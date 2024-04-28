@@ -11,11 +11,17 @@ let package = Package(
             name: "MlemMiddleware",
             targets: ["MlemMiddleware"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", .upToNextMajor(from: "1.2.2")),
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "MlemMiddleware"),
+            name: "MlemMiddleware",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies")
+            ]),
         .testTarget(
             name: "MlemMiddlewareTests",
             dependencies: ["MlemMiddleware"]),
