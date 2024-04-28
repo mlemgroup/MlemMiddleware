@@ -1,0 +1,3 @@
+[submodule "MlemMiddleware/Sources/MlemMiddleware/MlemApiTypes"]
+	path = MlemMiddleware/Sources/MlemMiddleware/MlemApiTypes
+	url = git@github.com:mlemgroup/MlemApiTypes.git
