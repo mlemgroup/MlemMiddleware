@@ -11,7 +11,7 @@ struct WeakReference<Content: AnyObject> {
     weak var content: Content?
 }
 
-protocol CacheIdentifiable {
+public protocol CacheIdentifiable {
     var cacheId: Int { get }
 }
 

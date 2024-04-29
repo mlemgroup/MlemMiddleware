@@ -8,5 +8,5 @@
 import Foundation
 
 extension ApiGetPersonDetailsResponse: Person3ApiBacker {
-    var person2ApiBacker: any Person2ApiBacker { personView }
+    public var person2ApiBacker: any Person2ApiBacker { personView }
 }

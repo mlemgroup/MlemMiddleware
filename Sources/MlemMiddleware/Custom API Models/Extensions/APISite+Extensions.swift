@@ -8,5 +8,5 @@
 import Foundation
 
 extension ApiSite: CacheIdentifiable, ActorIdentifiable, Identifiable {
-    var cacheId: Int { actorId.hashValue }
+    public var cacheId: Int { actorId.hashValue }
 }

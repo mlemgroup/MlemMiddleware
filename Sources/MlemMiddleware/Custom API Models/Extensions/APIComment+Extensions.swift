@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension ApiComment {
+public extension ApiComment {
     var parentId: Int? {
         let components = path.components(separatedBy: ".")
 

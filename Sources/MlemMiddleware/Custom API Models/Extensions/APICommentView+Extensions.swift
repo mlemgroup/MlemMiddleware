@@ -9,5 +9,5 @@ import Foundation
 
 extension ApiCommentView: Identifiable {
     // defer to our contained comment for identity
-    var id: Int { comment.id }
+    public var id: Int { comment.id }
 }

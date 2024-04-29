@@ -8,9 +8,9 @@
 import Foundation
 
 extension ApiMyUserInfo: Person3ApiBacker {
-    var site: ApiSite? { nil }
+    public var site: ApiSite? { nil }
     
-    var person2ApiBacker: any Person2ApiBacker {
+    public var person2ApiBacker: any Person2ApiBacker {
         localUserView
     }
 }

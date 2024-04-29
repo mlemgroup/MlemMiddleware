@@ -8,5 +8,5 @@
 import Foundation
 
 extension ApiSubscribedType {
-    var isSubscribed: Bool { self != .notSubscribed }
+    public var isSubscribed: Bool { self != .notSubscribed }
 }

@@ -8,13 +8,13 @@
 import Foundation
 
 // lemmy_api_common::post::GetPosts
-struct GetPostsRequest: ApiGetRequest {
-    typealias Response = ApiGetPostsResponse
+public struct GetPostsRequest: ApiGetRequest {
+    public typealias Response = ApiGetPostsResponse
 
-    let path = "post/list"
-    let queryItems: [URLQueryItem]
+    public let path = "post/list"
+    public let queryItems: [URLQueryItem]
     
-    init(
+    public init(
         communityId: Int?,
         page: Int,
         cursor: String?,

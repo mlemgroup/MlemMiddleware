@@ -8,8 +8,8 @@
 import Foundation
 
 extension ApiPostView: ActorIdentifiable, CacheIdentifiable, Identifiable {
-    var cacheId: Int { actorId.hashValue }
+    public var cacheId: Int { actorId.hashValue }
 
-    var actorId: URL { post.apId }
-    var id: Int { post.id }
+    public var actorId: URL { post.apId }
+    public var id: Int { post.id }
 }
