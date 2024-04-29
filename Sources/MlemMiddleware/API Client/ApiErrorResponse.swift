@@ -9,8 +9,8 @@ import Foundation
 
 // TODO: 0.19 support add all the error types (https://github.com/LemmyNet/lemmy-js-client/blob/b2edfeeaffd189a51150362cc8ead03c65ee2652/src/types/LemmyErrorType.ts)
 
-struct ApiErrorResponse: Decodable {
-    let error: String
+public struct ApiErrorResponse: Decodable {
+    public let error: String
 }
 
 private let possibleCredentialErrors = [

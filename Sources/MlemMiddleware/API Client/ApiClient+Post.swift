@@ -9,7 +9,7 @@ import Foundation
 
 extension ApiClient: PostFeedProvider {
     // swiftlint:disable:next function_parameter_count
-    func getPosts(
+    public func getPosts(
         communityId: Int,
         sort: ApiSortType,
         page: Int,
@@ -32,7 +32,7 @@ extension ApiClient: PostFeedProvider {
     }
     
     // swiftlint:disable:next function_parameter_count
-    func getPosts(
+    public func getPosts(
         feed: ApiListingType,
         sort: ApiSortType,
         page: Int,
@@ -55,14 +55,14 @@ extension ApiClient: PostFeedProvider {
     }
     
     @discardableResult
-    func voteOnPost(id: Int, score: ScoringOperation, semaphore: UInt?) async throws -> Post2 {
+    public func voteOnPost(id: Int, score: ScoringOperation, semaphore: UInt?) async throws -> Post2 {
         let request = LikePostRequest(postId: id, score: score.rawValue)
         let response = try await perform(request)
         return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
     
     @discardableResult
-    func savePost(id: Int, save: Bool, semaphore: UInt?) async throws -> Post2 {
+    public func savePost(id: Int, save: Bool, semaphore: UInt?) async throws -> Post2 {
         let request = SavePostRequest(postId: id, save: save)
         let response = try await perform(request)
         return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)

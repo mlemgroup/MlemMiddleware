@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol PostFeedProvider: ActorIdentifiable {
+public protocol PostFeedProvider: ActorIdentifiable {
     // swiftlint:disable:next function_parameter_count
     func getPosts(
         feed: ApiListingType,

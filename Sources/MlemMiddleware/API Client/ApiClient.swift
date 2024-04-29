@@ -24,7 +24,7 @@ public class ApiClient {
     private var fetchSiteTask: Task<SiteVersion, Error>?
     
     /// When `true`, the token will not be attatched to any API requests. This is useful for ensuring that inactive accounts don't accidentally make requests
-    var permissions: RequestPermissions = .all
+    public var permissions: RequestPermissions = .all
     
     public var willSendToken: Bool { permissions == .all && token != nil }
     

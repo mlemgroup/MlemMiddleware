@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension ApiClient {
+public extension ApiClient {
     func getCommunity(id: Int) async throws -> Community3 {
         let request = GetCommunityRequest(id: id, name: nil)
         let response = try await perform(request)

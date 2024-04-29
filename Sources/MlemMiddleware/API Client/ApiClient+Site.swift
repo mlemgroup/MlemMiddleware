@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension ApiClient {
+public extension ApiClient {
     func getSite() async throws -> Instance3 {
         let request = GetSiteRequest()
         let response = try await perform(request)

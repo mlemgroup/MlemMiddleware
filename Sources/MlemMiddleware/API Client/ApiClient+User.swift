@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension ApiClient {
+public extension ApiClient {
     // Returns a raw API type :(
     // Probably OK because it's part of onboarding, which is cursed and bootstrappy
     func login(username: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {

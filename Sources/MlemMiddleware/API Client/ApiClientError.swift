@@ -12,7 +12,7 @@ enum HTTPMethod {
     case post(Data)
 }
 
-enum ApiClientError: Error {
+public enum ApiClientError: Error {
     case encoding(Error)
     case networking(Error)
     case response(ApiErrorResponse, Int?)
@@ -23,7 +23,7 @@ enum ApiClientError: Error {
 }
 
 extension ApiClientError: CustomStringConvertible {
-    var description: String {
+    public var description: String {
         switch self {
         case .insufficientPermissions:
             return "Insufficient permissions. Check `ApiClient.permissions`"
