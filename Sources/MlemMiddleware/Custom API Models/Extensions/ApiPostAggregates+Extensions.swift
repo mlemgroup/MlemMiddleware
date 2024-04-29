@@ -7,4 +7,4 @@
 
 import Foundation
 
-// extension ApiPostAggregates: ApiContentAggregatesProtocol {}
+extension ApiPostAggregates: ApiContentAggregatesProtocol {}
