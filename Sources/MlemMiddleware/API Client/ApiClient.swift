@@ -9,7 +9,7 @@ import Combine
 import Foundation
 
 public class ApiClient {
-    enum RequestPermissions {
+    public enum RequestPermissions {
         case all, getOnly, none
     }
     
@@ -26,13 +26,13 @@ public class ApiClient {
     /// When `true`, the token will not be attatched to any API requests. This is useful for ensuring that inactive accounts don't accidentally make requests
     var permissions: RequestPermissions = .all
     
-    var willSendToken: Bool { permissions == .all && token != nil }
+    public var willSendToken: Bool { permissions == .all && token != nil }
     
     weak var myInstance: Instance3?
     weak var myUser: User?
     
     /// Returns the `fetchedVersion` if the version has already been fetched. Otherwise, waits until the version has been fetched before returning the received value.
-    var version: SiteVersion? {
+    public var version: SiteVersion? {
         get async {
             if let fetchedVersion {
                 return fetchedVersion
@@ -57,13 +57,13 @@ public class ApiClient {
     /// - Warning: DO NOT access this outside of ApiClient!
     static var apiClientCache: ApiClientCache = .init()
 
-    func cleanCaches() {
+    public func cleanCaches() {
         caches.clean()
         ApiClient.apiClientCache.clean()
     }
     
     /// Creates or retrieves an API client for the given connection parameters
-    static func getApiClient(for url: URL, with token: String?) -> ApiClient {
+    public static func getApiClient(for url: URL, with token: String?) -> ApiClient {
         apiClientCache.createOrRetrieveApiClient(for: url, with: token)
     }
     
@@ -76,7 +76,7 @@ public class ApiClient {
     }
     
     @discardableResult
-    func fetchSiteVersion(task: Task<SiteVersion, Error>? = nil) async throws -> SiteVersion {
+    public func fetchSiteVersion(task: Task<SiteVersion, Error>? = nil) async throws -> SiteVersion {
         let task = task ?? fetchSiteTask ?? Task { try await getSite().version }
         fetchSiteTask = task
         let result = await task.result
@@ -178,7 +178,7 @@ public class ApiClient {
 }
 
 extension ApiClient: CacheIdentifiable {
-    var cacheId: Int {
+    public var cacheId: Int {
         var hasher: Hasher = .init()
         hasher.combine(baseUrl)
         hasher.combine(token)
@@ -187,7 +187,7 @@ extension ApiClient: CacheIdentifiable {
 }
 
 extension ApiClient: ActorIdentifiable {
-    var actorId: URL { baseUrl }
+    public var actorId: URL { baseUrl }
 }
 
 // MARK: ApiClientCache
