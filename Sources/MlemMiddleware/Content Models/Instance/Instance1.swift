@@ -10,20 +10,20 @@ import SwiftUI
 
 @Observable
 public final class Instance1: Instance1Providing {
-    var api: ApiClient
-    var instance1: Instance1 { self }
+    public var api: ApiClient
+    public var instance1: Instance1 { self }
     
-    let id: Int
-    let creationDate: Date
-    let publicKey: String
+    public let id: Int
+    public let creationDate: Date
+    public let publicKey: String
     
-    var displayName: String = ""
-    var description: String?
-    var avatar: URL?
-    var banner: URL?
-    var lastRefreshDate: Date = .distantPast
+    public var displayName: String = ""
+    public var description: String?
+    public var avatar: URL?
+    public var banner: URL?
+    public var lastRefreshDate: Date = .distantPast
     
-    init(
+    public init(
         api: ApiClient,
         id: Int,
         creationDate: Date,
