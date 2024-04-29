@@ -17,7 +17,7 @@ public struct ActiveUserCount {
     static let zero: ActiveUserCount = .init(sixMonths: 0, month: 0, week: 0, day: 0)
 }
 
-protocol Community2Providing: Community1Providing {
+public protocol Community2Providing: Community1Providing {
     var community2: Community2 { get }
     
     var subscribed: Bool { get }
@@ -28,7 +28,7 @@ protocol Community2Providing: Community1Providing {
     var activeUserCount: ActiveUserCount { get }
 }
 
-extension Community2Providing {
+public extension Community2Providing {
     var community1: Community1 { community2.community1 }
     
     var subscribed: Bool { community2.subscribed }
@@ -47,7 +47,7 @@ extension Community2Providing {
     var subscriptionTier_: SubscriptionTier? { community2.subscriptionTier }
 }
 
-extension Community2Providing {
+public extension Community2Providing {
     var subscriptionTier: SubscriptionTier {
         if favorited { return .favorited }
         if subscribed { return .subscribed }

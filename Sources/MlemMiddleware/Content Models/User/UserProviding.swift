@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol UserProviding: CommunityOrPersonStub, AnyObject, Identifiable {
+public protocol UserProviding: CommunityOrPersonStub, AnyObject, Identifiable {
     var stub: UserStub { get }
     var api: ApiClient { get }
     
@@ -20,7 +20,7 @@ protocol UserProviding: CommunityOrPersonStub, AnyObject, Identifiable {
     var avatarUrl: URL? { get set }
 }
 
-extension UserProviding {
+public extension UserProviding {
     static var identifierPrefix: String { "@" }
     
     var id: Int { stub.id }
@@ -32,7 +32,7 @@ extension UserProviding {
     var avatarUrl: URL? { get { stub.avatarUrl } set { stub.avatarUrl = newValue } }
 }
 
-extension UserProviding {
+public extension UserProviding {
     var nicknameSortKey: String { "\(nickname ?? name)\(api.baseUrl.absoluteString)" }
     
     var instanceSortKey: String { "\(api.baseUrl.absoluteString)\(nickname ?? name)" }

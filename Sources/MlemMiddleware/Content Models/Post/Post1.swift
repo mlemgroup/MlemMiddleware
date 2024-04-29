@@ -7,37 +7,37 @@
 
 import SwiftUI
 
-struct PostEmbed {
+public struct PostEmbed {
     let title: String?
     let description: String?
     let videoUrl: URL?
 }
 
 @Observable
-final class Post1: Post1Providing {
-    var api: ApiClient
-    var post1: Post1 { self }
+public final class Post1: Post1Providing {
+    public var api: ApiClient
+    public var post1: Post1 { self }
     
-    let actorId: URL
-    let id: Int
+    public let actorId: URL
+    public let id: Int
     
-    let created: Date
+    public let created: Date
     
-    var title: String = ""
-    var content: String? = ""
-    var links: [LinkType] = []
-    var linkUrl: URL?
-    var deleted: Bool = false
-    var embed: PostEmbed?
-    var pinnedCommunity: Bool = false
-    var pinnedInstance: Bool = false
-    var locked: Bool = false
-    var nsfw: Bool = false
-    var removed: Bool = false
-    var thumbnailUrl: URL?
-    var updated: Date?
+    public var title: String = ""
+    public var content: String? = ""
+    public var links: [LinkType] = []
+    public var linkUrl: URL?
+    public var deleted: Bool = false
+    public var embed: PostEmbed?
+    public var pinnedCommunity: Bool = false
+    public var pinnedInstance: Bool = false
+    public var locked: Bool = false
+    public var nsfw: Bool = false
+    public var removed: Bool = false
+    public var thumbnailUrl: URL?
+    public var updated: Date?
     
-    init(
+    public init(
         api: ApiClient,
         actorId: URL,
         id: Int,

@@ -7,14 +7,14 @@
 
 import Foundation
 
-protocol Person3Providing: Person2Providing {
+public protocol Person3Providing: Person2Providing {
     var person3: Person3 { get }
     
     var instance: Instance1! { get }
     var moderatedCommunities: [Community1] { get }
 }
 
-extension Person3Providing {
+public extension Person3Providing {
     var person2: Person2 { person3.person2 }
     
     var instance: Instance1! { person3.instance }

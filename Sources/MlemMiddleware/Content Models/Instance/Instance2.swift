@@ -9,13 +9,13 @@ import Foundation
 import SwiftUI
 
 @Observable
-final class Instance2: Instance2Providing {
-    var api: ApiClient
-    var instance2: Instance2 { self }
+public final class Instance2: Instance2Providing {
+    public var api: ApiClient
+    public var instance2: Instance2 { self }
     
-    let instance1: Instance1
+    public let instance1: Instance1
 
-    init(api: ApiClient, instance1: Instance1) {
+    public init(api: ApiClient, instance1: Instance1) {
         self.api = api
         self.instance1 = instance1
     }

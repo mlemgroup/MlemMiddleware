@@ -24,7 +24,7 @@ public protocol Community1Providing: CommunityStubProviding, Identifiable {
     var blocked: Bool { get }
 }
 
-typealias Community = Community1Providing
+public typealias Community = Community1Providing
 
 public extension Community1Providing {
     var actorId: URL { community1.actorId }

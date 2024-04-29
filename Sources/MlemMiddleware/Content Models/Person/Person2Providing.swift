@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Person2Providing: Person1Providing {
+public protocol Person2Providing: Person1Providing {
     var person2: Person2 { get }
     
     var postCount: Int { get }
@@ -16,7 +16,7 @@ protocol Person2Providing: Person1Providing {
     var commentScore: Int { get }
 }
 
-extension Person2Providing {
+public extension Person2Providing {
     var person1: Person1 { person2.person1 }
     
     var postCount: Int { person2.postCount }

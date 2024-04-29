@@ -8,16 +8,16 @@
 import SwiftUI
 
 @Observable
-final class Person3: Person3Providing {
-    var api: ApiClient
-    var person3: Person3 { self }
+public final class Person3: Person3Providing {
+    public var api: ApiClient
+    public var person3: Person3 { self }
 
-    let person2: Person2
+    public let person2: Person2
 
-    var instance: Instance1!
-    var moderatedCommunities: [Community1] = .init()
+    public var instance: Instance1!
+    public var moderatedCommunities: [Community1] = .init()
     
-    init(
+    public init(
         api: ApiClient,
         person2: Person2,
         instance: Instance1? = nil,

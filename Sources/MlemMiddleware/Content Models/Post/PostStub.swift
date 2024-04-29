@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct PostStub: PostStubProviding {
-    var api: ApiClient
-    let actorId: URL
+public struct PostStub: PostStubProviding {
+    public var api: ApiClient
+    public let actorId: URL
     
-    static func == (lhs: PostStub, rhs: PostStub) -> Bool {
+    public static func == (lhs: PostStub, rhs: PostStub) -> Bool {
         lhs.actorId == rhs.actorId
     }
 }

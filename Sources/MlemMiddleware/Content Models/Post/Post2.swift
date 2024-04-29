@@ -9,27 +9,27 @@ import SwiftUI
 
 @Observable
 public final class Post2: Post2Providing {
-    var api: ApiClient
-    var post2: Post2 { self }
+    public var api: ApiClient
+    public var post2: Post2 { self }
     
-    let post1: Post1
+    public let post1: Post1
     
-    let creator: Person1
-    let community: Community1
+    public let creator: Person1
+    public let community: Community1
     
-    var commentCount: Int
-    var unreadCommentCount: Int
+    public var commentCount: Int
+    public var unreadCommentCount: Int
     
-    var votesManager: StateManager<VotesModel>
-    var votes: VotesModel { votesManager.wrappedValue }
+    public var votesManager: StateManager<VotesModel>
+    public var votes: VotesModel { votesManager.wrappedValue }
     
-    var isReadManager: StateManager<Bool>
-    var isRead: Bool { isReadManager.wrappedValue }
+    public var isReadManager: StateManager<Bool>
+    public var isRead: Bool { isReadManager.wrappedValue }
     
-    var isSavedManager: StateManager<Bool>
-    var isSaved: Bool { isSavedManager.wrappedValue }
+    public var isSavedManager: StateManager<Bool>
+    public var isSaved: Bool { isSavedManager.wrappedValue }
     
-    init(
+    public init(
         api: ApiClient,
         post1: Post1,
         creator: Person1,

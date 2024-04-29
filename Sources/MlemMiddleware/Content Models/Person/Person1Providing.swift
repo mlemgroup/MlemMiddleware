@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Person1Providing: PersonStubProviding, Identifiable {
+public protocol Person1Providing: PersonStubProviding, Identifiable {
     var api: ApiClient { get }
     
     var person1: Person1 { get }
@@ -27,9 +27,9 @@ protocol Person1Providing: PersonStubProviding, Identifiable {
     var blocked: Bool { get }
 }
 
-typealias Person = Person1Providing
+public typealias Person = Person1Providing
 
-extension Person1Providing {
+public extension Person1Providing {
     var actorId: URL { person1.actorId }
     var id: Int { person1.id }
     var name: String { person1.name }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Post2Providing: Post1Providing {
+public protocol Post2Providing: Post1Providing {
     var post2: Post2 { get }
     
     var creator: Person1 { get }
@@ -16,7 +16,7 @@ protocol Post2Providing: Post1Providing {
     var unreadCommentCount: Int { get }
 }
 
-extension Post2Providing {
+public extension Post2Providing {
     var post1: Post1 { post2.post1 }
     var interactable1: Post1 { post1 }
     
@@ -37,7 +37,7 @@ extension Post2Providing {
     var isRead_: Bool? { post2.isRead }
 }
 
-extension Post2Providing {
+public extension Post2Providing {
     private var votesManager: StateManager<VotesModel> { post2.votesManager }
     private var isReadManager: StateManager<Bool> { post2.isReadManager }
     private var isSavedManager: StateManager<Bool> { post2.isSavedManager }

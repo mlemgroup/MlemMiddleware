@@ -7,8 +7,7 @@
 
 import Foundation
 
-protocol Post1Providing: PostStubProviding,
-                         Identifiable {
+public protocol Post1Providing: PostStubProviding, Identifiable {
     var post1: Post1 { get }
     
     var id: Int { get }
@@ -28,9 +27,9 @@ protocol Post1Providing: PostStubProviding,
     var updated: Date? { get }
 }
 
-typealias Post = Post1Providing
+public typealias Post = Post1Providing
 
-extension Post1Providing {
+public extension Post1Providing {
     var actorId: URL { post1.actorId }
     
     var id: Int { post1.id }

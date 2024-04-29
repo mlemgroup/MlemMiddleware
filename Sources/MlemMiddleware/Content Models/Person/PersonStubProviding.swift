@@ -16,7 +16,7 @@ let developerNames = [
     "https://lemmy.ml/u/sjmarf"
 ]
 
-protocol PersonStubProviding: CommunityOrPersonStub {
+public protocol PersonStubProviding: CommunityOrPersonStub {
     // From User1Providing.
     var id_: Int? { get }
     var creationDate_: Date? { get }
@@ -42,7 +42,7 @@ protocol PersonStubProviding: CommunityOrPersonStub {
     var moderatedCommunities_: [Community1]? { get }
 }
 
-extension PersonStubProviding {
+public extension PersonStubProviding {
     static var identifierPrefix: String { "@" }
     
     var id_: Int? { nil }

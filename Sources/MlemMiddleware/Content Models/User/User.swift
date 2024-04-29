@@ -9,18 +9,18 @@ import Foundation
 import SwiftUI
 
 @Observable
-final class User: Person3Providing, UserProviding {
-    var api: ApiClient
+public final class User: Person3Providing, UserProviding {
+    public var api: ApiClient
     
-    static let identifierPrefix: String = "@"
+    public static let identifierPrefix: String = "@"
     
-    let stub: UserStub
-    let person3: Person3
-    let instance: Instance3
-    var id: Int { person3.id }
-    var name: String { stub.name }
+    public let stub: UserStub
+    public let person3: Person3
+    public let instance: Instance3
+    public var id: Int { person3.id }
+    public var name: String { stub.name }
   
-    init(api: ApiClient, stub: UserStub, person3: Person3, instance: Instance3) {
+    public init(api: ApiClient, stub: UserStub, person3: Person3, instance: Instance3) {
         self.api = api
         self.stub = stub
         self.person3 = person3

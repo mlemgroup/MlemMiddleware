@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol PostStubProviding: ContentStub {
+public protocol PostStubProviding: ContentStub {
     // From Post1Providing. These are defined as nil in the extension below
     var id_: Int? { get }
     var title_: String? { get }
@@ -37,7 +37,7 @@ protocol PostStubProviding: ContentStub {
     var myVote_: ScoringOperation? { get }
 }
 
-extension PostStubProviding {
+public extension PostStubProviding {
     var id_: Int? { nil }
     var title_: String? { nil }
     var content_: String? { nil }

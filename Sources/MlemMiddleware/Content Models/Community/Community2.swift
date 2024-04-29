@@ -11,20 +11,20 @@ import SwiftUI
 
 @Observable
 public final class Community2: Community2Providing {
-    var community2: Community2 { self }
-    var api: ApiClient
+    public var community2: Community2 { self }
+    public var api: ApiClient
 
-    let community1: Community1
+    public let community1: Community1
     
-    var subscribed: Bool = false
-    var favorited: Bool = false
+    public var subscribed: Bool = false
+    public var favorited: Bool = false
 
-    var subscriberCount: Int = 0
-    var postCount: Int = 0
-    var commentCount: Int = 0
-    var activeUserCount: ActiveUserCount = .zero
+    public var subscriberCount: Int = 0
+    public var postCount: Int = 0
+    public var commentCount: Int = 0
+    public var activeUserCount: ActiveUserCount = .zero
 
-    init(
+    public init(
         api: ApiClient,
         community1: Community1,
         subscribed: Bool = false,

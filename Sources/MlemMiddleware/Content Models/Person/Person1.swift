@@ -9,31 +9,31 @@ import SwiftUI
 
 @Observable
 public final class Person1: Person1Providing {
-    var api: ApiClient
-    var person1: Person1 { self }
+    public var api: ApiClient
+    public var person1: Person1 { self }
     
-    let actorId: URL
-    let id: Int
+    public let actorId: URL
+    public let id: Int
     
-    let name: String
-    let creationDate: Date
+    public let name: String
+    public let creationDate: Date
     
-    var updatedDate: Date? = .distantPast
-    var displayName: String?
-    var description: String?
-    var matrixId: String?
-    var avatar: URL?
-    var banner: URL?
+    public var updatedDate: Date? = .distantPast
+    public var displayName: String?
+    public var description: String?
+    public var matrixId: String?
+    public var avatar: URL?
+    public var banner: URL?
     
-    var deleted: Bool = false
-    var isBot: Bool = false
+    public var deleted: Bool = false
+    public var isBot: Bool = false
     
-    var instanceBan: InstanceBanType = .notBanned
+    public var instanceBan: InstanceBanType = .notBanned
     
     // These aren't included in the ApiPerson, and so are set externally by Post2 instead
-    var blocked: Bool = false
+    public var blocked: Bool = false
     
-    init(
+    public init(
         api: ApiClient,
         actorId: URL,
         id: Int,
