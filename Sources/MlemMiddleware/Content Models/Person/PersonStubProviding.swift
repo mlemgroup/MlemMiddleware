@@ -40,8 +40,6 @@ protocol PersonStubProviding: CommunityOrPersonStub {
     // From User3Providing.
     var instance_: Instance1? { get }
     var moderatedCommunities_: [Community1]? { get }
-    
-    func getFlairs(postContext: (any Post)?, communityContext: (any Community)?) -> [PersonFlair]
 }
 
 extension PersonStubProviding {
@@ -69,9 +67,4 @@ extension PersonStubProviding {
     var moderatedCommunities_: [Community1]? { nil }
     
     var isMlemDeveloper: Bool { developerNames.contains(actorId.absoluteString) }
-    
-    func getFlairs(
-        postContext: (any Post)? = nil,
-        communityContext: (any Community)? = nil
-    ) -> [PersonFlair] { isMlemDeveloper ? [.developer] : [] }
 }

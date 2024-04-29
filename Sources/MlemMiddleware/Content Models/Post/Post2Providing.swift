@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Post2Providing: Interactable2Providing, Post1Providing {
+protocol Post2Providing: Post1Providing {
     var post2: Post2 { get }
     
     var creator: Person1 { get }

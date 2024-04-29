@@ -7,6 +7,9 @@
 
 import Foundation
 import SwiftUI
+import KeychainAccess
+
+let keychain: Keychain = .init(service: "com.hanners.Mlem-keychain")
 
 enum UserError: Error {
     case noUserInResponse
@@ -82,7 +85,7 @@ final class UserStub: UserProviding, Codable {
         self.actorId = parseActorId(instanceLink: instanceLink, name: name)
         
         // retrive token and initialize ApiClient
-        guard let token = AppConstants.keychain[keychainId(id: id)] else {
+        guard let token = keychain[keychainId(id: id)] else {
             throw DecodingError.noTokenInKeychain
         }
         self.accessToken = token
@@ -90,7 +93,7 @@ final class UserStub: UserProviding, Codable {
     }
     
     func encode(to encoder: Encoder) throws {
-        AppConstants.keychain[keychainId(id: id)] = accessToken
+        keychain[keychainId(id: id)] = accessToken
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .username)

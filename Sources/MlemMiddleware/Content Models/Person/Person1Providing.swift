@@ -59,19 +59,3 @@ extension Person1Providing {
     var instanceBan_: InstanceBanType? { person1.instanceBan }
     var blocked_: Bool? { person1.blocked }
 }
-
-extension Person1Providing {
-    func getFlairs(
-        postContext: (any Post)? = nil,
-        communityContext: (any Community)? = nil
-    ) -> [PersonFlair] {
-        var flairs: [PersonFlair] = isMlemDeveloper ? [.developer] : []
-        if isBot {
-            flairs.append(.bot)
-        }
-        if instanceBan != .notBanned {
-            flairs.append(.banned)
-        }
-        return flairs
-    }
-}

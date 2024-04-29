@@ -8,9 +8,6 @@
 import Foundation
 
 protocol Post1Providing: PostStubProviding,
-                         Interactable1Providing,
-                         Actionable,
-                         FeedLoadable,
                          Identifiable {
     var post1: Post1 { get }
     
@@ -29,16 +26,6 @@ protocol Post1Providing: PostStubProviding,
     var removed: Bool { get }
     var thumbnailUrl: URL? { get }
     var updated: Date? { get }
-}
-
-extension Post1Providing {
-    var uid: ContentModelIdentifier { .init(contentType: .post, contentId: id) }
-    func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal {
-        switch sortType {
-        case .published:
-            return .published(created)
-        }
-    }
 }
 
 typealias Post = Post1Providing
@@ -77,30 +64,4 @@ extension Post1Providing {
     var removed_: Bool? { post1.removed }
     var thumbnailUrl_: URL? { post1.thumbnailUrl }
     var updatedDate_: Date? { post1.updated }
-}
-
-extension Post1Providing {
-    var postType: PostType {
-        // post with URL: either image or link
-        if let linkUrl {
-            // if image, return image link, otherwise return thumbnail
-            return linkUrl.isImage ? .image(linkUrl) : .link(thumbnailUrl)
-        }
-
-        // otherwise text, but post.body needs to be present, even if it's an empty string
-        if let postBody = content {
-            return .text(postBody)
-        }
-
-        return .titleOnly
-    }
-    
-    var menuActions: ActionGroup {
-        ActionGroup(children: [
-            ActionGroup(
-                children: [upvoteAction, downvoteAction]
-            ),
-            saveAction
-        ])
-    }
 }
