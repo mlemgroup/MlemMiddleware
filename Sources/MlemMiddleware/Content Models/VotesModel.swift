@@ -7,27 +7,27 @@
 
 import Foundation
 
-struct VotesModel: Hashable {
-    var total: Int { upvotes - downvotes }
-    var upvotes: Int
-    var downvotes: Int
-    var myVote: ScoringOperation
+public struct VotesModel: Hashable {
+    public var total: Int { upvotes - downvotes }
+    public var upvotes: Int
+    public var downvotes: Int
+    public var myVote: ScoringOperation
 
     // init from API type
-    init(from voteCount: any ApiContentAggregatesProtocol, myVote: ScoringOperation?) {
+    public init(from voteCount: any ApiContentAggregatesProtocol, myVote: ScoringOperation?) {
         self.upvotes = voteCount.upvotes
         self.downvotes = voteCount.downvotes
         self.myVote = myVote ?? .none
     }
 
     // raw init
-    init(upvotes: Int, downvotes: Int, myVote: ScoringOperation) {
+    public init(upvotes: Int, downvotes: Int, myVote: ScoringOperation) {
         self.upvotes = upvotes
         self.downvotes = downvotes
         self.myVote = myVote
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(upvotes)
         hasher.combine(downvotes)
         hasher.combine(myVote)

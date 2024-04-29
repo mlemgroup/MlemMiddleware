@@ -45,7 +45,7 @@ struct StateManagerTicket<Value: Equatable>: StateManagerTickerProtocol {
 /// When a vote finishes successfully, call `finishVotingOperation` with the new state returned from the server. If the caller is the most recent one, then clean state is wiped and a `true` value is returned; this indicates that the caller is clear to update the post with the returned value. If the caller is not the most recent one (i.e., another vote is underway), then the clean state is updated but a `false` value is returned; this indicates that the caller should not update the post with the returned value.
 /// When a vote finishes unsuccessfully, call `rollback`. If the caller is the most recent one, then the  `wrappedValue` will be reset to the `lastVerifiedValue`.
 @Observable
-class StateManager<Value: Equatable> {
+public class StateManager<Value: Equatable> {
     /// The state-faked value that should be shown to the user.
     private(set) var wrappedValue: Value
     

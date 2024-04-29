@@ -10,7 +10,7 @@ import Foundation
 /// Enumerates the types of links
 /// Equatable so that things like PostModel can be equatable
 /// All cases have a 'position' int for sorting the list
-enum LinkType {
+public enum LinkType {
     // TODO: capture internal Lemmy links:
     // - users
     // - communities
@@ -21,7 +21,7 @@ enum LinkType {
     case user(Int, String, String, URL) // position, username, instance, url
     case community(Int, String, String, URL) // position, community name, instance, url
     
-    var title: String {
+    public var title: String {
         switch self {
         case let .website(_, title, _):
             return title
@@ -32,7 +32,7 @@ enum LinkType {
         }
     }
     
-    var position: Int {
+    public var position: Int {
         switch self {
         case
             let .website(position, _, _),
@@ -42,7 +42,7 @@ enum LinkType {
         }
     }
     
-    var url: URL {
+    public var url: URL {
         switch self {
         case
             let .website(_, _, url),
@@ -54,7 +54,7 @@ enum LinkType {
 }
 
 extension LinkType: Hashable, Identifiable {
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         switch self {
         case let .website(position, title, url):
             hasher.combine(0)
@@ -72,9 +72,9 @@ extension LinkType: Hashable, Identifiable {
         }
     }
     
-    var id: Int { hashValue }
+    public var id: Int { hashValue }
     
-    var isWebsite: Bool {
+    public var isWebsite: Bool {
         if case .website = self {
             return true
         }

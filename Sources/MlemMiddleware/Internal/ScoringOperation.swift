@@ -9,15 +9,15 @@
 import Foundation
 import SwiftUI
 
-enum ScoringOperation: Int, Decodable, CustomStringConvertible {
+public enum ScoringOperation: Int, Decodable, CustomStringConvertible {
     case upvote = 1
     case downvote = -1
     case none = 0
 
-    var upvoteValue: Int { self == .upvote ? 1 : 0 }
-    var downvoteValue: Int { self == .downvote ? 1 : 0 }
+    public var upvoteValue: Int { self == .upvote ? 1 : 0 }
+    public var downvoteValue: Int { self == .downvote ? 1 : 0 }
 
-    var description: String {
+    public var description: String {
         switch self {
         case .upvote:
             "Upvote"
@@ -29,7 +29,7 @@ enum ScoringOperation: Int, Decodable, CustomStringConvertible {
     }
 }
 
-extension ScoringOperation {
+public extension ScoringOperation {
     /// Non-optional initializer; if int is nil or invalid, returns .none
     static func guaranteedInit(from int: Int?) -> ScoringOperation {
         guard let int else {

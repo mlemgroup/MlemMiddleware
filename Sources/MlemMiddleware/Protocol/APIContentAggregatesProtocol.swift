@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol ApiContentAggregatesProtocol {
+public protocol ApiContentAggregatesProtocol {
     var score: Int { get }
     var upvotes: Int { get }
     var downvotes: Int { get }

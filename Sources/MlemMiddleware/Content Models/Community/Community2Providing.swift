@@ -14,7 +14,7 @@ public struct ActiveUserCount {
     let week: Int
     let day: Int
     
-    static let zero: ActiveUserCount = .init(sixMonths: 0, month: 0, week: 0, day: 0)
+    public static let zero: ActiveUserCount = .init(sixMonths: 0, month: 0, week: 0, day: 0)
 }
 
 public protocol Community2Providing: Community1Providing {
