@@ -6,7 +6,7 @@
 //
 import Foundation
 
-enum SiteVersion: Equatable, Hashable {
+public enum SiteVersion: Equatable, Hashable {
     case release(major: Int, minor: Int, patch: Int)
     case other(String)
     case zero
@@ -39,7 +39,7 @@ enum SiteVersion: Equatable, Hashable {
 }
 
 extension SiteVersion: CustomStringConvertible {
-    var description: String {
+    public var description: String {
         switch self {
         case .zero:
             return "zero"
@@ -54,20 +54,20 @@ extension SiteVersion: CustomStringConvertible {
 }
 
 extension SiteVersion: Codable {
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let versionString = try container.decode(String.self)
         self.init(versionString)
     }
     
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(String(describing: self))
     }
 }
 
 extension SiteVersion: Comparable {
-    static func < (lhs: SiteVersion, rhs: SiteVersion) -> Bool {
+    public static func < (lhs: SiteVersion, rhs: SiteVersion) -> Bool {
         switch (lhs, rhs) {
         case (.release, .release):
             return lhs.parts! < rhs.parts!

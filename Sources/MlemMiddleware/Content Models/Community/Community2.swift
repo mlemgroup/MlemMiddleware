@@ -10,7 +10,7 @@ import Observation
 import SwiftUI
 
 @Observable
-final class Community2: Community2Providing {
+public final class Community2: Community2Providing {
     var community2: Community2 { self }
     var api: ApiClient
 

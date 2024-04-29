@@ -8,7 +8,7 @@
 import SwiftUI
 
 @Observable
-final class Person1: Person1Providing {
+public final class Person1: Person1Providing {
     var api: ApiClient
     var person1: Person1 { self }
     

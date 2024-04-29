@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct CommunityStub: CommunityStubProviding, Hashable {
-    var api: ApiClient
-    let actorId: URL
+public struct CommunityStub: CommunityStubProviding, Hashable {
+    public var api: ApiClient
+    public let actorId: URL
     
-    static func == (lhs: CommunityStub, rhs: CommunityStub) -> Bool {
+    public static func == (lhs: CommunityStub, rhs: CommunityStub) -> Bool {
         lhs.actorId == rhs.actorId
     }
 }

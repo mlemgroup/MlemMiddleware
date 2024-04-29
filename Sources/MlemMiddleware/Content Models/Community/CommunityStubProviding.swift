@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol CommunityStubProviding: CommunityOrPersonStub {
+public protocol CommunityStubProviding: CommunityOrPersonStub {
     // From Community1Providing.
     var id_: Int? { get }
     var creationDate_: Date? { get }
@@ -41,7 +41,7 @@ protocol CommunityStubProviding: CommunityOrPersonStub {
     func upgrade() async throws -> Community3
 }
 
-extension CommunityStubProviding {
+public extension CommunityStubProviding {
     static var identifierPrefix: String { "!" }
     
     // From Community1Providing.
@@ -75,11 +75,11 @@ extension CommunityStubProviding {
     var defaultPostLanguage_: Int? { nil }
 }
 
-enum UpgradeError: Error {
+public enum UpgradeError: Error {
     case entityNotFound
 }
 
-extension CommunityStubProviding {
+public extension CommunityStubProviding {
     func upgrade() async throws -> Community3 {
         guard let community = try await api.getCommunity(actorId: actorId) else {
             throw UpgradeError.entityNotFound

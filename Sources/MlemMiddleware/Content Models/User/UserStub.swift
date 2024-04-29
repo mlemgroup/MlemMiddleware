@@ -17,20 +17,20 @@ enum UserError: Error {
 }
 
 @Observable
-final class UserStub: UserProviding, Codable {
-    var api: ApiClient
+public final class UserStub: UserProviding, Codable {
+    public var api: ApiClient
     
-    var stub: UserStub { self }
+    public var stub: UserStub { self }
     
-    let id: Int
-    let name: String
-    var actorId: URL
+    public let id: Int
+    public let name: String
+    public var actorId: URL
     
-    var accessToken: String
-    var nickname: String?
-    var cachedSiteVersion: SiteVersion?
-    var avatarUrl: URL?
-    var lastLoggedIn: Date?
+    public var accessToken: String
+    public var nickname: String?
+    public var cachedSiteVersion: SiteVersion?
+    public var avatarUrl: URL?
+    public var lastLoggedIn: Date?
     
     enum CodingKeys: String, CodingKey {
         // These key names don't match the identifiers of their corresponding properties - this is because these key names must match the property names used in SavedAccount pre-1.3 in order to maintain compatibility
@@ -63,7 +63,7 @@ final class UserStub: UserProviding, Codable {
         self.lastLoggedIn = lastLoggedIn
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
         // copy simple values
@@ -92,7 +92,7 @@ final class UserStub: UserProviding, Codable {
         self.api = ApiClient.getApiClient(for: instanceLink, with: token)
     }
     
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         keychain[keychainId(id: id)] = accessToken
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)

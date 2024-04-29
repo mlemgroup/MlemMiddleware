@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 @Observable
-final class Instance1: Instance1Providing {
+public final class Instance1: Instance1Providing {
     var api: ApiClient
     var instance1: Instance1 { self }
     

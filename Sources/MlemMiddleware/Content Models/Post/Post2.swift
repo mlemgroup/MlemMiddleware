@@ -8,7 +8,7 @@
 import SwiftUI
 
 @Observable
-final class Post2: Post2Providing {
+public final class Post2: Post2Providing {
     var api: ApiClient
     var post2: Post2 { self }
     

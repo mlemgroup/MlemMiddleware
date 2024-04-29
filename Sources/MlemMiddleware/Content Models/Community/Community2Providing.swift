@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct ActiveUserCount {
+public struct ActiveUserCount {
     let sixMonths: Int
     let month: Int
     let week: Int

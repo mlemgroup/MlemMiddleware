@@ -9,31 +9,31 @@ import Observation
 import SwiftUI
 
 @Observable
-final class Community1: Community1Providing {
-    var community1: Community1 { self }
-    var api: ApiClient
+public final class Community1: Community1Providing {
+    public var community1: Community1 { self }
+    public var api: ApiClient
 
-    let actorId: URL
-    let id: Int
+    public let actorId: URL
+    public let id: Int
     
-    let name: String
-    let creationDate: Date
+    public let name: String
+    public let creationDate: Date
     
-    var updatedDate: Date? = .distantPast
-    var displayName: String = ""
-    var description: String?
-    var removed: Bool = false
-    var deleted: Bool = false
-    var nsfw: Bool = false
-    var avatar: URL?
-    var banner: URL?
-    var hidden: Bool = false
-    var onlyModeratorsCanPost: Bool = false
+    public var updatedDate: Date? = .distantPast
+    public var displayName: String = ""
+    public var description: String?
+    public var removed: Bool = false
+    public var deleted: Bool = false
+    public var nsfw: Bool = false
+    public var avatar: URL?
+    public var banner: URL?
+    public var hidden: Bool = false
+    public var onlyModeratorsCanPost: Bool = false
     
     // This isn't included in the ApiCommunity - it's included in ApiCommunityView, but defined here to maintain similarity with User models. User models don't have the `blocked` property defined in any of the Api types, annoyingly, so we instead request a list of all blocked users and cache the result in `MyUserStub`.
-    var blocked: Bool = false
+    public var blocked: Bool = false
   
-    init(
+    public init(
         api: ApiClient,
         actorId: URL,
         id: Int,

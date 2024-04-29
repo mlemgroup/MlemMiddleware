@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-class ApiClient {
+public class ApiClient {
     enum RequestPermissions {
         case all, getOnly, none
     }
@@ -17,7 +17,7 @@ class ApiClient {
     let urlSession: URLSession = .init(configuration: .default)
     
     // url and token MAY NOT be modified! Downstream code expects that a given ApiClient will *always* submit requests from the same user to the same instance.
-    let baseUrl: URL
+    public let baseUrl: URL
     let endpointUrl: URL
     let token: String?
     private(set) var fetchedVersion: SiteVersion?

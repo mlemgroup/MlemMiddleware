@@ -8,13 +8,13 @@
 import Foundation
 import SwiftUI
 
-protocol CommunityOrPersonStub: ContentStub {
+public protocol CommunityOrPersonStub: ContentStub {
     static var identifierPrefix: String { get }
     
     var name: String { get }
 }
 
-extension CommunityOrPersonStub {
+public extension CommunityOrPersonStub {
     var name: String { actorId.lastPathComponent }
 
     var fullName: String? {

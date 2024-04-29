@@ -9,17 +9,17 @@ import Observation
 import SwiftUI
 
 @Observable
-final class Community3: Community3Providing {
-    var community3: Community3 { self }
-    let api: ApiClient
+public final class Community3: Community3Providing {
+    public var community3: Community3 { self }
+    public let api: ApiClient
     
-    let community2: Community2
+    public let community2: Community2
     
-    var instance: Instance1! // TODO: no force unwrapping
-    var moderators: [Person1] = .init()
-    var discussionLanguages: [Int] = .init()
+    public var instance: Instance1! // TODO: no force unwrapping
+    public var moderators: [Person1] = .init()
+    public var discussionLanguages: [Int] = .init()
   
-    init(
+    public init(
         api: ApiClient,
         community2: Community2,
         instance: Instance1?,
@@ -33,5 +33,5 @@ final class Community3: Community3Providing {
         self.discussionLanguages = discussionLanguages
     }
     
-    func upgrade() async throws -> Community3 { self }
+    public func upgrade() async throws -> Community3 { self }
 }

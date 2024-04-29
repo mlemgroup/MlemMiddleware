@@ -7,6 +7,6 @@
 
 import SwiftUI
 
-enum SubscriptionTier {
+public enum SubscriptionTier {
     case unsubscribed, subscribed, favorited
 }

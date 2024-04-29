@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Community1Providing: CommunityStubProviding, Identifiable {
+public protocol Community1Providing: CommunityStubProviding, Identifiable {
     var community1: Community1 { get }
     
     var updatedDate: Date? { get }
@@ -26,7 +26,7 @@ protocol Community1Providing: CommunityStubProviding, Identifiable {
 
 typealias Community = Community1Providing
 
-extension Community1Providing {
+public extension Community1Providing {
     var actorId: URL { community1.actorId }
     var name: String { community1.name }
     
@@ -59,7 +59,7 @@ extension Community1Providing {
     var blocked_: Bool? { community1.blocked }
 }
 
-extension Community1Providing {
+public extension Community1Providing {
     // Overwrite the `upgrade()` method from CommunityStubProviding
     func upgrade() async throws -> Community3 {
         try await api.getCommunity(id: id)

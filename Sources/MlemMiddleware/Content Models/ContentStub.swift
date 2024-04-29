@@ -7,10 +7,10 @@
 
 import Foundation
 
-protocol ContentStub: ActorIdentifiable {
+public protocol ContentStub: ActorIdentifiable {
     var api: ApiClient { get }
 }
 
-extension ContentStub {
+public extension ContentStub {
     var host: String? { actorId.host() }
 }
