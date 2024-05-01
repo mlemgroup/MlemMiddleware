@@ -14,7 +14,9 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-dependencies.git", .upToNextMajor(from: "1.2.2")),
-        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess", branch: "master")
+        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess", branch: "master"),
+        .package(url: "https://github.com/groue/Semaphore.git", .upToNextMajor(from: "0.0.8")),
+        .package(url: "https://github.com/kean/Nuke.git", .upToNextMajor(from: "12.6.0"))
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -23,7 +25,9 @@ let package = Package(
             name: "MlemMiddleware",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "KeychainAccess", package: "KeychainAccess")
+                .product(name: "KeychainAccess", package: "KeychainAccess"),
+                .product(name: "Semaphore", package: "Semaphore"),
+                .product(name: "Nuke", package: "Nuke")
             ],
             swiftSettings: [.enableUpcomingFeature("BareSlashRegexLiterals")]
         ),

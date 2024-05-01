@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum PostType: Equatable {
+public enum PostType: Equatable {
     case text(String)
     case image(URL)
     case link(URL?)
