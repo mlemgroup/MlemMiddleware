@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Post1Providing: PostStubProviding, Identifiable, Actionable, Interactable1Providing, FeedLoadable {
+public protocol Post1Providing: PostStubProviding, Identifiable, Interactable1Providing, FeedLoadable {
     var post1: Post1 { get }
     
     var id: Int { get }
@@ -91,12 +91,12 @@ public extension Post1Providing {
         return .titleOnly
     }
     
-    var menuActions: ActionGroup {
-        ActionGroup(children: [
-            ActionGroup(
-                children: [upvoteAction, downvoteAction]
-            ),
-            saveAction
-        ])
-    }
+//    var menuActions: ActionGroup {
+//        ActionGroup(children: [
+//            ActionGroup(
+//                children: [upvoteAction, downvoteAction]
+//            ),
+//            saveAction
+//        ])
+//    }
 }
