@@ -5,7 +5,6 @@
 //  Created by Eric Andrews on 2023-10-15.
 //
 
-import Dependencies
 import Foundation
 import Semaphore
 import SwiftUI
@@ -42,8 +41,6 @@ struct FetchResponse<Item: FeedLoadable> {
 
 @Observable
 class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
-    @ObservationIgnored @Dependency(\.errorHandler) var errorHandler
-    
     /// loading state
     private var ids: Set<ContentModelIdentifier> = .init(minimumCapacity: 1000)
     /// number of the most recently loaded page. 0 indicates no content.
@@ -54,24 +51,20 @@ class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
 
     // MARK: - External methods
     
-    override func loadMoreItems() async {
-        do {
-            // declare this once here to avoid nasty race conditions
-            let pageToLoad = page + 1
-            
-            if pageToLoad == 1 {
-                // for loading first page, always use refresh--functions identically for page and cursor
-                try await load(action: .refresh(false))
+    override func loadMoreItems() async throws {
+        // declare this once here to avoid nasty race conditions
+        let pageToLoad = page + 1
+        
+        if pageToLoad == 1 {
+            // for loading first page, always use refresh--functions identically for page and cursor
+            try await load(action: .refresh(false))
+        } else {
+            // for loading subsequent pages, use cursor if available, page otherwise
+            if let loadingCursor {
+                try await load(action: .loadCursor(loadingCursor))
             } else {
-                // for loading subsequent pages, use cursor if available, page otherwise
-                if let loadingCursor {
-                    try await load(action: .loadCursor(loadingCursor))
-                } else {
-                    try await load(action: .loadPage(pageToLoad))
-                }
+                try await load(action: .loadPage(pageToLoad))
             }
-        } catch {
-            errorHandler.handle(error)
         }
     }
     
@@ -197,7 +190,7 @@ class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         var newState: LoadingState = .idle
         
         var newItems: [Item] = .init()
-        while newItems.count < internetSpeed.pageSize {
+        while newItems.count < pageSize {
             let fetched = try await fetchPage(page: page + 1)
             page += 1
             loadingCursor = fetched.cursor
@@ -241,7 +234,7 @@ class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         var newState: LoadingState = .idle
         
         var newItems: [Item] = .init()
-        while newItems.count < internetSpeed.pageSize {
+        while newItems.count < pageSize {
             let fetched = try await fetchCursor(cursor: cursor)
             if !fetched.hasContent || fetched.cursor == loadingCursor {
                 print("[\(Item.self) tracker] fetch returned no items or EOF cursor, setting loading state to done")

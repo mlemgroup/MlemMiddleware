@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-protocol Action: Identifiable {
+public protocol Action: Identifiable {
     var id: UUID { get }
     
     var isOn: Bool { get }

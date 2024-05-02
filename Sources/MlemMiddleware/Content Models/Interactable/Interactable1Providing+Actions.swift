@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Interactable1Providing {
+public extension Interactable1Providing {
     var upvoteAction: BasicAction {
         .upvote(isOn: false)
     }

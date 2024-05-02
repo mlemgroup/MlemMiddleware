@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol Actionable {
+public protocol Actionable {
     func action(ofType type: ActionType) -> (any Action)?
 }

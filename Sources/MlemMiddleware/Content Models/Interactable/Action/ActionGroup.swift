@@ -7,31 +7,31 @@
 
 import SwiftUI
 
-enum ActionGroupMode {
+public enum ActionGroupMode {
     case section, compactSection, disclosure, popup
 }
 
-struct ActionGroup: Action {
-    let id: UUID = .init()
+public struct ActionGroup: Action {
+    public let id: UUID = .init()
     
-    let isOn: Bool
+    public let isOn: Bool
     
-    let label: String
-    let isDestructive: Bool
-    let color: Color
+    public let label: String
+    public let isDestructive: Bool
+    public let color: Color
     
-    let barIcon: String
-    let menuIcon: String
-    let swipeIcon1: String
-    let swipeIcon2: String
+    public let barIcon: String
+    public let menuIcon: String
+    public let swipeIcon1: String
+    public let swipeIcon2: String
     
-    let enabled: Bool
-    let children: [any Action]
+    public let enabled: Bool
+    public let children: [any Action]
     
     /// Represents how the children of the `ActionGroup` are presented.
-    let displayMode: ActionGroupMode
+    public let displayMode: ActionGroupMode
     
-    init(
+    public init(
         isOn: Bool = false,
         label: String = "More...",
         color: Color = .blue,

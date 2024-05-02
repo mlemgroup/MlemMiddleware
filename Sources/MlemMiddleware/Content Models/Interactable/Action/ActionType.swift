@@ -7,6 +7,6 @@
 
 import SwiftUI
 
-enum ActionType: String {
+public enum ActionType: String {
     case upvote, downvote, save
 }

@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import MlemMiddleware
 
-extension Interactable2Providing {
+public extension Interactable2Providing {
     var upvoteAction: BasicAction {
         var action = BasicAction.upvote(isOn: api.willSendToken && votes.myVote == .upvote)
         action.callback = api.willSendToken ? toggleUpvote : nil

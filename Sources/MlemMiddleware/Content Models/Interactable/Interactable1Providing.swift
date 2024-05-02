@@ -6,10 +6,9 @@
 //
 
 import Foundation
-import MlemMiddleware
 
 /// Represents a post/comment that you *should* be able to interact with, but you cannot actually interact with due to the model being too low-tier.
-protocol Interactable1Providing: AnyObject, Actionable, ContentStub {
+public protocol Interactable1Providing: AnyObject, Actionable, ContentStub {
     var created: Date { get }
     var updated: Date? { get }
     

@@ -65,7 +65,7 @@ public extension Post1Providing {
     var updatedDate_: Date? { post1.updated }
 }
 
-extension Post1Providing {
+public extension Post1Providing {
     var uid: ContentModelIdentifier { .init(contentType: .post, contentId: id) }
     func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal {
         switch sortType {
@@ -75,3 +75,28 @@ extension Post1Providing {
     }
 }
 
+public extension Post1Providing {
+    var postType: PostType {
+        // post with URL: either image or link
+        if let linkUrl {
+            // if image, return image link, otherwise return thumbnail
+            return linkUrl.isImage ? .image(linkUrl) : .link(thumbnailUrl)
+        }
+
+        // otherwise text, but post.body needs to be present, even if it's an empty string
+        if let postBody = content {
+            return .text(postBody)
+        }
+
+        return .titleOnly
+    }
+    
+    var menuActions: ActionGroup {
+        ActionGroup(children: [
+            ActionGroup(
+                children: [upvoteAction, downvoteAction]
+            ),
+            saveAction
+        ])
+    }
+}

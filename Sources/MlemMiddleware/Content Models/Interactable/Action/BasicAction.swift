@@ -7,21 +7,21 @@
 
 import SwiftUI
 
-struct BasicAction: Action {
-    let id: UUID = .init()
-    let isOn: Bool
+public struct BasicAction: Action {
+    public let id: UUID = .init()
+    public let isOn: Bool
     
-    let label: String
-    let isDestructive: Bool
-    let color: Color
+    public let label: String
+    public let isDestructive: Bool
+    public let color: Color
     
-    let barIcon: String
-    let menuIcon: String
-    let swipeIcon1: String
-    let swipeIcon2: String
+    public let barIcon: String
+    public let menuIcon: String
+    public let swipeIcon1: String
+    public let swipeIcon2: String
     
     /// If this is nil, the BasicAction is disabled
-    var callback: (() -> Void)?
+    public var callback: (() -> Void)?
     
     init(
         isOn: Bool,
@@ -46,7 +46,7 @@ struct BasicAction: Action {
         self.callback = enabled ? callback : nil
     }
     
-    static func upvote(isOn: Bool) -> BasicAction {
+    public static func upvote(isOn: Bool) -> BasicAction {
         .init(
             isOn: isOn,
             label: isOn ? "Undo Upvote" : "Upvote",
@@ -58,7 +58,7 @@ struct BasicAction: Action {
         )
     }
     
-    static func downvote(isOn: Bool) -> BasicAction {
+    public static func downvote(isOn: Bool) -> BasicAction {
         .init(
             isOn: isOn,
             label: isOn ? "Undo Downvote" : "Downvote",
@@ -70,7 +70,7 @@ struct BasicAction: Action {
         )
     }
     
-    static func save(isOn: Bool) -> BasicAction {
+    public static func save(isOn: Bool) -> BasicAction {
         .init(
             isOn: isOn,
             label: isOn ? "Unsave": "Save",

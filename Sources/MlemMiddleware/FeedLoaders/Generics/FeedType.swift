@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import MlemMiddleware
 import SwiftUI
 
 enum FeedType: Equatable {
@@ -101,57 +100,57 @@ extension FeedType: Hashable, Identifiable {
     var id: Int { hashValue }
 }
 
-extension FeedType: AssociatedIcon {
-    var iconName: String {
-        switch self {
-        case .all: Icons.federatedFeed
-        case .local: Icons.localFeed
-        case .subscribed: Icons.subscribedFeed
-        case .saved: Icons.savedFeed
-        case .community: Icons.community
-        }
-    }
-    
-    var iconNameFill: String {
-        switch self {
-        case .all: Icons.federatedFeedFill
-        case .local: Icons.localFeedFill
-        case .subscribed: Icons.subscribedFeedFill
-        case .saved: Icons.savedFeedFill
-        case .community: Icons.communityFill
-        }
-    }
-    
-    var iconNameCircle: String {
-        switch self {
-        case .all: Icons.federatedFeedCircle
-        case .local: Icons.localFeedCircle
-        case .subscribed: Icons.subscribedFeedCircle
-        case .saved: Icons.savedFeedCircle
-        case .community: Icons.community
-        }
-    }
-    
-    /// Icon to use in system settings. This should be removed when the "unified symbol handling" is closed
-    var settingsIconName: String {
-        switch self {
-        case .all: "circle.hexagongrid"
-        case .local: "house"
-        case .subscribed: "newspaper"
-        case .saved: Icons.save
-        case .community: Icons.community
-        }
-    }
-}
-
-extension FeedType: AssociatedColor {
-    var color: Color? {
-        switch self {
-        case .all: .blue
-        case .local: .purple
-        case .subscribed: .red
-        case .saved: .green
-        case .community: .blue
-        }
-    }
-}
+//extension FeedType: AssociatedIcon {
+//    var iconName: String {
+//        switch self {
+//        case .all: Icons.federatedFeed
+//        case .local: Icons.localFeed
+//        case .subscribed: Icons.subscribedFeed
+//        case .saved: Icons.savedFeed
+//        case .community: Icons.community
+//        }
+//    }
+//    
+//    var iconNameFill: String {
+//        switch self {
+//        case .all: Icons.federatedFeedFill
+//        case .local: Icons.localFeedFill
+//        case .subscribed: Icons.subscribedFeedFill
+//        case .saved: Icons.savedFeedFill
+//        case .community: Icons.communityFill
+//        }
+//    }
+//    
+//    var iconNameCircle: String {
+//        switch self {
+//        case .all: Icons.federatedFeedCircle
+//        case .local: Icons.localFeedCircle
+//        case .subscribed: Icons.subscribedFeedCircle
+//        case .saved: Icons.savedFeedCircle
+//        case .community: Icons.community
+//        }
+//    }
+//    
+//    /// Icon to use in system settings. This should be removed when the "unified symbol handling" is closed
+//    var settingsIconName: String {
+//        switch self {
+//        case .all: "circle.hexagongrid"
+//        case .local: "house"
+//        case .subscribed: "newspaper"
+//        case .saved: Icons.save
+//        case .community: Icons.community
+//        }
+//    }
+//}
+//
+//extension FeedType: AssociatedColor {
+//    var color: Color? {
+//        switch self {
+//        case .all: .blue
+//        case .local: .purple
+//        case .subscribed: .red
+//        case .saved: .green
+//        case .community: .blue
+//        }
+//    }
+//}
