@@ -10,14 +10,14 @@ import Nuke
 import SwiftUI
 
 /// Enumeration of criteria on which to filter a post
-enum PostFilter: Hashable {
+public enum PostFilter: Hashable {
     /// Post is filtered because it was read
     case read
     
     /// Post is filtered because it contains a blocked keyword
     case keyword
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         switch self {
         case .read:
             hasher.combine("read")
@@ -27,44 +27,13 @@ enum PostFilter: Hashable {
     }
 }
 
-enum TrackerFeedType: Equatable {
-    case aggregateFeed(any PostFeedProvider, type: ApiListingType)
-    case community(any Community)
-    
-    static func == (lhs: TrackerFeedType, rhs: TrackerFeedType) -> Bool {
-        switch (lhs, rhs) {
-        case let (.aggregateFeed(source1, type: type1), .aggregateFeed(source2, type: type2)):
-            return source1.actorId == source2.actorId && type1 == type2
-        case let (.community(comm1), .community(comm2)):
-            return comm1.actorId == comm2.actorId
-        default:
-            return false
-        }
-    }
-    
-    func getPosts(
-        sort: ApiSortType,
-        page: Int = 1,
-        cursor: String? = nil,
-        limit: Int,
-        savedOnly: Bool = false
-    ) async throws -> (posts: [Post2], cursor: String?) {
-        switch self {
-        case let .aggregateFeed(api, type):
-            return try await api.getPosts(feed: type, sort: sort, page: page, cursor: cursor, limit: limit, savedOnly: savedOnly)
-        case let .community(community):
-            return try await community.getPosts(sort: sort, page: page, cursor: cursor, limit: limit, savedOnly: savedOnly)
-        }
-    }
-}
-
 /// Post tracker for use with single feeds. Supports all post sorting types, but is not suitable for multi-feed use.
 @Observable
-class StandardPostTracker: StandardFeedLoader<Post2> {
+public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     // TODO: ERIC keyword filters could be more elegant
     var filteredKeywords: [String]
     
-    var feedType: TrackerFeedType
+    var feedType: FeedType
     private(set) var postSortType: ApiSortType
     private var filters: [PostFilter: Int]
     
@@ -78,12 +47,43 @@ class StandardPostTracker: StandardFeedLoader<Post2> {
         maxConcurrentRequestCount: 40
     )
     
-    init(
+    public enum FeedType: Equatable {
+        case aggregateFeed(any PostFeedProvider, type: ApiListingType)
+        case community(any Community)
+        
+        public static func == (lhs: FeedType, rhs: FeedType) -> Bool {
+            switch (lhs, rhs) {
+            case let (.aggregateFeed(source1, type: type1), .aggregateFeed(source2, type: type2)):
+                return source1.actorId == source2.actorId && type1 == type2
+            case let (.community(comm1), .community(comm2)):
+                return comm1.actorId == comm2.actorId
+            default:
+                return false
+            }
+        }
+        
+        public func getPosts(
+            sort: ApiSortType,
+            page: Int = 1,
+            cursor: String? = nil,
+            limit: Int,
+            savedOnly: Bool = false
+        ) async throws -> (posts: [Post2], cursor: String?) {
+            switch self {
+            case let .aggregateFeed(api, type):
+                return try await api.getPosts(feed: type, sort: sort, page: page, cursor: cursor, limit: limit, savedOnly: savedOnly)
+            case let .community(community):
+                return try await community.getPosts(sort: sort, page: page, cursor: cursor, limit: limit, savedOnly: savedOnly)
+            }
+        }
+    }
+    
+    public init(
         pageSize: Int,
         sortType: ApiSortType,
         showReadPosts: Bool,
         filteredKeywords: [String],
-        feedType: TrackerFeedType
+        feedType: FeedType
     ) {  
         self.feedType = feedType
         self.postSortType = sortType
@@ -98,13 +98,13 @@ class StandardPostTracker: StandardFeedLoader<Post2> {
         }
     }
     
-    override func refresh(clearBeforeRefresh: Bool) async throws {
+    override public func refresh(clearBeforeRefresh: Bool) async throws {
         try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
     }
     
     // MARK: StandardTracker Loading Methods
     
-    override func fetchPage(page: Int) async throws -> FetchResponse<Post2> {
+    override public func fetchPage(page: Int) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: nil, limit: pageSize)
         
         let filteredPosts = filter(result.posts)
@@ -112,7 +112,7 @@ class StandardPostTracker: StandardFeedLoader<Post2> {
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
     
-    override func fetchCursor(cursor: String?) async throws -> FetchResponse<Post2> {
+    override public func fetchCursor(cursor: String?) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: cursor, limit: pageSize)
         
         let filteredPosts = filter(result.posts)
@@ -123,7 +123,7 @@ class StandardPostTracker: StandardFeedLoader<Post2> {
     // MARK: Custom Behavior
     
     /// Changes the post sort type to the specified value and reloads the feed
-    func changeSortType(to newSortType: ApiSortType, forceRefresh: Bool = false) async throws {
+    public func changeSortType(to newSortType: ApiSortType, forceRefresh: Bool = false) async throws {
         // don't do anything if sort type not changed
         guard postSortType != newSortType || forceRefresh else {
             return
@@ -134,7 +134,7 @@ class StandardPostTracker: StandardFeedLoader<Post2> {
     }
     
     @MainActor
-    func changeFeedType(to newFeedType: TrackerFeedType) async throws {
+    public func changeFeedType(to newFeedType: FeedType) async throws {
 //        // don't do anything if feed type not changed
 //        guard feedType != newFeedType else {
 //            return
@@ -149,26 +149,17 @@ class StandardPostTracker: StandardFeedLoader<Post2> {
         }
     }
     
-    @available(
-        *,
-        deprecated,
-        message: "Compatibility function for UserView. Should be removed and UserView refactored to use new multi-trackers."
-    )
-    func reset(with newPosts: [Post2]) async {
-        await setItems(newPosts)
-    }
-    
     /// Applies a filter to all items currently in the tracker, but does **NOT** add the filter to the tracker!
     /// Use in situations where filtering is handled server-side but should be retroactively applied to the current set of posts (e.g., filtering posts from a blocked user or community)
     /// - Parameter filter: filter to apply
-    func applyFilter(_ filter: PostFilter) async {
+    public func applyFilter(_ filter: PostFilter) async {
         await setItems(items.filter { shouldFilterPost($0, filters: [filter]) == nil })
     }
     
     /// Adds a filter to the tracker, removing all current posts that do not pass the filter and filtering out all future posts that do not pass the filter.
     /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
     /// - Parameter newFilter: NewPostFilterReason describing the filter to apply
-    func addFilter(_ newFilter: PostFilter) async throws {
+    public func addFilter(_ newFilter: PostFilter) async throws {
         guard !filters.keys.contains(newFilter) else {
             assertionFailure("Cannot apply new filter (already present in filters!)")
             return
@@ -182,7 +173,7 @@ class StandardPostTracker: StandardFeedLoader<Post2> {
         }
     }
     
-    func removeFilter(_ filterToRemove: PostFilter) async throws {
+    public func removeFilter(_ filterToRemove: PostFilter) async throws {
         guard filters.keys.contains(filterToRemove) else {
             assertionFailure("Cannot remove filter (not present in filters!)")
             return
@@ -192,7 +183,7 @@ class StandardPostTracker: StandardFeedLoader<Post2> {
         try await refresh(clearBeforeRefresh: true)
     }
     
-    func getFilteredCount(for filter: PostFilter) -> Int {
+    public func getFilteredCount(for filter: PostFilter) -> Int {
         filters[filter, default: 0]
     }
     

@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Array {
+public extension Array {
     mutating func prepend(_ newElement: Element) {
         insert(newElement, at: 0)
     }

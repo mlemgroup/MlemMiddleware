@@ -25,22 +25,22 @@ enum LoadAction {
 }
 
 /// Helper struct bundling the response from a fetchPage or fetchCursor call
-struct FetchResponse<Item: FeedLoadable> {
+public struct FetchResponse<Item: FeedLoadable> {
     /// Items returned
-    let items: [Item]
+    public let items: [Item]
     
     /// New cursor, if applicable
-    let cursor: String?
+    public let cursor: String?
     
     /// Number of items filtered out
-    let numFiltered: Int
+    public let numFiltered: Int
     
     /// True if the response has content, false otherwise. It is possible for a filter to remove all fetched items; this avoids that triggering an erroneous end of feed.
-    var hasContent: Bool { items.count + numFiltered > 0 }
+    public var hasContent: Bool { items.count + numFiltered > 0 }
 }
 
 @Observable
-class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
+public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     /// loading state
     private var ids: Set<ContentModelIdentifier> = .init(minimumCapacity: 1000)
     /// number of the most recently loaded page. 0 indicates no content.
@@ -51,7 +51,7 @@ class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
 
     // MARK: - External methods
     
-    override func loadMoreItems() async throws {
+    override public func loadMoreItems() async throws {
         // declare this once here to avoid nasty race conditions
         let pageToLoad = page + 1
         

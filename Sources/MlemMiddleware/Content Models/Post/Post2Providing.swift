@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Post2Providing: Post1Providing {
+public protocol Post2Providing: Post1Providing, Interactable2Providing {
     var post2: Post2 { get }
     
     var creator: Person1 { get }

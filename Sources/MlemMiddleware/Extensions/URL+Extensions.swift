@@ -15,7 +15,7 @@ extension URL: Identifiable {
     }
 }
 
-extension URL {
+public extension URL {
     // Spec described here: https://join-lemmy.org/docs/contributors/04-api.html#images
     func withIconSize(_ size: Int) -> URL {
         var result = self

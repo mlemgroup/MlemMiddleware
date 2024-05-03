@@ -10,9 +10,9 @@ import SwiftUI
 
 /// Class providing common feed loading functionality for StandardFeedLoader and ParentFeedLoader
 @Observable
-class CoreFeedLoader<Item: FeedLoadable> {
-    var items: [Item] = .init()
-    private(set) var loadingState: LoadingState = .idle
+public class CoreFeedLoader<Item: FeedLoadable> {
+    private(set) public var items: [Item] = .init()
+    private(set) public var loadingState: LoadingState = .idle
     
     // uids of items that should trigger loading. threshold is several items before the end, to give the illusion of infinite loading. fallbackThreshold is the last item in feed, and exists to catch loading if the user scrolled too fast to trigger threshold
     private(set) var threshold: ContentModelIdentifier?
@@ -35,7 +35,7 @@ class CoreFeedLoader<Item: FeedLoadable> {
         }
     }
     
-    func loadMoreItems() async throws {
+    public func loadMoreItems() async throws {
         preconditionFailure("This method must be overridden by the inheriting class")
     }
     

@@ -1,13 +1,13 @@
 //
-//  String+ParseLinks.swift
+//  String+Extensions.swift
+//  Mlem
 //
-//
-//  Created by Eric Andrews on 2024-04-29.
+//  Created by Eric Andrews on 2023-12-10.
 //
 
 import Foundation
 
-extension String {
+public extension String {
     func parseLinks() -> [LinkType] {
         // regex to match raw links not embedded in Markdown
         // (^|[^(\]\()]) ignores anything after a markdown link format (preceded by start of string or anything but '](')
@@ -76,5 +76,11 @@ extension String {
         
         // sort links by position in body and return
         return (rawLinks + markdownLinks + userLinks + communityLinks).sorted { $0.position < $1.position }
+    }
+}
+
+extension String {
+    func contains(_ strings: [String]) -> Bool {
+        strings.contains { contains($0) }
     }
 }
