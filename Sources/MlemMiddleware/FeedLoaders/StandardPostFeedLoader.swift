@@ -46,6 +46,8 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         destination: .memoryCache,
         maxConcurrentRequestCount: 40
     )
+    private let smallAvatarIconSize: Int
+    private let largeAvatarIconSize: Int
     
     public enum FeedType: Equatable {
         case aggregateFeed(any PostFeedProvider, type: ApiListingType)
@@ -83,13 +85,18 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         sortType: ApiSortType,
         showReadPosts: Bool,
         filteredKeywords: [String],
-        feedType: FeedType
-    ) {  
+        feedType: FeedType,
+        smallAvatarSize: CGFloat,
+        largeAvatarSize: CGFloat
+    ) {
         self.feedType = feedType
         self.postSortType = sortType
         
         self.filteredKeywords = filteredKeywords
         self.filters = [.keyword: 0]
+        
+        self.smallAvatarIconSize = Int(smallAvatarSize * 2)
+        self.largeAvatarIconSize = Int(largeAvatarSize * 2)
         
         super.init(pageSize: pageSize)
         
@@ -219,17 +226,17 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     }
     
     private func preloadImages(_ newPosts: [Post2]) {
-        URLSession.shared.configuration.urlCache = AppConstants.urlCache
+        URLSession.shared.configuration.urlCache = MiddlewareConstants.urlCache
         var imageRequests: [ImageRequest] = []
         for post in newPosts {
             // preload user and community avatars--fetching both because we don't know which we'll need, but these are super tiny
             // so it's probably not an API crime, right?
             if let communityAvatarLink = post.community.avatar {
-                imageRequests.append(ImageRequest(url: communityAvatarLink.withIconSize(Int(AppConstants.smallAvatarSize * 2))))
+                imageRequests.append(ImageRequest(url: communityAvatarLink.withIconSize(smallAvatarIconSize)))
             }
             
             if let userAvatarLink = post.creator.avatar {
-                imageRequests.append(ImageRequest(url: userAvatarLink.withIconSize(Int(AppConstants.largeAvatarSize * 2))))
+                imageRequests.append(ImageRequest(url: userAvatarLink.withIconSize(largeAvatarIconSize * 2)))
             }
             
             switch post.postType {
