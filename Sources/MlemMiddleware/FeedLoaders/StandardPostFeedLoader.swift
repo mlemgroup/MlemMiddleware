@@ -48,6 +48,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     )
     private let smallAvatarIconSize: Int
     private let largeAvatarIconSize: Int
+    private let urlCache: URLCache
     
     public enum FeedType: Equatable {
         case aggregateFeed(any PostFeedProvider, type: ApiListingType)
@@ -87,7 +88,8 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         filteredKeywords: [String],
         feedType: FeedType,
         smallAvatarSize: CGFloat,
-        largeAvatarSize: CGFloat
+        largeAvatarSize: CGFloat,
+        urlCache: URLCache
     ) {
         self.feedType = feedType
         self.postSortType = sortType
@@ -97,6 +99,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
+        self.urlCache = urlCache
         
         super.init(pageSize: pageSize)
         
@@ -226,7 +229,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     }
     
     private func preloadImages(_ newPosts: [Post2]) {
-        URLSession.shared.configuration.urlCache = MiddlewareConstants.urlCache
+        URLSession.shared.configuration.urlCache = urlCache
         var imageRequests: [ImageRequest] = []
         for post in newPosts {
             // preload user and community avatars--fetching both because we don't know which we'll need, but these are super tiny
