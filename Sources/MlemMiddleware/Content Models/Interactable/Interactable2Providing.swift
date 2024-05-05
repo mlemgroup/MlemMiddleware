@@ -12,7 +12,7 @@ public protocol Interactable2Providing: Interactable1Providing {
     var commentCount: Int { get }
     
     var votes: VotesModel { get }
-    var isSaved: Bool { get }
+    var saved: Bool { get }
     
     func vote(_ newVote: ScoringOperation)
     func toggleSave()

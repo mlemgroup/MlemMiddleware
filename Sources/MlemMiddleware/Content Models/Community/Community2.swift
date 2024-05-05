@@ -15,21 +15,25 @@ public final class Community2: Community2Providing {
 
     public let community1: Community1
     
-    internal var isSubscribedManager: StateManager<Bool>
-    public var isSubscribed: Bool { isSubscribedManager.wrappedValue }
+    internal var subscribedManager: StateManager<Bool>
+    public var subscribed: Bool { subscribedManager.wrappedValue }
     
-    public var isFavorited: Bool = false
+    public var favorited: Bool {
+        api.subscriptions?.favoriteIDs.contains(community1.id) ?? false
+    }
+    
+    /// Used to state-fake internally.
+    internal var shouldBeFavorited: Bool = false
 
     public var subscriberCount: Int = 0
     public var postCount: Int = 0
     public var commentCount: Int = 0
     public var activeUserCount: ActiveUserCount = .zero
 
-    public init(
+    internal init(
         api: ApiClient,
         community1: Community1,
-        isSubscribed: Bool = false,
-        isFavorited: Bool = false,
+        subscribed: Bool = false,
         subscriberCount: Int = 0,
         postCount: Int = 0,
         commentCount: Int = 0,
@@ -37,11 +41,19 @@ public final class Community2: Community2Providing {
     ) {
         self.api = api
         self.community1 = community1
-        self.isSubscribedManager = .init(wrappedValue: isSubscribed)
-        self.isFavorited = isFavorited
+        self.subscribedManager = .init(wrappedValue: subscribed)
         self.subscriberCount = subscriberCount
         self.postCount = postCount
         self.commentCount = commentCount
         self.activeUserCount = activeUserCount
+        
+        if favorited, !subscribed {
+            self.api.subscriptions?.favoriteIDs.remove(self.id)
+        }
+        self.subscribedManager.onSet = { newValue in
+            self.api.subscriptions?.updateCommunitySubscription(community: self)
+        }
+        self.shouldBeFavorited = favorited
+        self.subscribedManager.onSet(subscribed)
     }
 }

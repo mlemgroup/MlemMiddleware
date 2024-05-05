@@ -28,7 +28,7 @@ extension Community2: CacheIdentifiable {
     public var cacheId: Int { community1.cacheId }
     
     func update(with communityView: ApiCommunityView, semaphore: UInt? = nil) {
-        isSubscribedManager.updateWithReceivedValue(communityView.subscribed.isSubscribed, semaphore: semaphore)
+        subscribedManager.updateWithReceivedValue(communityView.subscribed.isSubscribed, semaphore: semaphore)
         subscriberCount = communityView.counts.subscribers
         postCount = communityView.counts.posts
         commentCount = communityView.counts.comments

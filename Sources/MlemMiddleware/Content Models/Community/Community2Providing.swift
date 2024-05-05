@@ -20,26 +20,31 @@ public struct ActiveUserCount {
 public protocol Community2Providing: Community1Providing {
     var community2: Community2 { get }
     
-    var isSubscribed: Bool { get }
-    var isFavorited: Bool { get }
+    var subscribed: Bool { get }
+    var favorited: Bool { get }
     var subscriberCount: Int { get }
     var postCount: Int { get }
     var commentCount: Int { get }
     var activeUserCount: ActiveUserCount { get }
+    
+    func toggleSubscribe()
+    
+    /// Favoriting a community also subscribes to it, if it is not subscribed already.
+    func toggleFavorite()
 }
 
 public extension Community2Providing {
     var community1: Community1 { community2.community1 }
     
-    var isSubscribed: Bool { community2.isSubscribed }
-    var isFavorited: Bool { community2.isFavorited }
+    var subscribed: Bool { community2.subscribed }
+    var favorited: Bool { community2.favorited }
     var subscriberCount: Int { community2.subscriberCount }
     var postCount: Int { community2.postCount }
     var commentCount: Int { community2.commentCount }
     var activeUserCount: ActiveUserCount { community2.activeUserCount }
     
-    var isSubscribed_: Bool? { community2.isSubscribed }
-    var isFavorited_: Bool? { community2.isFavorited }
+    var subscribed_: Bool? { community2.subscribed }
+    var favorited_: Bool? { community2.favorited }
     var subscriberCount_: Int? { community2.subscriberCount }
     var postCount_: Int? { community2.postCount }
     var commentCount_: Int? { community2.commentCount }
@@ -48,9 +53,37 @@ public extension Community2Providing {
 }
 
 public extension Community2Providing {
+    private var subscribedManager: StateManager<Bool> { community2.subscribedManager }
+    
     var subscriptionTier: SubscriptionTier {
-        if isFavorited { return .favorited }
-        if isSubscribed { return .subscribed }
+        if favorited { return .favorited }
+        if subscribed { return .subscribed }
         return .unsubscribed
+    }
+    
+    func toggleSubscribe() {
+        let newValue = !subscribed
+        subscribedManager.performRequest(expectedResult: newValue) { semaphore in
+            self.community2.shouldBeFavorited = false
+            try await self.api.subscribeToCommunity(id: self.id, subscribe: newValue, semaphore: semaphore)
+        }
+    }
+    
+    func toggleFavorite() {
+        guard let subscriptions = self.api.subscriptions else {
+            print("Tried to toggle favorite, but no SubscriptionList found!")
+            return
+        }
+        self.community2.shouldBeFavorited.toggle()
+        if !subscribed {
+            subscribedManager.performRequest(expectedResult: true) { semaphore in
+                try await self.api.subscribeToCommunity(id: self.id, subscribe: true, semaphore: semaphore)
+            } onRollback: { _ in
+                self.community2.shouldBeFavorited.toggle()
+                subscriptions.updateCommunitySubscription(community: self.community2)
+            }
+        } else {
+            subscriptions.updateCommunitySubscription(community: self.community2)
+        }
     }
 }

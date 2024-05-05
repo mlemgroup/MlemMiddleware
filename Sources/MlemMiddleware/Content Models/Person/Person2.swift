@@ -17,7 +17,7 @@ public final class Person2: Person2Providing {
     public var postCount: Int = 0
     public var commentCount: Int = 0
     
-    public init(
+    internal init(
         api: ApiClient,
         person1: Person1,
         postCount: Int = 0,

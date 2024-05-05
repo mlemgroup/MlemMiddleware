@@ -23,13 +23,13 @@ public final class Post2: Post2Providing {
     internal var votesManager: StateManager<VotesModel>
     public var votes: VotesModel { votesManager.wrappedValue }
     
-    internal var isReadManager: StateManager<Bool>
-    public var isRead: Bool { isReadManager.wrappedValue }
+    internal var readManager: StateManager<Bool>
+    public var read: Bool { readManager.wrappedValue }
     
-    internal var isSavedManager: StateManager<Bool>
-    public var isSaved: Bool { isSavedManager.wrappedValue }
+    internal var savedManager: StateManager<Bool>
+    public var saved: Bool { savedManager.wrappedValue }
     
-    public init(
+    internal init(
         api: ApiClient,
         post1: Post1,
         creator: Person1,
@@ -37,8 +37,8 @@ public final class Post2: Post2Providing {
         votes: VotesModel,
         commentCount: Int = 0,
         unreadCommentCount: Int = 0,
-        isSaved: Bool = false,
-        isRead: Bool = false
+        saved: Bool = false,
+        read: Bool = false
     ) {
         self.api = api
         self.post1 = post1
@@ -47,7 +47,7 @@ public final class Post2: Post2Providing {
         self.votesManager = .init(wrappedValue: votes)
         self.commentCount = commentCount
         self.unreadCommentCount = unreadCommentCount
-        self.isSavedManager = .init(wrappedValue: isSaved)
-        self.isReadManager = .init(wrappedValue: isRead)
+        self.savedManager = .init(wrappedValue: saved)
+        self.readManager = .init(wrappedValue: read)
     }
 }

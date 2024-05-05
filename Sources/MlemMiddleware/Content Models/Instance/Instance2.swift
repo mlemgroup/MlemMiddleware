@@ -15,7 +15,7 @@ public final class Instance2: Instance2Providing {
     
     public let instance1: Instance1
 
-    public init(api: ApiClient, instance1: Instance1) {
+    internal init(api: ApiClient, instance1: Instance1) {
         self.api = api
         self.instance1 = instance1
     }

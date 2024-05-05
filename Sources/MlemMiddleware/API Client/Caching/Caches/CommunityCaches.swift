@@ -44,8 +44,7 @@ class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
         .init(
             api: api,
             community1: community1Cache.getModel(api: api, from: apiType.community),
-            isSubscribed: apiType.subscribed.isSubscribed,
-            isFavorited: false, // TODO: get from favorites tracker
+            subscribed: apiType.subscribed.isSubscribed,
             subscriberCount: apiType.counts.subscribers,
             postCount: apiType.counts.posts,
             commentCount: apiType.counts.comments,

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 public extension ApiClient {
     func getCommunity(id: Int) async throws -> Community3 {
@@ -35,8 +36,23 @@ public extension ApiClient {
         return nil
     }
     
+    func setupSubscriptionList(
+        getFavorites: @escaping () -> Set<Int> = { [] },
+        setFavorites: @escaping (Set<Int>) -> Void = { _ in }
+    ) -> SubscriptionList {
+        if let subscriptions {
+            return subscriptions
+        } else {
+            let new: SubscriptionList = .init(apiClient: self, getFavorites: getFavorites, setFavorites: setFavorites)
+            self.subscriptions = new
+            return new
+        }
+        
+    }
+    
+    @discardableResult
     func getSubscriptionList() async throws -> SubscriptionList {
-        let subscriptionList = self.subscriptions ?? .init(apiClient: self)
+        let subscriptionList = setupSubscriptionList()
         
         let limit = 50
         var page = 1
@@ -57,5 +73,12 @@ public extension ApiClient {
             self.subscriptions = subscriptionList
         }
         return subscriptionList
+    }
+    
+    @discardableResult
+    func subscribeToCommunity(id: Int, subscribe: Bool, semaphore: UInt?) async throws -> Community2 {
+        let request = FollowCommunityRequest(communityId: id, follow: subscribe)
+        let response = try await perform(request)
+        return caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
     }
 }
