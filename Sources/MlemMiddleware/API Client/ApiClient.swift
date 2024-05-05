@@ -28,8 +28,9 @@ public class ApiClient {
     
     public var willSendToken: Bool { permissions == .all && token != nil }
     
-    weak var myInstance: Instance3?
-    weak var myUser: User?
+    internal weak var myInstance: Instance3?
+    internal weak var myUser: User?
+    internal weak var subscriptions: SubscriptionList?
     
     /// Returns the `fetchedVersion` if the version has already been fetched. Otherwise, waits until the version has been fetched before returning the received value.
     public var version: SiteVersion? {

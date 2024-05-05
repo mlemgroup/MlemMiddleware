@@ -15,8 +15,10 @@ public final class Community2: Community2Providing {
 
     public let community1: Community1
     
-    public var subscribed: Bool = false
-    public var favorited: Bool = false
+    internal var isSubscribedManager: StateManager<Bool>
+    public var isSubscribed: Bool { isSubscribedManager.wrappedValue }
+    
+    public var isFavorited: Bool = false
 
     public var subscriberCount: Int = 0
     public var postCount: Int = 0
@@ -26,8 +28,8 @@ public final class Community2: Community2Providing {
     public init(
         api: ApiClient,
         community1: Community1,
-        subscribed: Bool = false,
-        favorited: Bool = false,
+        isSubscribed: Bool = false,
+        isFavorited: Bool = false,
         subscriberCount: Int = 0,
         postCount: Int = 0,
         commentCount: Int = 0,
@@ -35,8 +37,8 @@ public final class Community2: Community2Providing {
     ) {
         self.api = api
         self.community1 = community1
-        self.subscribed = subscribed
-        self.favorited = favorited
+        self.isSubscribedManager = .init(wrappedValue: isSubscribed)
+        self.isFavorited = isFavorited
         self.subscriberCount = subscriberCount
         self.postCount = postCount
         self.commentCount = commentCount

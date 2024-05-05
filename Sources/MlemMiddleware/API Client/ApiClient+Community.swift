@@ -34,4 +34,28 @@ public extension ApiClient {
         }
         return nil
     }
+    
+    func getSubscriptionList() async throws -> SubscriptionList {
+        let subscriptionList = self.subscriptions ?? .init(apiClient: self)
+        
+        let limit = 50
+        var page = 1
+        var hasMorePages = true
+        var communities = [ApiCommunityView]()
+        
+        repeat {
+            let request = ListCommunitiesRequest(type_: .subscribed, sort: nil, page: page, limit: limit, showNsfw: true)
+            let response = try await perform(request)
+            communities.append(contentsOf: response.communities)
+            hasMorePages = response.communities.count >= limit
+            page += 1
+        } while hasMorePages
+            
+        let models: Set<Community2> = Set(communities.lazy.map { self.caches.community2.getModel(api: self, from: $0) })
+        await subscriptionList.updateCommunities(with: models)
+        RunLoop.main.perform {
+            self.subscriptions = subscriptionList
+        }
+        return subscriptionList
+    }
 }

@@ -20,13 +20,13 @@ public final class Post2: Post2Providing {
     public var commentCount: Int
     public var unreadCommentCount: Int
     
-    public var votesManager: StateManager<VotesModel>
+    internal var votesManager: StateManager<VotesModel>
     public var votes: VotesModel { votesManager.wrappedValue }
     
-    public var isReadManager: StateManager<Bool>
+    internal var isReadManager: StateManager<Bool>
     public var isRead: Bool { isReadManager.wrappedValue }
     
-    public var isSavedManager: StateManager<Bool>
+    internal var isSavedManager: StateManager<Bool>
     public var isSaved: Bool { isSavedManager.wrappedValue }
     
     public init(
