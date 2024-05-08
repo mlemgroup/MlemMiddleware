@@ -14,7 +14,7 @@ public class SubscriptionList {
     public private(set) var favorites: [Community2] = .init()
     public private(set) var alphabeticSections: [String?: [Community2]] = .init()
     
-    var favoriteIDs: Set<Int> {
+    private var favoriteIDs: Set<Int> {
         get { getFavorites() }
         set { self.setFavorites(newValue) }
     }
@@ -35,6 +35,10 @@ public class SubscriptionList {
     
     public func refresh() async throws {
         _ = try await apiClient.getSubscriptionList()
+    }
+    
+    public func isFavorited(_ community: any Community) -> Bool {
+        favoriteIDs.contains(community.id)
     }
     
     private func categoryForCommunity(_ community: Community2) -> String? {
@@ -60,11 +64,10 @@ public class SubscriptionList {
             if !self.communities.contains(community) {
                 self.addCommunity(community: community)
             }
-            if self.favoriteIDs.contains(community.id) != community.shouldBeFavorited {
+            if isFavorited(community) != community.shouldBeFavorited {
                 if community.shouldBeFavorited {
                     self.favoriteIDs.insert(community.id)
-                    let index = self.favorites.insertionIndex { $0.name < community.name }
-                    self.favorites.insert(community, at: index)
+                    self.favorites.sortedInsert(community) { $0.name < community.name }
                 } else {
                     self.favoriteIDs.remove(community.id)
                     if let index = favorites.firstIndex(of: community) {
@@ -81,8 +84,7 @@ public class SubscriptionList {
         let category = self.categoryForCommunity(community)
         self.communities.insert(community)
         if self.alphabeticSections.keys.contains(category) {
-            let index = self.alphabeticSections[category, default: []].insertionIndex { $0.name < community.name }
-            self.alphabeticSections[category]?.insert(community, at: index)
+            self.alphabeticSections[category]?.sortedInsert(community) { $0.name < community.name }
         } else {
             self.alphabeticSections[category] = [community]
         }

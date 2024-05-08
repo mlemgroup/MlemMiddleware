@@ -19,7 +19,7 @@ public final class Community2: Community2Providing {
     public var subscribed: Bool { subscribedManager.wrappedValue }
     
     public var favorited: Bool {
-        api.subscriptions?.favoriteIDs.contains(community1.id) ?? false
+        api.subscriptions?.isFavorited(self) ?? false
     }
     
     /// Used to state-fake internally.

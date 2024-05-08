@@ -11,4 +11,8 @@ public extension Array {
     mutating func prepend(_ newElement: Element) {
         insert(newElement, at: 0)
     }
+    
+    mutating func sortedInsert(_ newElement: Element, for predicate: (Element) -> Bool) {
+        insert(newElement, at: insertionIndex(for: predicate))
+    }
 }
