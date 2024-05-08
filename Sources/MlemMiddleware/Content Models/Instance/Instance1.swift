@@ -14,7 +14,9 @@ public final class Instance1: Instance1Providing {
     public var instance1: Instance1 { self }
     
     public let id: Int
+    public let name: String
     public let creationDate: Date
+    public let updatedDate: Date?
     public let publicKey: String
     
     public var displayName: String = ""
@@ -27,7 +29,9 @@ public final class Instance1: Instance1Providing {
         api: ApiClient,
         id: Int,
         creationDate: Date,
+        updatedDate: Date?,
         publicKey: String,
+        name: String,
         displayName: String = "",
         description: String? = nil,
         avatar: URL? = nil,
@@ -37,7 +41,9 @@ public final class Instance1: Instance1Providing {
         self.api = api
         self.id = id
         self.creationDate = creationDate
+        self.updatedDate = updatedDate
         self.publicKey = publicKey
+        self.name = name
         self.displayName = displayName
         self.description = description
         self.avatar = avatar

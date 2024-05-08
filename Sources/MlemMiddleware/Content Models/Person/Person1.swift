@@ -19,7 +19,7 @@ public final class Person1: Person1Providing {
     public let creationDate: Date
     
     public var updatedDate: Date? = .distantPast
-    public var displayName: String?
+    public var displayName: String
     public var description: String?
     public var matrixId: String?
     public var avatar: URL?
@@ -40,7 +40,7 @@ public final class Person1: Person1Providing {
         name: String,
         creationDate: Date,
         updatedDate: Date? = .distantPast,
-        displayName: String? = nil,
+        displayName: String = "",
         description: String? = nil,
         matrixId: String? = nil,
         avatar: URL? = nil,

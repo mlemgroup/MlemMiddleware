@@ -7,19 +7,12 @@
 
 import Foundation
 
-public protocol Person1Providing: PersonStubProviding, Identifiable {
+public protocol Person1Providing: PersonStubProviding, ProfileProviding, Identifiable {
     var api: ApiClient { get }
     
     var person1: Person1 { get }
     
-    var name: String { get }
-    var creationDate: Date { get }
-    var updatedDate: Date? { get }
-    var displayName: String? { get }
-    var description: String? { get }
     var matrixId: String? { get }
-    var avatar: URL? { get }
-    var banner: URL? { get }
     var deleted: Bool { get }
     var isBot: Bool { get }
     var instanceBan: InstanceBanType { get }
@@ -36,7 +29,7 @@ public extension Person1Providing {
     
     var creationDate: Date { person1.creationDate }
     var updatedDate: Date? { person1.updatedDate }
-    var displayName: String? { person1.displayName }
+    var displayName: String { person1.displayName }
     var description: String? { person1.description }
     var matrixId: String? { person1.matrixId }
     var avatar: URL? { person1.avatar }

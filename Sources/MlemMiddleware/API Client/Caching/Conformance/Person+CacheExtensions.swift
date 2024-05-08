@@ -12,7 +12,7 @@ extension Person1: CacheIdentifiable {
     
     func update(with person: ApiPerson) {
         updatedDate = person.updated
-        displayName = person.displayName
+        displayName = person.displayName ?? person.name
         description = person.bio
         avatar = person.avatar
         banner = person.banner

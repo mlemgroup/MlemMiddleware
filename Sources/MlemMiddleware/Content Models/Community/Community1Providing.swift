@@ -7,18 +7,12 @@
 
 import Foundation
 
-public protocol Community1Providing: CommunityStubProviding, Identifiable {
+public protocol Community1Providing: CommunityStubProviding, ProfileProviding, Identifiable {
     var community1: Community1 { get }
     
-    var updatedDate: Date? { get }
-    var creationDate: Date { get }
-    var displayName: String { get }
-    var description: String? { get }
     var removed: Bool { get }
     var deleted: Bool { get }
     var nsfw: Bool { get }
-    var avatar: URL? { get }
-    var banner: URL? { get }
     var hidden: Bool { get }
     var onlyModeratorsCanPost: Bool { get }
     var blocked: Bool { get }

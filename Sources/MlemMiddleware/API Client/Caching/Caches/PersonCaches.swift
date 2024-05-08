@@ -27,7 +27,7 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
             name: apiType.name,
             creationDate: apiType.published,
             updatedDate: apiType.updated,
-            displayName: apiType.displayName,
+            displayName: apiType.displayName ?? apiType.name,
             description: apiType.bio,
             matrixId: apiType.matrixUserId,
             avatar: apiType.avatar,
