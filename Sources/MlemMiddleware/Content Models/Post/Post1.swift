@@ -41,7 +41,7 @@ public final class Post1: Post1Providing {
         api: ApiClient,
         actorId: URL,
         id: Int,
-        creationDate: Date,
+        created: Date,
         title: String = "",
         content: String? = "",
         links: [LinkType] = [],
@@ -54,12 +54,12 @@ public final class Post1: Post1Providing {
         nsfw: Bool = false,
         removed: Bool = false,
         thumbnailUrl: URL? = nil,
-        updatedDate: Date? = nil
+        updated: Date? = nil
     ) {
         self.api = api
         self.actorId = actorId
         self.id = id
-        self.created = creationDate
+        self.created = created
         self.title = title
         self.content = content
         self.links = links
@@ -72,6 +72,6 @@ public final class Post1: Post1Providing {
         self.nsfw = nsfw
         self.removed = removed
         self.thumbnailUrl = thumbnailUrl
-        self.updated = updatedDate
+        self.updated = updated
     }
 }

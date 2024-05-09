@@ -11,8 +11,8 @@ extension Person1: CacheIdentifiable {
     public var cacheId: Int { actorId.hashValue }
     
     func update(with person: ApiPerson) {
-        updatedDate = person.updated
-        displayName = person.displayName
+        updated = person.updated
+        displayName = person.displayName ?? person.name
         description = person.bio
         avatar = person.avatar
         banner = person.banner

@@ -16,10 +16,10 @@ public final class Person1: Person1Providing {
     public let id: Int
     
     public let name: String
-    public let creationDate: Date
+    public let created: Date
     
-    public var updatedDate: Date? = .distantPast
-    public var displayName: String?
+    public var updated: Date? = .distantPast
+    public var displayName: String
     public var description: String?
     public var matrixId: String?
     public var avatar: URL?
@@ -38,9 +38,9 @@ public final class Person1: Person1Providing {
         actorId: URL,
         id: Int,
         name: String,
-        creationDate: Date,
-        updatedDate: Date? = .distantPast,
-        displayName: String? = nil,
+        created: Date,
+        updated: Date? = .distantPast,
+        displayName: String = "",
         description: String? = nil,
         matrixId: String? = nil,
         avatar: URL? = nil,
@@ -54,8 +54,8 @@ public final class Person1: Person1Providing {
         self.actorId = actorId
         self.id = id
         self.name = name
-        self.creationDate = creationDate
-        self.updatedDate = updatedDate
+        self.created = created
+        self.updated = updated
         self.displayName = displayName
         self.description = description
         self.matrixId = matrixId

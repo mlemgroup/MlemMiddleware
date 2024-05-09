@@ -20,10 +20,10 @@ public protocol PostStubProviding: ContentStub {
     var pinnedInstance_: Bool? { get }
     var locked_: Bool? { get }
     var nsfw_: Bool? { get }
-    var creationDate_: Date? { get }
+    var created_: Date? { get }
     var removed_: Bool? { get }
     var thumbnailUrl_: URL? { get }
-    var updatedDate_: Date? { get }
+    var updated_: Date? { get }
     
     // From Post2Providing. These are defined as nil in the extension below
     var creator_: Person1? { get }
@@ -49,10 +49,10 @@ public extension PostStubProviding {
     var pinnedInstance_: Bool? { nil }
     var locked_: Bool? { nil }
     var nsfw_: Bool? { nil }
-    var creationDate_: Date? { nil }
+    var created_: Date? { nil }
     var removed_: Bool? { nil }
     var thumbnailUrl_: URL? { nil }
-    var updatedDate_: Date? { nil }
+    var updated_: Date? { nil }
     
     var creator_: Person1? { nil }
     var community_: Community1? { nil }

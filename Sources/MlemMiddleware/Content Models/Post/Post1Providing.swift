@@ -59,10 +59,10 @@ public extension Post1Providing {
     var pinnedInstance_: Bool? { post1.pinnedInstance }
     var locked_: Bool? { post1.locked }
     var nsfw_: Bool? { post1.nsfw }
-    var creationDate_: Date? { post1.created }
+    var created_: Date? { post1.created }
     var removed_: Bool? { post1.removed }
     var thumbnailUrl_: URL? { post1.thumbnailUrl }
-    var updatedDate_: Date? { post1.updated }
+    var updated_: Date? { post1.updated }
 }
 
 public extension Post1Providing {

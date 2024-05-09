@@ -13,7 +13,7 @@ class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
             api: api,
             actorId: apiType.actorId,
             id: apiType.id,
-            creationDate: apiType.published,
+            created: apiType.published,
             title: apiType.name,
             content: apiType.body,
             links: apiType.body?.parseLinks() ?? .init(),
@@ -26,7 +26,7 @@ class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
             nsfw: apiType.nsfw,
             removed: apiType.removed,
             thumbnailUrl: apiType.thumbnailImageUrl,
-            updatedDate: apiType.updated
+            updated: apiType.updated
         )
     }
     

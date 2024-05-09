@@ -7,18 +7,12 @@
 
 import Foundation
 
-public protocol Community1Providing: CommunityStubProviding, Identifiable {
+public protocol Community1Providing: CommunityStubProviding, ProfileProviding, Identifiable {
     var community1: Community1 { get }
     
-    var updatedDate: Date? { get }
-    var creationDate: Date { get }
-    var displayName: String { get }
-    var description: String? { get }
     var removed: Bool { get }
     var deleted: Bool { get }
     var nsfw: Bool { get }
-    var avatar: URL? { get }
-    var banner: URL? { get }
     var hidden: Bool { get }
     var onlyModeratorsCanPost: Bool { get }
     var blocked: Bool { get }
@@ -31,8 +25,8 @@ public extension Community1Providing {
     var name: String { community1.name }
     
     var id: Int { community1.id }
-    var creationDate: Date { community1.creationDate }
-    var updatedDate: Date? { community1.updatedDate }
+    var created: Date { community1.created }
+    var updated: Date? { community1.updated }
     var displayName: String { community1.displayName }
     var description: String? { community1.description }
     var removed: Bool { community1.removed }
@@ -45,8 +39,8 @@ public extension Community1Providing {
     var blocked: Bool { community1.blocked }
     
     var id_: Int? { community1.id }
-    var creationDate_: Date? { community1.creationDate }
-    var updatedDate_: Date? { community1.updatedDate }
+    var created_: Date? { community1.created }
+    var updated_: Date? { community1.updated }
     var displayName_: String? { community1.displayName }
     var description_: String? { community1.description }
     var removed_: Bool? { community1.removed }

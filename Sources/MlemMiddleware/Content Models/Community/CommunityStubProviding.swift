@@ -10,8 +10,8 @@ import Foundation
 public protocol CommunityStubProviding: CommunityOrPersonStub {
     // From Community1Providing.
     var id_: Int? { get }
-    var creationDate_: Date? { get }
-    var updatedDate_: Date? { get }
+    var created_: Date? { get }
+    var updated_: Date? { get }
     var displayName_: String? { get }
     var description_: String? { get }
     var removed_: Bool? { get }
@@ -46,8 +46,8 @@ public extension CommunityStubProviding {
     
     // From Community1Providing.
     var id_: Int? { nil }
-    var creationDate_: Date? { nil }
-    var updatedDate_: Date? { nil }
+    var created_: Date? { nil }
+    var updated_: Date? { nil }
     var displayName_: String? { nil }
     var description_: String? { nil }
     var removed_: Bool? { nil }
