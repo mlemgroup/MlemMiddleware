@@ -13,6 +13,6 @@ public protocol ProfileProviding {
     var description: String? { get }
     var avatar: URL? { get }
     var banner: URL? { get }
-    var creationDate: Date { get }
-    var updatedDate: Date? { get }
+    var created: Date { get }
+    var updated: Date? { get }
 }

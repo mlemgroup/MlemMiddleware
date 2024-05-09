@@ -12,8 +12,8 @@ class Instance1Cache: ApiTypeBackedCache<Instance1, ApiSite> {
         .init(
             api: api,
             id: apiType.id,
-            creationDate: apiType.published,
-            updatedDate: apiType.updated,
+            created: apiType.published,
+            updated: apiType.updated,
             publicKey: apiType.publicKey,
             name: apiType.name,
             displayName: apiType.name,

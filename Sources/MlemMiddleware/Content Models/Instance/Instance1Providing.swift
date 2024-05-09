@@ -24,8 +24,8 @@ public extension Instance1Providing {
     var description: String? { instance1.description }
     var avatar: URL? { instance1.avatar }
     var banner: URL? { instance1.banner }
-    var creationDate: Date { instance1.creationDate }
-    var updatedDate: Date? { instance1.updatedDate }
+    var created: Date { instance1.created }
+    var updated: Date? { instance1.updated }
     var publicKey: String { instance1.publicKey }
     var lastRefreshDate: Date { instance1.lastRefreshDate }
     
@@ -35,7 +35,7 @@ public extension Instance1Providing {
     var description_: String? { instance1.description }
     var avatar_: URL? { instance1.avatar }
     var banner_: URL? { instance1.banner }
-    var updatedDate_: Date? { instance1.updatedDate }
+    var updated_: Date? { instance1.updated }
     var publicKey_: String? { instance1.publicKey }
     var lastRefreshDate_: Date? { instance1.lastRefreshDate }
 }

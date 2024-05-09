@@ -27,8 +27,8 @@ public extension Person1Providing {
     var id: Int { person1.id }
     var name: String { person1.name }
     
-    var creationDate: Date { person1.creationDate }
-    var updatedDate: Date? { person1.updatedDate }
+    var created: Date { person1.created }
+    var updated: Date? { person1.updated }
     var displayName: String { person1.displayName }
     var description: String? { person1.description }
     var matrixId: String? { person1.matrixId }
@@ -40,8 +40,8 @@ public extension Person1Providing {
     var blocked: Bool { person1.blocked }
     
     var id_: Int? { person1.id }
-    var creationDate_: Date? { person1.creationDate }
-    var updatedDate_: Date? { person1.updatedDate }
+    var created_: Date? { person1.created }
+    var updated_: Date? { person1.updated }
     var displayName_: String? { person1.displayName }
     var description_: String? { person1.description }
     var matrixId_: String? { person1.matrixId }

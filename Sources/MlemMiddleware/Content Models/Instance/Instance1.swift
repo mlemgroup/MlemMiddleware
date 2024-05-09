@@ -15,8 +15,8 @@ public final class Instance1: Instance1Providing {
     
     public let id: Int
     public let name: String
-    public let creationDate: Date
-    public let updatedDate: Date?
+    public let created: Date
+    public let updated: Date?
     public let publicKey: String
     
     public var displayName: String = ""
@@ -28,8 +28,8 @@ public final class Instance1: Instance1Providing {
     public init(
         api: ApiClient,
         id: Int,
-        creationDate: Date,
-        updatedDate: Date?,
+        created: Date,
+        updated: Date?,
         publicKey: String,
         name: String,
         displayName: String = "",
@@ -40,8 +40,8 @@ public final class Instance1: Instance1Providing {
     ) {
         self.api = api
         self.id = id
-        self.creationDate = creationDate
-        self.updatedDate = updatedDate
+        self.created = created
+        self.updated = updated
         self.publicKey = publicKey
         self.name = name
         self.displayName = displayName

@@ -11,7 +11,7 @@ extension Community1: CacheIdentifiable {
     public var cacheId: Int { actorId.hashValue }
     
     func update(with community: ApiCommunity) {
-        updatedDate = community.updated
+        updated = community.updated
         displayName = community.title
         description = community.description
         removed = community.removed
