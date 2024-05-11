@@ -19,7 +19,7 @@ public final class Community3: Community3Providing {
     public var moderators: [Person1] = .init()
     public var discussionLanguages: [Int] = .init()
   
-    public init(
+    internal init(
         api: ApiClient,
         community2: Community2,
         instance: Instance1?,

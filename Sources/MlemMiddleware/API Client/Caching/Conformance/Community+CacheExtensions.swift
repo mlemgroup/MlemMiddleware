@@ -27,8 +27,8 @@ extension Community1: CacheIdentifiable {
 extension Community2: CacheIdentifiable {
     public var cacheId: Int { community1.cacheId }
     
-    func update(with communityView: ApiCommunityView) {
-        subscribed = communityView.subscribed.isSubscribed
+    func update(with communityView: ApiCommunityView, semaphore: UInt? = nil) {
+        subscribedManager.updateWithReceivedValue(communityView.subscribed.isSubscribed, semaphore: semaphore)
         subscriberCount = communityView.counts.subscribers
         postCount = communityView.counts.posts
         commentCount = communityView.counts.comments
@@ -45,11 +45,11 @@ extension Community2: CacheIdentifiable {
 extension Community3: CacheIdentifiable {
     public var cacheId: Int { community2.cacheId }
     
-    func update(with response: ApiGetCommunityResponse) {
+    func update(with response: ApiGetCommunityResponse, semaphore: UInt? = nil) {
         moderators = response.moderators.map { moderatorView in
             api.caches.person1.performModelTranslation(api: api, from: moderatorView.moderator)
         }
         discussionLanguages = response.discussionLanguages
-        community2.update(with: response.communityView)
+        community2.update(with: response.communityView, semaphore: semaphore)
     }
 }

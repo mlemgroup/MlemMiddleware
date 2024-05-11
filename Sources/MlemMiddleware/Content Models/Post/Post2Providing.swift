@@ -25,41 +25,41 @@ public extension Post2Providing {
     var commentCount: Int { post2.commentCount }
     var votes: VotesModel { post2.votes }
     var unreadCommentCount: Int { post2.unreadCommentCount }
-    var isSaved: Bool { post2.isSaved }
-    var isRead: Bool { post2.isRead }
+    var saved: Bool { post2.saved }
+    var read: Bool { post2.read }
     
     var creator_: Person1? { post2.creator }
     var community_: Community1? { post2.community }
     var commentCount_: Int? { post2.commentCount }
     var votes_: VotesModel { post2.votes }
     var unreadCommentCount_: Int? { post2.unreadCommentCount }
-    var isSaved_: Bool? { post2.isSaved }
-    var isRead_: Bool? { post2.isRead }
+    var saved_: Bool? { post2.saved }
+    var read_: Bool? { post2.read }
 }
 
 public extension Post2Providing {
     private var votesManager: StateManager<VotesModel> { post2.votesManager }
-    private var isReadManager: StateManager<Bool> { post2.isReadManager }
-    private var isSavedManager: StateManager<Bool> { post2.isSavedManager }
+    private var readManager: StateManager<Bool> { post2.readManager }
+    private var savedManager: StateManager<Bool> { post2.savedManager }
 
     func vote(_ newVote: ScoringOperation) {
         guard newVote != self.votes.myVote else { return }
         groupStateRequest(
             votesManager.ticket(self.votes.applyScoringOperation(operation: newVote)),
-            isReadManager.ticket(true)
+            readManager.ticket(true)
         ) { semaphore in
             try await self.api.voteOnPost(id: self.id, score: newVote, semaphore: semaphore)
         }
     }
     
     func toggleSave() {
-        let newValue = !isSaved
+        let newValue = !saved
         if newValue, UserDefaults.standard.bool(forKey: "upvoteOnSave") {
             vote(.upvote)
         }
         groupStateRequest(
-            isSavedManager.ticket(newValue),
-            isReadManager.ticket(true)
+            savedManager.ticket(newValue),
+            readManager.ticket(true)
         ) { semaphore in
             try await self.api.savePost(id: self.id, save: newValue, semaphore: semaphore)
         }

@@ -32,8 +32,8 @@ public protocol PostStubProviding: ContentStub {
     var upvoteCount_: Int? { get }
     var downvoteCount_: Int? { get }
     var unreadCommentCount_: Int? { get }
-    var isSaved_: Bool? { get }
-    var isRead_: Bool? { get }
+    var saved_: Bool? { get }
+    var read_: Bool? { get }
     var myVote_: ScoringOperation? { get }
 }
 
@@ -60,7 +60,7 @@ public extension PostStubProviding {
     var upvoteCount_: Int? { nil }
     var downvoteCount_: Int? { nil }
     var unreadCommentCount_: Int? { nil }
-    var isSaved_: Bool? { nil }
-    var isRead_: Bool? { nil }
+    var saved_: Bool? { nil }
+    var read_: Bool? { nil }
     var myVote_: ScoringOperation? { nil }
 }

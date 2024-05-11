@@ -220,7 +220,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         for filter in filters {
             switch filter {
             case .read:
-                if post.isRead { return filter }
+                if post.read { return filter }
             case .keyword:
                 if post.title.lowercased().contains(filteredKeywords) { return filter }
             }

@@ -33,7 +33,7 @@ public final class Person1: Person1Providing {
     // These aren't included in the ApiPerson, and so are set externally by Post2 instead
     public var blocked: Bool = false
     
-    public init(
+    internal init(
         api: ApiClient,
         actorId: URL,
         id: Int,

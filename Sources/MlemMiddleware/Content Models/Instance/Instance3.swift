@@ -17,7 +17,7 @@ public final class Instance3: Instance3Providing {
     
     public var version: SiteVersion
   
-    public init(api: ApiClient, instance2: Instance2, version: SiteVersion) {
+    internal init(api: ApiClient, instance2: Instance2, version: SiteVersion) {
         self.api = api
         self.instance2 = instance2
         self.version = version

@@ -44,8 +44,8 @@ extension Post2: CacheIdentifiable {
             semaphore: semaphore
         )
         unreadCommentCount = post.unreadComments
-        isSavedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
-        isReadManager.updateWithReceivedValue(post.read, semaphore: semaphore)
+        savedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
+        readManager.updateWithReceivedValue(post.read, semaphore: semaphore)
         
         post1.update(with: post.post)
         creator.update(with: post.creator)

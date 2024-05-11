@@ -55,8 +55,8 @@ class Post2Cache: ApiTypeBackedCache<Post2, ApiPostView> {
             votes: .init(from: apiType.counts, myVote: ScoringOperation.guaranteedInit(from: apiType.myVote)),
             commentCount: apiType.counts.comments,
             unreadCommentCount: apiType.unreadComments,
-            isSaved: apiType.saved,
-            isRead: apiType.read
+            saved: apiType.saved,
+            read: apiType.read
         )
     }
     

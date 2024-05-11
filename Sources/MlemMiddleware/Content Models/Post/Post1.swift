@@ -37,7 +37,7 @@ public final class Post1: Post1Providing {
     public var thumbnailUrl: URL?
     public var updated: Date?
     
-    public init(
+    internal init(
         api: ApiClient,
         actorId: URL,
         id: Int,

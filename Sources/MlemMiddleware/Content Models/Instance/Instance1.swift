@@ -25,7 +25,7 @@ public final class Instance1: Instance1Providing {
     public var banner: URL?
     public var lastRefreshDate: Date = .distantPast
     
-    public init(
+    internal init(
         api: ApiClient,
         id: Int,
         created: Date,

@@ -47,7 +47,13 @@ struct StateManagerTicket<Value: Equatable>: StateManagerTickerProtocol {
 @Observable
 public class StateManager<Value: Equatable> {
     /// The state-faked value that should be shown to the user.
-    private(set) var wrappedValue: Value
+    private(set) var wrappedValue: Value {
+        didSet {
+            onSet(wrappedValue)
+        }
+    }
+    
+    internal var onSet: (Value) -> Void
     
     /// Responsible for tracking who the most recent caller is. Every time the state is changed, `lastSemaphore` is incremented by one.
     private var lastSemaphore: UInt = 0
@@ -55,8 +61,9 @@ public class StateManager<Value: Equatable> {
     /// Responsible for tracking the last verified value. If the current value is in sync with the server, this will be nil.
     private var lastVerifiedValue: Value?
     
-    init(wrappedValue: Value) {
+    init(wrappedValue: Value, onSet: @escaping (Value) -> Void = { _ in }) {
         self.wrappedValue = wrappedValue
+        self.onSet = onSet
     }
         
     /// Call at the start of a voting operation, BEFORE state faking is performed. Updates the clean state if nil and increments semaphore.
@@ -100,19 +107,23 @@ public class StateManager<Value: Equatable> {
     }
     
     /// If the given semaphore is still the most recent operation, rollback `wrappedValue` to `cleanValue`.
-    func rollback(semaphore: UInt) {
+    @discardableResult
+    func rollback(semaphore: UInt) -> Value? {
         if lastSemaphore == semaphore, let lastVerifiedValue {
             print("DEBUG [\(semaphore)] is the most recent caller! Resetting lastVerifiedValue.")
             wrappedValue = lastVerifiedValue
-            self.lastVerifiedValue = nil
+            defer { self.lastVerifiedValue = nil }
+            return lastVerifiedValue
         } else {
             print("DEBUG [\(semaphore)] is not the most recent caller or vote state nil.")
+            return nil
         }
     }
     
     func performRequest(
         expectedResult: Value,
-        operation: @escaping (_ semaphore: UInt) async throws -> Void
+        operation: @escaping (_ semaphore: UInt) async throws -> Void,
+        onRollback: @escaping (_ value: Value) -> Void = { _ in }
     ) {
         guard wrappedValue != expectedResult else { return }
         let semaphore = beginOperation(expectedResult: expectedResult)
@@ -121,7 +132,9 @@ public class StateManager<Value: Equatable> {
                 try await operation(semaphore)
             } catch {
                 print("DEBUG [\(semaphore)] failed!")
-                self.rollback(semaphore: semaphore)
+                if let newValue = self.rollback(semaphore: semaphore) {
+                    onRollback(newValue)
+                }
             }
         }
     }

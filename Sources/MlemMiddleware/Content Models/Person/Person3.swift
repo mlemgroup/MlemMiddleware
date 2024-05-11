@@ -17,7 +17,7 @@ public final class Person3: Person3Providing {
     public var instance: Instance1!
     public var moderatedCommunities: [Community1] = .init()
     
-    public init(
+    internal init(
         api: ApiClient,
         person2: Person2,
         instance: Instance1? = nil,

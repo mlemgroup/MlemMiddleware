@@ -45,7 +45,6 @@ class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
             api: api,
             community1: community1Cache.getModel(api: api, from: apiType.community),
             subscribed: apiType.subscribed.isSubscribed,
-            favorited: false, // TODO: get from favorites tracker
             subscriberCount: apiType.counts.subscribers,
             postCount: apiType.counts.posts,
             commentCount: apiType.counts.comments,
@@ -59,7 +58,7 @@ class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
     }
     
     override func updateModel(_ item: Community2, with apiType: ApiCommunityView, semaphore: UInt? = nil) {
-        item.update(with: apiType)
+        item.update(with: apiType, semaphore: semaphore)
     }
 }
 

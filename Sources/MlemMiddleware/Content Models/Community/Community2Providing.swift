@@ -26,6 +26,11 @@ public protocol Community2Providing: Community1Providing {
     var postCount: Int { get }
     var commentCount: Int { get }
     var activeUserCount: ActiveUserCount { get }
+    
+    func toggleSubscribe()
+    
+    /// Favoriting a community also subscribes to it, if it is not subscribed already.
+    func toggleFavorite()
 }
 
 public extension Community2Providing {
@@ -48,9 +53,37 @@ public extension Community2Providing {
 }
 
 public extension Community2Providing {
+    private var subscribedManager: StateManager<Bool> { community2.subscribedManager }
+    
     var subscriptionTier: SubscriptionTier {
         if favorited { return .favorited }
         if subscribed { return .subscribed }
         return .unsubscribed
+    }
+    
+    func toggleSubscribe() {
+        let newValue = !subscribed
+        subscribedManager.performRequest(expectedResult: newValue) { semaphore in
+            self.community2.shouldBeFavorited = false
+            try await self.api.subscribeToCommunity(id: self.id, subscribe: newValue, semaphore: semaphore)
+        }
+    }
+    
+    func toggleFavorite() {
+        guard let subscriptions = self.api.subscriptions else {
+            print("Tried to toggle favorite, but no SubscriptionList found!")
+            return
+        }
+        self.community2.shouldBeFavorited.toggle()
+        if !subscribed {
+            subscribedManager.performRequest(expectedResult: true) { semaphore in
+                try await self.api.subscribeToCommunity(id: self.id, subscribe: true, semaphore: semaphore)
+            } onRollback: { _ in
+                self.community2.shouldBeFavorited.toggle()
+                subscriptions.updateCommunitySubscription(community: self.community2)
+            }
+        } else {
+            subscriptions.updateCommunitySubscription(community: self.community2)
+        }
     }
 }
