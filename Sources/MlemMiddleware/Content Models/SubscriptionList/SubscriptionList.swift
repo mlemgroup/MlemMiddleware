@@ -14,7 +14,7 @@ public class SubscriptionList {
     public private(set) var favorites: [Community2] = .init()
     public private(set) var alphabeticSections: [String?: [Community2]] = .init()
     
-    private var favoriteIDs: Set<Int> {
+    internal var favoriteIDs: Set<Int> {
         get { getFavorites() }
         set { self.setFavorites(newValue) }
     }
@@ -22,19 +22,19 @@ public class SubscriptionList {
     private var getFavorites: () -> Set<Int>
     private var setFavorites: (Set<Int>) -> Void
     
-    private var apiClient: ApiClient
+    private var api: ApiClient
     
     internal init(
         apiClient: ApiClient,
         getFavorites: @escaping () -> Set<Int>,
         setFavorites: @escaping (Set<Int>) -> Void) {
-        self.apiClient = apiClient
+        self.api = apiClient
         self.getFavorites = getFavorites
         self.setFavorites = setFavorites
     }
     
     public func refresh() async throws {
-        _ = try await apiClient.getSubscriptionList()
+        _ = try await api.getSubscriptionList()
     }
     
     public func isFavorited(_ community: any Community) -> Bool {
@@ -70,9 +70,7 @@ public class SubscriptionList {
                     self.favorites.sortedInsert(community) { $0.name < community.name }
                 } else {
                     self.favoriteIDs.remove(community.id)
-                    if let index = favorites.firstIndex(of: community) {
-                        favorites.remove(at: index)
-                    }
+                    favorites.removeFirst { $0 === community }
                 }
             }
         } else {
@@ -93,12 +91,8 @@ public class SubscriptionList {
     private func removeCommunity(community: Community2) {
         self.communities.remove(community)
         self.favoriteIDs.remove(community.id)
-        if let index = self.favorites.firstIndex(of: community) {
-            self.favorites.remove(at: index)
-        }
+        favorites.removeFirst { $0 === community }
         let category = self.categoryForCommunity(community)
-        if let index = self.alphabeticSections[category]?.firstIndex(of: community) {
-            self.alphabeticSections[category]?.remove(at: index)
-        }
+        self.alphabeticSections[category]?.removeFirst { $0 === community }
     }
 }
