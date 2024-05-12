@@ -90,7 +90,7 @@ public final class UserStub: UserProviding, Codable {
     }
     
     public func encode(to encoder: Encoder) throws {
-        keychain[getKeychainId(actorId: actorId)] = api.token
+        saveTokenToKeychain()
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .username)
@@ -107,6 +107,10 @@ public final class UserStub: UserProviding, Codable {
     
     public func updateToken(_ newToken: String) {
         self.api.updateToken(newToken)
+    }
+    
+    func saveTokenToKeychain() {
+        keychain[getKeychainId(actorId: actorId)] = api.token
     }
     
     public func deleteTokenFromKeychain() {

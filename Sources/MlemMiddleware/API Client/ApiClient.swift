@@ -71,7 +71,7 @@ public class ApiClient {
         }
         Self.apiClientCache.changeToken(for: baseUrl, oldToken: token, newToken: newToken)
         self.token = newToken
-        self.myUser?.stub.deleteTokenFromKeychain()
+        self.myUser?.stub.saveTokenToKeychain()
     }
     
     /// Creates or retrieves an API client for the given connection parameters
