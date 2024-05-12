@@ -8,6 +8,7 @@
 import Foundation
 
 public protocol Instance1Providing: ProfileProviding, Identifiable {
+    var api: ApiClient { get }
     var instance1: Instance1 { get }
     
     var id: Int { get }
@@ -38,4 +39,8 @@ public extension Instance1Providing {
     var updated_: Date? { instance1.updated }
     var publicKey_: String? { instance1.publicKey }
     var lastRefreshDate_: Date? { instance1.lastRefreshDate }
+}
+
+public extension Instance1Providing {
+    var host: String { name } // For consistency with ContentStub
 }

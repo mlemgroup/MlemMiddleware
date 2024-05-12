@@ -41,14 +41,15 @@ public extension ApiClient {
     
     /// Loads the currently authenticated user
     func loadUser() async throws -> UserStub {
-        // TODO: should this cache? Implicitly via ApiClient?
+        if let myUser { return myUser.stub }
+        
         let request = GetSiteRequest()
         let response = try await perform(request)
 
         guard let user = response.myUser else {
             throw UserError.noUserInResponse
         }
-        guard let token else {
+        guard token != nil else {
             throw UserError.unauthenticated
         }
         
@@ -59,7 +60,6 @@ public extension ApiClient {
             id: user.localUserView.localUser.id,
             name: name,
             actorId: parseActorId(instanceLink: response.actorId, name: name),
-            accessToken: token,
             nickname: user.localUserView.person.displayName,
             cachedSiteVersion: .init(response.version),
             avatarUrl: user.localUserView.person.avatar,

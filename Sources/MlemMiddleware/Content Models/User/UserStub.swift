@@ -26,7 +26,6 @@ public final class UserStub: UserProviding, Codable {
     public let name: String
     public var actorId: URL
     
-    public var accessToken: String
     public var nickname: String?
     public var cachedSiteVersion: SiteVersion?
     public var avatarUrl: URL?
@@ -46,7 +45,6 @@ public final class UserStub: UserProviding, Codable {
         id: Int,
         name: String,
         actorId: URL,
-        accessToken: String,
         nickname: String? = nil,
         cachedSiteVersion: SiteVersion? = nil,
         avatarUrl: URL? = nil,
@@ -56,7 +54,6 @@ public final class UserStub: UserProviding, Codable {
         self.id = id
         self.name = name
         self.actorId = actorId
-        self.accessToken = accessToken
         self.nickname = nickname
         self.cachedSiteVersion = cachedSiteVersion
         self.avatarUrl = avatarUrl
@@ -82,18 +79,18 @@ public final class UserStub: UserProviding, Codable {
         guard let instanceLink = components.url else { throw DecodingError.cannotRemoveExtraneousPathComponents }
         
         // parse actor id
-        self.actorId = parseActorId(instanceLink: instanceLink, name: name)
+        let actorId = parseActorId(instanceLink: instanceLink, name: name)
+        self.actorId = actorId
         
         // retrive token and initialize ApiClient
-        guard let token = keychain[keychainId(id: id)] else {
+        guard let token = keychain[getKeychainId(actorId: actorId)] ?? keychain[getKeychainId(id: id)] else {
             throw DecodingError.noTokenInKeychain
         }
-        self.accessToken = token
         self.api = ApiClient.getApiClient(for: instanceLink, with: token)
     }
     
     public func encode(to encoder: Encoder) throws {
-        keychain[keychainId(id: id)] = accessToken
+        keychain[getKeychainId(actorId: actorId)] = api.token
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .username)
@@ -103,9 +100,26 @@ public final class UserStub: UserProviding, Codable {
         try container.encode(lastLoggedIn, forKey: .lastUsed)
         try container.encode(api.baseUrl, forKey: .instanceLink)
     }
+    
+    public var keychainId: String {
+        getKeychainId(actorId: actorId)
+    }
+    
+    public func updateToken(_ newToken: String) {
+        self.api.updateToken(newToken)
+    }
+    
+    public func deleteTokenFromKeychain() {
+        try? keychain.remove(getKeychainId(actorId: actorId))
+        try? keychain.remove(getKeychainId(id: id))
+    }
 }
 
-private func keychainId(id: Int) -> String {
+private func getKeychainId(actorId: URL) -> String {
+    "\(actorId.absoluteString)_accessToken"
+}
+
+private func getKeychainId(id: Int) -> String {
     "\(id)_accessToken"
 }
 

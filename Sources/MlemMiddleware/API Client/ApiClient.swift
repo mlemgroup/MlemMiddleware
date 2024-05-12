@@ -19,7 +19,7 @@ public class ApiClient {
     // url and token MAY NOT be modified! Downstream code expects that a given ApiClient will *always* submit requests from the same user to the same instance.
     public let baseUrl: URL
     let endpointUrl: URL
-    let token: String?
+    internal private(set) var token: String?
     private(set) var fetchedVersion: SiteVersion?
     private var fetchSiteTask: Task<SiteVersion, Error>?
     
@@ -61,6 +61,17 @@ public class ApiClient {
     public func cleanCaches() {
         caches.clean()
         ApiClient.apiClientCache.clean()
+    }
+    
+    /// This should **only** be used when we get a new token for **the same** account!
+    public func updateToken(_ newToken: String) {
+        guard token != nil else {
+            assertionFailure()
+            return
+        }
+        Self.apiClientCache.changeToken(for: baseUrl, oldToken: token, newToken: newToken)
+        self.token = newToken
+        self.myUser?.stub.deleteTokenFromKeychain()
     }
     
     /// Creates or retrieves an API client for the given connection parameters
@@ -180,10 +191,7 @@ public class ApiClient {
 
 extension ApiClient: CacheIdentifiable {
     public var cacheId: Int {
-        var hasher: Hasher = .init()
-        hasher.combine(baseUrl)
-        hasher.combine(token)
-        return hasher.finalize()
+        ApiClient.apiClientCache.getCacheId(for: baseUrl, with: token)
     }
 }
 
@@ -198,21 +206,28 @@ extension ApiClient: ActorIdentifiable {
 extension ApiClient {
     /// Cache for ApiClient--exception case because there's no ApiType and it may need to perform ApiClient bootstrapping
     class ApiClientCache: CoreCache<ApiClient> {
+        func getCacheId(for baseUrl: URL, with token: String?) -> Int {
+            var hasher: Hasher = .init()
+            hasher.combine(baseUrl)
+            hasher.combine(token)
+            return hasher.finalize()
+        }
         func createOrRetrieveApiClient(for baseUrl: URL, with token: String?) -> ApiClient {
-            let cacheId: Int = {
-                var hasher: Hasher = .init()
-                hasher.combine(baseUrl)
-                hasher.combine(token)
-                return hasher.finalize()
-            }()
-            
-            if let client = retrieveModel(cacheId: cacheId) {
+            if let client = retrieveModel(cacheId: getCacheId(for: baseUrl, with: token)) {
                 return client
             }
             
             let ret: ApiClient = .init(baseUrl: baseUrl, token: token)
             cachedItems[ret.cacheId] = .init(content: ret)
             return ret
+        }
+        
+        // Should ONLY be used when we get a new token for THE SAME account
+        func changeToken(for baseUrl: URL, oldToken: String?, newToken: String?) {
+            let oldCacheId = getCacheId(for: baseUrl, with: oldToken)
+            let newCacheId = getCacheId(for: baseUrl, with: oldToken)
+            cachedItems[newCacheId] = cachedItems[oldCacheId]
+            cachedItems[oldCacheId] = nil
         }
     }
 }
