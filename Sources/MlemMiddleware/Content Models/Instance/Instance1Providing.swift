@@ -7,8 +7,7 @@
 
 import Foundation
 
-public protocol Instance1Providing: ProfileProviding, Identifiable {
-    var api: ApiClient { get }
+public protocol Instance1Providing: ProfileProviding, ContentStub, Identifiable {
     var instance1: Instance1 { get }
     
     var id: Int { get }
@@ -19,8 +18,8 @@ public protocol Instance1Providing: ProfileProviding, Identifiable {
 public typealias Instance = Instance1Providing
 
 public extension Instance1Providing {
+    var actorId: URL { instance1.actorId }
     var id: Int { instance1.id }
-    var name: String { instance1.name }
     var displayName: String { instance1.displayName }
     var description: String? { instance1.description }
     var avatar: URL? { instance1.avatar }
@@ -31,7 +30,6 @@ public extension Instance1Providing {
     var lastRefreshDate: Date { instance1.lastRefreshDate }
     
     var id_: Int? { instance1.id }
-    var name_: String? { instance1.name }
     var displayName_: String? { instance1.displayName }
     var description_: String? { instance1.description }
     var avatar_: URL? { instance1.avatar }
@@ -42,5 +40,5 @@ public extension Instance1Providing {
 }
 
 public extension Instance1Providing {
-    var host: String { name } // For consistency with ContentStub
+    var name: String { host ?? "unknown" }
 }

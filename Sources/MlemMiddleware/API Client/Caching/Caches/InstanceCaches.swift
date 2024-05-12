@@ -11,11 +11,11 @@ class Instance1Cache: ApiTypeBackedCache<Instance1, ApiSite> {
     override func performModelTranslation(api: ApiClient, from apiType: ApiSite) -> Instance1 {
         .init(
             api: api,
+            actorId: apiType.actorId,
             id: apiType.id,
             created: apiType.published,
             updated: apiType.updated,
             publicKey: apiType.publicKey,
-            name: apiType.actorId.host() ?? "unknown",
             displayName: apiType.name,
             description: apiType.sidebar,
             avatar: apiType.icon,
