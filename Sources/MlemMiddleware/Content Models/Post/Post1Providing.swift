@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Post1Providing: PostStubProviding, Identifiable, Interactable1Providing, FeedLoadable, Hashable {
+public protocol Post1Providing: PostStubProviding, Identifiable, Interactable1Providing, FeedLoadable {
     var post1: Post1 { get }
     
     var id: Int { get }
