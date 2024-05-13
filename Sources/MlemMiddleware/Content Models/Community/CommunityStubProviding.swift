@@ -75,10 +75,6 @@ public extension CommunityStubProviding {
     var defaultPostLanguage_: Int? { nil }
 }
 
-public enum UpgradeError: Error {
-    case entityNotFound
-}
-
 public extension CommunityStubProviding {
     func upgrade() async throws -> Community3 {
         guard let community = try await api.getCommunity(actorId: actorId) else {

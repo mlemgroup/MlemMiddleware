@@ -90,13 +90,11 @@ public extension Post1Providing {
 
         return .titleOnly
     }
-    
-//    var menuActions: ActionGroup {
-//        ActionGroup(children: [
-//            ActionGroup(
-//                children: [upvoteAction, downvoteAction]
-//            ),
-//            saveAction
-//        ])
-//    }
+}
+
+public extension Post1Providing {
+    // Override the `upgrade()` method from PostStubProviding
+    func upgrade() async throws -> Post2 {
+        try await api.getPost(id: id)
+    }
 }
