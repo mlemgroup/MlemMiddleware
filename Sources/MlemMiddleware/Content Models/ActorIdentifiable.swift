@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents a Lemmy entity that can be represented by an ActivityPub Actor ID.
-public protocol ActorIdentifiable: Hashable {
+public protocol ActorIdentifiable: Hashable, Equatable {
     /// The URL of the entity on it's host instance. For example, "https://lemmy.ml/c/mlemapp". Useful for identifying entities across instances.
     var actorId: URL { get }
 }
