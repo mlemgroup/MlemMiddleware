@@ -68,11 +68,11 @@ public extension PostStubProviding {
 }
 
 public extension PostStubProviding {
-    func isUpgraded() -> Bool {
-        if let _ = self as? any Post2Providing {
-            return true
+    var upgraded: Post2? {
+        if let post2 = self as? any Post2Providing {
+            return post2.post2
         }
-        return false
+        return nil
     }
     
     func upgrade() async throws -> Post2 {
