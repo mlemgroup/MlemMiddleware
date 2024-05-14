@@ -15,3 +15,12 @@ public protocol Upgradable {
     
     func upgrade() async throws
 }
+
+public extension Upgradable {
+    var isUpgraded: Bool {
+        guard let _ = wrappedValue as? Upgraded else {
+            return false
+        }
+        return true
+    }
+}
