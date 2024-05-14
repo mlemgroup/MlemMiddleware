@@ -7,6 +7,7 @@
 
 import Foundation
 
+@Observable
 public class AnyPost: Hashable, Upgradable {
     public typealias Upgraded = Post2Providing
     
@@ -39,6 +40,9 @@ public extension AnyPost {
     }
     
     func upgrade() async throws {
-        post = try await post.upgrade()
+        let upgradedPost = try await post.upgrade()
+        Task { @MainActor in
+            self.post = upgradedPost
+        }
     }
 }
