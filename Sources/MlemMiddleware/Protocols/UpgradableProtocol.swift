@@ -11,7 +11,7 @@ public protocol Upgradable {
     associatedtype Upgraded
     associatedtype Base
     
-    var value: Base? { get }
+    var wrappedValue: Base { get }
     
-    func upgrade() async throws -> Upgraded
+    func upgrade() async throws
 }

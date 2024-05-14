@@ -33,12 +33,7 @@ public extension AnyPost {
 
 /// Upgradable conformance
 public extension AnyPost {
-    var upgraded: (any Post2Providing)? {
-        if let upgradedPost = post as? any Post2Providing {
-            return upgradedPost
-        }
-        return nil
-    }
+    var wrappedValue: any PostStubProviding { post }
     
     func upgrade() async throws {
         let upgradedPost = try await post.upgrade()
