@@ -10,6 +10,7 @@ import Foundation
 @Observable
 public class AnyPost: Hashable, Upgradable {
     public typealias Upgraded = Post2Providing
+    public typealias Base = PostStubProviding
     
     public var post: any PostStubProviding
     

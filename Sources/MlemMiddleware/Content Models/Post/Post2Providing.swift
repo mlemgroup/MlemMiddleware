@@ -65,3 +65,7 @@ public extension Post2Providing {
         }
     }
 }
+
+public extension Post2Providing {
+    func upgrade() async throws -> Post2 { post2 }
+}
