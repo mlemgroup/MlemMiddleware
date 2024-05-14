@@ -8,7 +8,7 @@
 import Foundation
 
 public class AnyPost: Hashable, Upgradable {
-    public typealias Upgraded = any Post2Providing
+    public typealias Upgraded = Post2Providing
     
     public var post: any PostStubProviding
     
