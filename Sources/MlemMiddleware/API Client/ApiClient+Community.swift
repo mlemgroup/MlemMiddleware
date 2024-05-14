@@ -16,7 +16,6 @@ public extension ApiClient {
     }
     
     func getCommunity(actorId: URL) async throws -> Community3? {
-        // search for community
         let request = ResolveObjectRequest(q: actorId.absoluteString)
         
         // if community found, get as Community3--caching performed in call

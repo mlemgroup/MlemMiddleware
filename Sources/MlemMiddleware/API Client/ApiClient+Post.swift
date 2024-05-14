@@ -62,10 +62,8 @@ extension ApiClient: PostFeedProvider {
     
     public func getPost(actorId: URL) async throws -> Post2? {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
-        let response = try await perform(request)
-        
-        if let post = response.post {
-            return caches.post2.getModel(api: self, from: post)
+        if let response = try await perform(request).post {
+            return caches.post2.getModel(api: self, from: response)
         }
         return nil
     }
