@@ -10,6 +10,10 @@ import Foundation
 public struct AnyPost: Hashable {
     public let post: any PostStubProviding
     
+    public init(post: any PostStubProviding) {
+        self.post = post
+    }
+    
     public func hash(into hasher: inout Hasher) {
         hasher.combine(post)
     }

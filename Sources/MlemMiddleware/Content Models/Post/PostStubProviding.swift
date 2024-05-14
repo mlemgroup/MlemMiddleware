@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol PostStubProviding: ContentStub, Upgradable {
+public protocol PostStubProviding: ContentStub {
     associatedtype Upgraded = Post2
     
     // From Post1Providing. These are defined as nil in the extension below
@@ -68,13 +68,6 @@ public extension PostStubProviding {
 }
 
 public extension PostStubProviding {
-    var upgraded: Post2? {
-        if let post2 = self as? any Post2Providing {
-            return post2.post2
-        }
-        return nil
-    }
-    
     func upgrade() async throws -> Post2 {
         guard let post = try await api.getPost(actorId: actorId) else {
             throw UpgradeError.entityNotFound
