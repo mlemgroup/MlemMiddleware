@@ -7,18 +7,38 @@
 
 import Foundation
 
-public struct AnyPost: Hashable {
-    public let post: any PostStubProviding
+public class AnyPost: Hashable, Upgradable {
+    public typealias Upgraded = any Post2Providing
+    
+    public var post: any PostStubProviding
     
     public init(post: any PostStubProviding) {
         self.post = post
     }
     
-    public func hash(into hasher: inout Hasher) {
+}
+
+/// Hashable, Equatable conformance
+public extension AnyPost {
+    func hash(into hasher: inout Hasher) {
         hasher.combine(post)
     }
     
-    public static func == (lhs: AnyPost, rhs: AnyPost) -> Bool {
+    static func == (lhs: AnyPost, rhs: AnyPost) -> Bool {
         lhs.hashValue == rhs.hashValue
+    }
+}
+
+/// Upgradable conformance
+public extension AnyPost {
+    var upgraded: (any Post2Providing)? {
+        if let upgradedPost = post as? any Post2Providing {
+            return upgradedPost
+        }
+        return nil
+    }
+    
+    func upgrade() async throws {
+        post = try await post.upgrade()
     }
 }
