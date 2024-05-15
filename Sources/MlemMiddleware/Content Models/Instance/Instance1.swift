@@ -13,8 +13,8 @@ public final class Instance1: Instance1Providing {
     public var api: ApiClient
     public var instance1: Instance1 { self }
     
+    public let actorId: URL
     public let id: Int
-    public let name: String
     public let created: Date
     public let updated: Date?
     public let publicKey: String
@@ -27,11 +27,11 @@ public final class Instance1: Instance1Providing {
     
     internal init(
         api: ApiClient,
+        actorId: URL,
         id: Int,
         created: Date,
         updated: Date?,
         publicKey: String,
-        name: String,
         displayName: String = "",
         description: String? = nil,
         avatar: URL? = nil,
@@ -39,11 +39,11 @@ public final class Instance1: Instance1Providing {
         lastRefreshDate: Date = .distantPast
     ) {
         self.api = api
+        self.actorId = actorId
         self.id = id
         self.created = created
         self.updated = updated
         self.publicKey = publicKey
-        self.name = name
         self.displayName = displayName
         self.description = description
         self.avatar = avatar
