@@ -225,7 +225,7 @@ extension ApiClient {
         // Should ONLY be used when we get a new token for THE SAME account
         func changeToken(for baseUrl: URL, oldToken: String?, newToken: String?) {
             let oldCacheId = getCacheId(for: baseUrl, with: oldToken)
-            let newCacheId = getCacheId(for: baseUrl, with: oldToken)
+            let newCacheId = getCacheId(for: baseUrl, with: newToken)
             cachedItems[newCacheId] = cachedItems[oldCacheId]
             cachedItems[oldCacheId] = nil
         }
