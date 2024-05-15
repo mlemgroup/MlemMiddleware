@@ -64,3 +64,12 @@ public extension PostStubProviding {
     var read_: Bool? { nil }
     var myVote_: ScoringOperation? { nil }
 }
+
+public extension PostStubProviding {
+    func upgrade() async throws -> Post2 {
+        guard let post = try await api.getPost(actorId: actorId) else {
+            throw UpgradeError.entityNotFound
+        }
+        return post
+    }
+}

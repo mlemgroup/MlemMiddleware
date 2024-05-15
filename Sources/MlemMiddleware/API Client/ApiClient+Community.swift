@@ -16,21 +16,11 @@ public extension ApiClient {
     }
     
     func getCommunity(actorId: URL) async throws -> Community3? {
-        // search for community
-        let request = SearchRequest(
-            q: actorId.absoluteString,
-            communityId: nil,
-            communityName: nil,
-            creatorId: nil,
-            type_: .communities,
-            sort: .new,
-            listingType: .all,
-            page: 1,
-            limit: 1
-        )
+        let request = ResolveObjectRequest(q: actorId.absoluteString)
         
         // if community found, get as Community3--caching performed in call
-        if let response = try await perform(request).communities.first {
+        if let response = try await perform(request).community {
+            // ResolveObject unfortunately only returns a Community2, so we've gotta make another call
             return try await getCommunity(id: response.id)
         }
         return nil
