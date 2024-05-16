@@ -13,6 +13,7 @@ public protocol Instance1Providing: ProfileProviding, ContentStub, Identifiable 
     var id: Int { get }
     var publicKey: String { get }
     var lastRefreshDate: Date { get }
+    var local: Bool { get }
 }
 
 public typealias Instance = Instance1Providing
@@ -28,6 +29,9 @@ public extension Instance1Providing {
     var updated: Date? { instance1.updated }
     var publicKey: String { instance1.publicKey }
     var lastRefreshDate: Date { instance1.lastRefreshDate }
+    internal(set) var local: Bool { get { instance1.local } set {
+        instance1.local = newValue
+    }}
     
     var id_: Int? { instance1.id }
     var displayName_: String? { instance1.displayName }
@@ -37,8 +41,13 @@ public extension Instance1Providing {
     var updated_: Date? { instance1.updated }
     var publicKey_: String? { instance1.publicKey }
     var lastRefreshDate_: Date? { instance1.lastRefreshDate }
+    var local_: Bool { instance1.local }
 }
 
 public extension Instance1Providing {
     var name: String { host ?? "unknown" }
+    
+    var guestApi: ApiClient {
+        .getApiClient(for: local ? api.baseUrl : actorId, with: nil)
+    }
 }

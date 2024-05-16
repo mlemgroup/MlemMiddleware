@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol ProfileProviding {
+public protocol ProfileProviding: ActorIdentifiable {
     var name: String { get }
     var displayName: String { get }
     var description: String? { get }

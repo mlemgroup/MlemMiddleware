@@ -25,6 +25,8 @@ public final class Instance1: Instance1Providing {
     public var banner: URL?
     public var lastRefreshDate: Date = .distantPast
     
+    public var local: Bool = false
+    
     internal init(
         api: ApiClient,
         actorId: URL,

@@ -63,6 +63,16 @@ public class ApiClient {
         ApiClient.apiClientCache.clean()
     }
     
+    /// Return a new `ApiClient` withou a token.
+    public func loggedOut() -> ApiClient {
+        .getApiClient(for: self.baseUrl, with: nil)
+    }
+    
+    /// Return a new `ApiClient` with the given token.
+    public func loggedIn(token: String) -> ApiClient {
+        .getApiClient(for: self.baseUrl, with: token)
+    }
+    
     /// This should **only** be used when we get a new token for **the same** account!
     public func updateToken(_ newToken: String) {
         guard token != nil else {
@@ -100,7 +110,6 @@ public class ApiClient {
     @discardableResult
     func perform<Request: ApiRequest>(_ request: Request) async throws -> Request.Response {
         let urlRequest = try urlRequest(from: request)
-
         let (data, response) = try await execute(urlRequest)
         
         if let response = response as? HTTPURLResponse {
