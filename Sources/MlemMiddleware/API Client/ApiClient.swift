@@ -63,7 +63,7 @@ public class ApiClient {
         ApiClient.apiClientCache.clean()
     }
     
-    /// Return a new `ApiClient` withou a token.
+    /// Return a new `ApiClient` without a token.
     public func loggedOut() -> ApiClient {
         .getApiClient(for: self.baseUrl, with: nil)
     }
