@@ -9,9 +9,9 @@ import Foundation
 
 class Instance1Cache: ApiTypeBackedCache<Instance1, ApiSite> {
     override func performModelTranslation(api: ApiClient, from apiType: ApiSite) -> Instance1 {
-        .init(
+        return .init(
             api: api,
-            actorId: apiType.actorId,
+            actorId: api.baseUrl,
             id: apiType.id,
             created: apiType.published,
             updated: apiType.updated,
