@@ -17,7 +17,6 @@ class ApiTypeBackedCache<Content: CacheIdentifiable & AnyObject & ContentStub, A
         
         let newItem: Content = performModelTranslation(api: api, from: apiType)
         cachedItems[newItem.cacheId] = .init(content: newItem)
-        api.contentUpdateCallback(newItem)
         return newItem
     }
     
