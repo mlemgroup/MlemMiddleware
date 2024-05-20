@@ -19,7 +19,7 @@ public class ApiClient {
     // url and token MAY NOT be modified! Downstream code expects that a given ApiClient will *always* submit requests from the same user to the same instance.
     public let baseUrl: URL
     let endpointUrl: URL
-    internal private(set) var token: String?
+    public private(set) var token: String?
     private(set) var fetchedVersion: SiteVersion?
     private var fetchSiteTask: Task<SiteVersion, Error>?
     
@@ -29,7 +29,7 @@ public class ApiClient {
     public var willSendToken: Bool { permissions == .all && token != nil }
     
     internal weak var myInstance: Instance3?
-    internal weak var myUser: User?
+    internal weak var myPerson: Person4?
     internal weak var subscriptions: SubscriptionList?
     
     /// Returns the `fetchedVersion` if the version has already been fetched. Otherwise, waits until the version has been fetched before returning the received value.
@@ -57,7 +57,27 @@ public class ApiClient {
     /// Caches of Instance objects, shared across all ApiClient instances
     /// - Warning: DO NOT access this outside of ApiClient!
     static var apiClientCache: ApiClientCache = .init()
-
+    
+    /// Creates or retrieves an API client for the given connection parameters
+    public static func getApiClient(
+        for url: URL,
+        with token: String?
+    ) -> ApiClient {
+        apiClientCache.createOrRetrieveApiClient(for: url, with: token)
+    }
+    
+    /// Creates a new API Client. Private because it should never be used outside of ApiClientCache, as the caching system depends on one ApiClient existing for any given session
+    private init(
+        baseUrl: URL,
+        token: String? = nil,
+        permissions: RequestPermissions = .all
+    ) {
+        self.baseUrl = baseUrl
+        self.endpointUrl = baseUrl.appendingPathComponent("api/v3")
+        self.token = token
+        self.permissions = permissions
+    }
+    
     public func cleanCaches() {
         caches.clean()
         ApiClient.apiClientCache.clean()
@@ -81,25 +101,12 @@ public class ApiClient {
         }
         Self.apiClientCache.changeToken(for: baseUrl, oldToken: token, newToken: newToken)
         self.token = newToken
-        self.myUser?.stub.saveTokenToKeychain()
     }
     
-    /// Creates or retrieves an API client for the given connection parameters
-    public static func getApiClient(for url: URL, with token: String?) -> ApiClient {
-        apiClientCache.createOrRetrieveApiClient(for: url, with: token)
-    }
-    
-    /// Creates a new API Client. Private because it should never be used outside of ApiClientCache, as the caching system depends on one ApiClient existing for any given session
-    private init(baseUrl: URL, token: String? = nil, permissions: RequestPermissions = .all) {
-        self.baseUrl = baseUrl
-        self.endpointUrl = baseUrl.appendingPathComponent("api/v3")
-        self.token = token
-        self.permissions = permissions
-    }
     
     @discardableResult
     public func fetchSiteVersion(task: Task<SiteVersion, Error>? = nil) async throws -> SiteVersion {
-        let task = task ?? fetchSiteTask ?? Task { try await getSite().version }
+        let task = task ?? fetchSiteTask ?? Task { try await getMyInstance().version }
         fetchSiteTask = task
         let result = await task.result
         let version = try result.get()

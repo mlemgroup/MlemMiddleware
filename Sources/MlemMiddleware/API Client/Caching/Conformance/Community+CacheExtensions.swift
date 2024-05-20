@@ -21,6 +21,7 @@ extension Community1: CacheIdentifiable {
         banner = community.banner
         hidden = community.hidden
         onlyModeratorsCanPost = community.postingRestrictedToMods
+        api.contentUpdateCallback(self)
     }
 }
 

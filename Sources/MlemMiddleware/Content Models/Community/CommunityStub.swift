@@ -5,7 +5,7 @@
 //  Created by Sjmarf on 03/02/2024.
 //
 
-import SwiftUI
+import Foundation
 
 public struct CommunityStub: CommunityStubProviding, Hashable {
     public var api: ApiClient

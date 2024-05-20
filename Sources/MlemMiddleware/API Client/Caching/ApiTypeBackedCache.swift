@@ -8,7 +8,7 @@
 import Foundation
 
 /// Class providing caching behavior for models associated with API types
-class ApiTypeBackedCache<Content: CacheIdentifiable & AnyObject, ApiType: CacheIdentifiable>: CoreCache<Content> {
+class ApiTypeBackedCache<Content: CacheIdentifiable & AnyObject & ContentStub, ApiType: CacheIdentifiable>: CoreCache<Content> {
     func getModel(api: ApiClient, from apiType: ApiType, semaphore: UInt? = nil) -> Content {
         if let item = retrieveModel(cacheId: apiType.cacheId) {
             updateModel(item, with: apiType, semaphore: semaphore)
@@ -17,6 +17,7 @@ class ApiTypeBackedCache<Content: CacheIdentifiable & AnyObject, ApiType: CacheI
         
         let newItem: Content = performModelTranslation(api: api, from: apiType)
         cachedItems[newItem.cacheId] = .init(content: newItem)
+        api.contentUpdateCallback(newItem)
         return newItem
     }
     

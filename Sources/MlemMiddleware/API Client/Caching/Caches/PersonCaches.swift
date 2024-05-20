@@ -101,3 +101,21 @@ class Person3Cache: CoreCache<Person3> {
         return newItem
     }
 }
+
+// Person4 can be created from any Person4ApiBacker, so can't use ApiTypeBackedCache
+class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
+    let person3Cache: Person3Cache
+    
+    init(person3Cache: Person3Cache) {
+        self.person3Cache = person3Cache
+    }
+    
+    override func performModelTranslation(api: ApiClient, from apiType: ApiMyUserInfo) -> Person4 {
+        .init(api: api, person3: person3Cache.getModel(api: api, from: apiType))
+    }
+    
+    override func updateModel(_ item: Person4, with apiType: ApiMyUserInfo, semaphore: UInt? = nil) {
+        item.update(with: apiType)
+    }
+}
+

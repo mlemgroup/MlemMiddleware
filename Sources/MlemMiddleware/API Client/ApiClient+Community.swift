@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 public extension ApiClient {
     func getCommunity(id: Int) async throws -> Community3 {

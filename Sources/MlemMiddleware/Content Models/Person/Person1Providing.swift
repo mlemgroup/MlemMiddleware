@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Person1Providing: PersonStubProviding, ProfileProviding, Identifiable {
+public protocol Person1Providing: PersonStubProviding, Profile2Providing, Identifiable {
     var api: ApiClient { get }
     
     var person1: Person1 { get }

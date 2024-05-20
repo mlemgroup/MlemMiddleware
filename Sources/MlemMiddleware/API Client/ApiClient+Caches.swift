@@ -28,12 +28,10 @@ extension ApiClient {
         var person1: Person1Cache
         var person2: Person2Cache
         var person3: Person3Cache
+        var person4: Person4Cache
         
         var post1: Post1Cache
         var post2: Post2Cache
-        
-        // We can only create a User for the logged-in account at the moment, so we only need one
-        weak var user: User?
         
         init() {
             self.instance1 = .init()
@@ -49,6 +47,8 @@ extension ApiClient {
             self.instance3 = .init(instance2Cache: instance2)
             self.person3 = .init(person2Cache: person2, community1Cache: community1, instance1Cache: instance1)
             self.community3 = .init(community2Cache: community2, instance1Cache: instance1, person1Cache: person1)
+            
+            self.person4 = .init(person3Cache: person3)
         }
         
         func clean() {
@@ -58,6 +58,7 @@ extension ApiClient {
             person1.clean()
             person2.clean()
             person3.clean()
+            person4.clean()
             post1.clean()
             post2.clean()
         }

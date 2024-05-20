@@ -54,9 +54,6 @@ public extension Post2Providing {
     
     func toggleSave() {
         let newValue = !saved
-        if newValue, UserDefaults.standard.bool(forKey: "upvoteOnSave") {
-            vote(.upvote)
-        }
         groupStateRequest(
             savedManager.ticket(newValue),
             readManager.ticket(true)

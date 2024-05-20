@@ -5,8 +5,8 @@
 //  Created by Sjmarf on 03/02/2024.
 //
 
+import Foundation
 import Observation
-import SwiftUI
 
 @Observable
 public final class Community1: Community1Providing {
@@ -30,7 +30,7 @@ public final class Community1: Community1Providing {
     public var hidden: Bool = false
     public var onlyModeratorsCanPost: Bool = false
     
-    // This isn't included in the ApiCommunity - it's included in ApiCommunityView, but defined here to maintain similarity with User models. User models don't have the `blocked` property defined in any of the Api types, annoyingly, so we instead request a list of all blocked users and cache the result in `MyUserStub`.
+    // This isn't included in the ApiCommunity - it's included in ApiCommunityView, but defined here to maintain similarity with User models. User models don't have the `blocked` property defined in any of the Api types, annoyingly, so we instead request a list of all blocked users and cache the result in `MyAccount`.
     public var blocked: Bool = false
   
     internal init(

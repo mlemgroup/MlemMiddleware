@@ -6,7 +6,6 @@
 //
 
 import Observation
-import SwiftUI
 
 @Observable
 public final class Community3: Community3Providing {

@@ -24,7 +24,7 @@ public extension ApiClient {
         return response
     }
     
-    func loadPerson(username: String) async throws -> Person3 {
+    func getPerson(username: String) async throws -> Person3 {
         let request = GetPersonDetailsRequest(
             personId: nil,
             username: username,
@@ -39,31 +39,17 @@ public extension ApiClient {
         return caches.person3.getModel(api: self, from: response)
     }
     
-    /// Loads the currently authenticated user
-    func loadUser() async throws -> UserStub {
-        if let myUser { return myUser.stub }
-        
+    func getMyPerson() async throws -> (person: Person4?, instance: Instance3) {
         let request = GetSiteRequest()
         let response = try await perform(request)
-
-        guard let user = response.myUser else {
-            throw UserError.noUserInResponse
-        }
-        guard token != nil else {
-            throw UserError.unauthenticated
-        }
+        let instance = caches.instance3.getModel(api: self, from: response)
         
-        let name = user.localUserView.person.name
-        
-        return .init(
-            api: self,
-            id: user.localUserView.localUser.id,
-            name: name,
-            actorId: parseActorId(instanceLink: response.actorId, name: name),
-            nickname: user.localUserView.person.displayName,
-            cachedSiteVersion: .init(response.version),
-            avatarUrl: user.localUserView.person.avatar,
-            lastLoggedIn: Date.now
-        )
+        var person: Person4?
+        if let myUser = response.myUser {
+            person = caches.person4.getModel(api: self, from: myUser)
+        }
+        myPerson = person
+        myInstance = instance
+        return (person: person, instance: instance)
     }
 }

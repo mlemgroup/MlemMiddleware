@@ -1,12 +1,12 @@
 //
-//  CommunityOrUserStub.swift
+//  CommunityOrAccount.swift
 //  Mlem
 //
 //  Created by Sjmarf on 16/02/2024.
 //
 
 import Foundation
-import SwiftUI
+import Observation
 
 public protocol CommunityOrPersonStub: ContentStub {
     static var identifierPrefix: String { get }

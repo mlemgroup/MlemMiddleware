@@ -5,7 +5,7 @@
 //  Created by Sjmarf on 05/05/2024.
 //
 
-import SwiftUI
+import Observation
 
 @Observable
 public class SubscriptionList {
