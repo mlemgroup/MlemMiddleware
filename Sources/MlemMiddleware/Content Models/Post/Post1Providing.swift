@@ -25,6 +25,7 @@ public protocol Post1Providing: PostStubProviding, Identifiable, Interactable1Pr
     var removed: Bool { get }
     var thumbnailUrl: URL? { get }
     var updated: Date? { get }
+    var creatorId: Int { get }
 }
 
 public typealias Post = Post1Providing
@@ -47,6 +48,8 @@ public extension Post1Providing {
     var removed: Bool { post1.removed }
     var thumbnailUrl: URL? { post1.thumbnailUrl }
     var updated: Date? { post1.updated }
+    var creatorId: Int { post1.creatorId }
+    
     
     var id_: Int? { post1.id }
     var title_: String? { post1.title }
@@ -63,6 +66,7 @@ public extension Post1Providing {
     var removed_: Bool? { post1.removed }
     var thumbnailUrl_: URL? { post1.thumbnailUrl }
     var updated_: Date? { post1.updated }
+    var creatorId_: Int { post1.creatorId }
 }
 
 public extension Post1Providing {

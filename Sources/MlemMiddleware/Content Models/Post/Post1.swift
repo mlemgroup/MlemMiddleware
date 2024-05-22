@@ -36,6 +36,7 @@ public final class Post1: Post1Providing {
     public var removed: Bool = false
     public var thumbnailUrl: URL?
     public var updated: Date?
+    public var creatorId: Int
     
     internal init(
         api: ApiClient,
@@ -54,7 +55,8 @@ public final class Post1: Post1Providing {
         nsfw: Bool = false,
         removed: Bool = false,
         thumbnailUrl: URL? = nil,
-        updated: Date? = nil
+        updated: Date? = nil,
+        creatorId: Int
     ) {
         self.api = api
         self.actorId = actorId
@@ -73,5 +75,6 @@ public final class Post1: Post1Providing {
         self.removed = removed
         self.thumbnailUrl = thumbnailUrl
         self.updated = updated
+        self.creatorId = creatorId
     }
 }
