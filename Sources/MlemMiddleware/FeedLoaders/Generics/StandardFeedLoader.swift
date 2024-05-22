@@ -7,7 +7,7 @@
 
 import Foundation
 import Semaphore
-import SwiftUI
+import Observation
 
 /// Enumeration of loading actions
 enum LoadAction {

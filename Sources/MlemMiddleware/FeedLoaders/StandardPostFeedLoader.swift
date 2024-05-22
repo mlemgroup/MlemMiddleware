@@ -7,7 +7,7 @@
 
 import Foundation
 import Nuke
-import SwiftUI
+import Observation
 
 /// Enumeration of criteria on which to filter a post
 public enum PostFilter: Hashable {

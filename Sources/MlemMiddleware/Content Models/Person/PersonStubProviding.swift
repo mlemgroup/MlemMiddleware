@@ -1,5 +1,5 @@
 //
-//  UserStubProviding.swift
+//  AccountProviding.swift
 //  Mlem
 //
 //  Created by Sjmarf on 16/02/2024.

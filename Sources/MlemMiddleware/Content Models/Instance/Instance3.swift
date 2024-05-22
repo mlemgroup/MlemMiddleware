@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftUI
+import Observation
 
 @Observable
 public final class Instance3: Instance3Providing {

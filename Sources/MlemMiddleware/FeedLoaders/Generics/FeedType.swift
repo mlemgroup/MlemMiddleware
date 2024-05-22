@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftUI
+import Observation
 
 enum FeedType: Equatable {
     case all, local, subscribed, saved

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftUI
+import Observation
 
 /// Class providing common feed loading functionality for StandardFeedLoader and ParentFeedLoader
 @Observable

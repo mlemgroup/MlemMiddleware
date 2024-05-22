@@ -13,7 +13,6 @@ let package = Package(
             targets: ["MlemMiddleware"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess", .upToNextMajor(from: "4.2.2")),
         .package(url: "https://github.com/groue/Semaphore.git", .upToNextMajor(from: "0.0.8")),
         .package(url: "https://github.com/kean/Nuke.git", .upToNextMajor(from: "12.6.0"))
     ],
@@ -23,7 +22,6 @@ let package = Package(
         .target(
             name: "MlemMiddleware",
             dependencies: [
-                .product(name: "KeychainAccess", package: "KeychainAccess"),
                 .product(name: "Semaphore", package: "Semaphore"),
                 .product(name: "Nuke", package: "Nuke")
             ],

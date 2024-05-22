@@ -5,7 +5,7 @@
 //  Created by Sjmarf on 16/02/2024.
 //
 
-import SwiftUI
+import Observation
 
 @Observable
 public final class Post2: Post2Providing {

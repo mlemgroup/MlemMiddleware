@@ -6,10 +6,9 @@
 //
 
 import Observation
-import SwiftUI
 
 @Observable
-public final class Community2: Community2Providing {
+public final class Community2: Community2Providing {    
     public var community2: Community2 { self }
     public var api: ApiClient
 
