@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 public struct ActiveUserCount {
     let sixMonths: Int

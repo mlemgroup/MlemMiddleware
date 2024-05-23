@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Instance1Providing: ProfileProviding, ContentStub, Identifiable {
+public protocol Instance1Providing: Profile2Providing, ContentStub, Identifiable {
     var instance1: Instance1 { get }
     
     var id: Int { get }

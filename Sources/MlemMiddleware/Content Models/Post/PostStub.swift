@@ -5,7 +5,8 @@
 //  Created by Sjmarf on 16/02/2024.
 //
 
-import SwiftUI
+import Foundation
+import Observation
 
 public struct PostStub: PostStubProviding {
     public var api: ApiClient

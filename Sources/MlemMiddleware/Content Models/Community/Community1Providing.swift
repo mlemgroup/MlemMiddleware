@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Community1Providing: CommunityStubProviding, ProfileProviding, Identifiable {
+public protocol Community1Providing: CommunityStubProviding, Profile2Providing, Identifiable {
     var community1: Community1 { get }
     
     var removed: Bool { get }

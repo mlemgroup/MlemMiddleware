@@ -5,7 +5,8 @@
 //  Created by Sjmarf on 10/02/2024.
 //
 
-import SwiftUI
+import Foundation
+import Observation
 
 @Observable
 public final class Person1: Person1Providing {

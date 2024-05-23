@@ -1,11 +1,12 @@
 //
-//  UserStub.swift
+//  Account.swift
 //  Mlem
 //
 //  Created by Sjmarf on 16/02/2024.
 //
 
-import SwiftUI
+import Foundation
+import Observation
 
 public struct PersonStub: PersonStubProviding {
     public var api: ApiClient
