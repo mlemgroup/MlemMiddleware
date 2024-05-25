@@ -24,7 +24,8 @@ public final class Post2: Post2Providing {
     public var votes: VotesModel { votesManager.wrappedValue }
     
     internal var readManager: StateManager<Bool>
-    public var read: Bool { readManager.wrappedValue }
+    public var read: Bool { readManager.wrappedValue || readQueued }
+    internal var readQueued: Bool = false
     
     internal var savedManager: StateManager<Bool>
     public var saved: Bool { savedManager.wrappedValue }

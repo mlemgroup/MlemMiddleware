@@ -12,7 +12,7 @@ public enum SiteVersion: Equatable, Hashable {
     case zero
     case infinity
     
-    init(_ version: String) {
+    public init(_ version: String) {
         let parts = version.split(separator: "-")
         if let firstPart = parts.first {
             let components = firstPart.split(separator: ".").compactMap { Int($0) }
@@ -27,7 +27,7 @@ public enum SiteVersion: Equatable, Hashable {
     }
     
     // swiftlint: disable large_tuple
-    var parts: (Int, Int, Int)? {
+    public var parts: (Int, Int, Int)? {
         switch self {
         case let .release(major, minor, patch):
             return (major, minor, patch)
@@ -36,6 +36,18 @@ public enum SiteVersion: Equatable, Hashable {
         }
     }
     // swiftlint: enable large_tuple
+    
+    public static let v18_0: Self = .init("0.18.0")
+    public static let v18_1: Self = .init("0.18.1")
+    public static let v18_2: Self = .init("0.18.2")
+    public static let v18_3: Self = .init("0.18.3")
+    public static let v18_4: Self = .init("0.18.4")
+    public static let v18_5: Self = .init("0.18.5")
+    public static let v19_0: Self = .init("0.19.0")
+    public static let v19_1: Self = .init("0.19.1")
+    public static let v19_2: Self = .init("0.19.2")
+    public static let v19_3: Self = .init("0.19.3")
+    public static let v19_4: Self = .init("0.19.4")
 }
 
 extension SiteVersion: CustomStringConvertible {
