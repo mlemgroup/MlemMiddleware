@@ -7,8 +7,12 @@
 
 import Foundation
 
-struct WeakReference<Content: AnyObject> {
-    weak var content: Content?
+public struct WeakReference<Content: AnyObject> {
+    public weak var content: Content?
+    
+    public init(content: Content) {
+        self.content = content
+    }
 }
 
 public protocol CacheIdentifiable {
