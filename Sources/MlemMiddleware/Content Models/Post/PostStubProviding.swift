@@ -12,7 +12,6 @@ public protocol PostStubProviding: ContentStub {
     var id_: Int? { get }
     var title_: String? { get }
     var content_: String? { get }
-    var links_: [LinkType]? { get }
     var linkUrl_: URL? { get }
     var deleted_: Bool? { get }
     var embed_: PostEmbed? { get }
@@ -41,7 +40,6 @@ public extension PostStubProviding {
     var id_: Int? { nil }
     var title_: String? { nil }
     var content_: String? { nil }
-    var links_: [LinkType]? { nil }
     var linkUrl_: URL? { nil }
     var deleted_: Bool? { nil }
     var embed_: PostEmbed? { nil }

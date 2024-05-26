@@ -16,7 +16,6 @@ class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
             created: apiType.published,
             title: apiType.name,
             content: apiType.body,
-            links: apiType.body?.parseLinks() ?? .init(),
             linkUrl: apiType.linkUrl,
             deleted: apiType.deleted,
             embed: apiType.embed,

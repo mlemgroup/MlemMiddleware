@@ -13,7 +13,6 @@ public protocol Post1Providing: PostStubProviding, Identifiable, Interactable1Pr
     var id: Int { get }
     var title: String { get }
     var content: String? { get }
-    var links: [LinkType] { get }
     var linkUrl: URL? { get }
     var deleted: Bool { get }
     var embed: PostEmbed? { get }
@@ -35,7 +34,6 @@ public extension Post1Providing {
     var id: Int { post1.id }
     var title: String { post1.title }
     var content: String? { post1.content }
-    var links: [LinkType] { post1.links }
     var linkUrl: URL? { post1.linkUrl }
     var deleted: Bool { post1.deleted }
     var embed: PostEmbed? { post1.embed }
@@ -51,7 +49,6 @@ public extension Post1Providing {
     var id_: Int? { post1.id }
     var title_: String? { post1.title }
     var content_: String? { post1.content }
-    var links_: [LinkType]? { post1.links }
     var linkUrl_: URL? { post1.linkUrl }
     var deleted_: Bool? { post1.deleted }
     var embed_: PostEmbed? { post1.embed }

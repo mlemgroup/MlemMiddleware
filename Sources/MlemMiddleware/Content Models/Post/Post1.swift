@@ -26,7 +26,6 @@ public final class Post1: Post1Providing {
     
     public var title: String = ""
     public var content: String? = ""
-    public var links: [LinkType] = []
     public var linkUrl: URL?
     public var deleted: Bool = false
     public var embed: PostEmbed?
@@ -45,7 +44,6 @@ public final class Post1: Post1Providing {
         created: Date,
         title: String = "",
         content: String? = "",
-        links: [LinkType] = [],
         linkUrl: URL? = nil,
         deleted: Bool = false,
         embed: PostEmbed? = nil,
@@ -63,7 +61,6 @@ public final class Post1: Post1Providing {
         self.created = created
         self.title = title
         self.content = content
-        self.links = links
         self.linkUrl = linkUrl
         self.deleted = deleted
         self.embed = embed
