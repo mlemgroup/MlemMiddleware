@@ -77,6 +77,7 @@ extension ApiClient: PostFeedProvider {
         semaphore: UInt? = nil
     ) async throws {
         // We *must* use `postId` in 0.18 versions, and we *must* use `postIds` from 0.19.4 onwards.
+        // On versions 0.19.0 to 0.19.3, either parameter is allowed.
         let version = try await version
         let request: MarkPostAsReadRequest
         if version >= .v19_0 {
@@ -130,7 +131,9 @@ extension ApiClient: PostFeedProvider {
             if !response.success {
                 throw ApiClientError.unsuccessful
             }
-            markReadQueue.subtract(ids)
+            if read {
+                markReadQueue.subtract(ids)
+            }
         } catch {
             self.markReadQueue.formUnion(markReadQueueCopy)
             throw error
