@@ -17,7 +17,6 @@ extension Post1: CacheIdentifiable {
         
         // We can't name this 'body' because @Observable uses that property name already
         content = post.body
-        links = post.body?.parseLinks() ?? []
         
         linkUrl = post.linkUrl
         
