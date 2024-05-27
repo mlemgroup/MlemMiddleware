@@ -115,9 +115,9 @@ extension ApiClient: PostFeedProvider {
         let idsToSend: Set<Int>
         let markReadQueueCopy: Set<Int>
         if read, includeQueuedPosts {
-            idsToSend = ids.union(self.markReadQueue)
             markReadQueueCopy = self.markReadQueue
             self.markReadQueue.removeAll()
+            idsToSend = ids.union(markReadQueueCopy)
         } else {
             markReadQueueCopy = []
             idsToSend = ids
