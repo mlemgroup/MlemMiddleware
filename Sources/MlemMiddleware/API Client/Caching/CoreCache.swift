@@ -8,18 +8,22 @@
 import Foundation
 
 /// Class providing common caching behavior
-class CoreCache<Content: CacheIdentifiable & AnyObject> {
-    var cachedItems: [Int: WeakReference<Content>] = .init()
+open class CoreCache<Content: CacheIdentifiable & AnyObject> {
+    public var cachedItems: [Int: WeakReference<Content>] = .init()
+    
+    public init() {
+        self.cachedItems = .init()
+    }
     
     /// Retrieves the cached model with the given cacheId, if present
     /// - Parameter cacheId: cacheId of the model to retrieve
     /// - Returns: cached model if present, nil otherwise
-    func retrieveModel(cacheId: Int) -> Content? {
+    public func retrieveModel(cacheId: Int) -> Content? {
         cachedItems[cacheId]?.content
     }
     
     /// Remove dead references
-    func clean() {
+    public func clean() {
         for (key, value) in cachedItems where value.content == nil {
             print("Removed value with id \(key)")
             cachedItems[key] = nil
