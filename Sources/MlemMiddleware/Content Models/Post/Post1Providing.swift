@@ -73,7 +73,7 @@ public extension Post1Providing {
 }
 
 public extension Post1Providing {
-    var postType: PostType {
+    var type: PostType {
         // post with URL: either image or link
         if let linkUrl {
             // if image, return image link, otherwise return thumbnail
