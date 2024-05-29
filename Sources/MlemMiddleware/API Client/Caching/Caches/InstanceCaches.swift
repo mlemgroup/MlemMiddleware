@@ -13,14 +13,17 @@ class Instance1Cache: ApiTypeBackedCache<Instance1, ApiSite> {
             api: api,
             actorId: api.baseUrl,
             id: apiType.id,
+            instanceId: apiType.instanceId,
             created: apiType.published,
             updated: apiType.updated,
             publicKey: apiType.publicKey,
             displayName: apiType.name,
             description: apiType.sidebar,
+            shortDescription: apiType.description,
             avatar: apiType.icon,
             banner: apiType.banner,
-            lastRefreshDate: apiType.lastRefreshedAt
+            lastRefresh: apiType.lastRefreshedAt,
+            contentWarning: apiType.contentWarning
         )
     }
     

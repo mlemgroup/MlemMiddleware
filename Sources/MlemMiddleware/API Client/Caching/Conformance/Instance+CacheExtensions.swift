@@ -8,15 +8,16 @@
 import Foundation
 
 extension Instance1: CacheIdentifiable {
-    // Instance and ApiClient share equatability properties--two instances are different iff they are different servers and being connected to using a different user. This makes intuitive sense given that instance is the source of things like post feeds, which can vary depending on the calling user (even instance-generics like All and Local will produce varying responses for different calling users, e.g., return an upvoted or neutral post)
-    public var cacheId: Int { api.cacheId }
+    public var cacheId: Int { id }
     
     func update(with site: ApiSite) {
         displayName = site.name
         description = site.sidebar
+        shortDescription = site.description
         avatar = site.icon
         banner = site.banner
-        lastRefreshDate = site.lastRefreshedAt
+        lastRefresh = site.lastRefreshedAt
+        contentWarning = site.contentWarning
     }
 }
 
