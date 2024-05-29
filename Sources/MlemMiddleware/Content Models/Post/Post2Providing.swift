@@ -44,12 +44,14 @@ public extension Post2Providing {
     
     func updateRead(_ newValue: Bool, shouldQueue: Bool = false) {
         if shouldQueue {
-            if newValue {
-                api.markReadQueue.insert(self.id)
-                post2.readQueued = true
-            } else {
-                api.markReadQueue.remove(self.id)
-                post2.readQueued = false
+            Task {
+                if newValue {
+                    await api.markReadQueue.add(self.id)
+                    post2.readQueued = true
+                } else {
+                    await api.markReadQueue.remove(self.id)
+                    post2.readQueued = false
+                }
             }
         } else {
             readManager.performRequest(expectedResult: newValue) { semaphore in
@@ -81,7 +83,9 @@ public extension Post2Providing {
         }
     }
     
-    var queuedForMarkAsRead: Bool { api.markReadQueue.contains(self.id) }
+    var queuedForMarkAsRead: Bool {
+        get async { await api.markReadQueue.ids.contains(self.id) }
+    }
 }
 
 public extension Post2Providing {

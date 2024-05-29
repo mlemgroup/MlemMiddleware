@@ -93,7 +93,7 @@ extension ApiClient: PostFeedProvider {
             if !response.success {
                 throw ApiClientError.unsuccessful
             }
-            markReadQueue.remove(id)
+            await markReadQueue.remove(id)
             if let post = caches.post2.retrieveModel(cacheId: id) {
                 post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
                 post.readQueued = false
@@ -115,8 +115,7 @@ extension ApiClient: PostFeedProvider {
         let idsToSend: Set<Int>
         let markReadQueueCopy: Set<Int>
         if read, includeQueuedPosts {
-            markReadQueueCopy = self.markReadQueue
-            self.markReadQueue.removeAll()
+            markReadQueueCopy = await markReadQueue.popAll()
             idsToSend = ids.union(markReadQueueCopy)
         } else {
             markReadQueueCopy = []
@@ -132,10 +131,10 @@ extension ApiClient: PostFeedProvider {
                 throw ApiClientError.unsuccessful
             }
             if read {
-                markReadQueue.subtract(ids)
+                await markReadQueue.subtract(ids)
             }
         } catch {
-            self.markReadQueue.formUnion(markReadQueueCopy)
+            await self.markReadQueue.union(markReadQueueCopy)
             throw error
         }
         for post in idsToSend.compactMap({ caches.post2.retrieveModel(cacheId: $0) }) {
@@ -145,7 +144,7 @@ extension ApiClient: PostFeedProvider {
     }
     
     public func flushPostReadQueue() async throws {
-        if !markReadQueue.isEmpty {
+        if await !markReadQueue.ids.isEmpty {
             try await markPostsAsRead(ids: [], read: true)
         }
     }

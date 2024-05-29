@@ -33,7 +33,7 @@ public class ApiClient {
     internal weak var subscriptions: SubscriptionList?
     
     /// Stores the IDs of posts that are queued to be marked read.
-    internal var markReadQueue: Set<Int> = .init()
+    internal var markReadQueue: MarkReadQueue = .init()
     
     /// Returns the `fetchedVersion` if the version has already been fetched. Otherwise, waits until the version has been fetched before returning the received value.
     public var version: SiteVersion {
