@@ -48,7 +48,42 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
     }
     
     override func performModelTranslation(api: ApiClient, from apiType: ApiSiteView) -> Instance2 {
-        .init(api: api, instance1: instance1Cache.getModel(api: api, from: apiType.site))
+        .init(
+            api: api,
+            instance1: instance1Cache.getModel(api: api, from: apiType.site),
+            setup: apiType.localSite.siteSetup,
+            downvotesEnabled: apiType.localSite.enableDownvotes,
+            nsfwContentEnabled: apiType.localSite.enableNsfw,
+            communityCreationRestrictedToAdmins: apiType.localSite.communityCreationAdminOnly,
+            emailVerificationRequired: apiType.localSite.requireEmailVerification,
+            applicationQuestion: apiType.localSite.applicationQuestion,
+            private: apiType.localSite.privateInstance,
+            defaultTheme: apiType.localSite.defaultTheme,
+            defaultFeed: apiType.localSite.defaultPostListingType,
+            legalInformation: apiType.localSite.legalInformation,
+            hideModlogNames: apiType.localSite.hideModlogModNames,
+            emailApplicationsToAdmins: apiType.localSite.applicationEmailAdmins,
+            emailReportsToAdmins: apiType.localSite.reportsEmailAdmins,
+            slurFilterRegex: apiType.localSite.slurFilterRegex,
+            actorNameMaxLength: apiType.localSite.actorNameMaxLength,
+            federationEnabled: apiType.localSite.federationEnabled,
+            captchaEnabled: apiType.localSite.captchaEnabled,
+            captchaDifficulty: .init(rawValue: apiType.localSite.captchaDifficulty),
+            registrationMode: apiType.localSite.registrationMode,
+            federationSignedFetch: apiType.localSite.federationSignedFetch,
+            defaultPostListingMode: apiType.localSite.defaultPostListingMode,
+            defaultSortType: apiType.localSite.defaultSortType,
+            userCount: apiType.counts.users,
+            postCount: apiType.counts.posts,
+            commentCount: apiType.counts.comments,
+            communityCount: apiType.counts.communities,
+            activeUserCount: .init(
+                sixMonths: apiType.counts.usersActiveHalfYear,
+                month: apiType.counts.usersActiveMonth,
+                week: apiType.counts.usersActiveWeek,
+                day: apiType.counts.usersActiveDay
+            )
+        )
     }
     
     override func updateModel(_ item: Instance2, with apiType: ApiSiteView, semaphore: UInt? = nil) {

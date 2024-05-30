@@ -42,10 +42,69 @@ public final class Instance2: Instance2Providing {
     public var postCount: Int
     public var commentCount: Int
     public var communityCount: Int
-    // public var activeUserCount
+    public var activeUserCount: ActiveUserCount
 
-    internal init(api: ApiClient, instance1: Instance1) {
+
+    internal init(
+        api: ApiClient,
+        instance1: Instance1,
+        setup: Bool,
+        downvotesEnabled: Bool,
+        nsfwContentEnabled: Bool,
+        communityCreationRestrictedToAdmins: Bool,
+        emailVerificationRequired: Bool,
+        applicationQuestion: String? = nil,
+        `private`: Bool,
+        defaultTheme: String,
+        defaultFeed: ApiListingType,
+        legalInformation: String? = nil,
+        hideModlogNames: Bool,
+        emailApplicationsToAdmins: Bool,
+        emailReportsToAdmins: Bool,
+        slurFilterRegex: String? = nil,
+        actorNameMaxLength: Int,
+        federationEnabled: Bool,
+        captchaEnabled: Bool,
+        captchaDifficulty: CaptchaDifficulty? = nil,
+        registrationMode: ApiRegistrationMode,
+        federationSignedFetch: Bool? = nil,
+        defaultPostListingMode: ApiPostListingMode? = nil,
+        defaultSortType: ApiSortType? = nil,
+        userCount: Int,
+        postCount: Int,
+        commentCount: Int,
+        communityCount: Int,
+        activeUserCount: ActiveUserCount
+    ) {
         self.api = api
         self.instance1 = instance1
+        self.setup = setup
+        self.downvotesEnabled = downvotesEnabled
+        self.nsfwContentEnabled = nsfwContentEnabled
+        self.communityCreationRestrictedToAdmins = communityCreationRestrictedToAdmins
+        self.emailVerificationRequired = emailVerificationRequired
+        self.applicationQuestion = applicationQuestion
+        self.`private` = `private`
+        self.defaultTheme = defaultTheme
+        self.defaultFeed = defaultFeed
+        self.legalInformation = legalInformation
+        self.hideModlogNames = hideModlogNames
+        self.emailApplicationsToAdmins = emailApplicationsToAdmins
+        self.emailReportsToAdmins = emailReportsToAdmins
+        self.slurFilterRegex = slurFilterRegex
+        self.actorNameMaxLength = actorNameMaxLength
+        self.federationEnabled = federationEnabled
+        self.captchaEnabled = captchaEnabled
+        self.captchaDifficulty = captchaDifficulty
+        self.registrationMode = registrationMode
+        self.federationSignedFetch = federationSignedFetch
+        self.defaultPostListingMode = defaultPostListingMode
+        self.defaultSortType = defaultSortType
+        self.userCount = userCount
+        self.postCount = postCount
+        self.commentCount = commentCount
+        self.communityCount = communityCount
+        self.activeUserCount = activeUserCount
     }
+    
 }

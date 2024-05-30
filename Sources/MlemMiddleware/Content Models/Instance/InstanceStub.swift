@@ -11,6 +11,8 @@ public struct InstanceStub: InstanceStubProviding {
     public var api: ApiClient
     public let actorId: URL
     
+    var local: Bool { actorId == api.baseUrl }
+    
     public init(api: ApiClient, actorId: URL) {
         self.api = api
         self.actorId = actorId

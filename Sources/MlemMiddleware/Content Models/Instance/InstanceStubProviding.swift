@@ -8,6 +8,8 @@
 import Foundation
 
 public protocol InstanceStubProviding: ContentStub {
+    var local: Bool { get }
+    
     // From Instance1Providing. These are defined as nil in the extension below
     var id_: Int? { get }
     var instanceId_: Int? { get }
@@ -22,9 +24,34 @@ public protocol InstanceStubProviding: ContentStub {
     var lastRefresh_: Date? { get }
     var contentWarning_: String? { get }
     
-    // We cannot calculate this value by comparing actorID to apiCliet.baseUrl
-    // because it wouldn't work correctly for locally running instances
-    var local_: Bool? { get }
+    // From Instance2Providing. These are defined as nil in the extension below
+    var setup_: Bool? { get }
+    var downvotesEnabled_: Bool? { get }
+    var nsfwContentEnabled_: Bool? { get }
+    var communityCreationRestrictedToAdmins_: Bool? { get }
+    var emailVerificationRequired_: Bool? { get }
+    var applicationQuestion_: String? { get }
+    var private_: Bool? { get }
+    var defaultTheme_: String? { get }
+    var defaultFeed_: ApiListingType? { get }
+    var legalInformation_: String? { get }
+    var hideModlogNames_: Bool? { get }
+    var emailApplicationsToAdmins_: Bool? { get }
+    var emailReportsToAdmins_: Bool? { get }
+    var slurFilterRegex_: String? { get }
+    var actorNameMaxLength_: Int? { get }
+    var federationEnabled_: Bool? { get }
+    var captchaEnabled_: Bool? { get }
+    var captchaDifficulty_: CaptchaDifficulty? { get }
+    var registrationMode_: ApiRegistrationMode? { get }
+    var federationSignedFetch_: Bool? { get }
+    var defaultPostListingMode_: ApiPostListingMode? { get }
+    var defaultSortType_: ApiSortType? { get }
+    var userCount_: Int? { get }
+    var postCount_: Int? { get }
+    var commentCount_: Int? { get }
+    var communityCount_: Int? { get }
+    var activeUserCount_: ActiveUserCount? { get }
 }
 
 public extension InstanceStubProviding {
@@ -41,6 +68,34 @@ public extension InstanceStubProviding {
     var lastRefresh_: Date? { nil }
     var local_: Bool? { nil }
     var contentWarning_: String? { nil }
+    
+    var setup_: Bool? { nil }
+    var downvotesEnabled_: Bool? { nil }
+    var nsfwContentEnabled_: Bool? { nil }
+    var communityCreationRestrictedToAdmins_: Bool? { nil }
+    var emailVerificationRequired_: Bool? { nil }
+    var applicationQuestion_: String? { nil }
+    var private_: Bool? { nil }
+    var defaultTheme_: String? { nil }
+    var defaultFeed_: ApiListingType? { nil }
+    var legalInformation_: String? { nil }
+    var hideModlogNames_: Bool? { nil }
+    var emailApplicationsToAdmins_: Bool? { nil }
+    var emailReportsToAdmins_: Bool? { nil }
+    var slurFilterRegex_: String? { nil }
+    var actorNameMaxLength_: Int? { nil }
+    var federationEnabled_: Bool? { nil }
+    var captchaEnabled_: Bool? { nil }
+    var captchaDifficulty_: CaptchaDifficulty? { nil }
+    var registrationMode_: ApiRegistrationMode? { nil }
+    var federationSignedFetch_: Bool? { nil }
+    var defaultPostListingMode_: ApiPostListingMode? { nil }
+    var defaultSortType_: ApiSortType? { nil }
+    var userCount_: Int? { nil }
+    var postCount_: Int? { nil }
+    var commentCount_: Int? { nil }
+    var communityCount_: Int? { nil }
+    var activeUserCount_: ActiveUserCount? { nil }
 }
 
 public enum InstanceUpgradeError: Error {

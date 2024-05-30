@@ -50,7 +50,6 @@ public extension Instance1Providing {
     var updated_: Date? { instance1.updated }
     var publicKey_: String? { instance1.publicKey }
     var lastRefresh_: Date? { instance1.lastRefresh }
-    var local_: Bool { instance1.local }
     var contentWarning_: String? { instance1.contentWarning }
 }
 

@@ -7,15 +7,6 @@
 
 import Foundation
 
-public struct ActiveUserCount {
-    let sixMonths: Int
-    let month: Int
-    let week: Int
-    let day: Int
-    
-    public static let zero: ActiveUserCount = .init(sixMonths: 0, month: 0, week: 0, day: 0)
-}
-
 public protocol Community2Providing: Community1Providing {
     var community2: Community2 { get }
     

@@ -32,8 +32,7 @@ public final class Instance1: Instance1Providing {
     public var lastRefresh: Date = .distantPast
     public var contentWarning: String?
     
-    /// This is set by the ``ApiClient`` when returning a local ``Instance3``.
-    /// If it is `false`, it is *not* guaranteed to be non-local.
+    /// If this is `false`, The instance is *not* guaranteed to be non-local, particularly for locally running instances.
     public var local: Bool = false
     
     internal init(
@@ -66,5 +65,6 @@ public final class Instance1: Instance1Providing {
         self.banner = banner
         self.lastRefresh = lastRefresh
         self.contentWarning = contentWarning
+        self.local = actorId == api.baseUrl
     }
 }

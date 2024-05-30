@@ -26,6 +26,39 @@ extension Instance2: CacheIdentifiable {
     
     func update(with siteView: ApiSiteView) {
         instance1.update(with: siteView.site)
+        
+        setup = siteView.localSite.siteSetup
+        downvotesEnabled = siteView.localSite.enableDownvotes
+        nsfwContentEnabled = siteView.localSite.enableNsfw
+        communityCreationRestrictedToAdmins = siteView.localSite.communityCreationAdminOnly
+        emailVerificationRequired = siteView.localSite.requireEmailVerification
+        applicationQuestion = siteView.localSite.applicationQuestion
+        `private` = siteView.localSite.privateInstance
+        defaultTheme = siteView.localSite.defaultTheme
+        defaultFeed = siteView.localSite.defaultPostListingType
+        legalInformation = siteView.localSite.legalInformation
+        hideModlogNames = siteView.localSite.hideModlogModNames
+        emailApplicationsToAdmins = siteView.localSite.applicationEmailAdmins
+        emailReportsToAdmins = siteView.localSite.reportsEmailAdmins
+        slurFilterRegex = siteView.localSite.slurFilterRegex
+        actorNameMaxLength = siteView.localSite.actorNameMaxLength
+        federationEnabled = siteView.localSite.federationEnabled
+        captchaEnabled = siteView.localSite.captchaEnabled
+        captchaDifficulty = .init(rawValue: siteView.localSite.captchaDifficulty)
+        registrationMode = siteView.localSite.registrationMode
+        federationSignedFetch = siteView.localSite.federationSignedFetch
+        defaultPostListingMode = siteView.localSite.defaultPostListingMode
+        defaultSortType = siteView.localSite.defaultSortType
+        userCount = siteView.counts.users
+        postCount = siteView.counts.posts
+        commentCount = siteView.counts.comments
+        communityCount = siteView.counts.communities
+        activeUserCount = .init(
+            sixMonths: siteView.counts.usersActiveHalfYear,
+            month: siteView.counts.usersActiveMonth,
+            week: siteView.counts.usersActiveWeek,
+            day: siteView.counts.usersActiveDay
+        )
     }
 }
 
