@@ -8,6 +8,7 @@
 import Foundation
 
 public protocol ContentStub: ActorIdentifiable {
+    static var tierNumber: Int { get }
     var api: ApiClient { get }
 }
 

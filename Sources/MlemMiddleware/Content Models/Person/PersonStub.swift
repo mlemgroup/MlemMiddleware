@@ -9,6 +9,7 @@ import Foundation
 import Observation
 
 public struct PersonStub: PersonStubProviding {
+    public static let tierNumber: Int = 0
     public var api: ApiClient
     public let actorId: URL
     

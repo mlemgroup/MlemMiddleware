@@ -16,6 +16,7 @@ public struct PostEmbed {
 
 @Observable
 public final class Post1: Post1Providing {
+    public static let tierNumber: Int = 1
     public var api: ApiClient
     public var post1: Post1 { self }
     

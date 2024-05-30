@@ -9,6 +9,7 @@ import Observation
 
 @Observable
 public final class Person4: Person4Providing {
+    public static let tierNumber: Int = 4
     public var api: ApiClient
     public var person4: Person4 { self }
 
@@ -21,4 +22,6 @@ public final class Person4: Person4Providing {
         self.api = api
         self.person3 = person3
     }
+    
+    func upgrade() async throws -> Person3 { person3 }
 }

@@ -9,6 +9,7 @@ import Observation
 
 @Observable
 public final class Post2: Post2Providing {
+    public static let tierNumber: Int = 2
     public var api: ApiClient
     public var post2: Post2 { self }
     
