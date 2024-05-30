@@ -8,7 +8,7 @@
 import Foundation
 
 extension Community1: CacheIdentifiable {
-    public var cacheId: Int { actorId.hashValue }
+    public var cacheId: Int { id }
     
     func update(with community: ApiCommunity) {
         updated = community.updated
@@ -25,7 +25,7 @@ extension Community1: CacheIdentifiable {
 }
 
 extension Community2: CacheIdentifiable {
-    public var cacheId: Int { community1.cacheId }
+    public var cacheId: Int { id }
     
     func update(with communityView: ApiCommunityView, semaphore: UInt? = nil) {
         subscribedManager.updateWithReceivedValue(communityView.subscribed.isSubscribed, semaphore: semaphore)
@@ -43,7 +43,7 @@ extension Community2: CacheIdentifiable {
 }
 
 extension Community3: CacheIdentifiable {
-    public var cacheId: Int { community2.cacheId }
+    public var cacheId: Int { id }
     
     func update(with response: ApiGetCommunityResponse, semaphore: UInt? = nil) {
         moderators = response.moderators.map { moderatorView in

@@ -14,11 +14,12 @@ public protocol Interactable2Providing: Interactable1Providing {
     var votes: VotesModel { get }
     var saved: Bool { get }
     
-    func vote(_ newVote: ScoringOperation)
-    func toggleSave()
+    func updateVote(_ newVote: ScoringOperation)
+    func updateSave(_ newValue: Bool)
 }
 
 public extension Interactable2Providing {
-    func toggleUpvote() { vote(votes.myVote == .upvote ? .none : .upvote) }
-    func toggleDownvote() { vote(votes.myVote == .downvote ? .none : .downvote) }
+    func toggleUpvote() { updateVote(votes.myVote == .upvote ? .none : .upvote) }
+    func toggleDownvote() { updateVote(votes.myVote == .downvote ? .none : .downvote) }
+    func toggleSave() { updateSave(!saved) }
 }
