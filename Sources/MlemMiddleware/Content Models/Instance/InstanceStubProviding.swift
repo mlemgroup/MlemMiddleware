@@ -52,6 +52,15 @@ public protocol InstanceStubProviding: ContentStub {
     var commentCount_: Int? { get }
     var communityCount_: Int? { get }
     var activeUserCount_: ActiveUserCount? { get }
+    
+    // From Instance3Providing. These are defined as get in the extension below
+    var version_: SiteVersion? { get }
+    var allLanguages_: [ApiLanguage]? { get }
+    var discussionLanguages_: [Int]? { get }
+    var taglines_: [ApiTagline]? { get }
+    var customEmojis_: [ApiCustomEmojiView]? { get }
+    var blockedUrls_: [ApiLocalSiteUrlBlocklist]? { get }
+    var administrators_: [Person2]? { get }
 }
 
 public extension InstanceStubProviding {
@@ -96,6 +105,14 @@ public extension InstanceStubProviding {
     var commentCount_: Int? { nil }
     var communityCount_: Int? { nil }
     var activeUserCount_: ActiveUserCount? { nil }
+    
+    var version_: SiteVersion? { nil }
+    var allLanguages_: [ApiLanguage]? { nil }
+    var discussionLanguages_: [Int]? { nil }
+    var taglines_: [ApiTagline]? { nil }
+    var customEmojis_: [ApiCustomEmojiView]? { nil }
+    var blockedUrls_: [ApiLocalSiteUrlBlocklist]? { nil }
+    var administrators_: [Person2]? { nil }
 }
 
 public enum InstanceUpgradeError: Error {

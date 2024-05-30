@@ -68,5 +68,11 @@ extension Instance3: CacheIdentifiable {
     func update(with response: ApiGetSiteResponse) {
         version = SiteVersion(response.version)
         instance2.update(with: response.siteView)
+        allLanguages = response.allLanguages
+        discussionLanguages = response.discussionLanguages
+        taglines = response.taglines
+        customEmojis = response.customEmojis
+        blockedUrls = response.blockedUrls
+        administrators = response.admins.map { api.caches.person2.getModel(api: api, from: $0) }
     }
 }

@@ -93,16 +93,24 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
 
 class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
     let instance2Cache: Instance2Cache
-    
-    init(instance2Cache: Instance2Cache) {
+    let person2Cache: Person2Cache
+
+    init(instance2Cache: Instance2Cache, person2Cache: Person2Cache) {
         self.instance2Cache = instance2Cache
+        self.person2Cache = person2Cache
     }
     
     override func performModelTranslation(api: ApiClient, from apiType: ApiGetSiteResponse) -> Instance3 {
         .init(
             api: api,
             instance2: instance2Cache.getModel(api: api, from: apiType.siteView),
-            version: .init(apiType.version)
+            version: .init(apiType.version),
+            allLanguages: apiType.allLanguages,
+            discussionLanguages: apiType.discussionLanguages,
+            taglines: apiType.taglines,
+            customEmojis: apiType.customEmojis,
+            blockedUrls: apiType.blockedUrls,
+            administrators: apiType.admins.map { person2Cache.getModel(api: api, from: $0) }
         )
     }
     

@@ -48,7 +48,7 @@ extension ApiClient {
             self.community2 = .init(community1Cache: community1)
             self.post2 = .init(post1Cache: post1, person1Cache: person1, community1Cache: community1)
             
-            self.instance3 = .init(instance2Cache: instance2)
+            self.instance3 = .init(instance2Cache: instance2, person2Cache: person2)
             self.person3 = .init(person2Cache: person2, community1Cache: community1, instance1Cache: instance1)
             self.community3 = .init(community2Cache: community2, instance1Cache: instance1, person1Cache: person1)
             
