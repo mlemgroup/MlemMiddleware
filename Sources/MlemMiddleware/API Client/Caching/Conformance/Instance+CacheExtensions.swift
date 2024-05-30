@@ -33,7 +33,7 @@ extension Instance2: CacheIdentifiable {
         communityCreationRestrictedToAdmins = siteView.localSite.communityCreationAdminOnly
         emailVerificationRequired = siteView.localSite.requireEmailVerification
         applicationQuestion = siteView.localSite.applicationQuestion
-        `private` = siteView.localSite.privateInstance
+        isPrivate = siteView.localSite.privateInstance
         defaultTheme = siteView.localSite.defaultTheme
         defaultFeed = siteView.localSite.defaultPostListingType
         legalInformation = siteView.localSite.legalInformation

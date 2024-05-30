@@ -57,7 +57,7 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
             communityCreationRestrictedToAdmins: apiType.localSite.communityCreationAdminOnly,
             emailVerificationRequired: apiType.localSite.requireEmailVerification,
             applicationQuestion: apiType.localSite.applicationQuestion,
-            private: apiType.localSite.privateInstance,
+            isPrivate: apiType.localSite.privateInstance,
             defaultTheme: apiType.localSite.defaultTheme,
             defaultFeed: apiType.localSite.defaultPostListingType,
             legalInformation: apiType.localSite.legalInformation,

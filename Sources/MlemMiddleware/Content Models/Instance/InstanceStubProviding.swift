@@ -31,7 +31,7 @@ public protocol InstanceStubProviding: ContentStub {
     var communityCreationRestrictedToAdmins_: Bool? { get }
     var emailVerificationRequired_: Bool? { get }
     var applicationQuestion_: String? { get }
-    var private_: Bool? { get }
+    var isPrivate_: Bool? { get }
     var defaultTheme_: String? { get }
     var defaultFeed_: ApiListingType? { get }
     var legalInformation_: String? { get }
@@ -84,7 +84,7 @@ public extension InstanceStubProviding {
     var communityCreationRestrictedToAdmins_: Bool? { nil }
     var emailVerificationRequired_: Bool? { nil }
     var applicationQuestion_: String? { nil }
-    var private_: Bool? { nil }
+    var isPrivate_: Bool? { nil }
     var defaultTheme_: String? { nil }
     var defaultFeed_: ApiListingType? { nil }
     var legalInformation_: String? { nil }

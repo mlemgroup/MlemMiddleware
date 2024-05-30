@@ -16,7 +16,7 @@ public protocol Instance2Providing: Instance1Providing {
     var communityCreationRestrictedToAdmins: Bool { get }
     var emailVerificationRequired: Bool { get }
     var applicationQuestion: String? { get }
-    var `private`: Bool { get }
+    var isPrivate: Bool { get }
     var defaultTheme: String { get }
     var defaultFeed: ApiListingType { get }
     var legalInformation: String? { get }
@@ -49,7 +49,7 @@ public extension Instance2Providing {
     var communityCreationRestrictedToAdmins: Bool { instance2.communityCreationRestrictedToAdmins }
     var emailVerificationRequired: Bool { instance2.emailVerificationRequired }
     var applicationQuestion: String? { instance2.applicationQuestion }
-    var `private`: Bool { instance2.private }
+    var isPrivate: Bool { instance2.isPrivate }
     var defaultTheme: String { instance2.defaultTheme }
     var defaultFeed: ApiListingType { instance2.defaultFeed }
     var legalInformation: String? { instance2.legalInformation }
@@ -77,7 +77,7 @@ public extension Instance2Providing {
     var communityCreationRestrictedToAdmins_: Bool? { instance2.communityCreationRestrictedToAdmins }
     var emailVerificationRequired_: Bool? { instance2.emailVerificationRequired }
     var applicationQuestion_: String? { instance2.applicationQuestion }
-    var private_: Bool? { instance2.private }
+    var isPrivate_: Bool? { instance2.isPrivate }
     var defaultTheme_: String? { instance2.defaultTheme }
     var defaultFeed_: ApiListingType? { instance2.defaultFeed }
     var legalInformation_: String? { instance2.legalInformation }

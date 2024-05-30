@@ -21,7 +21,7 @@ public final class Instance2: Instance2Providing {
     public var communityCreationRestrictedToAdmins: Bool
     public var emailVerificationRequired: Bool
     public var applicationQuestion: String?
-    public var `private`: Bool
+    public var isPrivate: Bool
     public var defaultTheme: String
     public var defaultFeed: ApiListingType
     public var legalInformation: String?
@@ -54,7 +54,7 @@ public final class Instance2: Instance2Providing {
         communityCreationRestrictedToAdmins: Bool,
         emailVerificationRequired: Bool,
         applicationQuestion: String? = nil,
-        `private`: Bool,
+        isPrivate: Bool,
         defaultTheme: String,
         defaultFeed: ApiListingType,
         legalInformation: String? = nil,
@@ -84,7 +84,7 @@ public final class Instance2: Instance2Providing {
         self.communityCreationRestrictedToAdmins = communityCreationRestrictedToAdmins
         self.emailVerificationRequired = emailVerificationRequired
         self.applicationQuestion = applicationQuestion
-        self.`private` = `private`
+        self.isPrivate = isPrivate
         self.defaultTheme = defaultTheme
         self.defaultFeed = defaultFeed
         self.legalInformation = legalInformation
