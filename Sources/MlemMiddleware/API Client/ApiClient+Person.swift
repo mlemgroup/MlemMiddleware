@@ -30,7 +30,7 @@ public extension ApiClient {
             username: nil,
             sort: .new,
             page: 1,
-            limit: 0,
+            limit: 1,
             communityId: nil,
             savedOnly: nil
         )
@@ -43,6 +43,7 @@ public extension ApiClient {
         
         // if community found, get as Person3--caching performed in call
         if let response = try await perform(request).person {
+
             // ResolveObject unfortunately only returns a Person2, so we've gotta make another call
             return try await getPerson(id: response.id)
         }

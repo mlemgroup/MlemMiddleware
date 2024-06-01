@@ -13,19 +13,18 @@ public class AnyPerson: Hashable, Upgradable {
     public typealias MinimumRenderable = Person1Providing
     public typealias Upgraded = Person3Providing
     
-    public var person: any PersonStubProviding
+    public var wrappedValue: any PersonStubProviding
     
-    public init(person: any PersonStubProviding) {
-        self.person = person
+    public required init(_ wrappedValue: any PersonStubProviding) {
+        self.wrappedValue = wrappedValue
     }
-    
 }
 
 /// Hashable, Equatable conformance
 public extension AnyPerson {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(person)
-        hasher.combine(type(of: person).tierNumber)
+        hasher.combine(wrappedValue)
+        hasher.combine(type(of: wrappedValue).tierNumber)
     }
     
     static func == (lhs: AnyPerson, rhs: AnyPerson) -> Bool {
@@ -34,13 +33,11 @@ public extension AnyPerson {
 }
 
 /// Upgradable conformance
-public extension AnyPerson {
-    var wrappedValue: any PersonStubProviding { person }
-    
+public extension AnyPerson {    
     func upgrade() async throws {
-        let upgradedPerson = try await person.upgrade()
+        let upgradedPerson = try await wrappedValue.upgrade()
         Task { @MainActor in
-            self.person = upgradedPerson
+            self.wrappedValue = upgradedPerson
         }
     }
 }

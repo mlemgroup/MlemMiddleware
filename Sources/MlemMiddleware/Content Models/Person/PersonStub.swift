@@ -13,6 +13,11 @@ public struct PersonStub: PersonStubProviding {
     public var api: ApiClient
     public let actorId: URL
     
+    public init(api: ApiClient, actorId: URL) {
+        self.api = api
+        self.actorId = actorId
+    }
+    
     public static func == (lhs: PersonStub, rhs: PersonStub) -> Bool {
         lhs.actorId == rhs.actorId
     }
