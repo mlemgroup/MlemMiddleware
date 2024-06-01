@@ -14,4 +14,9 @@ public protocol ContentStub: ActorIdentifiable {
 
 public extension ContentStub {
     var host: String? { actorId.host() }
+    
+     func hash(into hasher: inout Hasher) {
+        hasher.combine(actorId)
+        hasher.combine(Self.tierNumber)
+    }
 }

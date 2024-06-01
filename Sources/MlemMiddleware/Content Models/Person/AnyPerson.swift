@@ -24,7 +24,6 @@ public class AnyPerson: Hashable, Upgradable {
 public extension AnyPerson {
     func hash(into hasher: inout Hasher) {
         hasher.combine(wrappedValue)
-        hasher.combine(type(of: wrappedValue).tierNumber)
     }
     
     static func == (lhs: AnyPerson, rhs: AnyPerson) -> Bool {
