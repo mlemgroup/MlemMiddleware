@@ -22,7 +22,7 @@ extension Instance1: CacheIdentifiable {
 }
 
 extension Instance2: CacheIdentifiable {
-    public var cacheId: Int { instance1.cacheId }
+    public var cacheId: Int { id }
     
     func update(with siteView: ApiSiteView) {
         instance1.update(with: siteView.site)
@@ -63,7 +63,7 @@ extension Instance2: CacheIdentifiable {
 }
 
 extension Instance3: CacheIdentifiable {
-    public var cacheId: Int { instance2.cacheId }
+    public var cacheId: Int { id }
     
     func update(with response: ApiGetSiteResponse) {
         version = SiteVersion(response.version)

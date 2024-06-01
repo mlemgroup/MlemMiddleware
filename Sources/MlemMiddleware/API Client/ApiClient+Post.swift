@@ -68,15 +68,96 @@ extension ApiClient: PostFeedProvider {
         return nil
     }
     
+    /// Mark the given post as read. Works on all versions.
+    /// On v0.19.0 and above, calling this will also mark any queued posts as read unless `includeQueuedPosts` is set to `false`.
+    public func markPostAsRead(
+        id: Int,
+        read: Bool = true,
+        includeQueuedPosts: Bool = true,
+        semaphore: UInt? = nil
+    ) async throws {
+        // We *must* use `postId` in 0.18 versions, and we *must* use `postIds` from 0.19.4 onwards.
+        // On versions 0.19.0 to 0.19.3, either parameter is allowed.
+        let version = try await version
+        let request: MarkPostAsReadRequest
+        if version >= .v19_0 {
+            try await self.markPostsAsRead(
+                ids: [id],
+                read: read,
+                includeQueuedPosts: includeQueuedPosts,
+                semaphore: semaphore
+            )
+        } else {
+            request = MarkPostAsReadRequest(postId: id, read: read, postIds: nil)
+            let response = try await perform(request)
+            if !response.success {
+                throw ApiClientError.unsuccessful
+            }
+            await markReadQueue.remove(id)
+            if let post = caches.post2.retrieveModel(cacheId: id) {
+                post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
+                post.readQueued = false
+            }
+        }
+    }
+    
+    /// Mark the given posts as read. Only works on v0.19.0 and above; on lower versions, use `markPostAsRead` instead.
+    /// Calling this will also mark any queued posts as read unless `includeQueuedPosts` is set to `false`.
+    public func markPostsAsRead(
+        ids: Set<Int>,
+        read: Bool = true,
+        includeQueuedPosts: Bool = true,
+        semaphore: UInt? = nil
+    ) async throws {
+        let version = try await version
+        guard version >= .v19_0 else { throw ApiClientError.unsupportedLemmyVersion }
+        
+        let idsToSend: Set<Int>
+        let markReadQueueCopy: Set<Int>
+        if read, includeQueuedPosts {
+            markReadQueueCopy = await markReadQueue.popAll()
+            idsToSend = ids.union(markReadQueueCopy)
+        } else {
+            markReadQueueCopy = []
+            idsToSend = ids
+        }
+        
+        guard !idsToSend.isEmpty else { return }
+        
+        do {
+            let request = MarkPostAsReadRequest(postId: nil, read: read, postIds: Array(idsToSend))
+            let response = try await perform(request)
+            if !response.success {
+                throw ApiClientError.unsuccessful
+            }
+            if read {
+                await markReadQueue.subtract(ids)
+            }
+        } catch {
+            await self.markReadQueue.union(markReadQueueCopy)
+            throw error
+        }
+        for post in idsToSend.compactMap({ caches.post2.retrieveModel(cacheId: $0) }) {
+            post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
+            post.readQueued = false
+        }
+    }
+    
+    public func flushPostReadQueue() async throws {
+        if await !markReadQueue.ids.isEmpty {
+            try await markPostsAsRead(ids: [], read: true)
+        }
+    }
+    
     @discardableResult
-    public func voteOnPost(id: Int, score: ScoringOperation, semaphore: UInt?) async throws -> Post2 {
+    public func voteOnPost(id: Int, score: ScoringOperation, semaphore: UInt? = nil) async throws -> Post2 {
         let request = LikePostRequest(postId: id, score: score.rawValue)
         let response = try await perform(request)
         return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
     
     @discardableResult
-    public func savePost(id: Int, save: Bool, semaphore: UInt?) async throws -> Post2 {
+    public func savePost(id: Int, save: Bool, semaphore: UInt? = nil) async throws -> Post2 {
         let request = SavePostRequest(postId: id, save: save)
         let response = try await perform(request)
         return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)

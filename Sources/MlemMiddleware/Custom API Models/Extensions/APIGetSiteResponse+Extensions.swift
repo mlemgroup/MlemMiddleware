@@ -8,7 +8,7 @@
 import Foundation
 
 extension ApiGetSiteResponse: ActorIdentifiable, CacheIdentifiable, Identifiable {
-    public var cacheId: Int { actorId.hashValue }
+    public var cacheId: Int { id }
 
     public var actorId: URL { siteView.site.actorId }
     public var id: Int { siteView.site.id }

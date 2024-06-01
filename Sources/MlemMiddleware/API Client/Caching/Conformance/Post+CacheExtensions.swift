@@ -8,7 +8,7 @@
 import Foundation
 
 extension Post1: CacheIdentifiable {
-    public var cacheId: Int { actorId.hashValue }
+    public var cacheId: Int { id }
     
     func update(with post: ApiPost) {
         updated = post.updated
@@ -34,7 +34,7 @@ extension Post1: CacheIdentifiable {
 }
 
 extension Post2: CacheIdentifiable {
-    public var cacheId: Int { post1.cacheId }
+    public var cacheId: Int { id }
     
     func update(with post: ApiPostView, semaphore: UInt? = nil) {
         commentCount = post.counts.comments
@@ -45,7 +45,7 @@ extension Post2: CacheIdentifiable {
         unreadCommentCount = post.unreadComments
         savedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
         readManager.updateWithReceivedValue(post.read, semaphore: semaphore)
-        
+
         post1.update(with: post.post)
         creator.update(with: post.creator)
         community.update(with: post.community)

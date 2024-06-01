@@ -8,7 +8,7 @@
 import Foundation
 
 extension ApiCommunity: ActorIdentifiable, CacheIdentifiable, Identifiable {
-    public var cacheId: Int { actorId.hashValue }
+    public var cacheId: Int { id }
 }
 
 extension ApiCommunity: Comparable {

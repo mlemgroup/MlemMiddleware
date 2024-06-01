@@ -82,8 +82,7 @@ public class StateManager<Value: Equatable> {
         return lastSemaphore
     }
     
-    /// Call at the end of a successful operation. If the caller is the most recent caller, resets clean state and returns true; otherwise updates clean state and returns false.
-    /// If this method returns false, the model SHOULD NOT be reinitialized with the result of a voting operation!
+    /// Call when we receive a value from the ApiClient that we *know* to be up-to-date. Optionally pass a `sempahore` value. If the StateManager is awaiting the result of an operation, the `wrappedValue` will *only* be set if the passed semaphore matches the one that the `StateManager` is waiting for. Otherwise, the value is saved as the `lastVerifiedValue` such that the `StateManager` will rollback to it if the in-progress operation fails.
     @discardableResult
     func updateWithReceivedValue(_ newState: Value, semaphore: UInt?) -> Bool {
         if lastVerifiedValue == nil {
