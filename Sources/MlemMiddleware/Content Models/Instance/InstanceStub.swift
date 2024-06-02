@@ -8,6 +8,7 @@
 import Foundation
 
 public struct InstanceStub: InstanceStubProviding {
+    static public var tierNumber: Int = 0
     public var api: ApiClient
     public let actorId: URL
     
