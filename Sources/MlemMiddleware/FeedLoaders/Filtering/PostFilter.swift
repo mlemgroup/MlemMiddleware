@@ -51,14 +51,24 @@ class PostFilterer: FilterProviding {
         }
     }
     
-    func activate(filter: OptionalPostFilters) {
+    /// Activates the given filter
+    /// - Parameter filter: filter to activate
+    /// - Returns: true if the filter was successfully activated, false if it was already active
+    func activate(filter: OptionalPostFilters) -> Bool {
         var filter = getFilter(filter)
+        let ret = !filter.active
         filter.active = true
+        return ret
     }
     
-    func deactivate(filter: OptionalPostFilters) {
+    /// Deactivates the given filter
+    /// - Parameter filter: filter to deactivate
+    /// - Retunrs: true if the filter was successfully deactivated, false if it was already inactive
+    func deactivate(filter: OptionalPostFilters) -> Bool {
         var filter = getFilter(filter)
+        let ret = filter.active
         filter.active = false
+        return ret
     }
     
     func filteredCount(for filter: OptionalPostFilters) -> Int {

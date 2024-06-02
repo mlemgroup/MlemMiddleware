@@ -146,17 +146,19 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
     /// - Parameter newFilter: NewPostFilterReason describing the filter to apply
     public func addFilter(_ newFilter: OptionalPostFilters) async throws {
-        filter.activate(filter: newFilter)
-        await setItems(filter.reset(with: items))
-        
-        if items.isEmpty {
-            try await refresh(clearBeforeRefresh: false)
+        if filter.activate(filter: newFilter) {
+            await setItems(filter.reset(with: items))
+            
+            if items.isEmpty {
+                try await refresh(clearBeforeRefresh: false)
+            }
         }
     }
     
     public func removeFilter(_ filterToRemove: OptionalPostFilters) async throws {
-        filter.deactivate(filter: filterToRemove)
-        try await refresh(clearBeforeRefresh: true)
+        if filter.deactivate(filter: filterToRemove) {
+            try await refresh(clearBeforeRefresh: true)
+        }
     }
     
     public func getFilteredCount(for filter: OptionalPostFilters) -> Int {
