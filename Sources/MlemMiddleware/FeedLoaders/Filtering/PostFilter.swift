@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum OptionalFilters {
+public enum OptionalPostFilters {
     case read
 }
 
@@ -45,11 +45,25 @@ class PostFilterer: FilterProviding {
         return ret
     }
     
-    func activate(filter: OptionalFilters) {
-        // TODO: this needs to reset everything!
+    private func getFilter(_ filter: OptionalPostFilters) -> any FilterProviding<Post2> {
         switch filter {
-        case .read:
-            readFilter.active = true
+        case .read: readFilter
         }
+    }
+    
+    func activate(filter: OptionalPostFilters) {
+        var filter = getFilter(filter)
+        assert(!filter.active, "Filter already active!")
+        filter.active = true
+    }
+    
+    func deactivate(filter: OptionalPostFilters) {
+        var filter = getFilter(filter)
+        assert(filter.active, "Filter already inactive!")
+        filter.active = false
+    }
+    
+    func filteredCount(for filter: OptionalPostFilters) -> Int {
+        return getFilter(filter).numFiltered
     }
 }

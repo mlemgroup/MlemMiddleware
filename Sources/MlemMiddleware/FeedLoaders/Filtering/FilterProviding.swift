@@ -21,5 +21,5 @@ protocol FilterProviding<FilterTarget> {
     /// How many items this filter has caught
     var numFiltered: Int { get }
     
-    var active: Bool { get }
+    var active: Bool { get set }
 }
