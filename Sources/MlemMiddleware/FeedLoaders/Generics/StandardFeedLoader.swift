@@ -150,6 +150,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     private func clearHelper() async {
         ids = .init(minimumCapacity: 1000)
         page = 0
+        loadingCursor = nil
         await setLoading(.idle)
         await setItems(.init())
     }
@@ -204,8 +205,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             newItems.append(contentsOf: fetched.items)
         }
         
-        // let allowedItems = storeIdsAndDedupe(newItems: newItems)
-        let allowedItems = newItems
+        let allowedItems = storeIdsAndDedupe(newItems: newItems)
+        // let allowedItems = newItems
 
         // if loading page 1, we can just do a straight assignment regardless of whether we did clearBeforeReset
         if pageToLoad == 1 {
