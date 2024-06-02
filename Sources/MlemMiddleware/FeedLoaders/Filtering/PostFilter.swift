@@ -53,13 +53,11 @@ class PostFilterer: FilterProviding {
     
     func activate(filter: OptionalPostFilters) {
         var filter = getFilter(filter)
-        assert(!filter.active, "Filter already active!")
         filter.active = true
     }
     
     func deactivate(filter: OptionalPostFilters) {
         var filter = getFilter(filter)
-        assert(filter.active, "Filter already inactive!")
         filter.active = false
     }
     
