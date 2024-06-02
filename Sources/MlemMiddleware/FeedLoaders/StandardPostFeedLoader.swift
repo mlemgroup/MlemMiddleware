@@ -119,6 +119,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         }
         
         postSortType = newSortType
+        print("DEBUG sort type changed, refreshing")
         try await refresh(clearBeforeRefresh: true)
     }
     
@@ -134,6 +135,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         
         // if nominal feed type unchanged, don't refresh
         if feedType != newFeedType {
+            print("DEBUG feed type changed, refreshing")
             try await refresh(clearBeforeRefresh: true)
         }
     }
@@ -146,6 +148,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
             await setItems(filter.reset(with: items))
             
             if items.isEmpty {
+                print("DEBUG activated filter and items is empty, refreshing")
                 try await refresh(clearBeforeRefresh: false)
             }
         }
@@ -153,6 +156,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     public func removeFilter(_ filterToRemove: OptionalPostFilters) async throws {
         if filter.deactivate(filter: filterToRemove) {
+            print("deactivated filter, refreshing")
             try await refresh(clearBeforeRefresh: true)
         }
     }
