@@ -204,7 +204,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             newItems.append(contentsOf: fetched.items)
         }
         
-        let allowedItems = storeIdsAndDedupe(newItems: newItems)
+        // let allowedItems = storeIdsAndDedupe(newItems: newItems)
+        let allowedItems = newItems
 
         // if loading page 1, we can just do a straight assignment regardless of whether we did clearBeforeReset
         if pageToLoad == 1 {
