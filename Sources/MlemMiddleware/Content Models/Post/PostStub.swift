@@ -8,6 +8,7 @@
 import Foundation
 
 public struct PostStub: PostStubProviding {
+    public static let tierNumber: Int = 0
     public var api: ApiClient
     public let actorId: URL
     

@@ -10,6 +10,7 @@ import Observation
 
 @Observable
 public final class Person1: Person1Providing {
+    public static let tierNumber: Int = 1
     public var api: ApiClient
     public var person1: Person1 { self }
     

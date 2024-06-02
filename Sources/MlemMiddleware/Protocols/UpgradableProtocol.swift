@@ -15,6 +15,8 @@ public protocol Upgradable {
     var wrappedValue: Base { get }
     
     func upgrade() async throws
+    
+    init(_ wrappedValue: Base)
 }
 
 public extension Upgradable {

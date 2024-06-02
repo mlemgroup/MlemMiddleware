@@ -13,10 +13,10 @@ public class AnyPost: Hashable, Upgradable {
     public typealias MinimumRenderable = Post1Providing
     public typealias Upgraded = Post2Providing
     
-    public var post: any PostStubProviding
+    public var wrappedValue: any PostStubProviding
     
-    public init(post: any PostStubProviding) {
-        self.post = post
+    public required init(_ wrappedValue: any PostStubProviding) {
+        self.wrappedValue = wrappedValue
     }
     
 }
@@ -24,7 +24,7 @@ public class AnyPost: Hashable, Upgradable {
 /// Hashable, Equatable conformance
 public extension AnyPost {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(post)
+        hasher.combine(wrappedValue)
     }
     
     static func == (lhs: AnyPost, rhs: AnyPost) -> Bool {
@@ -34,12 +34,10 @@ public extension AnyPost {
 
 /// Upgradable conformance
 public extension AnyPost {
-    var wrappedValue: any PostStubProviding { post }
-    
     func upgrade() async throws {
-        let upgradedPost = try await post.upgrade()
+        let upgradedPost = try await wrappedValue.upgrade()
         Task { @MainActor in
-            self.post = upgradedPost
+            self.wrappedValue = upgradedPost
         }
     }
 }

@@ -9,6 +9,7 @@ import Observation
 
 @Observable
 public final class Person3: Person3Providing {
+    public static let tierNumber: Int = 3
     public var api: ApiClient
     public var person3: Person3 { self }
 
@@ -28,4 +29,6 @@ public final class Person3: Person3Providing {
         self.instance = instance
         self.moderatedCommunities = moderatedCommunities
     }
+    
+    func upgrade() async throws -> Person3 { self }
 }
