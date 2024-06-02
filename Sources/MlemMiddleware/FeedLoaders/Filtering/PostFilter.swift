@@ -18,11 +18,11 @@ class PostFilterer: FilterProviding {
     var active: Bool = true
     
     private var readFilter: PostReadFilter
-    private var dedupeFilter: PostDedupeFilter = .init()
+    // private var dedupeFilter: PostDedupeFilter = .init()
     
     private var allFilters: [any FilterProviding<Post2>] { [
         readFilter,
-        dedupeFilter
+        // dedupeFilter
     ] }
     
     init(showRead: Bool) {
