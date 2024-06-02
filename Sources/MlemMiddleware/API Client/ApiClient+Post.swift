@@ -15,7 +15,7 @@ extension ApiClient: PostFeedProvider {
         page: Int,
         cursor: String?,
         limit: Int,
-        savedOnly: Bool
+        savedOnly: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
         let request = try GetPostsRequest(
             communityId: communityId,
@@ -38,7 +38,7 @@ extension ApiClient: PostFeedProvider {
         page: Int,
         cursor: String?,
         limit: Int,
-        savedOnly: Bool
+        savedOnly: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
         let request = try GetPostsRequest(
             communityId: nil,

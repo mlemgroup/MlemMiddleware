@@ -242,7 +242,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
                 imageRequests.append(ImageRequest(url: userAvatarLink.withIconSize(largeAvatarIconSize * 2)))
             }
             
-            switch post.postType {
+            switch post.type {
             case let .image(url):
                 // images: only load the image
                 imageRequests.append(ImageRequest(url: url, priority: .high))
