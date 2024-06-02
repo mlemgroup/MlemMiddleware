@@ -78,17 +78,13 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         self.postSortType = sortType
         
         self.filteredKeywords = filteredKeywords
-        self.filter = .init()
+        self.filter = .init(showRead: showReadPosts)
         
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
         self.urlCache = urlCache
         
         super.init(pageSize: pageSize)
-        
-        if showReadPosts {
-            filter.deactivate(filter: .read)
-        }
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {

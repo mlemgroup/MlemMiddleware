@@ -17,13 +17,20 @@ class PostFilterer: FilterProviding {
     var numFiltered: Int { allFilters.reduce(0) { $0 + $1.numFiltered } }
     var active: Bool = true
     
-    private var readFilter: PostReadFilter = .init()
+    private var readFilter: PostReadFilter
     private var dedupeFilter: PostDedupeFilter = .init()
     
     private var allFilters: [any FilterProviding<Post2>] { [
         readFilter,
         dedupeFilter
     ] }
+    
+    init(showRead: Bool) {
+        self.readFilter = .init()
+        if showRead {
+            readFilter.active = false
+        }
+    }
     
     func filter(_ targets: [Post2]) -> [Post2] {
         var ret: [Post2] = targets
