@@ -192,6 +192,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         
         var newItems: [Item] = .init()
         while newItems.count < pageSize {
+            print("DEBUG fetching page \(page + 1)")
             let fetched = try await fetchPage(page: page + 1)
             page += 1
             loadingCursor = fetched.cursor
