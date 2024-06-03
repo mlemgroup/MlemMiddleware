@@ -32,9 +32,10 @@ class MultiFilter<FilterTarget: Filterable> {
         return ret
     }
     
-    /// Deactivates the given filter
-    /// - Parameter filter: filter to deactivate
-    /// - Retunrs: true if the filter was successfully deactivated, false if it was already inactive
+    /// Resets this filter and all its children
+    /// - Parameter targets optional; if present, will immediately re-filter all targets
+    /// - Returns result of filtering targets, if present, otherwise an empty array
+    @discardableResult
     func reset(with targets: [FilterTarget] = .init()) -> [FilterTarget] {
         var ret = targets
         for filter in allFilters() {
@@ -59,7 +60,7 @@ class MultiFilter<FilterTarget: Filterable> {
     
     /// Deactivates the given filter
     /// - Parameter filter: filter to deactivate
-    /// - Retunrs: true if the filter was successfully deactivated, false if it was already inactive
+    /// - Returns: true if the filter was successfully deactivated, false if it was already inactive
     func deactivate(_ toDeactivate: FilterTarget.OptionalFilters) -> Bool {
         var filter = getFilter(toDeactivate)
         let ret = filter.active
