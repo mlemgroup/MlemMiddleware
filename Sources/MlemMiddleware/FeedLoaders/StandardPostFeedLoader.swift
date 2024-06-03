@@ -17,7 +17,8 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     var feedType: FeedType
     private(set) var postSortType: ApiSortType
-    private var filter: PostFilterer
+    // private var filters: [PostFilter: Int]
+    // private var filter: PostFilterer
     
     // true when the items in the tracker are stale and should not be displayed
     var isStale: Bool = false
@@ -77,13 +78,14 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         self.postSortType = sortType
         
         self.filteredKeywords = filteredKeywords
-        self.filter = .init(showRead: showReadPosts)
-        
+    
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
         self.urlCache = urlCache
         
         super.init(pageSize: pageSize)
+        
+        self.filter = PostFilterer(showRead: showReadPosts)
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
@@ -95,7 +97,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     override public func fetchPage(page: Int) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: nil, limit: pageSize)
         
-        let filteredPosts = filter(result.posts)
+        let filteredPosts = filter?.filter(result.posts) ?? .init()
         preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
@@ -103,7 +105,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     override public func fetchCursor(cursor: String?) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: cursor, limit: pageSize)
         
-        let filteredPosts = filter(result.posts)
+        let filteredPosts = filter?.filter(result.posts) ?? .init()
         preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
@@ -143,7 +145,8 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
     /// - Parameter newFilter: NewPostFilterReason describing the filter to apply
     public func addFilter(_ newFilter: OptionalPostFilters) async throws {
-        if filter.activate(filter: newFilter) {
+        guard let filter else { return }
+        if filter.activate(newFilter) {
             await setItems(filter.reset(with: items))
             
             if items.isEmpty {
@@ -154,21 +157,21 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     }
     
     public func removeFilter(_ filterToRemove: OptionalPostFilters) async throws {
-        if filter.deactivate(filter: filterToRemove) {
+        if filter?.deactivate(filterToRemove) ?? false {
             print("deactivated filter, refreshing")
             try await refresh(clearBeforeRefresh: true)
         }
     }
     
     public func getFilteredCount(for filter: OptionalPostFilters) -> Int {
-        return self.filter.filteredCount(for: filter)
+        return self.filter?.numFiltered(for: filter) ?? 0
     }
     
     /// Filters a given list of posts.
     /// - Parameter posts: list of posts to filter
     /// - Returns: list of posts with filtered posts removed
-    private func filter(_ posts: [Post2]) -> [Post2] {
-        return filter.filter(posts)
+    private func performFiltering(_ posts: [Post2]) -> [Post2] {
+        return filter?.filter(posts) ?? .init()
     }
     
     private func preloadImages(_ newPosts: [Post2]) {

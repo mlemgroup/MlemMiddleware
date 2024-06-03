@@ -7,7 +7,11 @@
 
 import Foundation
 
-public protocol Post1Providing: PostStubProviding, Identifiable, Interactable1Providing, FeedLoadable {
+public protocol Post1Providing: 
+    PostStubProviding, 
+        Identifiable,
+        Interactable1Providing,
+        FeedLoadable where OptionalFilters == OptionalPostFilters {
     var post1: Post1 { get }
     
     var id: Int { get }
@@ -62,6 +66,7 @@ public extension Post1Providing {
     var updated_: Date? { post1.updated }
 }
 
+// FeedLoadable conformance
 public extension Post1Providing {
     var uid: ContentModelIdentifier { .init(contentType: .post, contentId: id) }
     func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal {
