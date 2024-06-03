@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol FeedLoadable: Equatable, AnyObject {
+public protocol FeedLoadable: Equatable, AnyObject, Filterable {
     associatedtype OptionalFilters
     
     var uid: ContentModelIdentifier { get }
