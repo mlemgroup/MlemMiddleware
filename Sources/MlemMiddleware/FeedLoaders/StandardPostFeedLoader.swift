@@ -92,22 +92,16 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     override public func fetchPage(page: Int) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: nil, limit: pageSize)
-        let result2 = try await feedType.getPosts(sort: postSortType, page: page, cursor: nil, limit: pageSize)
-
-        let posts = result.posts + result2.posts
         
-        let filteredPosts = filter.filter(posts)
+        let filteredPosts = filter.filter(result.posts)
         preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
     
     override public func fetchCursor(cursor: String?) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: cursor, limit: pageSize)
-        let result2 = try await feedType.getPosts(sort: postSortType, page: page, cursor: cursor, limit: pageSize)
         
-        let posts = result.posts + result2.posts
-        
-        let filteredPosts = filter.filter(posts)
+        let filteredPosts = filter.filter(result.posts)
         preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
