@@ -11,9 +11,9 @@ public enum OptionalPostFilters {
     case read
 }
 
-class PostFilterer: MultiFilter<Post2> {
+class PostFilter: MultiFilter<Post2> {
     private var readFilter: PostReadFilter
-    private var dedupeFilter: PostDedupeFilter = .init()
+    // private var dedupeFilter: PostDedupeFilter = .init()
     
     init(showRead: Bool) {
         self.readFilter = .init()
@@ -24,8 +24,8 @@ class PostFilterer: MultiFilter<Post2> {
 
     override func allFilters() -> [any FilterProviding<Post2>] {
         [
-            readFilter,
-            dedupeFilter
+            readFilter// ,
+            // dedupeFilter
         ]
     }
     

@@ -17,8 +17,6 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     var feedType: FeedType
     private(set) var postSortType: ApiSortType
-    // private var filters: [PostFilter: Int]
-    // private var filter: PostFilterer
     
     // true when the items in the tracker are stale and should not be displayed
     var isStale: Bool = false
@@ -83,7 +81,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
         self.urlCache = urlCache
         
-        super.init(pageSize: pageSize, filter: PostFilterer(showRead: showReadPosts))
+        super.init(pageSize: pageSize, filter: PostFilter(showRead: showReadPosts))
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
@@ -94,16 +92,22 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     override public func fetchPage(page: Int) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: nil, limit: pageSize)
+        let result2 = try await feedType.getPosts(sort: postSortType, page: page, cursor: nil, limit: pageSize)
+
+        let posts = result.posts + result2.posts
         
-        let filteredPosts = filter.filter(result.posts)
+        let filteredPosts = filter.filter(posts)
         preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
     
     override public func fetchCursor(cursor: String?) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: cursor, limit: pageSize)
+        let result2 = try await feedType.getPosts(sort: postSortType, page: page, cursor: cursor, limit: pageSize)
         
-        let filteredPosts = filter.filter(result.posts)
+        let posts = result.posts + result2.posts
+        
+        let filteredPosts = filter.filter(posts)
         preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
@@ -118,7 +122,6 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         }
         
         postSortType = newSortType
-        print("DEBUG sort type changed, refreshing")
         try await refresh(clearBeforeRefresh: true)
     }
     
@@ -147,7 +150,6 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
             await setItems(filter.reset(with: items))
             
             if items.isEmpty {
-                print("DEBUG activated filter and items is empty, refreshing")
                 try await refresh(clearBeforeRefresh: false)
             }
         }
@@ -155,7 +157,6 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     public func removeFilter(_ filterToRemove: OptionalPostFilters) async throws {
         if filter.deactivate(filterToRemove) {
-            print("deactivated filter, refreshing")
             try await refresh(clearBeforeRefresh: true)
         }
     }
