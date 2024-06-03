@@ -41,6 +41,7 @@ public struct FetchResponse<Item: FeedLoadable> {
 
 @Observable
 public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
+    private var filter: (any FilterProviding<Item>)? // if nil, no filtering will be performed
     /// loading state
     private var ids: Set<ContentModelIdentifier> = .init(minimumCapacity: 1000)
     /// number of the most recently loaded page. 0 indicates no content.
@@ -148,6 +149,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     /// Clears the tracker to an empty state.
     /// - Warning: **DO NOT** call this method from anywhere but `load`! This is *purely* a helper function for `load` and *will* lead to unexpected behavior if called elsewhere!
     private func clearHelper() async {
+        _ = filter?.reset(with: nil)
         ids = .init(minimumCapacity: 1000)
         page = 0
         loadingCursor = nil
@@ -164,6 +166,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             // if not clearing before reset, still clear these fields in order to sanitize the loading state--we just keep the items in place until we have received new ones, which will be set by loadPage/loadCursor
             page = 0
             loadingCursor = nil
+            _ = filter?.reset(with: nil)
             ids = .init(minimumCapacity: 1000)
             await setLoading(.idle)
         }

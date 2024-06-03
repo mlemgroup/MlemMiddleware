@@ -17,7 +17,6 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     var feedType: FeedType
     private(set) var postSortType: ApiSortType
-    // private var filters: [PostFilter: Int]
     private var filter: PostFilterer
     
     // true when the items in the tracker are stale and should not be displayed
