@@ -41,25 +41,50 @@ public extension Post2Providing {
     private var votesManager: StateManager<VotesModel> { post2.votesManager }
     private var readManager: StateManager<Bool> { post2.readManager }
     private var savedManager: StateManager<Bool> { post2.savedManager }
-
-    func vote(_ newVote: ScoringOperation) {
-        guard newVote != self.votes.myVote else { return }
-        groupStateRequest(
-            votesManager.ticket(self.votes.applyScoringOperation(operation: newVote)),
-            readManager.ticket(true)
-        ) { semaphore in
-            try await self.api.voteOnPost(id: self.id, score: newVote, semaphore: semaphore)
+    
+    func updateRead(_ newValue: Bool, shouldQueue: Bool = false) {
+        if shouldQueue {
+            Task {
+                if newValue {
+                    await api.markReadQueue.add(self.id)
+                    post2.readQueued = true
+                } else {
+                    await api.markReadQueue.remove(self.id)
+                    post2.readQueued = false
+                }
+            }
+        } else {
+            readManager.performRequest(expectedResult: newValue) { semaphore in
+                try await self.api.markPostAsRead(id: self.id, read: newValue, semaphore: semaphore)
+            }
         }
     }
     
-    func toggleSave() {
-        let newValue = !saved
+    func toggleRead(shouldQueue: Bool = false) {
+        updateRead(!read, shouldQueue: shouldQueue)
+    }
+
+    func updateVote(_ newValue: ScoringOperation) {
+        guard newValue != self.votes.myVote else { return }
+        groupStateRequest(
+            votesManager.ticket(self.votes.applyScoringOperation(operation: newValue)),
+            readManager.ticket(true)
+        ) { semaphore in
+            try await self.api.voteOnPost(id: self.id, score: newValue, semaphore: semaphore)
+        }
+    }
+    
+    func updateSave(_ newValue: Bool) {
         groupStateRequest(
             savedManager.ticket(newValue),
             readManager.ticket(true)
         ) { semaphore in
             try await self.api.savePost(id: self.id, save: newValue, semaphore: semaphore)
         }
+    }
+    
+    var queuedForMarkAsRead: Bool {
+        get async { await api.markReadQueue.ids.contains(self.id) }
     }
 }
 

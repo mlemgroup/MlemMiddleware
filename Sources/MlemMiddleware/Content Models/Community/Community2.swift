@@ -8,7 +8,8 @@
 import Observation
 
 @Observable
-public final class Community2: Community2Providing {    
+public final class Community2: Community2Providing {
+    public static let tierNumber: Int = 2
     public var community2: Community2 { self }
     public var api: ApiClient
 

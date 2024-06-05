@@ -40,7 +40,6 @@ public struct GetPostsRequest: ApiGetRequest {
         } else {
             paginationParameter = .init(name: "page", value: "\(page)")
         }
-        
         queryItems.append(paginationParameter)
         
         self.queryItems = queryItems

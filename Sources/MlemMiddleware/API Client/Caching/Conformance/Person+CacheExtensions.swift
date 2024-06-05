@@ -8,7 +8,7 @@
 import Foundation
 
 extension Person1: CacheIdentifiable {
-    public var cacheId: Int { actorId.hashValue }
+    public var cacheId: Int { id }
     
     func update(with person: ApiPerson) {
         updated = person.updated
@@ -33,7 +33,7 @@ extension Person1: CacheIdentifiable {
 }
 
 extension Person2: CacheIdentifiable {
-    public var cacheId: Int { person1.cacheId }
+    public var cacheId: Int { id }
     
     func update(with apiType: any Person2ApiBacker) {
         postCount = apiType.counts.postCount
@@ -43,7 +43,7 @@ extension Person2: CacheIdentifiable {
 }
 
 extension Person3: CacheIdentifiable {
-    public var cacheId: Int { person2.cacheId }
+    public var cacheId: Int { id }
     
     func update(moderatedCommunities: [Community1], person2ApiBacker: any Person2ApiBacker) {
         self.moderatedCommunities = moderatedCommunities
@@ -52,7 +52,7 @@ extension Person3: CacheIdentifiable {
 }
 
 extension Person4: CacheIdentifiable {
-    public var cacheId: Int { person3.cacheId }
+    public var cacheId: Int { id }
     
     func update(with apiMyUserInfo: ApiMyUserInfo) {
         let moderates = apiMyUserInfo.moderates.map { moderatorView in

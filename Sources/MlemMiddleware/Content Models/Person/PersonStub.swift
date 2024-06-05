@@ -9,8 +9,14 @@ import Foundation
 import Observation
 
 public struct PersonStub: PersonStubProviding {
+    public static let tierNumber: Int = 0
     public var api: ApiClient
     public let actorId: URL
+    
+    public init(api: ApiClient, actorId: URL) {
+        self.api = api
+        self.actorId = actorId
+    }
     
     public static func == (lhs: PersonStub, rhs: PersonStub) -> Bool {
         lhs.actorId == rhs.actorId

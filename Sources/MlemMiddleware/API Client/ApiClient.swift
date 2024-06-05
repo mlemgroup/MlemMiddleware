@@ -32,17 +32,20 @@ public class ApiClient {
     internal weak var myPerson: Person4?
     internal weak var subscriptions: SubscriptionList?
     
+    /// Stores the IDs of posts that are queued to be marked read.
+    internal var markReadQueue: MarkReadQueue = .init()
+    
     /// Returns the `fetchedVersion` if the version has already been fetched. Otherwise, waits until the version has been fetched before returning the received value.
-    public var version: SiteVersion? {
-        get async {
+    public var version: SiteVersion {
+        get async throws {
             if let fetchedVersion {
                 return fetchedVersion
             } else {
                 if let fetchSiteTask {
                     let result = await fetchSiteTask.result
-                    return try? result.get()
+                    return try result.get()
                 } else {
-                    return try? await fetchSiteVersion()
+                    return try await fetchSiteVersion()
                 }
             }
         }
@@ -118,7 +121,6 @@ public class ApiClient {
     func perform<Request: ApiRequest>(_ request: Request) async throws -> Request.Response {
         let urlRequest = try urlRequest(from: request)
         let (data, response) = try await execute(urlRequest)
-        
         if let response = response as? HTTPURLResponse {
             if response.statusCode >= 500 { // Error code for server being offline.
                 throw ApiClientError.response(

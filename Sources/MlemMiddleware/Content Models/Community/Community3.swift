@@ -9,6 +9,7 @@ import Observation
 
 @Observable
 public final class Community3: Community3Providing {
+    public static let tierNumber: Int = 3
     public var community3: Community3 { self }
     public let api: ApiClient
     

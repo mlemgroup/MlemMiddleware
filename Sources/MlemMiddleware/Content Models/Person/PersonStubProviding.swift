@@ -68,3 +68,12 @@ public extension PersonStubProviding {
     
     var isMlemDeveloper: Bool { developerNames.contains(actorId.absoluteString) }
 }
+
+public extension PersonStubProviding {
+    func upgrade() async throws -> Person3 {
+        guard let post = try await api.getPerson(actorId: actorId) else {
+            throw UpgradeError.entityNotFound
+        }
+        return post
+    }
+}

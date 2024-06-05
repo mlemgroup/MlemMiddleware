@@ -20,6 +20,9 @@ public enum ApiClientError: Error {
     case invalidSession
     case decoding(Data, Error?)
     case insufficientPermissions
+    /// Thrown when a `false` value of `SuccessResponse` is returned
+    case unsuccessful
+    case unsupportedLemmyVersion
 }
 
 extension ApiClientError: CustomStringConvertible {
@@ -50,6 +53,10 @@ extension ApiClientError: CustomStringConvertible {
             }
             
             return "Unable to decode: \(string)"
+        case .unsuccessful:
+            return "Operation was unsuccessful."
+        case .unsupportedLemmyVersion:
+            return "This version of Lemmy doesn't support that operation."
         }
     }
 }

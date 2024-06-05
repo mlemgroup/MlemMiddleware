@@ -9,6 +9,7 @@ import Observation
 
 @Observable
 public final class Post2: Post2Providing {
+    public static let tierNumber: Int = 2
     public var api: ApiClient
     public var post2: Post2 { self }
     
@@ -24,7 +25,8 @@ public final class Post2: Post2Providing {
     public var votes: VotesModel { votesManager.wrappedValue }
     
     internal var readManager: StateManager<Bool>
-    public var read: Bool { readManager.wrappedValue }
+    public var read: Bool { readManager.wrappedValue || readQueued }
+    internal var readQueued: Bool = false
     
     internal var savedManager: StateManager<Bool>
     public var saved: Bool { savedManager.wrappedValue }

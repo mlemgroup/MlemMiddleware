@@ -24,6 +24,32 @@ public extension ApiClient {
         return response
     }
     
+    func getPerson(id: Int) async throws -> Person3 {
+        let request = GetPersonDetailsRequest(
+            personId: id,
+            username: nil,
+            sort: .new,
+            page: 1,
+            limit: 1,
+            communityId: nil,
+            savedOnly: nil
+        )
+        let response = try await perform(request)
+        return caches.person3.getModel(api: self, from: response)
+    }
+    
+    func getPerson(actorId: URL) async throws -> Person3? {
+        let request = ResolveObjectRequest(q: actorId.absoluteString)
+        
+        // if community found, get as Person3--caching performed in call
+        if let response = try await perform(request).person {
+
+            // ResolveObject unfortunately only returns a Person2, so we've gotta make another call
+            return try await getPerson(id: response.id)
+        }
+        return nil
+    }
+    
     func getPerson(username: String) async throws -> Person3 {
         let request = GetPersonDetailsRequest(
             personId: nil,
