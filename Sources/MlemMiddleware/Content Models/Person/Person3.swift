@@ -30,5 +30,5 @@ public final class Person3: Person3Providing {
         self.moderatedCommunities = moderatedCommunities
     }
     
-    func upgrade() async throws -> Person3 { self }
+    public func upgrade() async throws -> any Person { self }
 }

@@ -34,10 +34,23 @@ public extension AnyPost {
 
 /// Upgradable conformance
 public extension AnyPost {
-    func upgrade() async throws {
-        let upgradedPost = try await wrappedValue.upgrade()
-        Task { @MainActor in
-            self.wrappedValue = upgradedPost
+    func upgrade(initialValue: (any Base)? = nil) async throws {
+        var lastValue = initialValue ?? self.wrappedValue
+        while !isUpgraded {
+            lastValue = try await lastValue.upgrade()
+            let task = Task { @MainActor [lastValue] in
+                self.wrappedValue = lastValue
+            }
+            _ = await task.value
         }
+    }
+    
+    func upgradeFromLocal() async throws {
+        try await upgrade(
+            initialValue: PostStub(
+                api: .getApiClient(for: wrappedValue.actorId.removingPathComponents(), with: nil),
+                actorId: wrappedValue.actorId
+            )
+        )
     }
 }

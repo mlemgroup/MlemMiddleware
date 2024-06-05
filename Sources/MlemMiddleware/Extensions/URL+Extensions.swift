@@ -13,6 +13,13 @@ extension URL: Identifiable {
     var isImage: Bool {
         pathExtension.lowercased().contains(["jpg", "jpeg", "png", "webp"])
     }
+    
+    func removingPathComponents() -> URL {
+        var components = URLComponents()
+        components.scheme = scheme
+        components.host = host
+        return components.url!
+    }
 }
 
 public extension URL {

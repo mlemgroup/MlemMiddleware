@@ -23,6 +23,7 @@ public enum ApiClientError: Error {
     /// Thrown when a `false` value of `SuccessResponse` is returned
     case unsuccessful
     case unsupportedLemmyVersion
+    case noEntityFound
 }
 
 extension ApiClientError: CustomStringConvertible {
@@ -57,6 +58,8 @@ extension ApiClientError: CustomStringConvertible {
             return "Operation was unsuccessful."
         case .unsupportedLemmyVersion:
             return "This version of Lemmy doesn't support that operation."
+        case .noEntityFound:
+            return "No entity returned in response."
         }
     }
 }

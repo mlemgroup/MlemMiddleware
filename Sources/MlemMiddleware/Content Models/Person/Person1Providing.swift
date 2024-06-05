@@ -52,3 +52,9 @@ public extension Person1Providing {
     var instanceBan_: InstanceBanType? { person1.instanceBan }
     var blocked_: Bool? { person1.blocked }
 }
+
+public extension Person1Providing {
+    func upgrade() async throws -> any Person {
+        try await api.getPerson(id: id)
+    }
+}

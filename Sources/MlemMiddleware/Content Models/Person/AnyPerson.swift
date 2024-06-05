@@ -32,11 +32,24 @@ public extension AnyPerson {
 }
 
 /// Upgradable conformance
-public extension AnyPerson {    
-    func upgrade() async throws {
-        let upgradedPerson = try await wrappedValue.upgrade()
-        Task { @MainActor in
-            self.wrappedValue = upgradedPerson
+public extension AnyPerson {
+    func upgrade(initialValue: (any Base)? = nil) async throws {
+        var lastValue = initialValue ?? self.wrappedValue
+        while !isUpgraded {
+            lastValue = try await lastValue.upgrade()
+            let task = Task { @MainActor [lastValue] in
+                self.wrappedValue = lastValue
+            }
+            _ = await task.value
         }
+    }
+    
+    func upgradeFromLocal() async throws {
+        try await upgrade(
+            initialValue: PersonStub(
+                api: .getApiClient(for: wrappedValue.actorId.removingPathComponents(), with: nil),
+                actorId: wrappedValue.actorId
+            )
+        )
     }
 }

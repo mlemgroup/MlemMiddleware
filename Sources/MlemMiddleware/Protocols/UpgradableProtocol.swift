@@ -14,23 +14,19 @@ public protocol Upgradable {
     
     var wrappedValue: Base { get }
     
-    func upgrade() async throws
+    func upgrade(initialValue: Base?) async throws
+    func upgradeFromLocal() async throws
     
     init(_ wrappedValue: Base)
 }
 
 public extension Upgradable {
-    var isRenderable: Bool {
-        guard let _ = wrappedValue as? MinimumRenderable else {
-            return false
-        }
-        return true
+    
+    func upgrade() async throws {
+        try await self.upgrade(initialValue: nil)
     }
     
-    var isUpgraded: Bool {
-        guard let _ = wrappedValue as? Upgraded else {
-            return false
-        }
-        return true
-    }
+    var isRenderable: Bool { wrappedValue is MinimumRenderable }
+    
+    var isUpgraded: Bool { wrappedValue is Upgraded }
 }

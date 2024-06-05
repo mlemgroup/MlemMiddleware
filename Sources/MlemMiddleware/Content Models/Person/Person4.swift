@@ -23,5 +23,5 @@ public final class Person4: Person4Providing {
         self.person3 = person3
     }
     
-    func upgrade() async throws -> Person3 { person3 }
+    public func upgrade() async throws -> any Person { self }
 }

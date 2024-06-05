@@ -32,6 +32,4 @@ public final class Community3: Community3Providing {
         self.moderators = moderators
         self.discussionLanguages = discussionLanguages
     }
-    
-    public func upgrade() async throws -> Community3 { self }
 }

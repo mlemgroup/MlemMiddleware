@@ -60,12 +60,16 @@ extension ApiClient: PostFeedProvider {
         return caches.post2.getModel(api: self, from: response.postView)
     }
     
-    public func getPost(actorId: URL) async throws -> Post2? {
+    public func getPost(actorId: URL) async throws -> Post2 {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
-        if let response = try await perform(request).post {
-            return caches.post2.getModel(api: self, from: response)
+        do {
+            if let response = try await perform(request).post {
+                return caches.post2.getModel(api: self, from: response)
+            }
+        } catch let ApiClientError.response(response, _) where response.couldntFindObject {
+            throw ApiClientError.noEntityFound
         }
-        return nil
+        throw ApiClientError.noEntityFound
     }
     
     /// Mark the given post as read. Works on all versions.

@@ -38,16 +38,16 @@ public extension ApiClient {
         return caches.person3.getModel(api: self, from: response)
     }
     
-    func getPerson(actorId: URL) async throws -> Person3? {
+    func getPerson(actorId: URL) async throws -> Person2 {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
-        
-        // if community found, get as Person3--caching performed in call
-        if let response = try await perform(request).person {
-
-            // ResolveObject unfortunately only returns a Person2, so we've gotta make another call
-            return try await getPerson(id: response.id)
+        do {
+            if let response = try await perform(request).person {
+                return caches.person2.getModel(api: self, from: response)
+            }
+        } catch let ApiClientError.response(response, _) where response.couldntFindObject {
+            throw ApiClientError.noEntityFound
         }
-        return nil
+        throw ApiClientError.noEntityFound
     }
     
     func getPerson(username: String) async throws -> Person3 {
@@ -63,6 +63,11 @@ public extension ApiClient {
         let response = try await perform(request)
         
         return caches.person3.getModel(api: self, from: response)
+    }
+    
+    func getPerson(actorId: URL) async throws -> Person3 {
+        let person: Person2 = try await getPerson(actorId: actorId)
+        return try await getPerson(id: person.id)
     }
     
     func getMyPerson() async throws -> (person: Person4?, instance: Instance3) {
