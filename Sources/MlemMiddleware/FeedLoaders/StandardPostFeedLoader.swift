@@ -131,7 +131,6 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         
         // if nominal feed type unchanged, don't refresh
         if feedType != newFeedType {
-            print("DEBUG feed type changed, refreshing")
             try await refresh(clearBeforeRefresh: true)
         }
     }
