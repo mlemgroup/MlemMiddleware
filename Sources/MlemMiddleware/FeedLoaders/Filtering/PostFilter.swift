@@ -7,13 +7,14 @@
 
 import Foundation
 
-public enum OptionalPostFilters {
-    case read
+public enum PostFilters {
+    case read, dedupe, keyword
 }
 
 class PostFilter: MultiFilter<Post2> {
     private var readFilter: PostReadFilter
     private var dedupeFilter: PostDedupeFilter = .init()
+    private var keywordFilter: PostKeywordFilter = .init(keywords: []) // TODO: enable keyword filtering
     
     init(showRead: Bool) {
         self.readFilter = .init()
@@ -25,13 +26,16 @@ class PostFilter: MultiFilter<Post2> {
     override func allFilters() -> [any FilterProviding<Post2>] {
         [
             readFilter,
-            dedupeFilter
+            dedupeFilter,
+            keywordFilter
         ]
     }
     
-    override func getFilter(_ toGet: OptionalPostFilters) -> any FilterProviding<Post2> {
+    override func getFilter(_ toGet: PostFilters) -> any FilterProviding<Post2> {
         switch toGet {
         case .read: readFilter
+        case .dedupe: dedupeFilter
+        case .keyword: keywordFilter
         }
     }
 }

@@ -20,7 +20,7 @@ class MultiFilter<FilterTarget: Filterable> {
     /// Gets a particular optional filter. Used internally to back the `activate`, `deactivate`, and `filteredCount` methods; as with `allFilters`, used to bridge generic and concrete behavior.
     /// - Parameter toGet: `OptionalFilters` describing the filter to get
     /// - Returns: filter corresponding to `toGet`
-    func getFilter(_ toGet: FilterTarget.OptionalFilters) -> any FilterProviding<FilterTarget> {
+    func getFilter(_ toGet: FilterTarget.Filters) -> any FilterProviding<FilterTarget> {
         preconditionFailure("This method must be implemented by the instantiating class")
     }
     
@@ -51,7 +51,7 @@ class MultiFilter<FilterTarget: Filterable> {
     /// Activates the given filter
     /// - Parameter filter: filter to activate
     /// - Returns: true if the filter was successfully activated, false if it was already active
-    func activate(_ toActivate: FilterTarget.OptionalFilters) -> Bool {
+    func activate(_ toActivate: FilterTarget.Filters) -> Bool {
         var filter = getFilter(toActivate)
         let ret = !filter.active
         filter.active = true
@@ -61,14 +61,14 @@ class MultiFilter<FilterTarget: Filterable> {
     /// Deactivates the given filter
     /// - Parameter filter: filter to deactivate
     /// - Returns: true if the filter was successfully deactivated, false if it was already inactive
-    func deactivate(_ toDeactivate: FilterTarget.OptionalFilters) -> Bool {
+    func deactivate(_ toDeactivate: FilterTarget.Filters) -> Bool {
         var filter = getFilter(toDeactivate)
         let ret = filter.active
         filter.active = false
         return ret
     }
     
-    func numFiltered(for filter: FilterTarget.OptionalFilters) -> Int {
+    func numFiltered(for filter: FilterTarget.Filters) -> Int {
         return getFilter(filter).numFiltered
     }
 }

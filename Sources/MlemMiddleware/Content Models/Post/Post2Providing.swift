@@ -61,11 +61,6 @@ public extension Post2Providing {
             try await self.api.savePost(id: self.id, save: newValue, semaphore: semaphore)
         }
     }
-//    
-//    func toggleRead() {
-//        let newValue = !read
-//        groupStateReq
-//    }
 }
 
 public extension Post2Providing {
