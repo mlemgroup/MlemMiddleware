@@ -19,7 +19,7 @@ class PostKeywordFilter: FilterProviding {
     }
     
     func filter(_ targets: [Post2]) -> [Post2] {
-        let ret = targets.filter { $0.title.lowercased().contains(keywords) }
+        let ret = targets.filter { !$0.title.lowercased().contains(keywords) }
         numFiltered += targets.count - ret.count
         return ret
     }
