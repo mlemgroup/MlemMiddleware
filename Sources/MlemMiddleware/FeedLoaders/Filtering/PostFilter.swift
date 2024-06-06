@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum PostFilters {
+public enum PostFilterType {
     case read, dedupe, keyword
 }
 
@@ -31,7 +31,7 @@ class PostFilter: MultiFilter<Post2> {
         ]
     }
     
-    override func getFilter(_ toGet: PostFilters) -> any FilterProviding<Post2> {
+    override func getFilter(_ toGet: PostFilterType) -> any FilterProviding<Post2> {
         switch toGet {
         case .read: readFilter
         case .dedupe: dedupeFilter

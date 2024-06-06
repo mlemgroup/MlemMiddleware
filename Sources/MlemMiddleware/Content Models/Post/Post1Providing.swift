@@ -11,7 +11,7 @@ public protocol Post1Providing:
     PostStubProviding, 
         Identifiable,
         Interactable1Providing,
-        FeedLoadable where Filters == PostFilters {
+        FeedLoadable where FilterType == PostFilterType {
     var post1: Post1 { get }
     
     var id: Int { get }

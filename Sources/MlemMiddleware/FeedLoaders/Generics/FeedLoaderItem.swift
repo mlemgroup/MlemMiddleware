@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol FeedLoadable: Equatable, AnyObject, Filterable {
-    associatedtype Filters
+    associatedtype FilterType
     
     var uid: ContentModelIdentifier { get }
     func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal

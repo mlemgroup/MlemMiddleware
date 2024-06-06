@@ -138,7 +138,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     /// Adds a filter to the tracker, removing all current posts that do not pass the filter and filtering out all future posts that do not pass the filter.
     /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
     /// - Parameter newFilter: NewPostFilterReason describing the filter to apply
-    public func addFilter(_ newFilter: PostFilters) async throws {
+    public func addFilter(_ newFilter: PostFilterType) async throws {
         if filter.activate(newFilter) {
             await setItems(filter.reset(with: items))
             
@@ -148,13 +148,13 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         }
     }
     
-    public func removeFilter(_ filterToRemove: PostFilters) async throws {
+    public func removeFilter(_ filterToRemove: PostFilterType) async throws {
         if filter.deactivate(filterToRemove) {
             try await refresh(clearBeforeRefresh: true)
         }
     }
     
-    public func getFilteredCount(for toCount: PostFilters) -> Int {
+    public func getFilteredCount(for toCount: PostFilterType) -> Int {
         return filter.numFiltered(for: toCount)
     }
     

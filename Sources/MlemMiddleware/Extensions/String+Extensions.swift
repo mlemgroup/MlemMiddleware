@@ -11,4 +11,8 @@ extension String {
     func contains(_ strings: [String]) -> Bool {
         strings.contains { contains($0) }
     }
+    
+    func isContainedIn(_ strings: Set<String>) -> Bool {
+        strings.contains { contains($0) }
+    }
 }

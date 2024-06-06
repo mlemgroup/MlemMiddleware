@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol Filterable {
-    associatedtype Filters
+    associatedtype FilterType
 }
