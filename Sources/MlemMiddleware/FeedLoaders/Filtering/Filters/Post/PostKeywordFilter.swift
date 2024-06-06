@@ -11,10 +11,10 @@ class PostKeywordFilter: FilterProviding {
     typealias FilterTarget = Post2
     
     var numFiltered: Int = 0
-    private var keywords: [String]
+    private var keywords: Set<String>
     var active: Bool = true
     
-    init(keywords: [String]) {
+    init(keywords: Set<String>) {
         self.keywords = keywords
     }
     
