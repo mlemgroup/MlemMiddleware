@@ -13,7 +13,7 @@ public enum PostFilters {
 
 class PostFilter: MultiFilter<Post2> {
     private var readFilter: PostReadFilter
-    private var dedupeFilter: PostDedupeFilter = .init()
+    private var dedupeFilter: DedupeFilter<Post2> = .init()
     private var keywordFilter: PostKeywordFilter = .init(keywords: []) // TODO: enable keyword filtering
     
     init(showRead: Bool) {
