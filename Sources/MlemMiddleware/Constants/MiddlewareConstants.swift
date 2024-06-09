@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import KeychainAccess
 
 enum MiddlewareConstants {
     static let infiniteLoadThresholdOffset: Int = -10

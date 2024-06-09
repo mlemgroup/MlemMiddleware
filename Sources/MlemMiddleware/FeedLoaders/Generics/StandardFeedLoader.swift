@@ -41,13 +41,18 @@ public struct FetchResponse<Item: FeedLoadable> {
 
 @Observable
 public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
+    var filter: MultiFilter<Item>
     /// loading state
-    private var ids: Set<ContentModelIdentifier> = .init(minimumCapacity: 1000)
     /// number of the most recently loaded page. 0 indicates no content.
     private(set) var page: Int = 0
     /// cursor of the most recently loaded page. nil indicates no content.
     private(set) var loadingCursor: String?
     private let loadingSemaphore: AsyncSemaphore = .init(value: 1)
+    
+    init(pageSize: Int, filter: MultiFilter<Item>) {
+        self.filter = filter
+        super.init(pageSize: pageSize)
+    }
 
     // MARK: - External methods
     
@@ -108,7 +113,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         }
     }
     
-    /// Fetches the given page of items. This method must be overridden by the instantiating class because different items are loaded differently. Relies on the instantiating class to handle fetch parameters such as unreadOnly and page size.
+    /// Fetches the given page of items. This method must be overridden by the instantiating class because different items are loaded differently. The instantiating class is responsible for handling fetch parameters (e.g., page size, unread only) and performing filtering
     /// - Parameters:
     ///   - page: page number to fetch
     /// - Returns: tuple of the requested page of items, the cursor returned by the API call (if present), and the number of items that were filtered out.
@@ -116,7 +121,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         preconditionFailure("This method must be implemented by the inheriting class")
     }
     
-    // Fetches items from the given cursor. This method must be overridden by the instantiating class because different items are loaded differently. Relies on the instantiating class to handle fetch parameters such as unreadOnly and page size.
+    /// Fetches items from the given cursor. This method must be overridden by the instantiating class because different items are loaded differently. The instantiating class is responsible for handling fetch parameters (e.g., page size, unread only) and performing filtering
     /// - Parameters:
     ///   - cursor: cursor to fetch
     /// - Returns: tuple of the requested page of items, the cursor returned by the API call (if present), and the number of items that were filtered out.
@@ -125,31 +130,13 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     }
 
     // MARK: - Helpers
-    
-    /// Filters out items according to the given filtering function.
-    /// - Parameter filter: function that, given an Item, returns true if the item should REMAIN in the tracker
-    @discardableResult func filter(with filter: @escaping (Item) -> Bool) async -> Int {
-        let newItems = items.filter(filter)
-        let removed = items.count - newItems.count
-        
-        await setItems(newItems)
-        
-        return removed
-    }
-    
-    /// Given an array of Items, adds their ids to ids. Returns the input filtered to only items not previously present in ids.
-    /// - Parameter newMessages: array of MessageModel
-    /// - Returns: `newMessages`, filtered to only messages not already present in ids
-    private func storeIdsAndDedupe(newItems: [Item]) -> [Item] {
-        let accepted = newItems.filter { ids.insert($0.uid).inserted }
-        return accepted
-    }
 
     /// Clears the tracker to an empty state.
     /// - Warning: **DO NOT** call this method from anywhere but `load`! This is *purely* a helper function for `load` and *will* lead to unexpected behavior if called elsewhere!
     private func clearHelper() async {
-        ids = .init(minimumCapacity: 1000)
+        filter.reset()
         page = 0
+        loadingCursor = nil
         await setLoading(.idle)
         await setItems(.init())
     }
@@ -161,9 +148,9 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             await clearHelper()
         } else {
             // if not clearing before reset, still clear these fields in order to sanitize the loading state--we just keep the items in place until we have received new ones, which will be set by loadPage/loadCursor
+            filter.reset()
             page = 0
             loadingCursor = nil
-            ids = .init(minimumCapacity: 1000)
             await setLoading(.idle)
         }
         try await loadPageHelper(1)
@@ -203,14 +190,12 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             
             newItems.append(contentsOf: fetched.items)
         }
-        
-        let allowedItems = storeIdsAndDedupe(newItems: newItems)
 
         // if loading page 1, we can just do a straight assignment regardless of whether we did clearBeforeReset
         if pageToLoad == 1 {
-            await setItems(allowedItems)
+            await setItems(newItems)
         } else {
-            await addItems(allowedItems)
+            await addItems(newItems)
         }
 
         await setLoading(newState)
@@ -248,8 +233,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             newItems.append(contentsOf: fetched.items)
         }
         
-        let allowedItems = storeIdsAndDedupe(newItems: newItems)
-        await addItems(allowedItems)
+        await addItems(newItems)
         await setLoading(newState)
     }
 }
