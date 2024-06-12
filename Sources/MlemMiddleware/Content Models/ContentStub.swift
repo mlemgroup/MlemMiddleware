@@ -19,4 +19,6 @@ public extension ContentStub {
         hasher.combine(actorId)
         hasher.combine(Self.tierNumber)
     }
+    
+    var apiIsLocal: Bool { api.host == host }
 }
