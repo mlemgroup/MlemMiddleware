@@ -9,24 +9,6 @@ import Foundation
 import Nuke
 import Observation
 
-/// Enumeration of criteria on which to filter a post
-public enum PostFilter: Hashable {
-    /// Post is filtered because it was read
-    case read
-    
-    /// Post is filtered because it contains a blocked keyword
-    case keyword
-    
-    public func hash(into hasher: inout Hasher) {
-        switch self {
-        case .read:
-            hasher.combine("read")
-        case .keyword:
-            hasher.combine("keyword")
-        }
-    }
-}
-
 /// Post tracker for use with single feeds. Supports all post sorting types, but is not suitable for multi-feed use.
 @Observable
 public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
@@ -35,7 +17,6 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     var feedType: FeedType
     private(set) var postSortType: ApiSortType
-    private var filters: [PostFilter: Int]
     
     // true when the items in the tracker are stale and should not be displayed
     var isStale: Bool = false
@@ -95,17 +76,12 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         self.postSortType = sortType
         
         self.filteredKeywords = filteredKeywords
-        self.filters = [.keyword: 0]
-        
+    
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
         self.urlCache = urlCache
         
-        super.init(pageSize: pageSize)
-        
-        if !showReadPosts {
-            filters[.read] = 0
-        }
+        super.init(pageSize: pageSize, filter: PostFilter(showRead: showReadPosts))
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
@@ -117,7 +93,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     override public func fetchPage(page: Int) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: nil, limit: pageSize)
         
-        let filteredPosts = filter(result.posts)
+        let filteredPosts = filter.filter(result.posts)
         preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
@@ -125,7 +101,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     override public func fetchCursor(cursor: String?) async throws -> FetchResponse<Post2> {
         let result = try await feedType.getPosts(sort: postSortType, page: page, cursor: cursor, limit: pageSize)
         
-        let filteredPosts = filter(result.posts)
+        let filteredPosts = filter.filter(result.posts)
         preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
@@ -159,73 +135,27 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         }
     }
     
-    /// Applies a filter to all items currently in the tracker, but does **NOT** add the filter to the tracker!
-    /// Use in situations where filtering is handled server-side but should be retroactively applied to the current set of posts (e.g., filtering posts from a blocked user or community)
-    /// - Parameter filter: filter to apply
-    public func applyFilter(_ filter: PostFilter) async {
-        await setItems(items.filter { shouldFilterPost($0, filters: [filter]) == nil })
-    }
-    
     /// Adds a filter to the tracker, removing all current posts that do not pass the filter and filtering out all future posts that do not pass the filter.
     /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
     /// - Parameter newFilter: NewPostFilterReason describing the filter to apply
-    public func addFilter(_ newFilter: PostFilter) async throws {
-        guard !filters.keys.contains(newFilter) else {
-            assertionFailure("Cannot apply new filter (already present in filters!)")
-            return
-        }
-        
-        filters[newFilter] = 0
-        await setItems(filter(items))
-        
-        if items.isEmpty {
-            try await refresh(clearBeforeRefresh: false)
-        }
-    }
-    
-    public func removeFilter(_ filterToRemove: PostFilter) async throws {
-        guard filters.keys.contains(filterToRemove) else {
-            assertionFailure("Cannot remove filter (not present in filters!)")
-            return
-        }
-        
-        filters.removeValue(forKey: filterToRemove)
-        try await refresh(clearBeforeRefresh: true)
-    }
-    
-    public func getFilteredCount(for filter: PostFilter) -> Int {
-        filters[filter, default: 0]
-    }
-    
-    /// Filters a given list of posts. Updates the counts of filtered posts in `filters`
-    /// - Parameter posts: list of posts to filter
-    /// - Returns: list of posts with filtered posts removed
-    private func filter(_ posts: [Post2]) -> [Post2] {
-        var ret: [Post2] = .init()
-        
-        for post in posts {
-            if let filterReason = shouldFilterPost(post, filters: Array(filters.keys)) {
-                filters[filterReason] = filters[filterReason, default: 0] + 1
-            } else {
-                ret.append(post)
+    public func addFilter(_ newFilter: PostFilterType) async throws {
+        if filter.activate(newFilter) {
+            await setItems(filter.reset(with: items))
+            
+            if items.isEmpty {
+                try await refresh(clearBeforeRefresh: false)
             }
         }
-        
-        return ret
     }
     
-    /// Given a post, determines whether it should be filtered
-    /// - Returns: the first reason according to which the post should be filtered, if applicable, or nil if the post should not be filtered
-    private func shouldFilterPost(_ post: Post2, filters: [PostFilter]) -> PostFilter? {
-        for filter in filters {
-            switch filter {
-            case .read:
-                if post.read { return filter }
-            case .keyword:
-                if post.title.lowercased().contains(filteredKeywords) { return filter }
-            }
+    public func removeFilter(_ filterToRemove: PostFilterType) async throws {
+        if filter.deactivate(filterToRemove) {
+            try await refresh(clearBeforeRefresh: true)
         }
-        return nil
+    }
+    
+    public func getFilteredCount(for toCount: PostFilterType) -> Int {
+        return filter.numFiltered(for: toCount)
     }
     
     private func preloadImages(_ newPosts: [Post2]) {
