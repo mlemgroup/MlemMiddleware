@@ -215,6 +215,8 @@ extension ApiClient: CacheIdentifiable {
 
 extension ApiClient: ActorIdentifiable {
     public var actorId: URL { baseUrl }
+    
+    public var host: String? { actorId.host() }
 }
 
 // MARK: ApiClientCache

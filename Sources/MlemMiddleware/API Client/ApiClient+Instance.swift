@@ -16,4 +16,25 @@ public extension ApiClient {
         myInstance = model
         return model
     }
+    
+    func getFederatedInstances() async throws -> ApiFederatedInstances {
+        let request = GetFederatedInstancesRequest()
+        let response = try await perform(request)
+        if let federatedInstances = response.federatedInstances {
+            return federatedInstances
+        }
+        throw ApiClientError.noEntityFound
+    }
+    
+    /// Returns `true` if federated, `false` if not federated, or `nil` if the status could not be determined.
+    func federatedWith(with url: URL) async throws -> FederationStatus? {
+        guard let domain = url.host() else { throw ApiClientError.invalidInput }
+        let federatedInstances = try await getFederatedInstances()
+        if !federatedInstances.blocked.isEmpty {
+            return federatedInstances.blocked.contains(where: { $0.domain == domain }) ? .explicitlyBlocked : .implicitlyAllowed
+        } else if !federatedInstances.allowed.isEmpty {
+            return federatedInstances.allowed.contains(where: { $0.domain == domain }) ? .explicitlyAllowed : .implicitlyBlocked
+        }
+        return nil
+    }
 }

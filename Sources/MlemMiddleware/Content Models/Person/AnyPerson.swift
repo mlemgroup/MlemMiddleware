@@ -33,23 +33,38 @@ public extension AnyPerson {
 
 /// Upgradable conformance
 public extension AnyPerson {
-    func upgrade(initialValue: (any Base)? = nil) async throws {
+    internal func upgrade(
+        initialValue: (any Base)? = nil,
+        upgradeOperation: (any Base) async throws -> any Base
+    ) async throws {
         var lastValue = initialValue ?? self.wrappedValue
-        while !isUpgraded {
-            lastValue = try await lastValue.upgrade()
-            let task = Task { @MainActor [lastValue] in
-                self.wrappedValue = lastValue
+        while !(lastValue is any Upgraded) {
+            lastValue = try await upgradeOperation(lastValue)
+            if type(of: lastValue).tierNumber >= type(of: wrappedValue).tierNumber {
+                let task = Task { @MainActor [lastValue] in
+                    self.wrappedValue = lastValue
+                }
+                _ = await task.value
             }
-            _ = await task.value
         }
     }
     
-    func upgradeFromLocal() async throws {
-        try await upgrade(
-            initialValue: PersonStub(
-                api: .getApiClient(for: wrappedValue.actorId.removingPathComponents(), with: nil),
+    func upgrade(
+        api: ApiClient?,
+        upgradeOperation: ((any Base) async throws -> any Base)?
+    ) async throws {
+        let initialValue: any Base
+        if let api {
+            initialValue = api === wrappedValue.api ? wrappedValue : PersonStub(
+                api: api,
                 actorId: wrappedValue.actorId
             )
+        } else {
+            initialValue = wrappedValue
+        }
+        try await upgrade(
+            initialValue: initialValue,
+            upgradeOperation: upgradeOperation ?? { try await $0.upgrade() }
         )
     }
 }

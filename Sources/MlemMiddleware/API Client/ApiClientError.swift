@@ -24,6 +24,7 @@ public enum ApiClientError: Error {
     case unsuccessful
     case unsupportedLemmyVersion
     case noEntityFound
+    case invalidInput
 }
 
 extension ApiClientError: CustomStringConvertible {
@@ -60,6 +61,8 @@ extension ApiClientError: CustomStringConvertible {
             return "This version of Lemmy doesn't support that operation."
         case .noEntityFound:
             return "No entity returned in response."
+        case .invalidInput:
+            return "Invalid input"
         }
     }
 }
