@@ -35,7 +35,7 @@ public extension ApiClient {
             savedOnly: nil
         )
         let response = try await perform(request)
-        return caches.person3.getModel(api: self, from: response)
+        return await caches.person3.getModel(api: self, from: response)
     }
     
     func getPerson(actorId: URL) async throws -> Person3? {
@@ -62,17 +62,17 @@ public extension ApiClient {
         )
         let response = try await perform(request)
         
-        return caches.person3.getModel(api: self, from: response)
+        return await caches.person3.getModel(api: self, from: response)
     }
     
     func getMyPerson() async throws -> (person: Person4?, instance: Instance3) {
         let request = GetSiteRequest()
         let response = try await perform(request)
-        let instance = caches.instance3.getModel(api: self, from: response)
+        let instance = await caches.instance3.getModel(api: self, from: response)
         
         var person: Person4?
         if let myUser = response.myUser {
-            person = caches.person4.getModel(api: self, from: myUser)
+            person = await caches.person4.getModel(api: self, from: myUser)
         }
         myPerson = person
         myInstance = instance

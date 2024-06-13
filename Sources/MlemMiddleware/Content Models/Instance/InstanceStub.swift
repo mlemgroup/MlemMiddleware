@@ -35,7 +35,7 @@ public extension InstanceStub {
     /// Due to API limitations (see [here](https://github.com/mlemgroup/mlem/pull/1029#issuecomment-2067746011)),
     /// it takes 4 API calls to perform this upgrade.
     func upgrade() async throws -> Instance1 {
-        let externalApi: ApiClient = .getApiClient(for: actorId, with: nil)
+        let externalApi: ApiClient = await .getApiClient(for: actorId, with: nil)
         
         let response = try await externalApi.getPosts(
             feed: .local,
@@ -60,7 +60,7 @@ public extension InstanceStub {
     
     /// Upgrade to an ``Instance3``, using the instance's local ``ApiClient``. This will not work for locally running instances.
     func upgradeLocal() async throws -> Instance3 {
-        let externalApi: ApiClient = .getApiClient(for: actorId, with: nil)
+        let externalApi: ApiClient = await .getApiClient(for: actorId, with: nil)
         return try await externalApi.getMyInstance()
     }
 }

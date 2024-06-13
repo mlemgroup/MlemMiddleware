@@ -55,16 +55,17 @@ extension ApiClient {
             self.person4 = .init(person3Cache: person3)
         }
         
-        func clean() {
-            community1.clean()
-            community2.clean()
-            community3.clean()
-            person1.clean()
-            person2.clean()
-            person3.clean()
-            person4.clean()
-            post1.clean()
-            post2.clean()
+        func clean() async {
+            // TODO: task group
+            await community1.clean()
+            await community2.clean()
+            await community3.clean()
+            await person1.clean()
+            await person2.clean()
+            await person3.clean()
+            await person4.clean()
+            await post1.clean()
+            await post2.clean()
         }
     }
 }

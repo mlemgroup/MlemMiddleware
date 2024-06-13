@@ -56,7 +56,7 @@ public extension Instance1Providing {
 public extension Instance1Providing {
     var name: String { host ?? "unknown" }
     
-    var guestApi: ApiClient {
-        .getApiClient(for: local ? api.baseUrl : actorId, with: nil)
+    func guestApi() async -> ApiClient {
+        await .getApiClient(for: local ? api.baseUrl : actorId, with: nil)
     }
 }

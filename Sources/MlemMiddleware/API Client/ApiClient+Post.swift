@@ -27,7 +27,7 @@ extension ApiClient: PostFeedProvider {
             savedOnly: savedOnly
         )
         let response = try await perform(request)
-        let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
+        let posts = await response.posts.asyncMap { await caches.post2.getModel(api: self, from: $0) }
         return (posts: posts, cursor: response.nextPage)
     }
     
@@ -50,20 +50,20 @@ extension ApiClient: PostFeedProvider {
             savedOnly: savedOnly
         )
         let response = try await perform(request)
-        let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
+        let posts = await response.posts.asyncMap { await caches.post2.getModel(api: self, from: $0) }
         return (posts: posts, cursor: response.nextPage)
     }
     
     public func getPost(id: Int) async throws -> Post2 {
         let request = GetPostRequest(id: id, commentId: nil)
         let response = try await perform(request)
-        return caches.post2.getModel(api: self, from: response.postView)
+        return await caches.post2.getModel(api: self, from: response.postView)
     }
     
     public func getPost(actorId: URL) async throws -> Post2? {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
         if let response = try await perform(request).post {
-            return caches.post2.getModel(api: self, from: response)
+            return await caches.post2.getModel(api: self, from: response)
         }
         return nil
     }
@@ -94,7 +94,7 @@ extension ApiClient: PostFeedProvider {
                 throw ApiClientError.unsuccessful
             }
             await markReadQueue.remove(id)
-            if let post = caches.post2.retrieveModel(cacheId: id) {
+            if let post = await caches.post2.get(id) {
                 post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
                 post.readQueued = false
             }
@@ -137,7 +137,7 @@ extension ApiClient: PostFeedProvider {
             await self.markReadQueue.union(markReadQueueCopy)
             throw error
         }
-        for post in idsToSend.compactMap({ caches.post2.retrieveModel(cacheId: $0) }) {
+        for post in await idsToSend.asyncCompactMap({ await caches.post2.get($0) }) {
             post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
             post.readQueued = false
         }
@@ -153,13 +153,13 @@ extension ApiClient: PostFeedProvider {
     public func voteOnPost(id: Int, score: ScoringOperation, semaphore: UInt? = nil) async throws -> Post2 {
         let request = LikePostRequest(postId: id, score: score.rawValue)
         let response = try await perform(request)
-        return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
+        return await caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
     
     @discardableResult
     public func savePost(id: Int, save: Bool, semaphore: UInt? = nil) async throws -> Post2 {
         let request = SavePostRequest(postId: id, save: save)
         let response = try await perform(request)
-        return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
+        return await caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 class Instance1Cache: ApiTypeBackedCache<Instance1, ApiSite> {
-    override func performModelTranslation(api: ApiClient, from apiType: ApiSite) -> Instance1 {
+    override func performModelTranslation(api: ApiClient, from apiType: ApiSite) async -> Instance1 {
         return .init(
             api: api,
             actorId: api.baseUrl,
@@ -27,14 +27,14 @@ class Instance1Cache: ApiTypeBackedCache<Instance1, ApiSite> {
         )
     }
     
-    override func updateModel(_ item: Instance1, with apiType: ApiSite, semaphore: UInt? = nil) {
+    override func updateModel(_ item: Instance1, with apiType: ApiSite, semaphore: UInt? = nil) async {
         item.update(with: apiType)
     }
     
     /// Convenience method for getting an optional site
-    func getOptionalModel(api: ApiClient, from apiType: ApiSite?) -> Instance1? {
+    func getOptionalModel(api: ApiClient, from apiType: ApiSite?) async -> Instance1? {
         if let apiType {
-            return getModel(api: api, from: apiType)
+            return await getModel(api: api, from: apiType)
         }
         return nil
     }
@@ -47,8 +47,8 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
         self.instance1Cache = instance1Cache
     }
     
-    override func performModelTranslation(api: ApiClient, from apiType: ApiSiteView) -> Instance2 {
-        .init(
+    override func performModelTranslation(api: ApiClient, from apiType: ApiSiteView) async -> Instance2 {
+        await .init(
             api: api,
             instance1: instance1Cache.getModel(api: api, from: apiType.site),
             setup: apiType.localSite.siteSetup,
@@ -86,7 +86,7 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
         )
     }
     
-    override func updateModel(_ item: Instance2, with apiType: ApiSiteView, semaphore: UInt? = nil) {
+    override func updateModel(_ item: Instance2, with apiType: ApiSiteView, semaphore: UInt? = nil) async {
         item.update(with: apiType)
     }
 }
@@ -100,8 +100,8 @@ class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
         self.person2Cache = person2Cache
     }
     
-    override func performModelTranslation(api: ApiClient, from apiType: ApiGetSiteResponse) -> Instance3 {
-        .init(
+    override func performModelTranslation(api: ApiClient, from apiType: ApiGetSiteResponse) async -> Instance3 {
+        await .init(
             api: api,
             instance2: instance2Cache.getModel(api: api, from: apiType.siteView),
             version: .init(apiType.version),
@@ -110,11 +110,11 @@ class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
             taglines: apiType.taglines,
             customEmojis: apiType.customEmojis,
             blockedUrls: apiType.blockedUrls,
-            administrators: apiType.admins.map { person2Cache.getModel(api: api, from: $0) }
+            administrators: apiType.admins.asyncMap { await person2Cache.getModel(api: api, from: $0) }
         )
     }
     
-    override func updateModel(_ item: Instance3, with apiType: ApiGetSiteResponse, semaphore: UInt? = nil) {
-        item.update(with: apiType)
+    override func updateModel(_ item: Instance3, with apiType: ApiGetSiteResponse, semaphore: UInt? = nil) async {
+        await item.update(with: apiType)
     }
 }

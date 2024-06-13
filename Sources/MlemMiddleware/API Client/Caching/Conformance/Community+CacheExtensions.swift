@@ -45,9 +45,9 @@ extension Community2: CacheIdentifiable {
 extension Community3: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with response: ApiGetCommunityResponse, semaphore: UInt? = nil) {
-        moderators = response.moderators.map { moderatorView in
-            api.caches.person1.performModelTranslation(api: api, from: moderatorView.moderator)
+    func update(with response: ApiGetCommunityResponse, semaphore: UInt? = nil) async {
+        moderators = await response.moderators.asyncMap { moderatorView in
+            await api.caches.person1.performModelTranslation(api: api, from: moderatorView.moderator)
         }
         discussionLanguages = response.discussionLanguages
         community2.update(with: response.communityView, semaphore: semaphore)

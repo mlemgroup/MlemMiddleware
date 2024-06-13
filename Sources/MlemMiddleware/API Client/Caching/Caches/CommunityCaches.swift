@@ -8,7 +8,7 @@
 import Foundation
 
 class Community1Cache: ApiTypeBackedCache<Community1, ApiCommunity> {
-    override func performModelTranslation(api: ApiClient, from apiType: ApiCommunity) -> Community1 {
+    override func performModelTranslation(api: ApiClient, from apiType: ApiCommunity) async -> Community1 {
         .init(
             api: api,
             actorId: apiType.actorId,
@@ -28,7 +28,7 @@ class Community1Cache: ApiTypeBackedCache<Community1, ApiCommunity> {
         )
     }
     
-    override func updateModel(_ item: Community1, with apiType: ApiCommunity, semaphore: UInt? = nil) {
+    override func updateModel(_ item: Community1, with apiType: ApiCommunity, semaphore: UInt? = nil) async {
         item.update(with: apiType)
     }
 }
@@ -40,10 +40,10 @@ class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
         self.community1Cache = community1Cache
     }
     
-    override func performModelTranslation(api: ApiClient, from apiType: ApiCommunityView) -> Community2 {
+    override func performModelTranslation(api: ApiClient, from apiType: ApiCommunityView) async  -> Community2 {
         .init(
             api: api,
-            community1: community1Cache.getModel(api: api, from: apiType.community),
+            community1: await community1Cache.getModel(api: api, from: apiType.community),
             subscribed: apiType.subscribed.isSubscribed,
             subscriberCount: apiType.counts.subscribers,
             postCount: apiType.counts.posts,
@@ -57,7 +57,7 @@ class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
         )
     }
     
-    override func updateModel(_ item: Community2, with apiType: ApiCommunityView, semaphore: UInt? = nil) {
+    override func updateModel(_ item: Community2, with apiType: ApiCommunityView, semaphore: UInt? = nil) async {
         item.update(with: apiType, semaphore: semaphore)
     }
 }
@@ -77,12 +77,12 @@ class Community3Cache: ApiTypeBackedCache<Community3, ApiGetCommunityResponse> {
         self.person1Cache = person1Cache
     }
     
-    override func performModelTranslation(api: ApiClient, from apiType: ApiGetCommunityResponse) -> Community3 {
-        .init(
+    override func performModelTranslation(api: ApiClient, from apiType: ApiGetCommunityResponse) async -> Community3 {
+        return await .init(
             api: api,
             community2: community2Cache.getModel(api: api, from: apiType.communityView),
             instance: instance1Cache.getOptionalModel(api: api, from: apiType.site),
-            moderators: apiType.moderators.map { person1Cache.getModel(api: api, from: $0.moderator) },
+            moderators: apiType.moderators.asyncMap { await person1Cache.getModel(api: api, from: $0.moderator) },
             discussionLanguages: apiType.discussionLanguages
         )
     }

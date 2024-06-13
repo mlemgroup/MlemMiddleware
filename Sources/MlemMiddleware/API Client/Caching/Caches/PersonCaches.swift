@@ -8,7 +8,7 @@
 import Foundation
 
 class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
-    override func performModelTranslation(api: ApiClient, from apiType: ApiPerson) -> Person1 {
+    override func performModelTranslation(api: ApiClient, from apiType: ApiPerson) async -> Person1 {
         let instanceBan: InstanceBanType
         if apiType.banned {
             if let expires = apiType.banExpires {
@@ -39,7 +39,7 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
         )
     }
     
-    override func updateModel(_ item: Person1, with apiType: ApiPerson, semaphore: UInt? = nil) {
+    override func updateModel(_ item: Person1, with apiType: ApiPerson, semaphore: UInt? = nil) async {
         item.update(with: apiType)
     }
 }
@@ -52,19 +52,19 @@ class Person2Cache: CoreCache<Person2> {
         self.person1Cache = person1Cache
     }
 
-    func getModel(api: ApiClient, from apiType: any Person2ApiBacker) -> Person2 {
-        if let item = retrieveModel(cacheId: apiType.cacheId) {
+    func getModel(api: ApiClient, from apiType: any Person2ApiBacker) async -> Person2 {
+        if let item = await get(apiType.cacheId) {
             item.update(with: apiType)
             return item
         }
         
-        let newItem: Person2 = .init(
+        let newItem: Person2 = await .init(
             api: api,
             person1: person1Cache.getModel(api: api, from: apiType.person),
             postCount: apiType.counts.postCount,
             commentCount: apiType.counts.commentCount
         )
-        cachedItems[newItem.cacheId] = .init(content: newItem)
+        await put(newItem)
         return newItem
     }
 }
@@ -81,23 +81,23 @@ class Person3Cache: CoreCache<Person3> {
         self.instance1Cache = instance1Cache
     }
     
-    func getModel(api: ApiClient, from apiType: any Person3ApiBacker) -> Person3 {
-        let moderatedCommunities = apiType.moderates.map { moderatedCommunity in
-            community1Cache.getModel(api: api, from: moderatedCommunity.community)
+    func getModel(api: ApiClient, from apiType: any Person3ApiBacker) async -> Person3 {
+        let moderatedCommunities = await apiType.moderates.asyncMap { moderatedCommunity in
+            await community1Cache.getModel(api: api, from: moderatedCommunity.community)
         }
         
-        if let item = retrieveModel(cacheId: apiType.cacheId) {
+        if let item = await get(apiType.cacheId) {
             item.update(moderatedCommunities: moderatedCommunities, person2ApiBacker: apiType.person2ApiBacker)
             return item
         }
         
-        let newItem: Person3 = .init(
+        let newItem: Person3 = await .init(
             api: api,
             person2: person2Cache.getModel(api: api, from: apiType.person2ApiBacker),
             instance: instance1Cache.getOptionalModel(api: api, from: apiType.site),
             moderatedCommunities: moderatedCommunities
         )
-        cachedItems[newItem.cacheId] = .init(content: newItem)
+        await put(newItem)
         return newItem
     }
 }
@@ -110,12 +110,12 @@ class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
         self.person3Cache = person3Cache
     }
     
-    override func performModelTranslation(api: ApiClient, from apiType: ApiMyUserInfo) -> Person4 {
-        .init(api: api, person3: person3Cache.getModel(api: api, from: apiType))
+    override func performModelTranslation(api: ApiClient, from apiType: ApiMyUserInfo) async -> Person4 {
+        await .init(api: api, person3: person3Cache.getModel(api: api, from: apiType))
     }
     
-    override func updateModel(_ item: Person4, with apiType: ApiMyUserInfo, semaphore: UInt? = nil) {
-        item.update(with: apiType)
+    override func updateModel(_ item: Person4, with apiType: ApiMyUserInfo, semaphore: UInt? = nil) async {
+        await item.update(with: apiType)
     }
 }
 

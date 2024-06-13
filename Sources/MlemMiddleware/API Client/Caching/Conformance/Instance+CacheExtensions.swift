@@ -65,7 +65,7 @@ extension Instance2: CacheIdentifiable {
 extension Instance3: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with response: ApiGetSiteResponse) {
+    func update(with response: ApiGetSiteResponse) async {
         version = SiteVersion(response.version)
         instance2.update(with: response.siteView)
         allLanguages = response.allLanguages
@@ -73,6 +73,6 @@ extension Instance3: CacheIdentifiable {
         taglines = response.taglines
         customEmojis = response.customEmojis
         blockedUrls = response.blockedUrls
-        administrators = response.admins.map { api.caches.person2.getModel(api: api, from: $0) }
+        administrators = await response.admins.asyncMap { await api.caches.person2.getModel(api: api, from: $0) }
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
-    override func performModelTranslation(api: ApiClient, from apiType: ApiPost) -> Post1 {
+    override func performModelTranslation(api: ApiClient, from apiType: ApiPost) async -> Post1 {
         .init(
             api: api,
             actorId: apiType.actorId,
@@ -29,7 +29,7 @@ class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
         )
     }
     
-    override func updateModel(_ item: Post1, with apiType: ApiPost, semaphore: UInt? = nil) {
+    override func updateModel(_ item: Post1, with apiType: ApiPost, semaphore: UInt? = nil) async {
         item.update(with: apiType)
     }
 }
@@ -45,8 +45,8 @@ class Post2Cache: ApiTypeBackedCache<Post2, ApiPostView> {
         self.community1Cache = community1Cache
     }
     
-    override func performModelTranslation(api: ApiClient, from apiType: ApiPostView) -> Post2 {
-        .init(
+    override func performModelTranslation(api: ApiClient, from apiType: ApiPostView) async -> Post2 {
+        await .init(
             api: api,
             post1: post1Cache.getModel(api: api, from: apiType.post),
             creator: person1Cache.getModel(api: api, from: apiType.creator),
@@ -59,7 +59,7 @@ class Post2Cache: ApiTypeBackedCache<Post2, ApiPostView> {
         )
     }
     
-    override func updateModel(_ item: Post2, with apiType: ApiPostView, semaphore: UInt? = nil) {
+    override func updateModel(_ item: Post2, with apiType: ApiPostView, semaphore: UInt? = nil) async {
         item.update(with: apiType, semaphore: semaphore)
     }
 }

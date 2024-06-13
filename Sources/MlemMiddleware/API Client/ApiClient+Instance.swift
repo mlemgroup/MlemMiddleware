@@ -11,7 +11,7 @@ public extension ApiClient {
     func getMyInstance() async throws -> Instance3 {
         let request = GetSiteRequest()
         let response = try await perform(request)
-        var model = caches.instance3.getModel(api: self, from: response)
+        var model = await caches.instance3.getModel(api: self, from: response)
         model.local = true
         myInstance = model
         return model

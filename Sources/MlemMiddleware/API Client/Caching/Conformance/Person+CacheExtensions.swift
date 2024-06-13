@@ -54,9 +54,9 @@ extension Person3: CacheIdentifiable {
 extension Person4: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with apiMyUserInfo: ApiMyUserInfo) {
-        let moderates = apiMyUserInfo.moderates.map { moderatorView in
-            api.caches.community1.performModelTranslation(api: api, from: moderatorView.community)
+    func update(with apiMyUserInfo: ApiMyUserInfo) async {
+        let moderates = await apiMyUserInfo.moderates.asyncMap { moderatorView in
+            await api.caches.community1.performModelTranslation(api: api, from: moderatorView.community)
         }
         person3.update(
             moderatedCommunities: moderates,

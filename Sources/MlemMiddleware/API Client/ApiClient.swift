@@ -65,8 +65,8 @@ public class ApiClient {
     public static func getApiClient(
         for url: URL,
         with token: String?
-    ) -> ApiClient {
-        apiClientCache.createOrRetrieveApiClient(for: url, with: token)
+    ) async -> ApiClient {
+        await apiClientCache.createOrRetrieveApiClient(for: url, with: token)
     }
     
     /// Creates a new API Client. Private because it should never be used outside of ApiClientCache, as the caching system depends on one ApiClient existing for any given session
@@ -81,28 +81,28 @@ public class ApiClient {
         self.permissions = permissions
     }
     
-    public func cleanCaches() {
-        caches.clean()
-        ApiClient.apiClientCache.clean()
+    public func cleanCaches() async {
+        await caches.clean()
+        await ApiClient.apiClientCache.clean()
     }
     
     /// Return a new `ApiClient` without a token.
-    public func loggedOut() -> ApiClient {
-        .getApiClient(for: self.baseUrl, with: nil)
+    public func loggedOut() async -> ApiClient {
+        await .getApiClient(for: self.baseUrl, with: nil)
     }
     
     /// Return a new `ApiClient` with the given token.
-    public func loggedIn(token: String) -> ApiClient {
-        .getApiClient(for: self.baseUrl, with: token)
+    public func loggedIn(token: String) async -> ApiClient {
+        await .getApiClient(for: self.baseUrl, with: token)
     }
     
     /// This should **only** be used when we get a new token for **the same** account!
-    public func updateToken(_ newToken: String) {
+    public func updateToken(_ newToken: String) async {
         guard token != nil else {
             assertionFailure()
             return
         }
-        Self.apiClientCache.changeToken(for: baseUrl, oldToken: token, newToken: newToken)
+        await Self.apiClientCache.changeToken(for: baseUrl, oldToken: token, newToken: newToken)
         self.token = newToken
     }
     
@@ -230,22 +230,22 @@ extension ApiClient {
             hasher.combine(token)
             return hasher.finalize()
         }
-        func createOrRetrieveApiClient(for baseUrl: URL, with token: String?) -> ApiClient {
-            if let client = retrieveModel(cacheId: getCacheId(for: baseUrl, with: token)) {
+        
+        func createOrRetrieveApiClient(for baseUrl: URL, with token: String?) async -> ApiClient {
+            if let client = await get(getCacheId(for: baseUrl, with: token)) {
                 return client
             }
             
             let ret: ApiClient = .init(baseUrl: baseUrl, token: token)
-            cachedItems[ret.cacheId] = .init(content: ret)
+            await put(ret)
             return ret
         }
         
         // Should ONLY be used when we get a new token for THE SAME account
-        func changeToken(for baseUrl: URL, oldToken: String?, newToken: String?) {
+        func changeToken(for baseUrl: URL, oldToken: String?, newToken: String?) async {
             let oldCacheId = getCacheId(for: baseUrl, with: oldToken)
             let newCacheId = getCacheId(for: baseUrl, with: newToken)
-            cachedItems[newCacheId] = cachedItems[oldCacheId]
-            cachedItems[oldCacheId] = nil
+            await updateCacheId(oldCacheId: oldCacheId, newCacheId: newCacheId)
         }
     }
 }

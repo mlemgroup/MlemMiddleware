@@ -11,7 +11,7 @@ public extension ApiClient {
     func getCommunity(id: Int) async throws -> Community3 {
         let request = GetCommunityRequest(id: id, name: nil)
         let response = try await perform(request)
-        return caches.community3.getModel(api: self, from: response)
+        return await caches.community3.getModel(api: self, from: response)
     }
     
     func getCommunity(actorId: URL) async throws -> Community3? {
@@ -56,7 +56,9 @@ public extension ApiClient {
             page += 1
         } while hasMorePages
             
-        let models: Set<Community2> = Set(communities.lazy.map { self.caches.community2.getModel(api: self, from: $0) })
+        let models: Set<Community2> = await Set(communities.lazy.asyncMap { community in
+            await self.caches.community2.getModel(api: self, from: community) }
+        )
         await subscriptionList.updateCommunities(with: models)
         RunLoop.main.perform {
             self.subscriptions = subscriptionList
@@ -68,6 +70,6 @@ public extension ApiClient {
     func subscribeToCommunity(id: Int, subscribe: Bool, semaphore: UInt?) async throws -> Community2 {
         let request = FollowCommunityRequest(communityId: id, follow: subscribe)
         let response = try await perform(request)
-        return caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
+        return await caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
     }
 }
