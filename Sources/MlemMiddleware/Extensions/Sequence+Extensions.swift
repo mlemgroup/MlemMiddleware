@@ -8,7 +8,7 @@
 import Foundation
 
 // from https://www.swiftbysundell.com/articles/async-and-concurrent-forEach-and-map/
-extension Sequence {
+public extension Sequence {
     func asyncMap<T>(
         _ transform: (Element) async throws -> T
     ) async rethrows -> [T] {
