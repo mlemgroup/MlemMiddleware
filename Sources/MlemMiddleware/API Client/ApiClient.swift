@@ -69,6 +69,15 @@ public class ApiClient {
         await apiClientCache.createOrRetrieveApiClient(for: url, with: token)
     }
     
+    /// Bootstrap initializer because view-side _really_ wants to have synchronous access to the ApiClient
+    public static func bootstrapApiClient() -> ApiClient {
+        let ret = ApiClient(baseUrl: URL(string: "http://lemmy.world")!)
+        Task {
+            await apiClientCache.put(ret)
+        }
+        return ret
+    }
+    
     /// Creates a new API Client. Private because it should never be used outside of ApiClientCache, as the caching system depends on one ApiClient existing for any given session
     private init(
         baseUrl: URL,
