@@ -13,6 +13,8 @@ public class ApiClient {
         case all, getOnly, none
     }
     
+    fileprivate static let bootstrapUrl: URL = .init(string: "https://lemmy.world")!
+    
     let decoder: JSONDecoder = .defaultDecoder
     let urlSession: URLSession = .init(configuration: .default)
     
@@ -71,7 +73,7 @@ public class ApiClient {
     
     /// Bootstrap initializer because view-side _really_ wants to have synchronous access to the ApiClient
     public static func bootstrapApiClient() -> ApiClient {
-        let ret = ApiClient(baseUrl: URL(string: "http://lemmy.world")!)
+        let ret = ApiClient(baseUrl: bootstrapUrl)
         Task {
             await apiClientCache.put(ret)
         }
