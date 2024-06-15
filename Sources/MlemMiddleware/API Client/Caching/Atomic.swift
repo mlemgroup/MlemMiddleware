@@ -15,7 +15,7 @@ import MachO
 /// A simple, generic lock-free finite state machine.
 ///
 /// - warning: `deinitialize` must be called to dispose of the consumed memory.
-internal struct UnsafeAtomicState<State: RawRepresentable> where State.RawValue == Int32 {
+private struct UnsafeAtomicState<State: RawRepresentable> where State.RawValue == Int32 {
     internal typealias Transition = (expected: State, next: State)
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
     private let value: UnsafeMutablePointer<Int32>
