@@ -236,7 +236,7 @@ extension ApiClient {
             }
             
             let ret: ApiClient = .init(baseUrl: baseUrl, token: token)
-            cachedItems.value[ret.cacheId] = .init(content: ret)
+            itemCache.put(ret)
             return ret
         }
         
@@ -244,8 +244,12 @@ extension ApiClient {
         func changeToken(for baseUrl: URL, oldToken: String?, newToken: String?) {
             let oldCacheId = getCacheId(for: baseUrl, with: oldToken)
             let newCacheId = getCacheId(for: baseUrl, with: newToken)
-            cachedItems.value[newCacheId] = cachedItems.value[oldCacheId]
-            cachedItems.value[oldCacheId] = nil
+            guard let cachedClient = itemCache.get(oldCacheId) else {
+                assertionFailure("Failed to find old ApiClient in cache!")
+                return
+            }
+            itemCache.put(cachedClient, overrideCacheId: newCacheId)
+            itemCache.remove(oldCacheId)
         }
     }
 }

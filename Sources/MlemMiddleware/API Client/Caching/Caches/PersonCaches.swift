@@ -64,7 +64,7 @@ class Person2Cache: CoreCache<Person2> {
             postCount: apiType.counts.postCount,
             commentCount: apiType.counts.commentCount
         )
-        cachedItems.value[newItem.cacheId] = .init(content: newItem)
+        itemCache.put(newItem)
         return newItem
     }
 }
@@ -97,7 +97,7 @@ class Person3Cache: CoreCache<Person3> {
             instance: instance1Cache.getOptionalModel(api: api, from: apiType.site),
             moderatedCommunities: moderatedCommunities
         )
-        cachedItems.value[newItem.cacheId] = .init(content: newItem)
+        itemCache.put(newItem)
         return newItem
     }
 }
