@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  FederationStatus.swift
 //  
 //
 //  Created by Sjmarf on 10/06/2024.
