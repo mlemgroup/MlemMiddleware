@@ -12,6 +12,10 @@ import Semaphore
 open class CoreCache<Content: CacheIdentifiable & AnyObject> {
     public var itemCache: ItemCache = .init()
     
+    public init() {
+        self.itemCache = .init()
+    }
+    
     public class ItemCache {
         private var cachedItems: Atomic<[Int: WeakReference<Content>]> = .init(.init())
         private let cleaningSemaphore: AsyncSemaphore = .init(value: 1)
