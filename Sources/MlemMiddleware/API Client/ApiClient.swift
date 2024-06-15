@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 
+@Observable
 public class ApiClient {
     public enum RequestPermissions {
         case all, getOnly, none
