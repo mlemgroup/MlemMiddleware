@@ -236,7 +236,7 @@ extension ApiClient {
             }
             
             let ret: ApiClient = .init(baseUrl: baseUrl, token: token)
-            cachedItems[ret.cacheId] = .init(content: ret)
+            cachedItems.value[ret.cacheId] = .init(content: ret)
             return ret
         }
         
@@ -244,8 +244,8 @@ extension ApiClient {
         func changeToken(for baseUrl: URL, oldToken: String?, newToken: String?) {
             let oldCacheId = getCacheId(for: baseUrl, with: oldToken)
             let newCacheId = getCacheId(for: baseUrl, with: newToken)
-            cachedItems[newCacheId] = cachedItems[oldCacheId]
-            cachedItems[oldCacheId] = nil
+            cachedItems.value[newCacheId] = cachedItems.value[oldCacheId]
+            cachedItems.value[oldCacheId] = nil
         }
     }
 }
