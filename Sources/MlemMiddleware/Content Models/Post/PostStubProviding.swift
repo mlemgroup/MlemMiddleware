@@ -28,12 +28,10 @@ public protocol PostStubProviding: ContentStub {
     var creator_: Person1? { get }
     var community_: Community1? { get }
     var commentCount_: Int? { get }
-    var upvoteCount_: Int? { get }
-    var downvoteCount_: Int? { get }
+    var votes_: VotesModel? { get }
     var unreadCommentCount_: Int? { get }
     var saved_: Bool? { get }
     var read_: Bool? { get }
-    var myVote_: ScoringOperation? { get }
 }
 
 public extension PostStubProviding {
@@ -55,12 +53,10 @@ public extension PostStubProviding {
     var creator_: Person1? { nil }
     var community_: Community1? { nil }
     var commentCount_: Int? { nil }
-    var upvoteCount_: Int? { nil }
-    var downvoteCount_: Int? { nil }
+    var votes_: VotesModel? { nil }
     var unreadCommentCount_: Int? { nil }
     var saved_: Bool? { nil }
     var read_: Bool? { nil }
-    var myVote_: ScoringOperation? { nil }
 }
 
 public extension PostStubProviding {
