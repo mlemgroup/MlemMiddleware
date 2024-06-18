@@ -35,6 +35,30 @@ extension ApiClient: PostFeedProvider {
         return (posts: posts, cursor: response.nextPage)
     }
     
+    func getPosts(
+        personId: Int,
+        communityId: Int? = nil,
+        sort: ApiSortType = .new,
+        page: Int,
+        limit: Int,
+        savedOnly: Bool = false
+    ) async throws -> (person: Person3, posts: [Post2]) {
+        let request = GetPersonDetailsRequest(
+            personId: personId,
+            username: nil,
+            sort: sort,
+            page: page,
+            limit: limit,
+            communityId: communityId,
+            savedOnly: savedOnly
+        )
+        let response = try await perform(request)
+        return (
+            person: caches.person3.getModel(api: self, from: response),
+            posts: response.posts.map { caches.post2.getModel(api: self, from: $0) }
+        )
+    }
+    
     // swiftlint:disable:next function_parameter_count
     public func getPosts(
         feed: ApiListingType,
@@ -68,12 +92,16 @@ extension ApiClient: PostFeedProvider {
         return caches.post2.getModel(api: self, from: response.postView)
     }
     
-    public func getPost(actorId: URL) async throws -> Post2? {
+    public func getPost(actorId: URL) async throws -> Post2 {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
-        if let response = try await perform(request).post {
-            return caches.post2.getModel(api: self, from: response)
+        do {
+            if let response = try await perform(request).post {
+                return caches.post2.getModel(api: self, from: response)
+            }
+        } catch let ApiClientError.response(response, _) where response.couldntFindObject {
+            throw ApiClientError.noEntityFound
         }
-        return nil
+        throw ApiClientError.noEntityFound
     }
     
     /// Mark the given post as read. Works on all versions.

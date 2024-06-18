@@ -29,3 +29,7 @@ public extension Community3Providing {
     var discussionLanguages_: [Int]? { community3.discussionLanguages }
     // var defaultPostLanguage_: Int? { community3.defaultPostLanguage }
 }
+
+public extension Community3Providing {
+    func upgrade() async throws -> any Community { self }
+}

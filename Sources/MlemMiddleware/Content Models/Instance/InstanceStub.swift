@@ -49,9 +49,9 @@ public extension InstanceStub {
             throw InstanceUpgradeError.noPostReturned
         }
         
-        let comm = try await api.getCommunity(actorId: post.community.actorId)
+        let comm: Community3 = try await api.getCommunity(actorId: post.community.actorId)
         
-        guard let instance = comm?.instance else {
+        guard let instance = comm.instance else {
             throw InstanceUpgradeError.noSiteReturned
         }
         

@@ -13,21 +13,21 @@ public enum PostType: Equatable {
     case link(URL?)
     case titleOnly
     
-    var isText: Bool {
+    public var isText: Bool {
         if case .text = self {
             return true
         }
         return false
     }
     
-    var isImage: Bool {
+    public var isImage: Bool {
         if case .image = self {
             return true
         }
         return false
     }
     
-    var isLink: Bool {
+    public var isLink: Bool {
         if case .link = self {
             return true
         }

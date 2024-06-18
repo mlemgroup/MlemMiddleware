@@ -6,27 +6,54 @@
 //
 
 import Foundation
+import Semaphore
 
 /// Class providing common caching behavior
 open class CoreCache<Content: CacheIdentifiable & AnyObject> {
-    public var cachedItems: [Int: WeakReference<Content>] = .init()
+    public var itemCache: ItemCache = .init()
     
     public init() {
-        self.cachedItems = .init()
+        self.itemCache = .init()
+    }
+    
+    public class ItemCache {
+        private var cachedItems: Atomic<[Int: WeakReference<Content>]> = .init(.init())
+        private let cleaningSemaphore: AsyncSemaphore = .init(value: 1)
+        
+        public func put(_ item: Content, overrideCacheId: Int? = nil) {
+            let cacheId = overrideCacheId ?? item.cacheId
+            cachedItems.value[cacheId] = .init(content: item)
+        }
+        
+        public func get(_ cacheId: Int) -> Content? {
+            cachedItems.value[cacheId]?.content
+        }
+        
+        public func remove(_ cacheId: Int) {
+            print("Removed \(cacheId)")
+            cachedItems.value[cacheId] = nil
+        }
+        
+        public func clean() async {
+            await cleaningSemaphore.wait()
+            defer { cleaningSemaphore.signal() }
+            for (key, value) in cachedItems.value where value.content == nil {
+                remove(key)
+            }
+        }
     }
     
     /// Retrieves the cached model with the given cacheId, if present
     /// - Parameter cacheId: cacheId of the model to retrieve
     /// - Returns: cached model if present, nil otherwise
     public func retrieveModel(cacheId: Int) -> Content? {
-        cachedItems[cacheId]?.content
+        itemCache.get(cacheId)
     }
     
     /// Remove dead references
     public func clean() {
-        for (key, value) in cachedItems where value.content == nil {
-            print("Removed value with id \(key)")
-            cachedItems[key] = nil
+        Task {
+            await itemCache.clean()
         }
     }
 }
