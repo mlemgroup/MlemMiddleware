@@ -9,10 +9,6 @@ import Foundation
 
 extension URL: Identifiable {
     public var id: URL { absoluteURL }
-
-    var isImage: Bool {
-        pathExtension.lowercased().contains(["jpg", "jpeg", "png", "webp"])
-    }
 }
 
 public extension URL {
@@ -21,5 +17,16 @@ public extension URL {
         var result = self
         result.append(queryItems: [URLQueryItem(name: "thumbnail", value: "\(size)")])
         return result
+    }
+    
+    func removingPathComponents() -> URL {
+        var components = URLComponents()
+        components.scheme = scheme
+        components.host = host
+        return components.url!
+    }
+    
+    var isImage: Bool {
+        pathExtension.lowercased().contains(["jpg", "jpeg", "png", "webp"])
     }
 }

@@ -43,4 +43,5 @@ extension ApiErrorResponse {
     var userRegistrationPending: Bool { registrationErrors.contains(error) }
     var emailNotVerified: Bool { registrationErrors.contains(error) }
     var instanceIsPrivate: Bool { error == "instance_is_private" }
+    var couldntFindObject: Bool { error == "couldnt_find_object" }
 }

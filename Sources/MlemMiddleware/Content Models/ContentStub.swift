@@ -12,11 +12,11 @@ public protocol ContentStub: ActorIdentifiable {
     var api: ApiClient { get }
 }
 
-public extension ContentStub {
-    var host: String? { actorId.host() }
-    
+public extension ContentStub {    
      func hash(into hasher: inout Hasher) {
         hasher.combine(actorId)
         hasher.combine(Self.tierNumber)
     }
+    
+    var apiIsLocal: Bool { api.host == host }
 }

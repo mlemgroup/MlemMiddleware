@@ -33,13 +33,13 @@ public protocol PersonStubProviding: CommunityOrPersonStub {
     
     // From User2Providing.
     var postCount_: Int? { get }
-    var postScore_: Int? { get }
     var commentCount_: Int? { get }
-    var commentScore_: Int? { get }
     
     // From User3Providing.
     var instance_: Instance1? { get }
     var moderatedCommunities_: [Community1]? { get }
+    
+    func upgrade() async throws -> any Person
 }
 
 public extension PersonStubProviding {
@@ -59,9 +59,7 @@ public extension PersonStubProviding {
     var blocked_: Bool? { nil }
     
     var postCount_: Int? { nil }
-    var postScore_: Int? { nil }
     var commentCount_: Int? { nil }
-    var commentScore_: Int? { nil }
     
     var instance_: Instance1? { nil }
     var moderatedCommunities_: [Community1]? { nil }
@@ -70,10 +68,7 @@ public extension PersonStubProviding {
 }
 
 public extension PersonStubProviding {
-    func upgrade() async throws -> Person3 {
-        guard let post = try await api.getPerson(actorId: actorId) else {
-            throw UpgradeError.entityNotFound
-        }
-        return post
+    func upgrade() async throws -> any Person {
+        try await api.getPerson(actorId: actorId) as Person2
     }
 }

@@ -95,8 +95,7 @@ public extension Post1Providing {
 }
 
 public extension Post1Providing {
-    // Override the `upgrade()` method from PostStubProviding
-    func upgrade() async throws -> Post2 {
+    func upgrade() async throws -> any Post {
         try await api.getPost(id: id)
     }
 }

@@ -54,8 +54,7 @@ public extension Community1Providing {
 }
 
 public extension Community1Providing {
-    // Override the `upgrade()` method from CommunityStubProviding
-    func upgrade() async throws -> Community3 {
+    func upgrade() async throws -> any Community {
         try await api.getCommunity(id: id)
     }
     

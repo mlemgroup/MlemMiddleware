@@ -18,7 +18,6 @@ public class AnyPost: Hashable, Upgradable {
     public required init(_ wrappedValue: any PostStubProviding) {
         self.wrappedValue = wrappedValue
     }
-    
 }
 
 /// Hashable, Equatable conformance
@@ -34,10 +33,38 @@ public extension AnyPost {
 
 /// Upgradable conformance
 public extension AnyPost {
-    func upgrade() async throws {
-        let upgradedPost = try await wrappedValue.upgrade()
-        Task { @MainActor in
-            self.wrappedValue = upgradedPost
+    internal func upgrade(
+        initialValue: (any Base)? = nil,
+        upgradeOperation: (any Base) async throws -> any Base
+    ) async throws {
+        var lastValue = initialValue ?? self.wrappedValue
+        while !(lastValue is any Upgraded) {
+            lastValue = try await upgradeOperation(lastValue)
+            if type(of: lastValue).tierNumber >= type(of: wrappedValue).tierNumber {
+                let task = Task { @MainActor [lastValue] in
+                    self.wrappedValue = lastValue
+                }
+                _ = await task.value
+            }
         }
+    }
+    
+    func upgrade(
+        api: ApiClient?,
+        upgradeOperation: ((any Base) async throws -> any Base)?
+    ) async throws {
+        let initialValue: any Base
+        if let api {
+            initialValue = api === wrappedValue.api ? wrappedValue : PostStub(
+                api: api,
+                actorId: wrappedValue.actorId
+            )
+        } else {
+            initialValue = wrappedValue
+        }
+        try await upgrade(
+            initialValue: initialValue,
+            upgradeOperation: upgradeOperation ?? { try await $0.upgrade() }
+        )
     }
 }
