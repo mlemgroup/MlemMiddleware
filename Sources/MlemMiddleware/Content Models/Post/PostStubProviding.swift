@@ -32,6 +32,8 @@ public protocol PostStubProviding: ContentStub {
     var unreadCommentCount_: Int? { get }
     var saved_: Bool? { get }
     var read_: Bool? { get }
+    
+    func upgrade() async throws -> any Post
 }
 
 public extension PostStubProviding {
@@ -60,10 +62,7 @@ public extension PostStubProviding {
 }
 
 public extension PostStubProviding {
-    func upgrade() async throws -> Post2 {
-        guard let post = try await api.getPost(actorId: actorId) else {
-            throw UpgradeError.entityNotFound
-        }
-        return post
+    func upgrade() async throws -> any Post {
+        try await api.getPost(actorId: actorId)
     }
 }

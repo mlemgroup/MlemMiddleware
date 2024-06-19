@@ -24,7 +24,9 @@ public extension Person3Providing {
     var moderatedCommunities_: [Community1]? { person3.moderatedCommunities }
 }
 
-public extension Person3Providing {
+public extension Person3Providing {  
+    func upgrade() async throws -> any Person { self }
+    
     func moderates(community: any CommunityStubProviding) -> Bool {
         self.moderatedCommunities.contains { $0.actorId == community.actorId }
     }

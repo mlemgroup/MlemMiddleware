@@ -52,3 +52,25 @@ public extension Person1Providing {
     var instanceBan_: InstanceBanType? { person1.instanceBan }
     var blocked_: Bool? { person1.blocked }
 }
+
+public extension Person1Providing {
+    func upgrade() async throws -> any Person {
+        try await api.getPerson(id: id)
+    }
+    
+    func getPosts(
+        community: (any Community)? = nil,
+        sort: ApiSortType = .new,
+        page: Int,
+        limit: Int,
+        savedOnly: Bool = false
+    ) async throws -> (person: Person3, posts: [Post2]) {
+        return try await api.getPosts(
+            personId: id,
+            communityId: community?.id,
+            page: page,
+            limit: limit,
+            savedOnly: savedOnly
+        )
+    }
+}

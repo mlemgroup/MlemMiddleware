@@ -42,6 +42,8 @@ public extension Post2Providing {
     private var readManager: StateManager<Bool> { post2.readManager }
     private var savedManager: StateManager<Bool> { post2.savedManager }
     
+    func upgrade() async throws -> any Post { self }
+    
     func updateRead(_ newValue: Bool, shouldQueue: Bool = false) {
         if shouldQueue {
             Task {
@@ -86,8 +88,4 @@ public extension Post2Providing {
     var queuedForMarkAsRead: Bool {
         get async { await api.markReadQueue.ids.contains(self.id) }
     }
-}
-
-public extension Post2Providing {
-    func upgrade() async throws -> Post2 { post2 }
 }

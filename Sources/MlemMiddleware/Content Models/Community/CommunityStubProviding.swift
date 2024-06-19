@@ -38,7 +38,7 @@ public protocol CommunityStubProviding: CommunityOrPersonStub {
     var discussionLanguages_: [Int]? { get }
     var defaultPostLanguage_: Int? { get }
     
-    func upgrade() async throws -> Community3
+    func upgrade() async throws -> any Community
 }
 
 public extension CommunityStubProviding {
@@ -76,10 +76,7 @@ public extension CommunityStubProviding {
 }
 
 public extension CommunityStubProviding {
-    func upgrade() async throws -> Community3 {
-        guard let community = try await api.getCommunity(actorId: actorId) else {
-            throw UpgradeError.entityNotFound
-        }
-        return community
+    func upgrade() async throws -> any Community {
+        try await api.getCommunity(actorId: actorId) as Community2
     }
 }

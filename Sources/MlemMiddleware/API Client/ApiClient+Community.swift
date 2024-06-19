@@ -14,15 +14,21 @@ public extension ApiClient {
         return caches.community3.getModel(api: self, from: response)
     }
     
-    func getCommunity(actorId: URL) async throws -> Community3? {
+    func getCommunity(actorId: URL) async throws -> Community2 {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
-        
-        // if community found, get as Community3--caching performed in call
-        if let response = try await perform(request).community {
-            // ResolveObject unfortunately only returns a Community2, so we've gotta make another call
-            return try await getCommunity(id: response.id)
+        do {
+            if let response = try await perform(request).community {
+                return caches.community2.getModel(api: self, from: response)
+            }
+        } catch let ApiClientError.response(response, _) where response.couldntFindObject {
+            throw ApiClientError.noEntityFound
         }
-        return nil
+        throw ApiClientError.noEntityFound
+    }
+    
+    func getCommunity(actorId: URL) async throws -> Community3 {
+        let comm: Community2 = try await getCommunity(actorId: actorId)
+        return try await getCommunity(id: comm.id)
     }
     
     func setupSubscriptionList(

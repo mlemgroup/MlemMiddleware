@@ -14,6 +14,8 @@ public protocol ActorIdentifiable: Hashable, Equatable {
 }
 
 extension ActorIdentifiable {
+    public var host: String? { actorId.host() }
+    
     public func hash(into hasher: inout Hasher) {
         hasher.combine(actorId)
     }
