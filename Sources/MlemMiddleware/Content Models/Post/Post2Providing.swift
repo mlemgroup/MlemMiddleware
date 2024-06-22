@@ -31,7 +31,7 @@ public extension Post2Providing {
     var creator_: Person1? { post2.creator }
     var community_: Community1? { post2.community }
     var commentCount_: Int? { post2.commentCount }
-    var votes_: VotesModel { post2.votes }
+    var votes_: VotesModel? { post2.votes }
     var unreadCommentCount_: Int? { post2.unreadCommentCount }
     var saved_: Bool? { post2.saved }
     var read_: Bool? { post2.read }
