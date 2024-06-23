@@ -17,14 +17,18 @@ extension ApiClient: PostFeedProvider {
         limit: Int,
         savedOnly: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
-        let request = try GetPostsRequest(
-            communityId: communityId,
-            page: page,
-            cursor: cursor,
+        let request = GetPostsRequest(
+            type_: .all,
             sort: sort,
-            type: .all,
+            page: page,
             limit: limit,
-            savedOnly: savedOnly
+            communityId: communityId,
+            communityName: nil,
+            savedOnly: savedOnly,
+            likedOnly: nil,
+            dislikedOnly: nil,
+            pageCursor: cursor,
+            showHidden: false
         )
         let response = try await perform(request)
         let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
@@ -64,14 +68,18 @@ extension ApiClient: PostFeedProvider {
         limit: Int,
         savedOnly: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
-        let request = try GetPostsRequest(
-            communityId: nil,
-            page: page,
-            cursor: cursor,
+        let request = GetPostsRequest(
+            type_: .all,
             sort: sort,
-            type: feed,
+            page: page,
             limit: limit,
-            savedOnly: savedOnly
+            communityId: nil,
+            communityName: nil,
+            savedOnly: savedOnly,
+            likedOnly: nil,
+            dislikedOnly: nil,
+            pageCursor: cursor,
+            showHidden: false
         )
         let response = try await perform(request)
         let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
