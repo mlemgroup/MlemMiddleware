@@ -144,6 +144,7 @@ public class SubscriptionList {
             case 2:
                 items.removeFirst { $0 === community }
                 instanceSections[nil, default: []].sortedInsert(items[0], for: { $0.name < community.name })
+                instanceSections.removeValue(forKey: community.host)
             default:
                 instanceSections[community.host]?.removeFirst { $0 === community }
             }
