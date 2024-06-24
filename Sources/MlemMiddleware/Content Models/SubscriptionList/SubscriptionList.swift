@@ -15,6 +15,8 @@ public class SubscriptionList {
     public private(set) var alphabeticSections: [String?: [Community2]] = .init()
     public private(set) var instanceSections: [String?: [Community2]] = .init()
     
+    public internal(set) var hasLoaded: Bool = false
+    
     internal var favoriteIDs: Set<Int> {
         get { getFavorites() }
         set { self.setFavorites(newValue) }
@@ -84,6 +86,7 @@ public class SubscriptionList {
     }
     
     func updateCommunitySubscription(community: Community2) {
+        guard hasLoaded else { return }
         if community.subscribed {
             if !self.communities.contains(community) {
                 self.addCommunity(community: community)
@@ -97,7 +100,7 @@ public class SubscriptionList {
                     favorites.removeFirst { $0 === community }
                 }
             }
-        } else {
+        } else if self.communities.contains(community) {
             self.removeCommunity(community: community)
         }
     }

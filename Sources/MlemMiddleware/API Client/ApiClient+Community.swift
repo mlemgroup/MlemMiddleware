@@ -64,9 +64,7 @@ public extension ApiClient {
             
         let models: Set<Community2> = Set(communities.lazy.map { self.caches.community2.getModel(api: self, from: $0) })
         await subscriptionList.updateCommunities(with: models)
-        RunLoop.main.perform {
-            self.subscriptions = subscriptionList
-        }
+        subscriptionList.hasLoaded = true
         return subscriptionList
     }
     
