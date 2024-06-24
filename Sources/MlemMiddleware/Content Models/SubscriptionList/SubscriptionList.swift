@@ -136,6 +136,9 @@ public class SubscriptionList {
         favorites.removeFirst { $0 === community }
         let category = self.alphabeticCategoryForCommunity(community)
         self.alphabeticSections[category]?.removeFirst { $0 === community }
+        if self.alphabeticSections[category]?.isEmpty ?? false {
+            self.alphabeticSections.removeValue(forKey: category)
+        }
         
         if var items = instanceSections[community.host] {
             switch items.count {
