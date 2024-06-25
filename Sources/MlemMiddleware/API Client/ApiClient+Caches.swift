@@ -37,16 +37,26 @@ extension ApiClient {
         var post1: Post1Cache
         var post2: Post2Cache
         
+        var comment1: Comment1Cache
+        var comment2: Comment2Cache
+        
         init() {
             self.instance1 = .init()
             self.person1 = .init()
             self.community1 = .init()
             self.post1 = .init()
+            self.comment1 = .init()
             
             self.instance2 = .init(instance1Cache: instance1)
             self.person2 = .init(person1Cache: person1)
             self.community2 = .init(community1Cache: community1)
             self.post2 = .init(post1Cache: post1, person1Cache: person1, community1Cache: community1)
+            self.comment2 = .init(
+                comment1Cache: comment1,
+                post1Cache: post1,
+                person1Cache: person1,
+                community1Cache: community1
+            )
             
             self.instance3 = .init(instance2Cache: instance2, person2Cache: person2)
             self.person3 = .init(person2Cache: person2, community1Cache: community1, instance1Cache: instance1)

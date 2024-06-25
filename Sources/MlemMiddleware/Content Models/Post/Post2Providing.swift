@@ -12,8 +12,8 @@ public protocol Post2Providing: Post1Providing, Interactable2Providing {
     
     var creator: Person1 { get }
     var community: Community1 { get }
-
     var unreadCommentCount: Int { get }
+    var read: Bool { get }
 }
 
 public extension Post2Providing {

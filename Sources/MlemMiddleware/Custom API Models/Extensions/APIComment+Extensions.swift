@@ -7,6 +7,12 @@
 
 import Foundation
 
+extension ApiComment: ActorIdentifiable, CacheIdentifiable {
+    public var cacheId: Int { id }
+
+    public var actorId: URL { apId }
+}
+
 public extension ApiComment {
     var parentId: Int? {
         let components = path.components(separatedBy: ".")
