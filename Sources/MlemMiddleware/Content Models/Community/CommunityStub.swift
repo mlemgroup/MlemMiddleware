@@ -12,6 +12,11 @@ public struct CommunityStub: CommunityStubProviding, Hashable {
     public var api: ApiClient
     public let actorId: URL
     
+    public init(api: ApiClient, actorId: URL) {
+        self.api = api
+        self.actorId = actorId
+    }
+    
     public static func == (lhs: CommunityStub, rhs: CommunityStub) -> Bool {
         lhs.actorId == rhs.actorId
     }
