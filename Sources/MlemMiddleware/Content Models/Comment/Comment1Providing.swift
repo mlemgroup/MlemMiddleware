@@ -53,3 +53,11 @@ public extension Comment1Providing {
     var distinguished_: Bool? { comment1.distinguished }
     var languageId_: Int? { comment1.languageId }
 }
+
+public extension Comment1Providing {
+    var depth: Int { parentCommentIds.count }
+    
+    func upgrade() async throws -> any Comment {
+        try await api.getComment(id: id)
+    }
+}

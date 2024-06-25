@@ -29,8 +29,11 @@ extension Comment2: CacheIdentifiable {
         self.creator.update(with: comment.creator)
         self.post.update(with: comment.post)
         self.community.update(with: comment.community)
-        self.votes =  .init(from: comment.counts, myVote: ScoringOperation.guaranteedInit(from: comment.myVote))
-        self.saved = comment.saved
+        votesManager.updateWithReceivedValue(
+            .init(from: comment.counts, myVote: ScoringOperation.guaranteedInit(from: comment.myVote)),
+            semaphore: semaphore
+        )
+        savedManager.updateWithReceivedValue(comment.saved, semaphore: semaphore)
         self.creatorIsModerator = comment.creatorIsModerator
         self.creatorIsAdmin = comment.creatorIsAdmin
         self.bannedFromCommunity = comment.bannedFromCommunity

@@ -20,12 +20,16 @@ public final class Comment2: Comment2Providing {
     public let post: Post1
     public let community: Community1
     
-    public var votes: VotesModel
-    public var saved: Bool
     public var creatorIsModerator: Bool?
     public var creatorIsAdmin: Bool?
     public var bannedFromCommunity: Bool?
     public var commentCount: Int
+    
+    internal var votesManager: StateManager<VotesModel>
+    public var votes: VotesModel { votesManager.wrappedValue }
+    
+    internal var savedManager: StateManager<Bool>
+    public var saved: Bool { savedManager.wrappedValue }
     
     internal init(
         api: ApiClient,
@@ -45,8 +49,8 @@ public final class Comment2: Comment2Providing {
         self.creator = creator
         self.post = post
         self.community = community
-        self.votes = votes
-        self.saved = saved
+        self.votesManager = .init(wrappedValue: votes)
+        self.savedManager = .init(wrappedValue: saved)
         self.creatorIsModerator = creatorIsModerator
         self.creatorIsAdmin = creatorIsAdmin
         self.bannedFromCommunity = bannedFromCommunity

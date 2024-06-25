@@ -49,4 +49,12 @@ public extension CommentStubProviding {
     var unreadCommentCount_: Int? { nil }
     var saved_: Bool? { nil }
     var read_: Bool? { nil }
+    
+    var depth_: Int? { parentCommentIds_?.count }
+}
+
+public extension CommentStubProviding {
+    func upgrade() async throws -> any Comment {
+        try await api.getComment(actorId: actorId)
+    }
 }

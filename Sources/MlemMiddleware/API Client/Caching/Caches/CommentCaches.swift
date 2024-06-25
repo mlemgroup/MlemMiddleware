@@ -20,7 +20,7 @@ class Comment1Cache: ApiTypeBackedCache<Comment1, ApiComment> {
             deleted: apiType.deleted,
             creatorId: apiType.creatorId,
             postId: apiType.postId,
-            parentCommentIds: Array(apiType.path.split(separator: ".").compactMap { Int($0) }.dropFirst()),
+            parentCommentIds: Array(apiType.path.split(separator: ".").compactMap { Int($0) }.dropFirst().dropLast()),
             distinguished: apiType.distinguished,
             languageId: apiType.languageId
         )
