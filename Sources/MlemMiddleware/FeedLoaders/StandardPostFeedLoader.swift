@@ -51,7 +51,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
             page: Int = 1,
             cursor: String? = nil,
             limit: Int,
-            filter: GetContentFilter = .saved,
+            filter: GetContentFilter? = nil,
             showHidden: Bool = false
         ) async throws -> (posts: [Post2], cursor: String?) {
             switch self {
