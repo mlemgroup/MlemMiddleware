@@ -17,7 +17,7 @@ public struct PostStub: PostStubProviding {
         self.actorId = actorId
     }
     
-    func asLocal() -> Self {
+    public func asLocal() -> Self {
         .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
     }
     
