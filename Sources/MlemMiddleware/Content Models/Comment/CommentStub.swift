@@ -17,6 +17,10 @@ public struct CommentStub: CommentStubProviding {
         self.actorId = actorId
     }
     
+    func asLocal() -> Self {
+        .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
+    }
+    
     public static func == (lhs: CommentStub, rhs: CommentStub) -> Bool {
         lhs.actorId == rhs.actorId
     }

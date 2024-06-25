@@ -17,6 +17,10 @@ public struct CommunityStub: CommunityStubProviding, Hashable {
         self.actorId = actorId
     }
     
+    func asLocal() -> Self {
+        .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
+    }
+    
     public static func == (lhs: CommunityStub, rhs: CommunityStub) -> Bool {
         lhs.actorId == rhs.actorId
     }
