@@ -12,10 +12,7 @@ import Observation
 /// Post tracker for use with single feeds. Supports all post sorting types, but is not suitable for multi-feed use.
 @Observable
 public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
-    // TODO: ERIC keyword filters could be more elegant
-    var filteredKeywords: [String]
-    
-    var feedType: FeedType
+    public var feedType: FeedType
     private(set) var postSortType: ApiSortType
     
     // true when the items in the tracker are stale and should not be displayed
@@ -74,8 +71,6 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     ) {
         self.feedType = feedType
         self.postSortType = sortType
-        
-        self.filteredKeywords = filteredKeywords
     
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
