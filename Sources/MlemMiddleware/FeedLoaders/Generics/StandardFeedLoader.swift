@@ -49,9 +49,9 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     private(set) var loadingCursor: String?
     private let loadingSemaphore: AsyncSemaphore = .init(value: 1)
     
-    init(pageSize: Int, filter: MultiFilter<Item>, loadImmediately: Bool = false) throws {
+    init(pageSize: Int, filter: MultiFilter<Item>, loadImmediately: Bool = false) {
         self.filter = filter
-        try super.init(pageSize: pageSize, loadImmediately: loadImmediately)
+        super.init(pageSize: pageSize, loadImmediately: loadImmediately)
     }
 
     // MARK: - External methods

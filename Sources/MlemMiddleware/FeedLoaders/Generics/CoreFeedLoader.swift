@@ -20,12 +20,17 @@ public class CoreFeedLoader<Item: FeedLoadable> {
     
     private(set) var pageSize: Int
 
-    init(pageSize: Int, loadImmediately: Bool = false) throws {
+    init(pageSize: Int, loadImmediately: Bool = false) {
         self.pageSize = pageSize
         
         if loadImmediately {
             Task {
-                try await loadMoreItems()
+                do {
+                    try await loadMoreItems()
+                } catch {
+                    print(error)
+                    // TODO: loading state failed?
+                }
             }
         }
     }

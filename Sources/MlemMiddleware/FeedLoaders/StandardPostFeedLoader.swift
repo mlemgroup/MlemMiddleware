@@ -69,7 +69,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         largeAvatarSize: CGFloat,
         urlCache: URLCache,
         loadImmediately: Bool = false
-    ) throws {
+    ) {
         self.feedType = feedType
         self.postSortType = sortType
     
@@ -77,15 +77,11 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
         self.urlCache = urlCache
         
-        try super.init(
+        super.init(
             pageSize: pageSize,
             filter: PostFilter(showRead: showReadPosts),
             loadImmediately: loadImmediately
         )
-        //
-//        Task {
-//            try await loadMoreItems()
-//        }
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
