@@ -120,12 +120,14 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
 //        guard feedType != newFeedType else {
 //            return
 //        }
-//
+        
+        let feedTypeChanged = feedType != newFeedType
+        
         // always perform assignment--if account changed, feed type will look unchanged but API will be different
         feedType = newFeedType
         
         // if nominal feed type unchanged, don't refresh
-        if feedType != newFeedType {
+        if feedTypeChanged {
             try await refresh(clearBeforeRefresh: true)
         }
     }
