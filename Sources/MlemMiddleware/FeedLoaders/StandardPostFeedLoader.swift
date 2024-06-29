@@ -67,8 +67,9 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         feedType: FeedType,
         smallAvatarSize: CGFloat,
         largeAvatarSize: CGFloat,
-        urlCache: URLCache
-    ) {
+        urlCache: URLCache,
+        loadImmediately: Bool = false
+    ) throws {
         self.feedType = feedType
         self.postSortType = sortType
     
@@ -76,7 +77,15 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
         self.urlCache = urlCache
         
-        super.init(pageSize: pageSize, filter: PostFilter(showRead: showReadPosts))
+        try super.init(
+            pageSize: pageSize,
+            filter: PostFilter(showRead: showReadPosts),
+            loadImmediately: loadImmediately
+        )
+        //
+//        Task {
+//            try await loadMoreItems()
+//        }
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
@@ -116,17 +125,12 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     @MainActor
     public func changeFeedType(to newFeedType: FeedType) async throws {
-//        // don't do anything if feed type not changed
-//        guard feedType != newFeedType else {
-//            return
-//        }
-        
         let feedTypeChanged = feedType != newFeedType
         
         // always perform assignment--if account changed, feed type will look unchanged but API will be different
         feedType = newFeedType
         
-        // if nominal feed type unchanged, don't refresh
+        // only refresh if nominal feed type changed
         if feedTypeChanged {
             try await refresh(clearBeforeRefresh: true)
         }

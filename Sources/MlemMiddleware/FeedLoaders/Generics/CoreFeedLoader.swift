@@ -20,8 +20,14 @@ public class CoreFeedLoader<Item: FeedLoadable> {
     
     private(set) var pageSize: Int
 
-    init(pageSize: Int) {
+    init(pageSize: Int, loadImmediately: Bool = false) throws {
         self.pageSize = pageSize
+        
+        if loadImmediately {
+            Task {
+                try await loadMoreItems()
+            }
+        }
     }
     
     /// If the given item is the loading threshold item, loads more content
