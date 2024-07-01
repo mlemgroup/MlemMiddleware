@@ -68,7 +68,6 @@ public extension Post1Providing {
 
 // FeedLoadable conformance
 public extension Post1Providing {
-    var uid: ContentModelIdentifier { .init(contentType: .post, contentId: id) }
     func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal {
         switch sortType {
         case .published:

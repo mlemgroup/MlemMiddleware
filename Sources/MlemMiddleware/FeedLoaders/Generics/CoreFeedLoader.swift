@@ -15,8 +15,8 @@ public class CoreFeedLoader<Item: FeedLoadable> {
     private(set) public var loadingState: LoadingState = .idle
     
     // uids of items that should trigger loading. threshold is several items before the end, to give the illusion of infinite loading. fallbackThreshold is the last item in feed, and exists to catch loading if the user scrolled too fast to trigger threshold
-    private(set) var threshold: ContentModelIdentifier?
-    private(set) var fallbackThreshold: ContentModelIdentifier?
+    private(set) var threshold: URL?
+    private(set) var fallbackThreshold: URL?
     
     private(set) var pageSize: Int
 
@@ -27,7 +27,7 @@ public class CoreFeedLoader<Item: FeedLoadable> {
     /// If the given item is the loading threshold item, loads more content
     /// This should be called as an .onAppear of every item in a feed that should support infinite scrolling
     public func loadIfThreshold(_ item: Item) throws {
-        if loadingState == .idle, item.uid == threshold || item.uid == fallbackThreshold {
+        if loadingState == .idle, item.actorId == threshold || item.actorId == fallbackThreshold {
             // this is a synchronous function that wraps the loading as a task so that the task is attached to the loader itself, not the view that calls it, and is therefore safe from being cancelled by view redraws
             Task(priority: .userInitiated) {
                 try await loadMoreItems()
@@ -70,8 +70,8 @@ public class CoreFeedLoader<Item: FeedLoadable> {
             threshold = nil
         } else {
             let thresholdIndex = max(0, items.count + MiddlewareConstants.infiniteLoadThresholdOffset)
-            threshold = items[thresholdIndex].uid
-            fallbackThreshold = items.last?.uid
+            threshold = items[thresholdIndex].actorId
+            fallbackThreshold = items.last?.actorId
         }
     }
 }

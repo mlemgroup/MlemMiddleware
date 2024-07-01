@@ -53,6 +53,16 @@ public extension Person1Providing {
     var blocked_: Bool? { person1.blocked }
 }
 
+// FeedLoadable conformance
+public extension Person1Providing {
+    func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal {
+        switch sortType {
+        case .published:
+            return .published(created)
+        }
+    }
+}
+
 public extension Person1Providing {
     func upgrade() async throws -> any Person {
         try await api.getPerson(id: id)
