@@ -32,7 +32,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     private let urlCache: URLCache
     
     public enum FeedType: Equatable {
-        case aggregateFeed(any PostFeedProvider, type: ApiListingType)
+        case aggregateFeed(ApiClient, type: ApiListingType)
         case community(any Community)
         
         public static func == (lhs: FeedType, rhs: FeedType) -> Bool {
@@ -51,13 +51,29 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
             page: Int = 1,
             cursor: String? = nil,
             limit: Int,
-            savedOnly: Bool = false
+            filter: GetContentFilter? = nil,
+            showHidden: Bool = false
         ) async throws -> (posts: [Post2], cursor: String?) {
             switch self {
             case let .aggregateFeed(api, type):
-                return try await api.getPosts(feed: type, sort: sort, page: page, cursor: cursor, limit: limit, savedOnly: savedOnly)
+                return try await api.getPosts(
+                    feed: type,
+                    sort: sort,
+                    page: page,
+                    cursor: cursor,
+                    limit: limit,
+                    filter: filter,
+                    showHidden: showHidden
+                )
             case let .community(community):
-                return try await community.getPosts(sort: sort, page: page, cursor: cursor, limit: limit, savedOnly: savedOnly)
+                return try await community.getPosts(
+                    sort: sort,
+                    page: page,
+                    cursor: cursor,
+                    limit: limit,
+                    filter: filter,
+                    showHidden: showHidden
+                )
             }
         }
     }

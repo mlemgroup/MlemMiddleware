@@ -7,15 +7,16 @@
 
 import Foundation
 
-extension ApiClient: PostFeedProvider {
+public extension ApiClient {
     // swiftlint:disable:next function_parameter_count
-    public func getPosts(
+    func getPosts(
         communityId: Int,
         sort: ApiSortType,
         page: Int,
         cursor: String?,
         limit: Int,
-        savedOnly: Bool = false
+        filter: GetContentFilter? = nil,
+        showHidden: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
         let request = GetPostsRequest(
             type_: .all,
@@ -24,11 +25,39 @@ extension ApiClient: PostFeedProvider {
             limit: limit,
             communityId: communityId,
             communityName: nil,
-            savedOnly: savedOnly,
-            likedOnly: nil,
-            dislikedOnly: nil,
+            savedOnly: filter == .saved,
+            likedOnly: filter == .upvoted,
+            dislikedOnly: filter == .downvoted,
             pageCursor: cursor,
-            showHidden: false
+            showHidden: showHidden
+        )
+        let response = try await perform(request)
+        let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
+        return (posts: posts, cursor: response.nextPage)
+    }
+
+    // swiftlint:disable:next function_parameter_count
+    func getPosts(
+        feed: ApiListingType,
+        sort: ApiSortType,
+        page: Int,
+        cursor: String?,
+        limit: Int,
+        filter: GetContentFilter? = nil,
+        showHidden: Bool = false
+    ) async throws -> (posts: [Post2], cursor: String?) {
+        let request = GetPostsRequest(
+            type_: .all,
+            sort: sort,
+            page: page,
+            limit: limit,
+            communityId: nil,
+            communityName: nil,
+            savedOnly: filter == .saved,
+            likedOnly: filter == .upvoted,
+            dislikedOnly: filter == .downvoted,
+            pageCursor: cursor,
+            showHidden: showHidden
         )
         let response = try await perform(request)
         let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
@@ -59,40 +88,14 @@ extension ApiClient: PostFeedProvider {
         )
     }
     
-    // swiftlint:disable:next function_parameter_count
-    public func getPosts(
-        feed: ApiListingType,
-        sort: ApiSortType,
-        page: Int,
-        cursor: String?,
-        limit: Int,
-        savedOnly: Bool = false
-    ) async throws -> (posts: [Post2], cursor: String?) {
-        let request = GetPostsRequest(
-            type_: .all,
-            sort: sort,
-            page: page,
-            limit: limit,
-            communityId: nil,
-            communityName: nil,
-            savedOnly: savedOnly,
-            likedOnly: nil,
-            dislikedOnly: nil,
-            pageCursor: cursor,
-            showHidden: false
-        )
-        let response = try await perform(request)
-        let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
-        return (posts: posts, cursor: response.nextPage)
-    }
     
-    public func getPost(id: Int) async throws -> Post2 {
+    func getPost(id: Int) async throws -> Post2 {
         let request = GetPostRequest(id: id, commentId: nil)
         let response = try await perform(request)
         return caches.post2.getModel(api: self, from: response.postView)
     }
     
-    public func getPost(actorId: URL) async throws -> Post2 {
+    func getPost(actorId: URL) async throws -> Post2 {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
         do {
             if let response = try await perform(request).post {
@@ -106,7 +109,7 @@ extension ApiClient: PostFeedProvider {
     
     /// Mark the given post as read. Works on all versions.
     /// On v0.19.0 and above, calling this will also mark any queued posts as read unless `includeQueuedPosts` is set to `false`.
-    public func markPostAsRead(
+    func markPostAsRead(
         id: Int,
         read: Bool = true,
         includeQueuedPosts: Bool = true,
@@ -139,7 +142,7 @@ extension ApiClient: PostFeedProvider {
     
     /// Mark the given posts as read. Only works on v0.19.0 and above; on lower versions, use `markPostAsRead` instead.
     /// Calling this will also mark any queued posts as read unless `includeQueuedPosts` is set to `false`.
-    public func markPostsAsRead(
+    func markPostsAsRead(
         ids: Set<Int>,
         read: Bool = true,
         includeQueuedPosts: Bool = true,
@@ -179,21 +182,21 @@ extension ApiClient: PostFeedProvider {
         }
     }
     
-    public func flushPostReadQueue() async throws {
+    func flushPostReadQueue() async throws {
         if await !markReadQueue.ids.isEmpty {
             try await markPostsAsRead(ids: [], read: true)
         }
     }
     
     @discardableResult
-    public func voteOnPost(id: Int, score: ScoringOperation, semaphore: UInt? = nil) async throws -> Post2 {
+    func voteOnPost(id: Int, score: ScoringOperation, semaphore: UInt? = nil) async throws -> Post2 {
         let request = LikePostRequest(postId: id, score: score.rawValue)
         let response = try await perform(request)
         return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
     
     @discardableResult
-    public func savePost(id: Int, save: Bool, semaphore: UInt? = nil) async throws -> Post2 {
+    func savePost(id: Int, save: Bool, semaphore: UInt? = nil) async throws -> Post2 {
         let request = SavePostRequest(postId: id, save: save)
         let response = try await perform(request)
         return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)

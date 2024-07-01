@@ -17,6 +17,10 @@ public struct PostStub: PostStubProviding {
         self.actorId = actorId
     }
     
+    public func asLocal() -> Self {
+        .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
+    }
+    
     public static func == (lhs: PostStub, rhs: PostStub) -> Bool {
         lhs.actorId == rhs.actorId
     }

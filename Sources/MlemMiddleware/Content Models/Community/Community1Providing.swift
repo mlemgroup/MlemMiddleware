@@ -63,7 +63,8 @@ public extension Community1Providing {
         page: Int = 1,
         cursor: String? = nil,
         limit: Int,
-        savedOnly: Bool = false
+        filter: GetContentFilter? = nil,
+        showHidden: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
         try await api.getPosts(
             communityId: id,
@@ -71,7 +72,8 @@ public extension Community1Providing {
             page: page,
             cursor: cursor,
             limit: limit,
-            savedOnly: savedOnly
+            filter: filter,
+            showHidden: showHidden
         )
     }
 }

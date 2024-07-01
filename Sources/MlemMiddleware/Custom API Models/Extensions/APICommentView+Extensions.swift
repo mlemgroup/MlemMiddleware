@@ -7,7 +7,9 @@
 
 import Foundation
 
-extension ApiCommentView: Identifiable {
-    // defer to our contained comment for identity
+extension ApiCommentView: ActorIdentifiable, CacheIdentifiable, Identifiable {
+    public var cacheId: Int { id }
+
+    public var actorId: URL { post.apId }
     public var id: Int { comment.id }
 }
