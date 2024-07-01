@@ -66,6 +66,27 @@ public extension ApiClient {
         return try await getPerson(id: person.id)
     }
     
+    func searchPeople(
+        query: String,
+        page: Int = 1,
+        limit: Int = 20,
+        filter: ApiListingType = .all
+    ) async throws -> [Person2] {
+        let request = SearchRequest(
+            q: query,
+            communityId: nil,
+            communityName: nil,
+            creatorId: nil,
+            type_: .users,
+            sort: .topAll,
+            listingType: filter,
+            page: page,
+            limit: limit
+        )
+        return try await perform(request).users.map { caches.person2.getModel(api: self, from: $0) }
+    }
+    
+    
     func getContent(authorId id: Int) async throws -> Person3 {
         //    feed: ApiListingType,
         //    sort: ApiSortType,
