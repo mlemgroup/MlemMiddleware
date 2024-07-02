@@ -76,7 +76,7 @@ public extension Post2Providing {
         }
     }
     
-    func updateSave(_ newValue: Bool) {
+    func updateSaved(_ newValue: Bool) {
         groupStateRequest(
             savedManager.ticket(newValue),
             readManager.ticket(true)

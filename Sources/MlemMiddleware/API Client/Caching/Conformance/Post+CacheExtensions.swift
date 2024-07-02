@@ -50,6 +50,6 @@ extension Post2: CacheIdentifiable {
         creator.update(with: post.creator)
         community.update(with: post.community)
         
-        creator.blocked = post.creatorBlocked
+        creator.blockedManager.updateWithReceivedValue(post.creatorBlocked, semaphore: semaphore)
     }
 }

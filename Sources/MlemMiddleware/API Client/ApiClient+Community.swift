@@ -94,4 +94,12 @@ public extension ApiClient {
         let response = try await perform(request)
         return caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
     }
+    
+    @discardableResult
+    func blockCommunity(id: Int, block: Bool, semaphore: UInt? = nil) async throws -> Community2 {
+        let request = BlockCommunityRequest(communityId: id, block: block)
+        let response = try await perform(request)
+        let person = caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
+        return person
+    }
 }

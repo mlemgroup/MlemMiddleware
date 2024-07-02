@@ -55,7 +55,7 @@ public extension Comment2Providing {
         }
     }
     
-    func updateSave(_ newValue: Bool) {
+    func updateSaved(_ newValue: Bool) {
         savedManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.saveComment(id: self.id, save: newValue, semaphore: semaphore)
         }

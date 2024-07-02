@@ -9,9 +9,10 @@ import Foundation
 import Observation
 
 public protocol Comment1Providing:
-    CommentStubProviding,
+        CommentStubProviding,
         Identifiable,
-        Interactable1Providing {
+        Interactable1Providing,
+        SelectableContentProviding {
     
     var comment1: Comment1 { get }
     var id: Int { get }
@@ -52,6 +53,11 @@ public extension Comment1Providing {
     var parentCommentIds_: [Int]? { comment1.parentCommentIds }
     var distinguished_: Bool? { comment1.distinguished }
     var languageId_: Int? { comment1.languageId }
+}
+
+// SelectableContentProviding conformance
+public extension Comment1Providing {
+    var selectableContent: String? { content }
 }
 
 public extension Comment1Providing {
