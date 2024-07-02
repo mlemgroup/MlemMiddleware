@@ -75,6 +75,8 @@ extension ApiClient {
             person4.clean()
             post1.clean()
             post2.clean()
+            comment1.clean()
+            comment2.clean()
         }
     }
 }
