@@ -220,9 +220,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         
         var newItems: [Item] = .init()
         while newItems.count < pageSize {
-            print("Fetching \(cursor)")
             let fetched = try await fetchCursor(cursor: cursor)
-            print("Fetched \(cursor)")
             if !fetched.hasContent || fetched.cursor == loadingCursor {
                 print("[\(Item.self) tracker] fetch returned no items or EOF cursor, setting loading state to done")
                 newState = .done
@@ -234,8 +232,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             
             newItems.append(contentsOf: fetched.items)
         }
-        
-        print("Completed fetch")
         
         await addItems(newItems)
         await setLoading(newState)
