@@ -143,6 +143,7 @@ public class ApiClient {
             }
             
             let statusCode = (response as? HTTPURLResponse)?.statusCode
+            print("DEBUG Error! \(statusCode)")
             throw ApiClientError.response(apiError, statusCode)
         }
         
