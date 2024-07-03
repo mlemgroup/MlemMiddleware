@@ -26,9 +26,7 @@ public class CoreFeedLoader<Item: FeedLoadable> {
         if preheat {
             Task {
                 do {
-                    if items.isEmpty {
-                        try await loadMoreItems()
-                    }
+                    try await loadMoreItems()
                 } catch {
                     print(error)
                     // TODO: loading state failed?
