@@ -108,7 +108,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             print("[\(Item.self) tracker] loading page \(pageToLoad)")
             try await loadPageHelper(pageToLoad)
         case let .loadCursor(cursorToLoad):
-            print("[\(Item.self) tracker] loading cursor")
+            print("[\(Item.self) tracker] loading cursor \(cursorToLoad)")
             try await loadCursorHelper(cursorToLoad)
         }
     }
