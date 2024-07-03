@@ -20,7 +20,7 @@ extension ApiClient: PostFeedProvider {
         let request = GetPostsRequest(
             type_: .all,
             sort: sort,
-            page: page,
+            page: cursor == nil ? page : nil,
             limit: limit,
             communityId: communityId,
             communityName: nil,
@@ -71,7 +71,7 @@ extension ApiClient: PostFeedProvider {
         let request = GetPostsRequest(
             type_: feed,
             sort: sort,
-            page: page,
+            page: cursor == nil ? page : nil,
             limit: limit,
             communityId: nil,
             communityName: nil,
