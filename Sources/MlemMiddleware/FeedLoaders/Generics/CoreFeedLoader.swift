@@ -23,10 +23,12 @@ public class CoreFeedLoader<Item: FeedLoadable> {
     init(pageSize: Int, preheat: Bool = false) {
         self.pageSize = pageSize
         
-        if preheat, items.isEmpty {
+        if preheat {
             Task {
                 do {
-                    try await loadMoreItems()
+                    if items.isEmpty {
+                        try await loadMoreItems()
+                    }
                 } catch {
                     print(error)
                     // TODO: loading state failed?
