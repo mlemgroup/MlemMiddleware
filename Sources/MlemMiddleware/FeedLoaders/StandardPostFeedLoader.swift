@@ -68,7 +68,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         smallAvatarSize: CGFloat,
         largeAvatarSize: CGFloat,
         urlCache: URLCache,
-        loadImmediately: Bool = false
+        preheat: Bool = false
     ) {
         self.feedType = feedType
         self.postSortType = sortType
@@ -80,7 +80,7 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
         super.init(
             pageSize: pageSize,
             filter: PostFilter(showRead: showReadPosts),
-            loadImmediately: loadImmediately
+            preheat: preheat
         )
     }
     

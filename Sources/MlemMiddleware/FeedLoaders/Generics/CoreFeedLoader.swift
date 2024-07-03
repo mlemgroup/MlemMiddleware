@@ -20,10 +20,10 @@ public class CoreFeedLoader<Item: FeedLoadable> {
     
     private(set) var pageSize: Int
 
-    init(pageSize: Int, loadImmediately: Bool = false) {
+    init(pageSize: Int, preheat: Bool = false) {
         self.pageSize = pageSize
         
-        if loadImmediately {
+        if preheat, items.isEmpty {
             Task {
                 do {
                     try await loadMoreItems()
