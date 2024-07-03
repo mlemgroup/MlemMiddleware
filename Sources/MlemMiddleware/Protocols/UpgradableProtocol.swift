@@ -15,6 +15,7 @@ public protocol Upgradable: Observable {
     var wrappedValue: Base { get }
     
     func upgrade(api: ApiClient?, upgradeOperation: ((Base) async throws -> Base)?) async throws
+    func refresh(upgradeOperation: ((any Base) async throws -> any Base)?) async throws
     
     init(_ wrappedValue: Base)
 }
