@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Community1Providing: CommunityStubProviding, Profile2Providing, Identifiable {
+public protocol Community1Providing: CommunityStubProviding, Profile2Providing, ContentIdentifiable {
     var community1: Community1 { get }
     
     var removed: Bool { get }
@@ -21,6 +21,8 @@ public protocol Community1Providing: CommunityStubProviding, Profile2Providing, 
 public typealias Community = Community1Providing
 
 public extension Community1Providing {
+    static var modelTypeId: String { "community" }
+    
     var actorId: URL { community1.actorId }
     var name: String { community1.name }
     
@@ -86,7 +88,7 @@ public extension Community1Providing {
     
     func updateBlocked(_ newValue: Bool) {
         blockedManager.performRequest(expectedResult: newValue) { semaphore in
-            try await self.api.blockCommunity(id: id, block: newValue, semaphore: semaphore)
+            try await self.api.blockCommunity(id: self.id, block: newValue, semaphore: semaphore)
         }
     }
     

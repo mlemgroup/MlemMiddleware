@@ -23,7 +23,7 @@ public class AnyComment: Hashable, Upgradable {
 /// Hashable, Equatable conformance
 public extension AnyComment {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(wrappedValue)
+        hasher.combine(wrappedValue.actorId)
     }
     
     static func == (lhs: AnyComment, rhs: AnyComment) -> Bool {

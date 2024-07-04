@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol CommentStubProviding: ContentStub {
+public protocol CommentStubProviding: ActorIdentifiable, ContentModel {
     // From Comment1Providing. These are defined as nil in the extension below
     var id_: Int? { get }
     var content_: String? { get }

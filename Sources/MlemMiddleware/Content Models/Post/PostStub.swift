@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct PostStub: PostStubProviding {
+public struct PostStub: PostStubProviding, Hashable {
     public static let tierNumber: Int = 0
     public var api: ApiClient
     public let actorId: URL
@@ -19,6 +19,10 @@ public struct PostStub: PostStubProviding {
     
     public func asLocal() -> Self {
         .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(actorId)
     }
     
     public static func == (lhs: PostStub, rhs: PostStub) -> Bool {

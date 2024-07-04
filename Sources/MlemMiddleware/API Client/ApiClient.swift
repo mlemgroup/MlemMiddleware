@@ -218,6 +218,16 @@ extension ApiClient: ActorIdentifiable {
     public var actorId: URL { baseUrl }
 }
 
+extension ApiClient: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.baseUrl)
+    }
+    
+    public static func == (lhs: ApiClient, rhs: ApiClient) -> Bool {
+        lhs === rhs
+    }
+}
+
 // MARK: ApiClientCache
 
 // This needs to be declared in this file to have access to the private initializer
