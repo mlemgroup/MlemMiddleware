@@ -20,22 +20,8 @@ public class CoreFeedLoader<Item: FeedLoadable> {
     
     private(set) var pageSize: Int
 
-    init(pageSize: Int, preheat: Bool = false) {
+    init(pageSize: Int) {
         self.pageSize = pageSize
-        
-        if preheat {
-            Task {
-                do {
-                    print(items.count)
-                    if items.isEmpty {
-                        try await loadMoreItems()
-                    }
-                } catch {
-                    print(error)
-                    // TODO: loading state failed?
-                }
-            }
-        }
     }
     
     /// If the given item is the loading threshold item, loads more content
