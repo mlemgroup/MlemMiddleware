@@ -10,7 +10,7 @@ import Observation
 
 /// Class providing common feed loading functionality for StandardFeedLoader and ParentFeedLoader
 @Observable
-public class CoreFeedLoader<Item: FeedLoadable> {
+public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     private(set) public var items: [Item] = .init()
     private(set) public var loadingState: LoadingState = .idle
     
