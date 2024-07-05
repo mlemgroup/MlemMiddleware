@@ -50,11 +50,19 @@ public extension Reply2Providing {
 }
 
 public extension Reply2Providing {
-    func updateVote(_ newVote: ScoringOperation) {
-        
+    private var votesManager: StateManager<VotesModel> { reply2.votesManager }
+    private var savedManager: StateManager<Bool> { reply2.savedManager }
+    
+    func updateVote(_ newValue: ScoringOperation) {
+        guard newValue != self.votes.myVote else { return }
+        votesManager.performRequest(expectedResult: self.votes.applyScoringOperation(operation: newValue)) { semaphore in
+            try await self.api.voteOnComment(id: self.commentId, score: newValue, semaphore: semaphore)
+        }
     }
     
     func updateSaved(_ newValue: Bool) {
-        
+        savedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.saveComment(id: self.commentId, save: newValue, semaphore: semaphore)
+        }
     }
 }

@@ -18,8 +18,10 @@ public final class Reply1: Reply1Providing {
     public let recipientId: Int
     public let commentId: Int
     public let created: Date
+    public let isMention: Bool
     
-    public var read: Bool
+    internal let readManager: StateManager<Bool>
+    public var read: Bool { readManager.wrappedValue }
     
     init(
         api: ApiClient,
@@ -27,13 +29,15 @@ public final class Reply1: Reply1Providing {
         recipientId: Int,
         commentId: Int,
         created: Date,
-        read: Bool
+        read: Bool,
+        isMention: Bool
     ) {
         self.api = api
         self.id = id
         self.recipientId = recipientId
         self.commentId = commentId
         self.created = created
-        self.read = read
+        self.isMention = isMention
+        self.readManager = .init(wrappedValue: read)
     }
 }

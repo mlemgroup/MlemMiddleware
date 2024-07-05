@@ -20,11 +20,11 @@ public final class Reply2: Reply2Providing {
     public let post: Post1
     public let community: Community1
     public let recipient: Person1
-    public let subscribed: Bool
+    public var subscribed: Bool
     public var commentCount: Int
-    public let creatorIsModerator: Bool?
-    public let creatorIsAdmin: Bool?
-    public let bannedFromCommunity: Bool?
+    public var creatorIsModerator: Bool?
+    public var creatorIsAdmin: Bool?
+    public var bannedFromCommunity: Bool?
     
     internal var votesManager: StateManager<VotesModel>
     public var votes: VotesModel { votesManager.wrappedValue }
@@ -45,8 +45,8 @@ public final class Reply2: Reply2Providing {
         creatorIsModerator: Bool?,
         creatorIsAdmin: Bool?,
         bannedFromCommunity: Bool?,
-        votes: VotesModel,
-        saved: Bool
+        votesManager: StateManager<VotesModel>,
+        savedManager: StateManager<Bool>
     ) {
         self.api = api
         self.reply1 = reply1
@@ -60,7 +60,7 @@ public final class Reply2: Reply2Providing {
         self.creatorIsModerator = creatorIsModerator
         self.creatorIsAdmin = creatorIsAdmin
         self.bannedFromCommunity = bannedFromCommunity
-        self.votesManager = .init(wrappedValue: votes)
-        self.savedManager = .init(wrappedValue: saved)
+        self.votesManager = votesManager
+        self.savedManager = savedManager
     }
 }

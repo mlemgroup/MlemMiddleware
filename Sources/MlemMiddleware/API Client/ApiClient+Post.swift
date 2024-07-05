@@ -47,7 +47,7 @@ public extension ApiClient {
         showHidden: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
         let request = GetPostsRequest(
-            type_: .all,
+            type_: feed,
             sort: sort,
             page: page,
             limit: limit,

@@ -37,8 +37,8 @@ public final class Comment2: Comment2Providing {
         creator: Person1,
         post: Post1,
         community: Community1,
-        votes: VotesModel,
-        saved: Bool,
+        votesManager: StateManager<VotesModel>,
+        savedManager: StateManager<Bool>,
         creatorIsModerator: Bool?,
         creatorIsAdmin: Bool?,
         bannedFromCommunity: Bool?, 
@@ -49,8 +49,8 @@ public final class Comment2: Comment2Providing {
         self.creator = creator
         self.post = post
         self.community = community
-        self.votesManager = .init(wrappedValue: votes)
-        self.savedManager = .init(wrappedValue: saved)
+        self.votesManager = votesManager
+        self.savedManager = savedManager
         self.creatorIsModerator = creatorIsModerator
         self.creatorIsAdmin = creatorIsAdmin
         self.bannedFromCommunity = bannedFromCommunity

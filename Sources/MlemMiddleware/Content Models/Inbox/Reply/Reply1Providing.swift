@@ -20,12 +20,14 @@ public protocol Reply1Providing:
     var commentId: Int { get }
     var read: Bool { get }
     var created: Date { get }
+    var isMention: Bool { get }
 
     var id_: Int? { get }
     var recipientId_: Int? { get }
     var commentId_: Int? { get }
     var read_: Bool? { get }
     var created_: Date? { get }
+    var isMention_: Bool? { get }
     
     // From Reply2Providing
     var reply1_: Reply1? { get }
@@ -56,12 +58,14 @@ public extension Reply1Providing {
     var commentId: Int { reply1.commentId }
     var read: Bool { reply1.read }
     var created: Date { reply1.created }
+    var isMention: Bool { reply1.isMention }
     
     var id_: Int? { id }
     var recipientId_: Int? { recipientId }
     var commentId_: Int? { commentId }
     var read_: Bool? { read }
     var created_: Date? { created }
+    var isMention_: Bool? { isMention }
     
     // From Reply2Providing
     var reply1_: Reply1? { nil }
@@ -75,4 +79,14 @@ public extension Reply1Providing {
     var creatorIsModerator_: Bool? { nil }
     var creatorIsAdmin_: Bool? { nil }
     var bannedFromCommunity_: Bool? { nil }
+}
+
+public extension Reply1Providing {
+    private var readManager: StateManager<Bool> { reply1.readManager }
+    
+    func updateRead(_ newValue: Bool) {
+        readManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.saveComment(id: self.commentId, save: newValue, semaphore: semaphore)
+        }
+    }
 }
