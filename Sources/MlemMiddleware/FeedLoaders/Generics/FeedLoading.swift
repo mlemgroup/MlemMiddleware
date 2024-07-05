@@ -11,6 +11,7 @@ public protocol FeedLoading {
     associatedtype Item: FeedLoadable
     
     var items: [Item] { get }
+    var loadingState: LoadingState { get }
     
     func loadMoreItems() async throws
 }
