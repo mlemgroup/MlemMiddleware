@@ -30,7 +30,6 @@ public protocol Reply1Providing:
     var isMention_: Bool? { get }
     
     // From Reply2Providing
-    var reply1_: Reply1? { get }
     var comment_: Comment1? { get }
     var creator_: Person1? { get }
     var post_: Post1? { get }
@@ -68,7 +67,6 @@ public extension Reply1Providing {
     var isMention_: Bool? { isMention }
     
     // From Reply2Providing
-    var reply1_: Reply1? { nil }
     var comment_: Comment1? { nil }
     var creator_: Person1? { nil }
     var post_: Post1? { nil }
@@ -86,7 +84,26 @@ public extension Reply1Providing {
     
     func updateRead(_ newValue: Bool) {
         readManager.performRequest(expectedResult: newValue) { semaphore in
-            try await self.api.saveComment(id: self.commentId, save: newValue, semaphore: semaphore)
+            if self.isMention {
+                try await self.api.markMentionAsRead(id: self.id, read: newValue, semaphore: semaphore)
+            } else {
+                try await self.api.markReplyAsRead(id: self.id, read: newValue, semaphore: semaphore)
+            }
         }
+    }
+    
+    func toggleRead() {
+        updateRead(!read)
+    }
+    
+    // Override the `ContentIdentifiable` implementation to include `isMention` - I'm not sure if a
+    // reply and a mention can have the same ID - if they do, this is required to ensure that a reply
+    // and mention never have the same hash value.
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(api.actorId)
+        hasher.combine(id)
+        hasher.combine(self.isMention)
+        hasher.combine(Self.modelTypeId)
+        hasher.combine(Self.tierNumber)
     }
 }

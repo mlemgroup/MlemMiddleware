@@ -43,6 +43,9 @@ extension ApiClient {
         var reply1: Reply1Cache = .init()
         var reply2: Reply2Cache = .init()
         
+        var message1: Message1Cache = .init()
+        var message2: Message2Cache = .init()
+        
         func clean() {
             community1.clean()
             community2.clean()
@@ -57,6 +60,8 @@ extension ApiClient {
             comment2.clean()
             reply1.clean()
             reply2.clean()
+            message1.clean()
+            message2.clean()
         }
     }
 }

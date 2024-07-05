@@ -10,8 +10,8 @@ import Foundation
 extension Reply1: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with reply: any Reply1ApiBacker) {
-        self.read = reply.read
+    func update(with reply: any Reply1ApiBacker, semaphore: UInt? = nil) {
+        self.readManager.updateWithReceivedValue(reply.read, semaphore: semaphore)
     }
 }
 

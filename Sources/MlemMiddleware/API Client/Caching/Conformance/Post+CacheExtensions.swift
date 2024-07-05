@@ -12,16 +12,11 @@ extension Post1: CacheIdentifiable {
     
     func update(with post: ApiPost) {
         updated = post.updated
-    
         title = post.name
-        
         // We can't name this 'body' because @Observable uses that property name already
         content = post.body
-        
         linkUrl = post.linkUrl
-        
         deleted = post.deleted
-        
         embed = post.embed
         
         pinnedCommunity = post.featuredCommunity
