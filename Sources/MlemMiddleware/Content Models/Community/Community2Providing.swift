@@ -52,7 +52,10 @@ public extension Community2Providing {
     }
     
     func toggleSubscribe() {
-        let newValue = !subscribed
+        updateSubscribe(!subscribed)
+    }
+    
+    func updateSubscribe(_ newValue: Bool) {
         subscribedManager.performRequest(expectedResult: newValue) { semaphore in
             self.community2.shouldBeFavorited = false
             try await self.api.subscribeToCommunity(id: self.id, subscribe: newValue, semaphore: semaphore)
@@ -60,16 +63,20 @@ public extension Community2Providing {
     }
     
     func toggleFavorite() {
+        updateFavorite(!favorited)
+    }
+    
+    func updateFavorite(_ newValue: Bool) {
         guard let subscriptions = self.api.subscriptions else {
             print("Tried to toggle favorite, but no SubscriptionList found!")
             return
         }
-        self.community2.shouldBeFavorited.toggle()
-        if !subscribed {
+        self.community2.shouldBeFavorited = newValue
+        if !subscribed, newValue {
             subscribedManager.performRequest(expectedResult: true) { semaphore in
                 try await self.api.subscribeToCommunity(id: self.id, subscribe: true, semaphore: semaphore)
             } onRollback: { _ in
-                self.community2.shouldBeFavorited.toggle()
+                self.community2.shouldBeFavorited = false
                 subscriptions.updateCommunitySubscription(community: self.community2)
             }
         } else {

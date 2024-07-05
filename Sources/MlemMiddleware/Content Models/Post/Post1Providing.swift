@@ -98,4 +98,21 @@ public extension Post1Providing {
     func upgrade() async throws -> any Post {
         try await api.getPost(id: id)
     }
+    
+    func getComments(
+        sort: ApiCommentSortType = .hot,
+        page: Int,
+        maxDepth: Int? = nil,
+        limit: Int,
+        filter: GetContentFilter? = nil
+    ) async throws -> [Comment2] {
+        return try await api.getComments(
+            postId: id,
+            sort: sort,
+            page: page,
+            maxDepth: maxDepth,
+            limit: limit,
+            filter: filter
+        )
+    }
 }

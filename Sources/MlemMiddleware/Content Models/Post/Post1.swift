@@ -23,8 +23,6 @@ public final class Post1: Post1Providing {
     public let actorId: URL
     public let id: Int
     
-    public let created: Date
-    
     public var title: String = ""
     public var content: String? = ""
     public var linkUrl: URL?
@@ -36,6 +34,7 @@ public final class Post1: Post1Providing {
     public var nsfw: Bool = false
     public var removed: Bool = false
     public var thumbnailUrl: URL?
+    public let created: Date
     public var updated: Date?
     
     internal init(

@@ -1,13 +1,13 @@
 //
-//  CommunityStub.swift
-//  Mlem
+//  CommentStub.swift
 //
-//  Created by Sjmarf on 03/02/2024.
+//
+//  Created by Sjmarf on 24/06/2024.
 //
 
 import Foundation
 
-public struct CommunityStub: CommunityStubProviding, Hashable {
+public struct CommentStub: CommentStubProviding {
     public static let tierNumber: Int = 0
     public var api: ApiClient
     public let actorId: URL
@@ -21,7 +21,7 @@ public struct CommunityStub: CommunityStubProviding, Hashable {
         .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
     }
     
-    public static func == (lhs: CommunityStub, rhs: CommunityStub) -> Bool {
+    public static func == (lhs: CommentStub, rhs: CommentStub) -> Bool {
         lhs.actorId == rhs.actorId
     }
 }

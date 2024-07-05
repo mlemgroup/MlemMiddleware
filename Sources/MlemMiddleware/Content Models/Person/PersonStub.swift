@@ -18,6 +18,10 @@ public struct PersonStub: PersonStubProviding {
         self.actorId = actorId
     }
     
+    public func asLocal() -> Self {
+        .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
+    }
+    
     public static func == (lhs: PersonStub, rhs: PersonStub) -> Bool {
         lhs.actorId == rhs.actorId
     }
