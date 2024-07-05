@@ -21,7 +21,7 @@ public extension ApiClient {
         let request = GetPostsRequest(
             type_: .all,
             sort: sort,
-            page: page,
+            page: cursor == nil ? page : nil,
             limit: limit,
             communityId: communityId,
             communityName: nil,
@@ -47,9 +47,9 @@ public extension ApiClient {
         showHidden: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
         let request = GetPostsRequest(
-            type_: .all,
+            type_: feed,
             sort: sort,
-            page: page,
+            page: cursor == nil ? page : nil,
             limit: limit,
             communityId: nil,
             communityName: nil,
@@ -87,8 +87,7 @@ public extension ApiClient {
             posts: response.posts.map { caches.post2.getModel(api: self, from: $0) }
         )
     }
-    
-    
+        
     func getPost(id: Int) async throws -> Post2 {
         let request = GetPostRequest(id: id, commentId: nil)
         let response = try await perform(request)
