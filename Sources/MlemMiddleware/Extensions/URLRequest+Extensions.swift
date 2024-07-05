@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  URLRequest+Extensions.swift
+//
 //
 //  Created by Eric Andrews on 2024-07-03.
 //
@@ -9,6 +9,7 @@
 import Foundation
 
 extension URLRequest {
+    /// Prints this URLRequest in human-readable form
     func debug() {
         print("\(self.httpMethod!) \(self.url!)")
         print("Headers:")
