@@ -12,10 +12,7 @@ import Observation
 /// Post tracker for use with single feeds. Supports all post sorting types, but is not suitable for multi-feed use.
 @Observable
 public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
-    // TODO: ERIC keyword filters could be more elegant
-    var filteredKeywords: [String]
-    
-    var feedType: FeedType
+    public var feedType: FeedType
     private(set) var postSortType: ApiSortType
     
     // true when the items in the tracker are stale and should not be displayed
@@ -90,14 +87,15 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     ) {
         self.feedType = feedType
         self.postSortType = sortType
-        
-        self.filteredKeywords = filteredKeywords
     
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
         self.urlCache = urlCache
         
-        super.init(pageSize: pageSize, filter: PostFilter(showRead: showReadPosts))
+        super.init(
+            pageSize: pageSize,
+            filter: PostFilter(showRead: showReadPosts)
+        )
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
@@ -137,16 +135,13 @@ public class StandardPostFeedLoader: StandardFeedLoader<Post2> {
     
     @MainActor
     public func changeFeedType(to newFeedType: FeedType) async throws {
-//        // don't do anything if feed type not changed
-//        guard feedType != newFeedType else {
-//            return
-//        }
-//
+        let feedTypeChanged = feedType != newFeedType
+        
         // always perform assignment--if account changed, feed type will look unchanged but API will be different
         feedType = newFeedType
         
-        // if nominal feed type unchanged, don't refresh
-        if feedType != newFeedType {
+        // only refresh if nominal feed type changed
+        if feedTypeChanged {
             try await refresh(clearBeforeRefresh: true)
         }
     }

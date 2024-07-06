@@ -122,6 +122,8 @@ public class ApiClient {
     @discardableResult
     func perform<Request: ApiRequest>(_ request: Request) async throws -> Request.Response {
         let urlRequest = try urlRequest(from: request)
+        // this line intentionally left commented for convenient future debugging
+        // urlRequest.debug()
         let (data, response) = try await execute(urlRequest)
         if let response = response as? HTTPURLResponse {
             if response.statusCode >= 500 { // Error code for server being offline.
