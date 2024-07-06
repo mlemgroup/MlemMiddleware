@@ -68,11 +68,11 @@ public extension AnyCommunity {
         )
     }
     
-    func refresh(upgradeOperation: ((any Base) async throws -> any Base)?) async throws {
+    func refresh(upgradeOperation: ((any Base) async throws -> any Base) = { try await $0.upgrade() }) async throws {
         if let wrappedValue = wrappedValue as? any Upgraded {
             try await self.upgrade(
                 initialValue: wrappedValue.community2,
-                upgradeOperation: upgradeOperation ?? { try await $0.upgrade() }
+                upgradeOperation: upgradeOperation
             )
         }
     }
