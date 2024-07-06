@@ -10,7 +10,8 @@ import Foundation
 public protocol Message1Providing:
         ContentModel,
         ActorIdentifiable,
-        ContentIdentifiable
+        ContentIdentifiable,
+        InboxItemProviding
     {
     
     var message1: Message1 { get }
@@ -69,13 +70,10 @@ public extension Message1Providing {
 public extension Message1Providing {
     private var readManager: StateManager<Bool> { message1.readManager }
     
+    // `toggleRead` is defined in `InboxItemProviding`
     func updateRead(_ newValue: Bool) {
         readManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.markMessageAsRead(id: self.id, read: newValue, semaphore: semaphore)
         }
-    }
-    
-    func toggleRead() {
-        updateRead(!read)
     }
 }

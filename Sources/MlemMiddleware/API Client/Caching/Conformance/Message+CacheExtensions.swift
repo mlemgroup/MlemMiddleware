@@ -22,7 +22,7 @@ extension Message2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with message: ApiPrivateMessageView, semaphore: UInt? = nil) {
-        self.message1.update(with: message.privateMessage)
+        self.message1.update(with: message.privateMessage, semaphore: semaphore)
         self.creator.update(with: message.creator, semaphore: semaphore)
         self.recipient.update(with: message.recipient, semaphore: semaphore)
     }

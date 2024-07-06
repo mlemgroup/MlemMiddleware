@@ -8,13 +8,19 @@
 import Foundation
 
 // These can't go inside of StateManager because generic classes cannot store static properties
-private class SemaphoreServer {
+internal class SemaphoreServer {
     static var value: UInt = 0
     
     static func next() -> UInt {
         value += 1
         return value
     }
+}
+
+internal enum StateManagerUpdateType {
+    case begin
+    case rollback
+    case receive
 }
 
 protocol StateManagerTickerProtocol {
@@ -41,19 +47,20 @@ struct StateManagerTicket<Value: Equatable>: StateManagerTickerProtocol {
 }
 
 /// This class provides logic to ensure proper handling of returned API responses so as to avoid flickering or the client falling out of sync.
-/// When you begin a task, call `.beginVotingOperation` with the result you expect to get. If no other operations are ongoing, `lastVerifiedValue` is updated to match; otherwise `lastVerifiedValue` is left untouched. The semaphore is incremented and its value returned.
-/// When a vote finishes successfully, call `finishVotingOperation` with the new state returned from the server. If the caller is the most recent one, then clean state is wiped and a `true` value is returned; this indicates that the caller is clear to update the post with the returned value. If the caller is not the most recent one (i.e., another vote is underway), then the clean state is updated but a `false` value is returned; this indicates that the caller should not update the post with the returned value.
-/// When a vote finishes unsuccessfully, call `rollback`. If the caller is the most recent one, then the  `wrappedValue` will be reset to the `lastVerifiedValue`.
+/// When you begin a task, call `.beginVotingOperation` with the result you expect to get. If no other operations are ongoing, 
+/// `lastVerifiedValue` is updated to match; otherwise `lastVerifiedValue` is left untouched. The semaphore is incremented
+/// and its value returned. When a vote finishes successfully, call `finishVotingOperation` with the new state returned from the server.
+/// If the caller is the most recent one, then clean state is wiped and a `true` value is returned; this indicates that the caller is clear to
+/// update the post with the returned value. If the caller is not the most recent one (i.e., another vote is underway), then the clean state is
+/// updated but a `false` value is returned; this indicates that the caller should not update the post with the returned value. When a vote
+/// finishes unsuccessfully, call `rollback`. If the caller is the most recent one, then the  `wrappedValue` will be reset to the
+/// `lastVerifiedValue`.
 @Observable
 public class StateManager<Value: Equatable> {
     /// The state-faked value that should be shown to the user.
-    private(set) var wrappedValue: Value {
-        didSet {
-            onSet(wrappedValue)
-        }
-    }
+    private(set) var wrappedValue: Value
     
-    internal var onSet: (Value) -> Void
+    internal var onSet: (Value, _ type: StateManagerUpdateType) -> Void
     
     /// Responsible for tracking who the most recent caller is. Every time the state is changed, `lastSemaphore` is incremented by one.
     private var lastSemaphore: UInt = 0
@@ -61,7 +68,7 @@ public class StateManager<Value: Equatable> {
     /// Responsible for tracking the last verified value. If the current value is in sync with the server, this will be nil.
     private var lastVerifiedValue: Value?
     
-    init(wrappedValue: Value, onSet: @escaping (Value) -> Void = { _ in }) {
+    init(wrappedValue: Value, onSet: @escaping (Value, _ type: StateManagerUpdateType) -> Void = { _, _ in }) {
         self.wrappedValue = wrappedValue
         self.onSet = onSet
     }
@@ -77,6 +84,9 @@ public class StateManager<Value: Equatable> {
             lastVerifiedValue = wrappedValue
         }
         DispatchQueue.main.async {
+            if self.wrappedValue != expectedResult {
+                self.onSet(expectedResult, .begin)
+            }
             self.wrappedValue = expectedResult
         }
         return lastSemaphore
@@ -86,7 +96,10 @@ public class StateManager<Value: Equatable> {
     @discardableResult
     func updateWithReceivedValue(_ newState: Value, semaphore: UInt?) -> Bool {
         if lastVerifiedValue == nil {
-            wrappedValue = newState
+            if self.wrappedValue != newState {
+                self.onSet(newState, .receive)
+            }
+            self.wrappedValue = newState
             return false
         }
         
@@ -110,7 +123,10 @@ public class StateManager<Value: Equatable> {
     func rollback(semaphore: UInt) -> Value? {
         if lastSemaphore == semaphore, let lastVerifiedValue {
             print("DEBUG [\(semaphore)] is the most recent caller! Resetting lastVerifiedValue.")
-            wrappedValue = lastVerifiedValue
+            if self.wrappedValue != lastVerifiedValue {
+                self.onSet(lastVerifiedValue, .rollback)
+            }
+            self.wrappedValue = lastVerifiedValue
             defer { self.lastVerifiedValue = nil }
             return lastVerifiedValue
         } else {

@@ -10,7 +10,8 @@ import Foundation
 public protocol Reply1Providing:
         ContentModel,
         ContentIdentifiable,
-        Interactable1Providing
+        Interactable1Providing,
+        InboxItemProviding
     {
     
     var reply1: Reply1 { get }
@@ -82,6 +83,7 @@ public extension Reply1Providing {
 public extension Reply1Providing {
     private var readManager: StateManager<Bool> { reply1.readManager }
     
+    // `toggleRead` is defined in `InboxItemProviding`
     func updateRead(_ newValue: Bool) {
         readManager.performRequest(expectedResult: newValue) { semaphore in
             if self.isMention {
@@ -90,10 +92,6 @@ public extension Reply1Providing {
                 try await self.api.markReplyAsRead(id: self.id, read: newValue, semaphore: semaphore)
             }
         }
-    }
-    
-    func toggleRead() {
-        updateRead(!read)
     }
     
     // Override the `ContentIdentifiable` implementation to include `isMention` - I'm not sure if a

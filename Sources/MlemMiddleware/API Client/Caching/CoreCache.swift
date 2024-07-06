@@ -20,6 +20,10 @@ open class CoreCache<Content: CacheIdentifiable & AnyObject> {
         private var cachedItems: Atomic<[Int: WeakReference<Content>]> = .init(.init())
         private let cleaningSemaphore: AsyncSemaphore = .init(value: 1)
         
+        var value: [Int: WeakReference<Content>] {
+            cachedItems.value
+        }
+        
         public func put(_ item: Content, overrideCacheId: Int? = nil) {
             let cacheId = overrideCacheId ?? item.cacheId
             cachedItems.value[cacheId] = .init(content: item)

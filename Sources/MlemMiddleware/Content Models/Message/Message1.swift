@@ -47,5 +47,10 @@ public final class Message1: Message1Providing {
         self.created = created
         self.updated = updated
         self.readManager = .init(wrappedValue: read)
+        self.readManager.onSet = { newValue, type in
+            if type != .receive {
+                api.unreadCount?.messages += newValue ? -1 : 1
+            }
+        }
     }
 }

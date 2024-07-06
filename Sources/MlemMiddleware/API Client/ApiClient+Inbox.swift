@@ -41,6 +41,18 @@ public extension ApiClient {
         return response.privateMessages.map { caches.message2.getModel(api: self, from: $0) }
     }
     
+    func markAllAsRead() async throws {
+        let request = MarkAllAsReadRequest()
+        try await perform(request)
+        for reply in caches.reply1.itemCache.value.values {
+            reply.content?.readManager.updateWithReceivedValue(true, semaphore: nil)
+        }
+        for message in caches.message1.itemCache.value.values {
+            message.content?.readManager.updateWithReceivedValue(true, semaphore: nil)
+        }
+        self.unreadCount?.clear()
+    }
+    
     @discardableResult
     func markReplyAsRead(
         id: Int,
@@ -72,5 +84,22 @@ public extension ApiClient {
         let request = MarkPrivateMessageAsReadRequest(privateMessageId: id, read: read)
         let response = try await perform(request)
         return caches.message2.getModel(api: self, from: response.privateMessageView, semaphore: semaphore)
+    }
+    
+    @discardableResult
+    internal func refreshUnreadCount() async throws -> ApiGetUnreadCountResponse {
+        let request = GetUnreadCountRequest()
+        let response = try await perform(request)
+        self.unreadCount?.update(with: response)
+        return response
+    }
+    
+    /// Get an ``UnreadCount`` object that continues to be updated by the ``ApiClient`` whenever an inbox item is marked read/unread.
+    func getUnreadCount() async throws -> UnreadCount {
+        let unreadCount = self.unreadCount ?? .init(api: self)
+        let response: ApiGetUnreadCountResponse = try await self.refreshUnreadCount()
+        unreadCount.update(with: response)
+        self.unreadCount = unreadCount
+        return unreadCount
     }
 }

@@ -19,7 +19,7 @@ extension Reply2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with reply: any Reply2ApiBacker, semaphore: UInt? = nil) {
-        self.reply1.update(with: reply.reply)
+        self.reply1.update(with: reply.reply, semaphore: semaphore)
         self.comment.update(with: reply.comment)
         self.creator.update(with: reply.creator)
         self.post.update(with: reply.post)

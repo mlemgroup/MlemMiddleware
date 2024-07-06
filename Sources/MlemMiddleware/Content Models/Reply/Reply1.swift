@@ -39,5 +39,14 @@ public final class Reply1: Reply1Providing {
         self.created = created
         self.isMention = isMention
         self.readManager = .init(wrappedValue: read)
+        self.readManager.onSet = { newValue, type in
+            if type != .receive {
+                if isMention {
+                    api.unreadCount?.mentions += newValue ? -1 : 1
+                } else {
+                    api.unreadCount?.replies += newValue ? -1 : 1
+                }
+            }
+        }
     }
 }
