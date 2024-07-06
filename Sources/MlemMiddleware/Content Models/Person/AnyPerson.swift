@@ -68,11 +68,11 @@ public extension AnyPerson {
         )
     }
     
-    func refresh(upgradeOperation: ((any Base) async throws -> any Base) = { try await $0.upgrade() }) async throws {
+    func refresh(upgradeOperation: ((any Base) async throws -> any Base)?) async throws {
         if let wrappedValue = wrappedValue as? any Upgraded {
             try await self.upgrade(
                 initialValue: wrappedValue.person2,
-                upgradeOperation: upgradeOperation
+                upgradeOperation: upgradeOperation ?? { try await $0.upgrade() }
             )
         }
     }
