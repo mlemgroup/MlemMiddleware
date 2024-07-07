@@ -10,7 +10,7 @@ import Foundation
 public class CommunityPostFeedLoader: CorePostFeedLoader {
     private var community: any Community
     
-    init(
+    public init(
         pageSize: Int,
         sortType: ApiSortType,
         showReadPosts: Bool,
