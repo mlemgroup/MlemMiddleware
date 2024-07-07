@@ -11,7 +11,8 @@ public protocol Message1Providing:
         ContentModel,
         ActorIdentifiable,
         ContentIdentifiable,
-        InboxItemProviding
+        InboxItemProviding,
+        SelectableContentProviding
     {
     
     var message1: Message1 { get }
@@ -40,6 +41,11 @@ public protocol Message1Providing:
 }
 
 public typealias Message = Message1Providing
+
+// SelectableContentProviding conformance
+public extension Message1Providing {
+    var selectableContent: String? { content }
+}
 
 public extension Message1Providing {
     static var modelTypeId: String { "message" }

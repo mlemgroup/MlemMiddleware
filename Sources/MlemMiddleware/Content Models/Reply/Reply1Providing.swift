@@ -94,9 +94,20 @@ public extension Reply1Providing {
         }
     }
     
-    // Override the `ContentIdentifiable` implementation to include `isMention` - I'm not sure if a
-    // reply and a mention can have the same ID - if they do, this is required to ensure that a reply
-    // and mention never have the same hash value.
+ 
+}
+
+// Override the `ContentIdentifiable` implementation to include `isMention`, because a reply
+// and a mention can have the same ID
+public extension Reply1Providing {
+    var uid: Int {
+        var hasher = Hasher()
+        hasher.combine(Self.modelTypeId)
+        hasher.combine(id)
+        hasher.combine(isMention)
+        return hasher.finalize()
+    }
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(api.actorId)
         hasher.combine(id)
