@@ -11,6 +11,7 @@ public protocol Instance1Providing:
         Profile2Providing,
         ActorIdentifiable,
         ContentIdentifiable,
+        InstanceStubProviding,
         ContentModel {
     var instance1: Instance1 { get }
     
