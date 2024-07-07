@@ -8,7 +8,7 @@
 import Foundation
 import Observation
 
-/// Class providing common feed loading functionality for StandardFeedLoader and ParentFeedLoader
+/// Class providing common feed loading functionality for CorePostFeedLoader and ParentFeedLoader
 @Observable
 public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     private(set) public var items: [Item] = .init()
