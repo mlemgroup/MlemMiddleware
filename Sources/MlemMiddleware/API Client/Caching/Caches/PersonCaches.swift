@@ -40,7 +40,7 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
     }
     
     override func updateModel(_ item: Person1, with apiType: ApiPerson, semaphore: UInt? = nil) {
-        item.update(with: apiType)
+        item.update(with: apiType, semaphore: semaphore)
     }
 }
 
@@ -52,9 +52,9 @@ class Person2Cache: CoreCache<Person2> {
         self.person1Cache = person1Cache
     }
 
-    func getModel(api: ApiClient, from apiType: any Person2ApiBacker) -> Person2 {
+    func getModel(api: ApiClient, from apiType: any Person2ApiBacker, semaphore: UInt? = nil) -> Person2 {
         if let item = retrieveModel(cacheId: apiType.cacheId) {
-            item.update(with: apiType)
+            item.update(with: apiType, semaphore: semaphore)
             return item
         }
         
@@ -115,7 +115,7 @@ class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
     }
     
     override func updateModel(_ item: Person4, with apiType: ApiMyUserInfo, semaphore: UInt? = nil) {
-        item.update(with: apiType)
+        item.update(with: apiType, semaphore: semaphore)
     }
 }
 

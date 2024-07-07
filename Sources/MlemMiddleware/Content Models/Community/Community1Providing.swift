@@ -53,7 +53,14 @@ public extension Community1Providing {
     var blocked_: Bool? { community1.blocked }
 }
 
+// SelectableContentProviding conformance
 public extension Community1Providing {
+    var selectableContent: String? { description }
+}
+
+public extension Community1Providing {
+    private var blockedManager: StateManager<Bool> { community1.blockedManager }
+    
     func upgrade() async throws -> any Community {
         try await api.getCommunity(id: id)
     }
@@ -75,5 +82,15 @@ public extension Community1Providing {
             filter: filter,
             showHidden: showHidden
         )
+    }
+    
+    func updateBlocked(_ newValue: Bool) {
+        blockedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.blockCommunity(id: id, block: newValue, semaphore: semaphore)
+        }
+    }
+    
+    func toggleBlocked() {
+        updateBlocked(!blocked)
     }
 }

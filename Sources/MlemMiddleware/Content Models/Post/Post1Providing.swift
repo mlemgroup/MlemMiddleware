@@ -8,9 +8,10 @@
 import Foundation
 
 public protocol Post1Providing: 
-    PostStubProviding, 
+        PostStubProviding,
         Identifiable,
         Interactable1Providing,
+        SelectableContentProviding,
         FeedLoadable where FilterType == PostFilterType {
     var post1: Post1 { get }
     
@@ -68,11 +69,21 @@ public extension Post1Providing {
 
 // FeedLoadable conformance
 public extension Post1Providing {
-    var uid: ContentModelIdentifier { .init(contentType: .post, contentId: id) }
     func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal {
         switch sortType {
         case .published:
             return .published(created)
+        }
+    }
+}
+
+// SelectableContentProviding conformance
+public extension Post1Providing {
+    var selectableContent: String? {
+        if let content {
+            "\(title)\n\n\(content)"
+        } else {
+            title
         }
     }
 }

@@ -66,6 +66,35 @@ public extension ApiClient {
         return try await getPerson(id: person.id)
     }
     
+    func searchPeople(
+        query: String,
+        page: Int = 1,
+        limit: Int = 20,
+        filter: ApiListingType = .all
+    ) async throws -> [Person2] {
+        let request = SearchRequest(
+            q: query,
+            communityId: nil,
+            communityName: nil,
+            creatorId: nil,
+            type_: .users,
+            sort: .topAll,
+            listingType: filter,
+            page: page,
+            limit: limit
+        )
+        return try await perform(request).users.map { caches.person2.getModel(api: self, from: $0) }
+    }
+    
+    @discardableResult
+    func blockPerson(id: Int, block: Bool, semaphore: UInt? = nil) async throws -> Person2 {
+        let request = BlockPersonRequest(personId: id, block: block)
+        let response = try await perform(request)
+        let person = caches.person2.getModel(api: self, from: response.personView, semaphore: semaphore)
+        person.person1.blockedManager.updateWithReceivedValue(response.blocked, semaphore: semaphore)
+        return person
+    }
+    
     func getContent(authorId id: Int) async throws -> Person3 {
         //    feed: ApiListingType,
         //    sort: ApiSortType,

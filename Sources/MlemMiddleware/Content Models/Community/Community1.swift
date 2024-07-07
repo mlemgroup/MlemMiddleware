@@ -31,8 +31,9 @@ public final class Community1: Community1Providing {
     public var hidden: Bool = false
     public var onlyModeratorsCanPost: Bool = false
     
-    // This isn't included in the ApiCommunity - it's included in ApiCommunityView, but defined here to maintain similarity with User models. User models don't have the `blocked` property defined in any of the Api types, annoyingly, so we instead request a list of all blocked users and cache the result in `MyAccount`.
-    public var blocked: Bool = false
+    // This isn't included in ApiCommunity - it's included in ApiCommunityView, but defined here to maintain similarity with Person models. Person models don't have the `blocked` property defined in any of the Api types, annoyingly. Instead, certain parent models such as ApiPostView contain the value.
+    internal var blockedManager: StateManager<Bool>
+    public var blocked: Bool { blockedManager.wrappedValue }
   
     internal init(
         api: ApiClient,
@@ -67,6 +68,6 @@ public final class Community1: Community1Providing {
         self.banner = banner
         self.hidden = hidden
         self.onlyModeratorsCanPost = onlyModeratorsCanPost
-        self.blocked = blocked
+        self.blockedManager = .init(wrappedValue: blocked)
     }
 }

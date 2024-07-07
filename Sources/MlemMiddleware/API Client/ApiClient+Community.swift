@@ -31,6 +31,26 @@ public extension ApiClient {
         return try await getCommunity(id: comm.id)
     }
     
+    func searchCommunities(
+        query: String,
+        page: Int = 1,
+        limit: Int = 20,
+        filter: ApiListingType = .all
+    ) async throws -> [Community2] {
+        let request = SearchRequest(
+            q: query,
+            communityId: nil,
+            communityName: nil,
+            creatorId: nil,
+            type_: .communities,
+            sort: .topAll,
+            listingType: filter,
+            page: page,
+            limit: limit
+        )
+        return try await perform(request).communities.map { caches.community2.getModel(api: self, from: $0) }
+    }
+    
     func setupSubscriptionList(
         getFavorites: @escaping () -> Set<Int> = { [] },
         setFavorites: @escaping (Set<Int>) -> Void = { _ in }
@@ -73,5 +93,13 @@ public extension ApiClient {
         let request = FollowCommunityRequest(communityId: id, follow: subscribe)
         let response = try await perform(request)
         return caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
+    }
+    
+    @discardableResult
+    func blockCommunity(id: Int, block: Bool, semaphore: UInt? = nil) async throws -> Community2 {
+        let request = BlockCommunityRequest(communityId: id, block: block)
+        let response = try await perform(request)
+        let person = caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
+        return person
     }
 }

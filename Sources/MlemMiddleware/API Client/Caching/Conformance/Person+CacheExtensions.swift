@@ -10,7 +10,7 @@ import Foundation
 extension Person1: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with person: ApiPerson) {
+    func update(with person: ApiPerson, semaphore: UInt? = nil) {
         updated = person.updated
         displayName = person.displayName ?? person.name
         description = person.bio
@@ -35,32 +35,33 @@ extension Person1: CacheIdentifiable {
 extension Person2: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with apiType: any Person2ApiBacker) {
+    func update(with apiType: any Person2ApiBacker, semaphore: UInt? = nil) {
         postCount = apiType.counts.postCount
         commentCount = apiType.counts.commentCount
-        person1.update(with: apiType.person)
+        person1.update(with: apiType.person, semaphore: semaphore)
     }
 }
 
 extension Person3: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(moderatedCommunities: [Community1], person2ApiBacker: any Person2ApiBacker) {
+    func update(moderatedCommunities: [Community1], person2ApiBacker: any Person2ApiBacker, semaphore: UInt? = nil) {
         self.moderatedCommunities = moderatedCommunities
-        person2.update(with: person2ApiBacker)
+        person2.update(with: person2ApiBacker, semaphore: semaphore)
     }
 }
 
 extension Person4: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with apiMyUserInfo: ApiMyUserInfo) {
+    func update(with apiMyUserInfo: ApiMyUserInfo, semaphore: UInt? = nil) {
         let moderates = apiMyUserInfo.moderates.map { moderatorView in
             api.caches.community1.performModelTranslation(api: api, from: moderatorView.community)
         }
         person3.update(
             moderatedCommunities: moderates,
-            person2ApiBacker: apiMyUserInfo.localUserView
+            person2ApiBacker: apiMyUserInfo.localUserView,
+            semaphore: semaphore
         )
     }
 }

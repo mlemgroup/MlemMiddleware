@@ -7,7 +7,11 @@
 
 import Foundation
 
-public protocol Person1Providing: PersonStubProviding, Profile2Providing, Identifiable {
+public protocol Person1Providing:
+        PersonStubProviding,
+        Profile2Providing,
+        Identifiable,
+        SelectableContentProviding {
     var api: ApiClient { get }
     
     var person1: Person1 { get }
@@ -53,7 +57,24 @@ public extension Person1Providing {
     var blocked_: Bool? { person1.blocked }
 }
 
+// FeedLoadable conformance
 public extension Person1Providing {
+    func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal {
+        switch sortType {
+        case .published:
+            return .published(created)
+        }
+    }
+}
+
+// SelectableContentProviding conformance
+public extension Person1Providing {
+    var selectableContent: String? { description }
+}
+
+public extension Person1Providing {
+    private var blockedManager: StateManager<Bool> { person1.blockedManager }
+    
     func upgrade() async throws -> any Person {
         try await api.getPerson(id: id)
     }
@@ -72,5 +93,15 @@ public extension Person1Providing {
             limit: limit,
             savedOnly: savedOnly
         )
+    }
+    
+    func updateBlocked(_ newValue: Bool) {
+        blockedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.blockPerson(id: id, block: newValue, semaphore: semaphore)
+        }
+    }
+    
+    func toggleBlocked() {
+        updateBlocked(!blocked)
     }
 }
