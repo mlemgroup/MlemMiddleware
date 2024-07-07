@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CommunityPostFeedLoader: CorePostFeedLoader {
+public class CommunityPostFeedLoader: CorePostFeedLoader {
     private var community: any Community
     
     init(

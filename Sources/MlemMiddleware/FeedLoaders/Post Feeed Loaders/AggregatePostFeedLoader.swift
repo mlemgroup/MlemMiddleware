@@ -7,7 +7,7 @@
 
 import Foundation
 
-class AggregatePostFeedLoader: CorePostFeedLoader {
+public class AggregatePostFeedLoader: CorePostFeedLoader {
     private var api: ApiClient
     private(set) var feedType: ApiListingType // ew raw API type but in this case defining a proxy enum seems silly
     
