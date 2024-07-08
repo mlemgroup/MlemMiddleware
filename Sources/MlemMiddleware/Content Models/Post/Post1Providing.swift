@@ -9,7 +9,7 @@ import Foundation
 
 public protocol Post1Providing: 
         PostStubProviding,
-        Identifiable,
+        ContentIdentifiable,
         Interactable1Providing,
         SelectableContentProviding,
         FeedLoadable where FilterType == PostFilterType {
@@ -34,6 +34,8 @@ public protocol Post1Providing:
 public typealias Post = Post1Providing
 
 public extension Post1Providing {
+    static var modelTypeId: String { "post" }
+    
     var actorId: URL { post1.actorId }
     
     var id: Int { post1.id }

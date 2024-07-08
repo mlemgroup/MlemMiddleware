@@ -8,7 +8,7 @@
 import Foundation
 import Observation
 
-public struct PersonStub: PersonStubProviding {
+public struct PersonStub: PersonStubProviding, Hashable {
     public static let tierNumber: Int = 0
     public var api: ApiClient
     public let actorId: URL
@@ -20,6 +20,10 @@ public struct PersonStub: PersonStubProviding {
     
     public func asLocal() -> Self {
         .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(actorId)
     }
     
     public static func == (lhs: PersonStub, rhs: PersonStub) -> Bool {

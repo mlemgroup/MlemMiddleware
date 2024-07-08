@@ -20,7 +20,6 @@ public protocol Comment2Providing: Comment1Providing, Interactable2Providing {
 
 public extension Comment2Providing {
     var comment1: Comment1 { comment2.comment1 }
-    var interactable1: Comment1 { comment1 }
     
     var creator: Person1 { comment2.creator }
     var post: Post1 { comment2.post }

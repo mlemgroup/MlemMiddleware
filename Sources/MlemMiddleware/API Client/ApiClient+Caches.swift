@@ -21,49 +21,30 @@ public protocol CacheIdentifiable {
 
 extension ApiClient {
     struct BaseCacheGroup {
-        var instance1: Instance1Cache
-        var instance2: Instance2Cache
-        var instance3: Instance3Cache
+        var instance1: Instance1Cache = .init()
+        var instance2: Instance2Cache = .init()
+        var instance3: Instance3Cache = .init()
         
-        var community1: Community1Cache
-        var community2: Community2Cache
-        var community3: Community3Cache
+        var community1: Community1Cache = .init()
+        var community2: Community2Cache = .init()
+        var community3: Community3Cache = .init()
         
-        var person1: Person1Cache
-        var person2: Person2Cache
-        var person3: Person3Cache
-        var person4: Person4Cache
+        var person1: Person1Cache = .init()
+        var person2: Person2Cache = .init()
+        var person3: Person3Cache = .init()
+        var person4: Person4Cache = .init()
         
-        var post1: Post1Cache
-        var post2: Post2Cache
+        var post1: Post1Cache = .init()
+        var post2: Post2Cache = .init()
         
-        var comment1: Comment1Cache
-        var comment2: Comment2Cache
+        var comment1: Comment1Cache = .init()
+        var comment2: Comment2Cache = .init()
         
-        init() {
-            self.instance1 = .init()
-            self.person1 = .init()
-            self.community1 = .init()
-            self.post1 = .init()
-            self.comment1 = .init()
-            
-            self.instance2 = .init(instance1Cache: instance1)
-            self.person2 = .init(person1Cache: person1)
-            self.community2 = .init(community1Cache: community1)
-            self.post2 = .init(post1Cache: post1, person1Cache: person1, community1Cache: community1)
-            self.comment2 = .init(
-                comment1Cache: comment1,
-                post1Cache: post1,
-                person1Cache: person1,
-                community1Cache: community1
-            )
-            
-            self.instance3 = .init(instance2Cache: instance2, person2Cache: person2)
-            self.person3 = .init(person2Cache: person2, community1Cache: community1, instance1Cache: instance1)
-            self.community3 = .init(community2Cache: community2, instance1Cache: instance1, person1Cache: person1)
-            
-            self.person4 = .init(person3Cache: person3)
-        }
+        var reply1: Reply1Cache = .init()
+        var reply2: Reply2Cache = .init()
+        
+        var message1: Message1Cache = .init()
+        var message2: Message2Cache = .init()
         
         func clean() {
             community1.clean()
@@ -77,6 +58,10 @@ extension ApiClient {
             post2.clean()
             comment1.clean()
             comment2.clean()
+            reply1.clean()
+            reply2.clean()
+            message1.clean()
+            message2.clean()
         }
     }
 }

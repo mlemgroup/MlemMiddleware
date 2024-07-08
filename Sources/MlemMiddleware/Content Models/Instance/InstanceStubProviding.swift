@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol InstanceStubProviding: ContentStub {
+public protocol InstanceStubProviding: ActorIdentifiable, ContentModel {
     var local: Bool { get }
     
     // From Instance1Providing. These are defined as nil in the extension below

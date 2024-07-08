@@ -10,7 +10,7 @@ import Foundation
 public protocol Person1Providing:
         PersonStubProviding,
         Profile2Providing,
-        Identifiable,
+        ContentIdentifiable,
         SelectableContentProviding {
     var api: ApiClient { get }
     
@@ -27,6 +27,8 @@ public protocol Person1Providing:
 public typealias Person = Person1Providing
 
 public extension Person1Providing {
+    static var modelTypeId: String { "person" }
+    
     var actorId: URL { person1.actorId }
     var id: Int { person1.id }
     var name: String { person1.name }
@@ -97,7 +99,7 @@ public extension Person1Providing {
     
     func updateBlocked(_ newValue: Bool) {
         blockedManager.performRequest(expectedResult: newValue) { semaphore in
-            try await self.api.blockPerson(id: id, block: newValue, semaphore: semaphore)
+            try await self.api.blockPerson(id: self.id, block: newValue, semaphore: semaphore)
         }
     }
     

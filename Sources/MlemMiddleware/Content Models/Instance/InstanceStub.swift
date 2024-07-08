@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct InstanceStub: InstanceStubProviding {
+public struct InstanceStub: InstanceStubProviding, Hashable {
     static public var tierNumber: Int = 0
     public var api: ApiClient
     public let actorId: URL
@@ -21,6 +21,10 @@ public struct InstanceStub: InstanceStubProviding {
     
     public func asLocal() -> Self {
         .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(actorId)
     }
     
     public static func == (lhs: InstanceStub, rhs: InstanceStub) -> Bool {
