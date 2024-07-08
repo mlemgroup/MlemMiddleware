@@ -38,12 +38,17 @@ public extension ApiClient {
         return nil
     }
     
-    @discardableResult
     /// `instanceId` is distinct from `id`. Make sure to pass `instance.instanceId` and not `id`.
     func blockInstance(instanceId: Int, block: Bool, semaphore: UInt? = nil) async throws {
         let request = BlockInstanceRequest(instanceId: instanceId, block: block)
         let response = try await perform(request)
-        // TODO THIS PR fix this
-        // caches.instance1.retrieveModel(cacheId:)
+        if let instance = caches.instance1.retrieveModel(instanceId: instanceId) {
+            instance.blockedManager.updateWithReceivedValue(response.blocked, semaphore: semaphore)
+        }
+        if response.blocked {
+            blocks?.instances.insert(.init(id: instanceId, actorId: actorId))
+        } else {
+            blocks?.instances.remove(.init(id: instanceId, actorId: actorId))
+        }
     }
 }

@@ -17,7 +17,7 @@ internal class SemaphoreServer {
     }
 }
 
-internal enum StateManagerUpdateType {
+internal enum StateManagerUpdateType: Equatable {
     case begin
     case rollback
     case receive

@@ -10,6 +10,7 @@ import Foundation
 @Observable
 public class BlockList {
     public struct Item: Hashable {
+        /// `id` is the `instanceId` when used for instances
         let id: Int
         let actorId: URL
     }
@@ -83,7 +84,7 @@ public class BlockList {
         }
         
         for item in newInstances.subtracting(self.instances) {
-            if let person = api.caches.instance1.retrieveModel(cacheId: item.id) {
+            if let person = api.caches.instance1.retrieveModel(instanceId: item.id) {
                 person.blockedManager.updateWithReceivedValue(true, semaphore: nil)
             }
         }
@@ -103,7 +104,7 @@ public class BlockList {
         }
         
         for item in self.instances.subtracting(newInstances) {
-            if let person = api.caches.instance1.retrieveModel(cacheId: item.id) {
+            if let person = api.caches.instance1.retrieveModel(instanceId: item.id) {
                 person.blockedManager.updateWithReceivedValue(false, semaphore: nil)
             }
         }

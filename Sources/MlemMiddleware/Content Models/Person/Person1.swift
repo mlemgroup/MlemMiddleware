@@ -67,6 +67,15 @@ public final class Person1: Person1Providing {
         self.deleted = deleted
         self.isBot = isBot
         self.instanceBan = instanceBan
-        self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.people.contains(actorId) ?? false)
+        self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.people.contains(.init(id: id, actorId: actorId)) ?? false)
+        self.blockedManager.onSet = { newValue, type in
+            if type != .receive {
+                if newValue {
+                    api.blocks?.people.insert(.init(id: id, actorId: actorId))
+                } else {
+                    api.blocks?.people.remove(.init(id: id, actorId: actorId))
+                }
+            }
+        }
     }
 }

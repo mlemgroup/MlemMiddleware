@@ -7,9 +7,16 @@
 
 import Foundation
 
-class Instance1Cache: ApiTypeBackedCache<Instance1, ApiSite> {
-    override func performModelTranslation(api: ApiClient, from apiType: ApiSite) -> Instance1 {
-        return .init(
+class Instance1Cache: CoreCache<Instance1> {
+    public var instanceIdCache: ItemCache = .init()
+    
+    func getModel(api: ApiClient, from apiType: ApiSite, semaphore: UInt? = nil) -> Instance1 {
+        if let item = retrieveModel(cacheId: apiType.cacheId) {
+            item.update(with: apiType)
+            return item
+        }
+    
+        let newItem: Instance1 = .init(
             api: api,
             actorId: api.baseUrl,
             id: apiType.id,
@@ -25,10 +32,22 @@ class Instance1Cache: ApiTypeBackedCache<Instance1, ApiSite> {
             lastRefresh: apiType.lastRefreshedAt,
             contentWarning: apiType.contentWarning
         )
+        
+        itemCache.put(newItem)
+        instanceIdCache.put(newItem, overrideCacheId: newItem.instanceId)
+        return newItem
     }
     
-    override func updateModel(_ item: Instance1, with apiType: ApiSite, semaphore: UInt? = nil) {
-        item.update(with: apiType)
+    /// Get an instance with the given `instanceId` - this is different from the `id` of the instance.
+    public func retrieveModel(instanceId: Int) -> Instance1? {
+        instanceIdCache.get(instanceId)
+    }
+    
+    override func clean() {
+        Task {
+            await itemCache.clean()
+            await instanceIdCache.clean()
+        }
     }
     
     /// Convenience method for getting an optional site

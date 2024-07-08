@@ -75,7 +75,7 @@ public extension Instance1Providing {
     
     func updateBlocked(_ newValue: Bool) {
         blockedManager.performRequest(expectedResult: newValue) { semaphore in
-            try await self.api.blockInstance(instanceId: id, block: newValue, semaphore: semaphore)
+            try await self.api.blockInstance(instanceId: self.instanceId, block: newValue, semaphore: semaphore)
         }
     }
     
