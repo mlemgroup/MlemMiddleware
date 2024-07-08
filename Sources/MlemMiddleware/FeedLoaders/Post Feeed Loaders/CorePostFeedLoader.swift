@@ -14,9 +14,6 @@ import Observation
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     private(set) var postSortType: ApiSortType
     
-    // true when the items in the tracker are stale and should not be displayed
-    var isStale: Bool = false
-    
     // prefetching
     private let smallAvatarIconSize: Int
     private let largeAvatarIconSize: Int
