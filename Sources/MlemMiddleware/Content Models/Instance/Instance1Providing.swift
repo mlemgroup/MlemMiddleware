@@ -11,12 +11,14 @@ public protocol Instance1Providing: Profile2Providing, InstanceStubProviding, Co
     var instance1: Instance1 { get }
     
     var id: Int { get }
+    /// This ID is different from `id`, and should be used when blocking an instance.
     var instanceId: Int { get }
     var publicKey: String { get }
     var lastRefresh: Date { get }
     var local: Bool { get }
     var shortDescription: String? { get }
     var contentWarning: String? { get }
+    var blocked: Bool { get }
 }
 
 public typealias Instance = Instance1Providing
@@ -38,6 +40,7 @@ public extension Instance1Providing {
         instance1.local = newValue
     }}
     var contentWarning: String? { instance1.contentWarning }
+    var blocked: Bool { instance1.blocked }
     
     var id_: Int? { instance1.id }
     var instanceId_: Int { instance1.instanceId }
@@ -51,12 +54,25 @@ public extension Instance1Providing {
     var publicKey_: String? { instance1.publicKey }
     var lastRefresh_: Date? { instance1.lastRefresh }
     var contentWarning_: String? { instance1.contentWarning }
+    var blocked_: Bool? { instance1.blocked }
 }
 
 public extension Instance1Providing {
+    private var blockedManager: StateManager<Bool> { instance1.blockedManager }
+    
     var name: String { host ?? "unknown" }
     
     var guestApi: ApiClient {
         .getApiClient(for: local ? api.baseUrl : actorId, with: nil)
+    }
+    
+    func updateBlocked(_ newValue: Bool) {
+        blockedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.blockInstance(instanceId: id, block: newValue, semaphore: semaphore)
+        }
+    }
+    
+    func toggleBlocked() {
+        updateBlocked(!blocked)
     }
 }

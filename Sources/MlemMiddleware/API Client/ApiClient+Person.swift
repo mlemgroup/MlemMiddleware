@@ -115,17 +115,24 @@ public extension ApiClient {
         return caches.person3.getModel(api: self, from: response)
     }
     
-    func getMyPerson() async throws -> (person: Person4?, instance: Instance3) {
+    func getMyPerson() async throws -> (person: Person4?, instance: Instance3, blocks: BlockList?) {
         let request = GetSiteRequest()
         let response = try await perform(request)
         let instance = caches.instance3.getModel(api: self, from: response)
         
+        var blocks: BlockList? = self.blocks
         var person: Person4?
         if let myUser = response.myUser {
             person = caches.person4.getModel(api: self, from: myUser)
+            if let blocks {
+                blocks
+            } else {
+                blocks = .init(myUserInfo: myUser)
+            }
         }
+        self.blocks = blocks
         myPerson = person
         myInstance = instance
-        return (person: person, instance: instance)
+        return (person: person, instance: instance, blocks: blocks)
     }
 }

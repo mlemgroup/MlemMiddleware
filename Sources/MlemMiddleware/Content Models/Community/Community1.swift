@@ -51,7 +51,7 @@ public final class Community1: Community1Providing {
         banner: URL? = nil,
         hidden: Bool = false,
         onlyModeratorsCanPost: Bool = false,
-        blocked: Bool = false
+        blocked: Bool? = nil
     ) {
         self.api = api
         self.actorId = actorId
@@ -68,6 +68,6 @@ public final class Community1: Community1Providing {
         self.banner = banner
         self.hidden = hidden
         self.onlyModeratorsCanPost = onlyModeratorsCanPost
-        self.blockedManager = .init(wrappedValue: blocked)
+        self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.communities.contains(actorId) ?? false)
     }
 }

@@ -37,4 +37,13 @@ public extension ApiClient {
         }
         return nil
     }
+    
+    @discardableResult
+    /// `instanceId` is distinct from `id`. Make sure to pass `instance.instanceId` and not `id`.
+    func blockInstance(instanceId: Int, block: Bool, semaphore: UInt? = nil) async throws {
+        let request = BlockInstanceRequest(instanceId: instanceId, block: block)
+        let response = try await perform(request)
+        // TODO THIS PR fix this
+        // caches.instance1.retrieveModel(cacheId:)
+    }
 }

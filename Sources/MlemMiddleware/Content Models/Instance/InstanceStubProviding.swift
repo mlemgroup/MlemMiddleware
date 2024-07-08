@@ -23,6 +23,7 @@ public protocol InstanceStubProviding: ContentStub {
     var publicKey_: String? { get }
     var lastRefresh_: Date? { get }
     var contentWarning_: String? { get }
+    var blocked_: Bool? { get }
     
     // From Instance2Providing. These are defined as nil in the extension below
     var setup_: Bool? { get }
@@ -105,6 +106,7 @@ public extension InstanceStubProviding {
     var commentCount_: Int? { nil }
     var communityCount_: Int? { nil }
     var activeUserCount_: ActiveUserCount? { nil }
+    var blocked_: Bool? { nil }
     
     var version_: SiteVersion? { nil }
     var allLanguages_: [ApiLanguage]? { nil }

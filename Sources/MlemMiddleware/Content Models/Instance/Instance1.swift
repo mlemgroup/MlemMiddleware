@@ -36,6 +36,10 @@ public final class Instance1: Instance1Providing {
     /// If this is `false`, The instance is *not* guaranteed to be non-local, particularly for locally running instances.
     public var local: Bool = false
     
+    // This is set externally when the instance is loaded
+    internal var blockedManager: StateManager<Bool>
+    public var blocked: Bool { blockedManager.wrappedValue }
+    
     internal init(
         api: ApiClient,
         actorId: URL,
@@ -50,7 +54,8 @@ public final class Instance1: Instance1Providing {
         avatar: URL? = nil,
         banner: URL? = nil,
         lastRefresh: Date = .distantPast,
-        contentWarning: String? = nil
+        contentWarning: String? = nil,
+        blocked: Bool? = nil
     ) {
         self.api = api
         self.actorId = actorId
@@ -67,5 +72,6 @@ public final class Instance1: Instance1Providing {
         self.lastRefresh = lastRefresh
         self.contentWarning = contentWarning
         self.local = actorId == api.baseUrl
+        self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.instances.contains(actorId) ?? false)
     }
 }
