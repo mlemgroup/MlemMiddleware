@@ -18,6 +18,11 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     private let smallAvatarIconSize: Int
     private let largeAvatarIconSize: Int
     private let urlCache: URLCache
+    private let prefetcher: ImagePrefetcher = .init(
+        pipeline: ImagePipeline.shared,
+        destination: .memoryCache,
+        maxConcurrentRequestCount: 40
+    )
     
     public init(
         pageSize: Int,
@@ -50,7 +55,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         let result = try await getPosts(page: page, cursor: nil)
         
         let filteredPosts = filter.filter(result.posts)
-        preloadImagesHelper(filteredPosts)
+        preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
     
@@ -58,7 +63,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         let result = try await getPosts(page: page, cursor: cursor)
         
         let filteredPosts = filter.filter(result.posts)
-        preloadImagesHelper(filteredPosts)
+        preloadImages(filteredPosts)
         return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
     }
     
@@ -102,13 +107,12 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         return filter.numFiltered(for: toCount)
     }
     
-    /// Helper method to call preloadImages with this loader's configutration
-    private func preloadImagesHelper(_ posts: [Post2]) {
-        preloadImages(
-            posts,
-            smallAvatarIconSize: smallAvatarIconSize,
-            largeAvatarIconSize: largeAvatarIconSize,
-            urlCache: urlCache
-        )
+    /// Preloads images for the given post
+    private func preloadImages(_ posts: [Post2]) {
+        prefetcher.startPrefetching(with: posts.flatMap { 
+            $0.imageRequests(
+                smallAvatarIconSize: smallAvatarIconSize,
+                largeAvatarIconSize: largeAvatarIconSize)
+        })
     }
 }
