@@ -125,9 +125,9 @@ public extension ApiClient {
         if let myUser = response.myUser {
             person = caches.person4.getModel(api: self, from: myUser)
             if let blocks {
-                blocks
+                blocks.update(myUserInfo: myUser)
             } else {
-                blocks = .init(myUserInfo: myUser)
+                blocks = .init(api: self, myUserInfo: myUser)
             }
         }
         self.blocks = blocks

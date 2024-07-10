@@ -38,7 +38,7 @@ public struct InstanceStub: InstanceStubProviding, Hashable {
 // misleading because they would instead downgrade the model.
 public extension InstanceStub {
     /// Upgrades to an ``Instance1`` -  the highest tier that can be upgraded to without using the local ``ApiClient`` instead.
-    /// Use ``upgradeLocal()`` if you need an ``Instance3``. This method does work for locally running instances.
+    /// Use ``upgradeLocal()`` if you need an ``Instance3``. This method does not work for locally running instances.
     ///
     /// Due to API limitations (see [here](https://github.com/mlemgroup/mlem/pull/1029#issuecomment-2067746011)),
     /// it takes 4 API calls to perform this upgrade.

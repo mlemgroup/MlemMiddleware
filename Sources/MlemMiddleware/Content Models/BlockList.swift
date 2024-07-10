@@ -113,4 +113,12 @@ public class BlockList {
         self.communities = newCommunities
         self.instances = newInstances
     }
+    
+    func update(myUserInfo: ApiMyUserInfo) {
+        self.update(
+            people: myUserInfo.personBlocks,
+            communities: myUserInfo.communityBlocks,
+            instances: myUserInfo.instanceBlocks ?? []
+        )
+    }
 }
