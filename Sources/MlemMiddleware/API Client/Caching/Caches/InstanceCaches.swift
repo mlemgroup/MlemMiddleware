@@ -18,7 +18,7 @@ class Instance1Cache: CoreCache<Instance1> {
     
         let newItem: Instance1 = .init(
             api: api,
-            actorId: api.baseUrl,
+            actorId: apiType.actorId,
             id: apiType.id,
             instanceId: apiType.instanceId,
             created: apiType.published,
