@@ -10,7 +10,7 @@ import Observation
 
 public protocol Comment1Providing:
         CommentStubProviding,
-        Identifiable,
+        ContentIdentifiable,
         Interactable1Providing,
         SelectableContentProviding {
     
@@ -30,6 +30,8 @@ public protocol Comment1Providing:
 public typealias Comment = Comment1Providing
 
 public extension Comment1Providing {
+    static var modelTypeId: ContentType { .comment }
+    
     var actorId: URL { comment1.actorId }
     
     var id: Int { comment1.id }

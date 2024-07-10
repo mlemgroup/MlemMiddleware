@@ -41,16 +41,11 @@ class Instance1Cache: ApiTypeBackedCache<Instance1, ApiSite> {
 }
 
 class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
-    let instance1Cache: Instance1Cache
-    
-    init(instance1Cache: Instance1Cache) {
-        self.instance1Cache = instance1Cache
-    }
     
     override func performModelTranslation(api: ApiClient, from apiType: ApiSiteView) -> Instance2 {
         .init(
             api: api,
-            instance1: instance1Cache.getModel(api: api, from: apiType.site),
+            instance1: api.caches.instance1.getModel(api: api, from: apiType.site),
             setup: apiType.localSite.siteSetup,
             downvotesEnabled: apiType.localSite.enableDownvotes,
             nsfwContentEnabled: apiType.localSite.enableNsfw,
@@ -92,25 +87,17 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
 }
 
 class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
-    let instance2Cache: Instance2Cache
-    let person2Cache: Person2Cache
-
-    init(instance2Cache: Instance2Cache, person2Cache: Person2Cache) {
-        self.instance2Cache = instance2Cache
-        self.person2Cache = person2Cache
-    }
-    
     override func performModelTranslation(api: ApiClient, from apiType: ApiGetSiteResponse) -> Instance3 {
         .init(
             api: api,
-            instance2: instance2Cache.getModel(api: api, from: apiType.siteView),
+            instance2: api.caches.instance2.getModel(api: api, from: apiType.siteView),
             version: .init(apiType.version),
             allLanguages: apiType.allLanguages,
             discussionLanguages: apiType.discussionLanguages,
             taglines: apiType.taglines,
             customEmojis: apiType.customEmojis,
             blockedUrls: apiType.blockedUrls,
-            administrators: apiType.admins.map { person2Cache.getModel(api: api, from: $0) }
+            administrators: apiType.admins.map { api.caches.person2.getModel(api: api, from: $0) }
         )
     }
     

@@ -32,6 +32,7 @@ public class ApiClient {
     internal weak var myInstance: Instance3?
     internal weak var myPerson: Person4?
     internal weak var subscriptions: SubscriptionList?
+    internal weak var unreadCount: UnreadCount?
     
     /// Stores the IDs of posts that are queued to be marked read.
     internal var markReadQueue: MarkReadQueue = .init()
@@ -218,6 +219,17 @@ extension ApiClient: CacheIdentifiable {
 
 extension ApiClient: ActorIdentifiable {
     public var actorId: URL { baseUrl }
+}
+
+extension ApiClient: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.baseUrl)
+        hasher.combine(self.token)
+    }
+    
+    public static func == (lhs: ApiClient, rhs: ApiClient) -> Bool {
+        lhs === rhs
+    }
 }
 
 // MARK: ApiClientCache

@@ -46,12 +46,6 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
 
 // Person2 can be created from any Person2ApiBacker, so we can't use ApiTypeBackedCache
 class Person2Cache: CoreCache<Person2> {
-    let person1Cache: Person1Cache
-    
-    init(person1Cache: Person1Cache) {
-        self.person1Cache = person1Cache
-    }
-
     func getModel(api: ApiClient, from apiType: any Person2ApiBacker, semaphore: UInt? = nil) -> Person2 {
         if let item = retrieveModel(cacheId: apiType.cacheId) {
             item.update(with: apiType, semaphore: semaphore)
@@ -60,7 +54,7 @@ class Person2Cache: CoreCache<Person2> {
         
         let newItem: Person2 = .init(
             api: api,
-            person1: person1Cache.getModel(api: api, from: apiType.person),
+            person1: api.caches.person1.getModel(api: api, from: apiType.person),
             postCount: apiType.counts.postCount,
             commentCount: apiType.counts.commentCount
         )
@@ -71,19 +65,9 @@ class Person2Cache: CoreCache<Person2> {
 
 // Person3 can be created from any Person3ApiBacker, so can't use ApiTypeBackedCache
 class Person3Cache: CoreCache<Person3> {
-    let person2Cache: Person2Cache
-    let community1Cache: Community1Cache
-    let instance1Cache: Instance1Cache
-    
-    init(person2Cache: Person2Cache, community1Cache: Community1Cache, instance1Cache: Instance1Cache) {
-        self.person2Cache = person2Cache
-        self.community1Cache = community1Cache
-        self.instance1Cache = instance1Cache
-    }
-    
     func getModel(api: ApiClient, from apiType: any Person3ApiBacker) -> Person3 {
         let moderatedCommunities = apiType.moderates.map { moderatedCommunity in
-            community1Cache.getModel(api: api, from: moderatedCommunity.community)
+            api.caches.community1.getModel(api: api, from: moderatedCommunity.community)
         }
         
         if let item = retrieveModel(cacheId: apiType.cacheId) {
@@ -93,8 +77,8 @@ class Person3Cache: CoreCache<Person3> {
         
         let newItem: Person3 = .init(
             api: api,
-            person2: person2Cache.getModel(api: api, from: apiType.person2ApiBacker),
-            instance: instance1Cache.getOptionalModel(api: api, from: apiType.site),
+            person2: api.caches.person2.getModel(api: api, from: apiType.person2ApiBacker),
+            instance: api.caches.instance1.getOptionalModel(api: api, from: apiType.site),
             moderatedCommunities: moderatedCommunities
         )
         itemCache.put(newItem)
@@ -104,14 +88,8 @@ class Person3Cache: CoreCache<Person3> {
 
 // Person4 can be created from any Person4ApiBacker, so can't use ApiTypeBackedCache
 class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
-    let person3Cache: Person3Cache
-    
-    init(person3Cache: Person3Cache) {
-        self.person3Cache = person3Cache
-    }
-    
     override func performModelTranslation(api: ApiClient, from apiType: ApiMyUserInfo) -> Person4 {
-        .init(api: api, person3: person3Cache.getModel(api: api, from: apiType))
+        .init(api: api, person3: api.caches.person3.getModel(api: api, from: apiType))
     }
     
     override func updateModel(_ item: Person4, with apiType: ApiMyUserInfo, semaphore: UInt? = nil) {

@@ -50,10 +50,10 @@ public final class Community2: Community2Providing {
         if favorited, !subscribed {
             self.api.subscriptions?.favoriteIDs.remove(self.id)
         }
-        self.subscribedManager.onSet = { newValue in
+        self.subscribedManager.onSet = { newValue, _ in
             self.api.subscriptions?.updateCommunitySubscription(community: self)
         }
         self.shouldBeFavorited = favorited
-        self.subscribedManager.onSet(subscribed)
+        self.subscribedManager.onSet(subscribed, .receive)
     }
 }

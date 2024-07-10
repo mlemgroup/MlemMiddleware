@@ -21,6 +21,10 @@ public struct CommunityStub: CommunityStubProviding, Hashable {
         .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
     }
     
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(actorId)
+    }
+    
     public static func == (lhs: CommunityStub, rhs: CommunityStub) -> Bool {
         lhs.actorId == rhs.actorId
     }

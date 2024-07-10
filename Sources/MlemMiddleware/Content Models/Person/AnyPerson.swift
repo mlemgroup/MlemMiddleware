@@ -23,7 +23,7 @@ public class AnyPerson: Hashable, Upgradable {
 /// Hashable, Equatable conformance
 public extension AnyPerson {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(wrappedValue)
+        hasher.combine(wrappedValue.actorId)
     }
     
     static func == (lhs: AnyPerson, rhs: AnyPerson) -> Bool {

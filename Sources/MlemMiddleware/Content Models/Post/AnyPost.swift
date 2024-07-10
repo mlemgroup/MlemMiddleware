@@ -23,7 +23,7 @@ public class AnyPost: Hashable, Upgradable {
 /// Hashable, Equatable conformance
 public extension AnyPost {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(wrappedValue)
+        hasher.combine(wrappedValue.actorId)
     }
     
     static func == (lhs: AnyPost, rhs: AnyPost) -> Bool {

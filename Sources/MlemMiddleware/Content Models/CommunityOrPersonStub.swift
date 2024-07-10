@@ -8,7 +8,7 @@
 import Foundation
 import Observation
 
-public protocol CommunityOrPersonStub: ContentStub {
+public protocol CommunityOrPersonStub: ActorIdentifiable, ContentModel {
     static var identifierPrefix: String { get }
     
     var name: String { get }

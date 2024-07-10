@@ -19,7 +19,6 @@ public protocol Post2Providing: Post1Providing, Interactable2Providing {
 
 public extension Post2Providing {
     var post1: Post1 { post2.post1 }
-    var interactable1: Post1 { post1 }
     
     var creator: Person1 { post2.creator }
     var community: Community1 { post2.community }

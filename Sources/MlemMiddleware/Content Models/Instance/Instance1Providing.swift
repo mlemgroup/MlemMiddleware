@@ -7,7 +7,12 @@
 
 import Foundation
 
-public protocol Instance1Providing: Profile2Providing, InstanceStubProviding, ContentStub, Identifiable {
+public protocol Instance1Providing:
+        Profile2Providing,
+        ActorIdentifiable,
+        ContentIdentifiable,
+        InstanceStubProviding,
+        ContentModel {
     var instance1: Instance1 { get }
     
     var id: Int { get }
@@ -22,6 +27,8 @@ public protocol Instance1Providing: Profile2Providing, InstanceStubProviding, Co
 public typealias Instance = Instance1Providing
 
 public extension Instance1Providing {
+    static var modelTypeId: ContentType { .instance }
+    
     var actorId: URL { instance1.actorId }
     var id: Int { instance1.id }
     var instanceId: Int { instance1.instanceId }
