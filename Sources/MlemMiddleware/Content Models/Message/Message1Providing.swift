@@ -48,7 +48,7 @@ public extension Message1Providing {
 }
 
 public extension Message1Providing {
-    static var modelTypeId: String { "message" }
+    static var modelTypeId: ContentType { .message }
     
     var actorId: URL { message1.actorId }
     var id: Int { message1.id }
