@@ -135,4 +135,15 @@ public extension ApiClient {
         myInstance = instance
         return (person: person, instance: instance, blocks: blocks)
     }
+    
+    func getBlocked() async throws -> (people: [Person2], communities: [Community2], instances: [Instance1]) {
+        let request = GetSiteRequest()
+        let response = try await perform(request)
+        
+        guard let myUser = response.myUser else { return ([], [], []) }
+        
+        return (
+            people: myUser.personBlocks.map()
+        )
+    }
 }
