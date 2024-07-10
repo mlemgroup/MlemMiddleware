@@ -121,3 +121,11 @@ public enum InstanceUpgradeError: Error {
     case noPostReturned
     case noSiteReturned
 }
+
+public extension InstanceStubProviding {
+    /// Upgrade to an ``Instance3``, using the instance's local ``ApiClient``. This will not work for locally running instances.
+    func upgradeLocal() async throws -> Instance3 {
+        let externalApi: ApiClient = .getApiClient(for: actorId, with: nil)
+        return try await externalApi.getMyInstance()
+    }
+}

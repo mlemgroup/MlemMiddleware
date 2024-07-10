@@ -39,16 +39,17 @@ public extension ApiClient {
     }
     
     /// `instanceId` is distinct from `id`. Make sure to pass `instance.instanceId` and not `id`.
-    func blockInstance(instanceId: Int, block: Bool, semaphore: UInt? = nil) async throws {
+    ///  Technically only `instanceId` is needed to perform this request, but `actorId` is also needed to properly update the `BlockList`.
+    func blockInstance(actorId: URL, instanceId: Int, block: Bool, semaphore: UInt? = nil) async throws {
         let request = BlockInstanceRequest(instanceId: instanceId, block: block)
         let response = try await perform(request)
         if let instance = caches.instance1.retrieveModel(instanceId: instanceId) {
             instance.blockedManager.updateWithReceivedValue(response.blocked, semaphore: semaphore)
         }
         if response.blocked {
-            blocks?.instances.insert(.init(id: instanceId, actorId: actorId))
+            blocks?.instances[actorId] = instanceId
         } else {
-            blocks?.instances.remove(.init(id: instanceId, actorId: actorId))
+            blocks?.instances.removeValue(forKey: actorId)
         }
     }
 }

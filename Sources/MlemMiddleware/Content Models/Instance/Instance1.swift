@@ -73,14 +73,14 @@ public final class Instance1: Instance1Providing {
         self.contentWarning = contentWarning
         self.local = actorId == api.baseUrl
         self.blockedManager = .init(
-            wrappedValue: blocked ?? api.blocks?.instances.contains(.init(id: instanceId, actorId: actorId)) ?? false
+            wrappedValue: blocked ?? api.blocks?.instances.keys.contains(actorId) ?? false
         )
         self.blockedManager.onSet = { newValue, type in
             if type != .receive {
                 if newValue {
-                    api.blocks?.instances.insert(.init(id: instanceId, actorId: actorId))
+                    api.blocks?.instances[actorId] = instanceId
                 } else {
-                    api.blocks?.instances.remove(.init(id: instanceId, actorId: actorId))
+                    api.blocks?.instances.removeValue(forKey: actorId)
                 }
             }
         }

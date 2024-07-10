@@ -68,13 +68,13 @@ public final class Community1: Community1Providing {
         self.banner = banner
         self.hidden = hidden
         self.onlyModeratorsCanPost = onlyModeratorsCanPost
-        self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.communities.contains(.init(id: id, actorId: actorId)) ?? false)
+        self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.communities.keys.contains(actorId) ?? false)
         self.blockedManager.onSet = { newValue, type in
             if type != .receive {
                 if newValue {
-                    api.blocks?.communities.insert(.init(id: id, actorId: actorId))
+                    api.blocks?.communities[actorId] = id
                 } else {
-                    api.blocks?.communities.remove(.init(id: id, actorId: actorId))
+                    api.blocks?.communities.removeValue(forKey: actorId)
                 }
             }
         }

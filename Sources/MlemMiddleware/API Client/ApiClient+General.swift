@@ -25,4 +25,22 @@ public extension ApiClient {
         }
         throw ApiClientError.noEntityFound
     }
+    
+    func getBlocked() async throws -> (people: [Person1], communities: [Community1], instances: [Instance1]) {
+        let request = GetSiteRequest()
+        let response = try await perform(request)
+        
+        guard let myUser = response.myUser else { return ([], [], []) }
+        
+        return (
+            people: myUser.personBlocks.map { caches.person1.getModel(api: self, from: $0.target) },
+            communities: myUser.communityBlocks.map { caches.community1.getModel(api: self, from: $0.community) },
+            instances: myUser.instanceBlocks?.compactMap {
+                if let site = $0.site {
+                    return caches.instance1.getModel(api: self, from: site)
+                }
+                return nil
+            } ?? []
+        )
+    }
 }
