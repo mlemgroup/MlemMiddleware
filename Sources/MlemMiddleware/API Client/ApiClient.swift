@@ -224,6 +224,7 @@ extension ApiClient: ActorIdentifiable {
 extension ApiClient: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.baseUrl)
+        hasher.combine(self.token)
     }
     
     public static func == (lhs: ApiClient, rhs: ApiClient) -> Bool {
