@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Nuke
 
 public protocol Post2Providing: Post1Providing, Interactable2Providing {
     var post2: Post2 { get }
@@ -86,5 +87,39 @@ public extension Post2Providing {
     
     var queuedForMarkAsRead: Bool {
         get async { await api.markReadQueue.ids.contains(self.id) }
+    }
+    
+    /// Generates an array of image requests to fetch all images associated with this Post2Providing
+    func imageRequests(smallAvatarIconSize: Int, largeAvatarIconSize: Int) -> [ImageRequest] {
+        var ret: [ImageRequest] = .init()
+        
+        // preload user and community avatars--fetching both because we don't know which we'll need, but these are super tiny
+        // so it's probably not an API crime, right?
+        if let communityAvatarLink = community.avatar {
+            ret.append(ImageRequest(url: communityAvatarLink.withIconSize(smallAvatarIconSize)))
+        }
+        
+        if let userAvatarLink = creator.avatar {
+            ret.append(ImageRequest(url: userAvatarLink.withIconSize(largeAvatarIconSize * 2)))
+        }
+        
+        switch type {
+        case let .image(url):
+            // images: only load the image
+            ret.append(ImageRequest(url: url, priority: .high))
+        case let .link(url):
+            // websites: load image and favicon
+            if let baseURL = linkUrl?.host,
+               let favIconURL = URL(string: "https://www.google.com/s2/favicons?sz=64&domain=\(baseURL)") {
+                ret.append(ImageRequest(url: favIconURL))
+            }
+            if let url {
+                ret.append(ImageRequest(url: url, priority: .high))
+            }
+        default:
+            break
+        }
+        
+        return ret
     }
 }
