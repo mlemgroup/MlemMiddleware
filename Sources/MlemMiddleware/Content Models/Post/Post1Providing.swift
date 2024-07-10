@@ -34,7 +34,7 @@ public protocol Post1Providing:
 public typealias Post = Post1Providing
 
 public extension Post1Providing {
-    static var modelTypeId: String { "post" }
+    static var modelTypeId: ContentType { .post }
     
     var actorId: URL { post1.actorId }
     

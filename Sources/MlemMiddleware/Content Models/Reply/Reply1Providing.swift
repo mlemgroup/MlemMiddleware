@@ -51,7 +51,7 @@ public extension Reply1Providing {
 }
 
 public extension Reply1Providing {
-    static var modelTypeId: String { "reply" }
+    static var modelTypeId: ContentType { .reply }
     
     var id: Int { reply1.id }
     var recipientId: Int { reply1.recipientId }

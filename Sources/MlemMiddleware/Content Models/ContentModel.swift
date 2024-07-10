@@ -17,7 +17,7 @@ public extension ContentModel where Self: ActorIdentifiable {
 }
 
 public protocol ContentIdentifiable: AnyObject, ContentModel, Hashable, Identifiable {
-    static var modelTypeId: String { get }
+    static var modelTypeId: ContentType { get }
 }
 
 public extension ContentIdentifiable {

@@ -27,7 +27,7 @@ public protocol Person1Providing:
 public typealias Person = Person1Providing
 
 public extension Person1Providing {
-    static var modelTypeId: String { "person" }
+    static var modelTypeId: ContentType { .person }
     
     var actorId: URL { person1.actorId }
     var id: Int { person1.id }

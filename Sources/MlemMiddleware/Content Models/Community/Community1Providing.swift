@@ -21,7 +21,7 @@ public protocol Community1Providing: CommunityStubProviding, Profile2Providing, 
 public typealias Community = Community1Providing
 
 public extension Community1Providing {
-    static var modelTypeId: String { "community" }
+    static var modelTypeId: ContentType { .community }
     
     var actorId: URL { community1.actorId }
     var name: String { community1.name }

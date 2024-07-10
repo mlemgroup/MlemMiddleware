@@ -30,7 +30,7 @@ public protocol Comment1Providing:
 public typealias Comment = Comment1Providing
 
 public extension Comment1Providing {
-    static var modelTypeId: String { "comment" }
+    static var modelTypeId: ContentType { .comment }
     
     var actorId: URL { comment1.actorId }
     
