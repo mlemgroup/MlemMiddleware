@@ -10,6 +10,7 @@ public enum FeedLoaderSortType {
     case published
 }
 
+// TODO: consolidate into a single enum, proxy ApiListingType, contain Sort as member here
 public enum FeedLoaderSortVal: Comparable {
     case published(Date)
     
