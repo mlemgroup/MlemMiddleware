@@ -85,9 +85,11 @@ public class StateManager<Value: Equatable> {
         }
         DispatchQueue.main.async {
             if self.wrappedValue != expectedResult {
+                self.wrappedValue = expectedResult
                 self.onSet(expectedResult, .begin)
+            } else {
+                self.wrappedValue = expectedResult
             }
-            self.wrappedValue = expectedResult
         }
         return lastSemaphore
     }
@@ -97,6 +99,7 @@ public class StateManager<Value: Equatable> {
     func updateWithReceivedValue(_ newState: Value, semaphore: UInt?) -> Bool {
         if lastVerifiedValue == nil {
             if self.wrappedValue != newState {
+                self.wrappedValue = newState
                 self.onSet(newState, .receive)
             }
             self.wrappedValue = newState
@@ -124,6 +127,7 @@ public class StateManager<Value: Equatable> {
         if lastSemaphore == semaphore, let lastVerifiedValue {
             print("DEBUG [\(semaphore)] is the most recent caller! Resetting lastVerifiedValue.")
             if self.wrappedValue != lastVerifiedValue {
+                self.wrappedValue = lastVerifiedValue
                 self.onSet(lastVerifiedValue, .rollback)
             }
             self.wrappedValue = lastVerifiedValue
