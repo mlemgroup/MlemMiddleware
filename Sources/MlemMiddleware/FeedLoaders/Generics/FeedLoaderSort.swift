@@ -6,35 +6,44 @@
 //
 import Foundation
 
-public enum FeedLoaderSortType {
-    case published
+public enum FeedLoaderSort: Comparable {
+    case new(Date)
+    
+    public enum SortType {
+        case new
+    }
 }
 
-// TODO: consolidate into a single enum, proxy ApiListingType, contain Sort as member here
-public enum FeedLoaderSortVal: Comparable {
-    case published(Date)
-    
-    static func typeEquals(lhs: FeedLoaderSortVal, rhs: FeedLoaderSortVal) -> Bool {
-        switch lhs {
-        case .published:
-            switch rhs {
-            case .published:
-                return true
-            }
+public extension FeedLoaderSort {
+    var sortType: FeedLoaderSort.SortType {
+        switch self {
+        case .new: .new
         }
     }
     
-    public static func < (lhs: FeedLoaderSortVal, rhs: FeedLoaderSortVal) -> Bool {
-        guard typeEquals(lhs: lhs, rhs: rhs) else {
-            assertionFailure("Compare called on trackersortvals with different types")
+    var apiType: ApiSortType {
+        switch self {
+        case .new: .new
+        }
+    }
+    
+    func typeEquals(lhs: FeedLoaderSort, rhs: FeedLoaderSort) -> Bool {
+        lhs.sortType == rhs.sortType
+    }
+    
+    
+    /// Compares two FeedLoaderSorts. Returns true if rhs should be sorted after rhs. Assumes that higher items should be sorted first.
+    static func < (lhs: FeedLoaderSort, rhs: FeedLoaderSort) -> Bool {
+        guard lhs.sortType == rhs.sortType else {
+            assertionFailure("Compare called on TrackerSorts with different types")
             return true
         }
         
         switch lhs {
-        case let .published(lhsDate):
+        case let .new(lhsDate):
             switch rhs {
-            case let .published(rhsDate):
-                return lhsDate < rhsDate
+            case let .new(rhsDate):
+                return lhsDate > rhsDate
             }
         }
     }
