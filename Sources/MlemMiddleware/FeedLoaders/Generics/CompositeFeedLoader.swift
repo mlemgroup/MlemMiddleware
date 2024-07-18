@@ -17,26 +17,27 @@ import Semaphore
 /// in the standard Parent/Child FeedLoader. To load a new page, however, the stream calls the load method of the
 /// UserContentFeedLoader, which performs the call and pushes the results down to the child streams
 
-public enum UserContent: Equatable {
+public enum UserContent: Hashable, Equatable {
     // This always comes from GetPersonDetailsRequest, so we can know we're getting Post2 and Comment2
     case post(Post2)
     case comment(Comment2)
 }
 
 public extension UserContent {
-    static func == (lhs: UserContent, rhs: UserContent) -> Bool {
-        switch lhs {
-        case let .post(lhsPost):
-            switch rhs {
-            case let .post(rhsPost): lhsPost == rhsPost
-            default: false
-            }
-        case .comment(let lhsComment):
-            switch rhs {
-            case let .comment(rhsComment): lhsComment == rhsComment
-            default: false
-            }
+    func hash(into hasher: inout Hasher) {
+        // TODO: better conformance
+        switch self {
+        case let .post(post2):
+            hasher.combine(post2)
+            hasher.combine(ContentType.post)
+        case let .comment(comment2):
+            hasher.combine(comment2)
+            hasher.combine(ContentType.comment)
         }
+    }
+    
+    static func == (lhs: UserContent, rhs: UserContent) -> Bool {
+        lhs.hashValue == rhs.hashValue
     }
 }
 
