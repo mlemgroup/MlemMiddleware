@@ -242,7 +242,7 @@ public class SavedFeedLoader: UserContentFeedLoader {
     private var userId: Int
     
     // NOTE: must initialize with my user id
-    init(api: ApiClient, sortType: FeedLoaderSort.SortType, userId: Int) {
+    public init(api: ApiClient, sortType: FeedLoaderSort.SortType, userId: Int) {
         self.userId = userId
         super.init(api: api, sortType: sortType)
     }
