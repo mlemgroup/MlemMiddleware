@@ -137,7 +137,7 @@ public class UserContentFeedLoader {
     lazy var postStream: UserContentStream<Post2> = .init(sortType: sortType, load: self.fetchItems)
     lazy var commentStream: UserContentStream<Comment2> = .init(sortType: sortType, load: self.fetchItems)
     
-    init(
+    public init(
         api: ApiClient,
         sortType: FeedLoaderSort.SortType
     ) {
