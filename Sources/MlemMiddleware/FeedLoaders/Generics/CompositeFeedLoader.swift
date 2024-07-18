@@ -17,10 +17,27 @@ import Semaphore
 /// in the standard Parent/Child FeedLoader. To load a new page, however, the stream calls the load method of the
 /// UserContentFeedLoader, which performs the call and pushes the results down to the child streams
 
-public enum UserContent {
+public enum UserContent: Equatable {
     // This always comes from GetPersonDetailsRequest, so we can know we're getting Post2 and Comment2
     case post(Post2)
     case comment(Comment2)
+}
+
+public extension UserContent {
+    static func == (lhs: UserContent, rhs: UserContent) -> Bool {
+        switch lhs {
+        case let .post(lhsPost):
+            switch rhs {
+            case let .post(rhsPost): lhsPost == rhsPost
+            default: false
+            }
+        case .comment(let lhsComment):
+            switch rhs {
+            case let .comment(rhsComment): lhsComment == rhsComment
+            default: false
+            }
+        }
+    }
 }
 
 // This is basically a ChildTracker minus post loading
@@ -101,11 +118,19 @@ public struct UserContentStream<Item: FeedLoadable> {
 
 public class UserContentFeedLoader {
     public var api: ApiClient
-    private(set) var sortType: FeedLoaderSort.SortType
-    internal var page: Int
     public var items: [UserContent]
-    private var loadingSempahore: AsyncSemaphore
-    private var thresholds: (UserContent?, UserContent?)
+    public var loadingState: LoadingState
+    
+    private(set) var sortType: FeedLoaderSort.SortType
+    
+    /// Last page fetched from the API
+    internal var apiPage: Int
+    /// Last page of content loaded, used to avoid duplicate loads
+    internal var contentPage: Int
+    
+    private var apiLoadingSemaphore: AsyncSemaphore
+    private var contentLoadingSemaphore: AsyncSemaphore
+    private var thresholds: (standard: UserContent?, fallback: UserContent?)
     
     // These are lazy so that we can pass loadMoreItems in at init
     lazy var postStream: UserContentStream<Post2> = .init(sortType: sortType, load: self.fetchItems)
@@ -117,27 +142,57 @@ public class UserContentFeedLoader {
     ) {
         self.api = api
         self.sortType = sortType
-        self.page = 1
+        self.apiPage = 0
+        self.contentPage = 0
         self.items = .init()
-        self.loadingSempahore = .init(value: 1)
+        self.apiLoadingSemaphore = .init(value: 1)
+        self.contentLoadingSemaphore = .init(value: 1)
         self.thresholds = (nil, nil)
+        self.loadingState = .idle
     }
     
-    public func loadIfThreshold(item: UserContent) {
-        
+    public func loadIfThreshold(item: UserContent) async throws {
+        if thresholds.standard == item || thresholds.fallback == item {
+            try await loadContentPage(contentPage + 1)
+        }
     }
     
-    func loadPage(_ pageToLoad: Int) async throws {
-        await loadingSempahore.wait()
-        defer { loadingSempahore.signal() }
+    public func loadContentPage(_ pageToLoad: Int) async throws {
+        await contentLoadingSemaphore.wait()
+        defer { contentLoadingSemaphore.signal() }
         
-        if pageToLoad != page + 1 {
-            print("Unexpected page \(pageToLoad) encountered (expected \(page + 1)), skipping load")
+        guard pageToLoad == contentPage + 1 else {
+            print("Unexpected content page \(pageToLoad) encountered (expected \(contentPage + 1), skipping load")
             return
         }
         
+        contentPage += 1
+        var newItems: [UserContent] = .init()
+        while newItems.count < 50, loadingState != .done {
+            if let nextItem = try await computeNextItem() {
+                newItems.append(nextItem)
+            } else {
+                loadingState = .done
+            }
+        }
+        
+        await addItems(newItems)
+        if loadingState != .done {
+            updateThresholds()
+        }
+    }
+    
+    func loadApiPage(_ pageToLoad: Int) async throws {
+        await apiLoadingSemaphore.wait()
+        defer { apiLoadingSemaphore.signal() }
+        
+        guard pageToLoad == apiPage + 1 else {
+            print("Unexpected API page \(pageToLoad) encountered (expected \(apiPage + 1)), skipping load")
+            return
+        }
+        
+        apiPage += 1
         try await fetchItems()
-        page += 1
     }
     
     func fetchItems() async throws {
@@ -167,6 +222,19 @@ public class UserContentFeedLoader {
         postStream = .init(sortType: sortType, load: fetchItems)
         commentStream = .init(sortType: sortType, load: fetchItems)
     }
+    
+    // MARK: Helpers
+    @MainActor
+    private func addItems(_ newItems: [UserContent]) {
+        items.append(contentsOf: newItems)
+    }
+    
+    private func updateThresholds() {
+        thresholds = (
+            standard: items[items.count - 10],
+            fallback: items.last
+        )
+    }
 }
 
 public class SavedFeedLoader: UserContentFeedLoader {
@@ -179,7 +247,7 @@ public class SavedFeedLoader: UserContentFeedLoader {
     }
     
     override func fetchItems() async throws {
-        let response = try await api.getContent(authorId: userId, sort: .new, page: page, limit: 50, savedOnly: true)
+        let response = try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: true)
         postStream.addItems(response.posts)
         commentStream.addItems(response.comments)
     }
