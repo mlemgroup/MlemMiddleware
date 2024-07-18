@@ -90,7 +90,7 @@ public extension ApiClient {
     internal func refreshUnreadCount() async throws -> ApiGetUnreadCountResponse {
         let request = GetUnreadCountRequest()
         let response = try await perform(request)
-        self.unreadCount?.update(with: response)
+        await self.unreadCount?.update(with: response)
         return response
     }
     
@@ -98,7 +98,7 @@ public extension ApiClient {
     func getUnreadCount() async throws -> UnreadCount {
         let unreadCount = self.unreadCount ?? .init(api: self)
         let response: ApiGetUnreadCountResponse = try await self.refreshUnreadCount()
-        unreadCount.update(with: response)
+        await unreadCount.update(with: response)
         self.unreadCount = unreadCount
         return unreadCount
     }
