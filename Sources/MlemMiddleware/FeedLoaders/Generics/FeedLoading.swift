@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol FeedLoading {
+public protocol FeedLoading<Item> {
     associatedtype Item: FeedLoadable
     
     var items: [Item] { get }
