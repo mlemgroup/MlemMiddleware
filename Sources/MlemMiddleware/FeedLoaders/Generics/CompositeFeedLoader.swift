@@ -17,16 +17,38 @@ import Semaphore
 /// in the standard Parent/Child FeedLoader. To load a new page, however, the stream calls the load method of the
 /// UserContentFeedLoader, which performs the call and pushes the results down to the child streams
 
-public enum UserContent: Hashable, Equatable {
-    // This always comes from GetPersonDetailsRequest, so we can know we're getting Post2 and Comment2
-    case post(Post2)
-    case comment(Comment2)
-}
-
-public extension UserContent {
-    func hash(into hasher: inout Hasher) {
+public class UserContent: Hashable, Equatable, FeedLoadable {
+    public typealias FilterType = UserContentFilterType
+    
+    let wrappedValue: Value
+    
+    public enum Value {
+        // This always comes from GetPersonDetailsRequest, so we can know we're getting Post2 and Comment2
+        case post(Post2)
+        case comment(Comment2)
+    }
+    
+    public init(wrappedValue: UserContent.Value) {
+        self.wrappedValue = wrappedValue
+    }
+    
+    public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
+        switch wrappedValue {
+        case let .post(post2): post2.sortVal(sortType: sortType)
+        case let .comment(comment2): comment2.sortVal(sortType: sortType)
+        }
+    }
+    
+    public var actorId: URL {
+        switch wrappedValue {
+        case let .post(post2): post2.actorId
+        case let .comment(comment2): comment2.actorId
+        }
+    }
+    
+    public func hash(into hasher: inout Hasher) {
         // TODO: better conformance
-        switch self {
+        switch wrappedValue {
         case let .post(post2):
             hasher.combine(post2)
             hasher.combine(ContentType.post)
@@ -36,7 +58,7 @@ public extension UserContent {
         }
     }
     
-    static func == (lhs: UserContent, rhs: UserContent) -> Bool {
+    public static func == (lhs: UserContent, rhs: UserContent) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
 }
@@ -106,10 +128,10 @@ public struct UserContentStream<Item: FeedLoadable> {
     
     private func toParent(item: Item) -> UserContent? {
         if let post = item as? Post2 {
-            return .post(post)
+            return .init(wrappedValue: .post(post))
         }
         if let comment = item as? Comment2 {
-            return .comment(comment)
+            return .init(wrappedValue: .comment(comment))
         }
         // shouldn't ever get here because we know we're getting either Post2 or Comment2
         assertionFailure("Could not convert to parent or comment!")
@@ -117,7 +139,7 @@ public struct UserContentStream<Item: FeedLoadable> {
     }
 }
 
-public class UserContentFeedLoader {
+public class UserContentFeedLoader: FeedLoading {
     public var api: ApiClient
     public var items: [UserContent]
     public var loadingState: LoadingState
@@ -152,13 +174,17 @@ public class UserContentFeedLoader {
         self.loadingState = .idle
     }
     
-    public func loadIfThreshold(item: UserContent) async throws {
+    public func loadIfThreshold(_ item: UserContent) async throws {
         if thresholds.standard == item || thresholds.fallback == item {
             try await loadContentPage(contentPage + 1)
         }
     }
     
-    public func loadContentPage(_ pageToLoad: Int) async throws {
+    public func loadMoreItems() async throws {
+        try await loadContentPage(contentPage + 1)
+    }
+    
+    internal func loadContentPage(_ pageToLoad: Int) async throws {
         await contentLoadingSemaphore.wait()
         defer { contentLoadingSemaphore.signal() }
         

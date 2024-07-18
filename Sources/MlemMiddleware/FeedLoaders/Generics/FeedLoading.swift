@@ -14,4 +14,5 @@ public protocol FeedLoading {
     var loadingState: LoadingState { get }
     
     func loadMoreItems() async throws
+    func loadIfThreshold(_ item: Item) async throws
 }
