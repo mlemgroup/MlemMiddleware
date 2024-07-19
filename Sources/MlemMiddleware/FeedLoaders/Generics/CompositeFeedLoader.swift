@@ -156,8 +156,8 @@ public class UserContentFeedLoader: FeedLoading {
     private var thresholds: (standard: UserContent?, fallback: UserContent?)
     
     // These are lazy so that we can pass loadMoreItems in at init
-    lazy var postStream: UserContentStream<Post2> = .init(sortType: sortType, load: self.fetchItems)
-    lazy var commentStream: UserContentStream<Comment2> = .init(sortType: sortType, load: self.fetchItems)
+    lazy var postStream: UserContentStream<Post2> = .init(sortType: sortType, load: self.loadNextApiPage)
+    lazy var commentStream: UserContentStream<Comment2> = .init(sortType: sortType, load: self.loadNextApiPage)
     
     public init(
         api: ApiClient,
