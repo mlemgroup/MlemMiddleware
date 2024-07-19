@@ -174,9 +174,11 @@ public class UserContentFeedLoader: FeedLoading {
         self.loadingState = .idle
     }
     
-    public func loadIfThreshold(_ item: UserContent) async throws {
+    public func loadIfThreshold(_ item: UserContent) throws {
         if thresholds.standard == item || thresholds.fallback == item {
-            try await loadContentPage(contentPage + 1)
+            Task(priority: .userInitiated) {
+                try await loadContentPage(contentPage + 1)
+            }
         }
     }
     
