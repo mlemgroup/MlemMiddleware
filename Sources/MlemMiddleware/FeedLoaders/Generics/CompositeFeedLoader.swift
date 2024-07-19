@@ -183,7 +183,24 @@ public class UserContentFeedLoader: FeedLoading {
     }
     
     public func loadMoreItems() async throws {
+        print("Loading more user content")
         try await loadContentPage(contentPage + 1)
+    }
+    
+    public func refresh(clearBeforeRefresh: Bool) async throws {
+        await contentLoadingSemaphore.wait()
+        await apiLoadingSemaphore.wait()
+        defer {
+            contentLoadingSemaphore.signal()
+            apiLoadingSemaphore.signal()
+        }
+        
+        self.items = .init()
+        self.apiPage = 0
+        self.contentPage = 0
+        self.postStream = .init(sortType: sortType, load: self.fetchItems)
+        self.commentStream = .init(sortType: sortType, load: self.fetchItems)
+        try await loadMoreItems()
     }
     
     internal func loadContentPage(_ pageToLoad: Int) async throws {
