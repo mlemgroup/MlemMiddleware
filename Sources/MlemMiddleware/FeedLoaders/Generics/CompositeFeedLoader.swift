@@ -299,6 +299,7 @@ public class SavedFeedLoader: UserContentFeedLoader {
     }
     
     override func fetchItems() async throws {
+        print("Fetching page \(apiPage)")
         let response = try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: true)
         postStream.addItems(response.posts)
         commentStream.addItems(response.comments)
