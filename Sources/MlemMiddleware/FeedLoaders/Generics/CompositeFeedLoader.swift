@@ -20,7 +20,7 @@ import Semaphore
 public class UserContent: Hashable, Equatable, FeedLoadable {
     public typealias FilterType = UserContentFilterType
     
-    let wrappedValue: Value
+    public let wrappedValue: Value
     
     public enum Value {
         // This always comes from GetPersonDetailsRequest, so we can know we're getting Post2 and Comment2
