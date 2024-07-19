@@ -188,13 +188,6 @@ public class UserContentFeedLoader: FeedLoading {
     }
     
     public func refresh(clearBeforeRefresh: Bool) async throws {
-        await contentLoadingSemaphore.wait()
-        await apiLoadingSemaphore.wait()
-        defer {
-            contentLoadingSemaphore.signal()
-            apiLoadingSemaphore.signal()
-        }
-        
         self.items = .init()
         self.apiPage = 0
         self.contentPage = 0
