@@ -207,6 +207,8 @@ public class UserContentFeedLoader: FeedLoading {
         await contentLoadingSemaphore.wait()
         defer { contentLoadingSemaphore.signal() }
         
+        loadingState = .loading
+        
         guard pageToLoad == contentPage + 1 else {
             print("Unexpected content page \(pageToLoad) encountered (expected \(contentPage + 1), skipping load")
             return
@@ -217,13 +219,17 @@ public class UserContentFeedLoader: FeedLoading {
         while newItems.count < 50, loadingState != .done {
             if let nextItem = try await computeNextItem() {
                 newItems.append(nextItem)
+                print("\(newItems.count)")
             } else {
                 loadingState = .done
             }
         }
         
+        print("Loaded \(newItems.count) new items")
+        
         await addItems(newItems)
         if loadingState != .done {
+            loadingState = .idle
             updateThresholds()
         }
     }
