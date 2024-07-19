@@ -191,8 +191,8 @@ public class UserContentFeedLoader: FeedLoading {
         self.items = .init()
         self.apiPage = 0
         self.contentPage = 0
-        self.postStream = .init(sortType: sortType, load: self.fetchItems)
-        self.commentStream = .init(sortType: sortType, load: self.fetchItems)
+        self.postStream = .init(sortType: sortType, load: self.loadNextApiPage)
+        self.commentStream = .init(sortType: sortType, load: self.loadNextApiPage)
         try await loadMoreItems()
     }
     
@@ -227,7 +227,11 @@ public class UserContentFeedLoader: FeedLoading {
         }
     }
     
-    func loadApiPage(_ pageToLoad: Int) async throws {
+    internal func loadNextApiPage() async throws {
+        try await loadApiPage(apiPage + 1)
+    }
+    
+    internal func loadApiPage(_ pageToLoad: Int) async throws {
         await apiLoadingSemaphore.wait()
         defer { apiLoadingSemaphore.signal() }
         
@@ -264,8 +268,8 @@ public class UserContentFeedLoader: FeedLoading {
     public func changeSortType(to sortType: FeedLoaderSort.SortType) {
         self.sortType = sortType
         items = .init()
-        postStream = .init(sortType: sortType, load: fetchItems)
-        commentStream = .init(sortType: sortType, load: fetchItems)
+        postStream = .init(sortType: sortType, load: loadNextApiPage)
+        commentStream = .init(sortType: sortType, load: loadNextApiPage)
     }
     
     // MARK: Helpers
