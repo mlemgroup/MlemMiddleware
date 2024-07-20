@@ -63,16 +63,13 @@ public class UserContent: Hashable, Equatable, FeedLoadable {
     }
 }
 
-// This is basically a ChildTracker minus post loading
+// This struct is just a convenience wrapper to handle stream state--all loading operations happen at the FeedLoader level to avoid parent/child concurrency control hell
 public struct UserContentStream<Item: FeedLoadable> {
     var items: [Item] = .init()
     var cursor: Int = 0
     var doneLoading: Bool = false
-    let sortType: FeedLoaderSort.SortType
     
-    init(sortType: FeedLoaderSort.SortType) {
-        self.sortType = sortType
-    }
+    var needsMoreItems: Bool { !doneLoading && cursor >= items.count }
     
     mutating func addItems(_ newItems: [Item]) {
         items.append(contentsOf: newItems)
@@ -81,25 +78,15 @@ public struct UserContentStream<Item: FeedLoadable> {
         }
     }
     
-    /// Gets the sort value of the next item in stream for a given sort type without affecting the cursor.
+    /// Gets the sort value of the next item in stream for a given sort type without affecting the cursor. Assumes loading has been handled by the FeedLoader.
     /// - Returns: sorting value of the next tracker item corresponding to the given sort type
     /// - Warning: This is NOT a thread-safe function! Only one thread at a time per stream may call this function!
-    func nextItemSortVal(load: @escaping () async throws -> Void) async throws -> FeedLoaderSort? {
-        assert(sortType == self.sortType, "Conflicting types for sortType! This should not be possible!")
-        
-        if cursor < items.count {
-            return items[cursor].sortVal(sortType: sortType)
-        }
-        
-        // if done loading, return nil
+    func nextItemSortVal(sortType: FeedLoaderSort.SortType) async throws -> FeedLoaderSort? {
         guard !doneLoading else {
             return nil
         }
         
-        // otherwise, wait for the next page to load and try to return the first value
-        // if the next page is already loading, this call to loadNextPage will be noop, but still wait until that load completes thanks to the semaphore
-        try await load()
-        return cursor < items.count ? items[cursor].sortVal(sortType: sortType) : nil
+        return items[safeIndex: cursor]?.sortVal(sortType: sortType)
     }
     
     /// Gets the next item in the stream and increments the cursor
@@ -165,8 +152,8 @@ public class UserContentFeedLoader: FeedLoading {
         self.contentLoadingSemaphore = .init(value: 1)
         self.thresholds = (nil, nil)
         self.loadingState = .idle
-        self.postStream = .init(sortType: sortType)
-        self.commentStream = .init(sortType: sortType)
+        self.postStream = .init()
+        self.commentStream = .init()
     }
     
     public func loadIfThreshold(_ item: UserContent) throws {
@@ -186,8 +173,8 @@ public class UserContentFeedLoader: FeedLoading {
         self.items = .init()
         self.apiPage = 0
         self.contentPage = 0
-        self.postStream = .init(sortType: sortType)
-        self.commentStream = .init(sortType: sortType)
+        self.postStream = .init()
+        self.commentStream = .init()
         try await loadMoreItems()
     }
     
@@ -220,31 +207,15 @@ public class UserContentFeedLoader: FeedLoading {
         }
     }
     
-    internal func loadNextApiPage() async throws {
-        try await loadApiPage(apiPage + 1)
-    }
-    
-    internal func loadApiPage(_ pageToLoad: Int) async throws {
-        await apiLoadingSemaphore.wait()
-        defer { apiLoadingSemaphore.signal() }
-        
-        guard pageToLoad == apiPage + 1 else {
-            print("Unexpected API page \(pageToLoad) encountered (expected \(apiPage + 1)), skipping load")
-            return
-        }
-        
-        apiPage += 1
-        try await fetchItems()
-    }
-    
-    func fetchItems() async throws {
-        preconditionFailure("This method must be implemented by the inheriting class")
-    }
-    
     /// Returns the next post or comment, depending on which is sorted first
     internal func computeNextItem() async throws -> UserContent? {
-        let nextPost = try await postStream.nextItemSortVal(load: loadNextApiPage)
-        let nextComment = try await commentStream.nextItemSortVal(load: loadNextApiPage)
+        // if either postStream or commentStream needs items, load
+        if postStream.needsMoreItems || commentStream.needsMoreItems {
+            try await loadNextApiPage()
+        }
+        
+        let nextPost = try await postStream.nextItemSortVal(sortType: sortType)
+        let nextComment = try await commentStream.nextItemSortVal(sortType: sortType)
         
         if let nextPost {
             if let nextComment {
@@ -269,14 +240,27 @@ public class UserContentFeedLoader: FeedLoading {
     public func changeSortType(to sortType: FeedLoaderSort.SortType) {
         self.sortType = sortType
         items = .init()
-        postStream = .init(sortType: sortType)
-        commentStream = .init(sortType: sortType)
+        postStream = .init()
+        commentStream = .init()
     }
     
     // MARK: Helpers
     @MainActor
     private func addItems(_ newItems: [UserContent]) {
         items.append(contentsOf: newItems)
+    }
+    
+    internal func fetchItems() async throws -> (posts: [Post2], comments: [Comment2]) {
+        preconditionFailure("This method must be implemented by the inheriting class")
+    }
+    
+    /// Loads the next page from the API
+    /// - Warning: This is NOT a thread-safe function! It should only be called from a concurrency-controlled environment
+    private func loadNextApiPage() async throws {
+        apiPage += 1
+        let response = try await fetchItems()
+        postStream.addItems(response.posts)
+        commentStream.addItems(response.comments)
     }
     
     private func updateThresholds() {
@@ -296,10 +280,8 @@ public class SavedFeedLoader: UserContentFeedLoader {
         super.init(api: api, sortType: sortType)
     }
     
-    override func fetchItems() async throws {
+    override func fetchItems() async throws -> (posts: [Post2], comments: [Comment2]) {
         print("Fetching page \(apiPage)")
-        let response = try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: true)
-        postStream.addItems(response.posts)
-        commentStream.addItems(response.comments)
+        return try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: true)
     }
 }
