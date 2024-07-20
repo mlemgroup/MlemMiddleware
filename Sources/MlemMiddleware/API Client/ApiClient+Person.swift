@@ -106,7 +106,7 @@ public extension ApiClient {
         let request = GetPersonDetailsRequest(
             personId: id,
             username: nil,
-            sort: .new,
+            sort: sort,
             page: page,
             limit: limit,
             communityId: nil,

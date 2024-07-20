@@ -186,6 +186,8 @@ public class UserContentFeedLoader: FeedLoading {
         self.items = .init()
         self.apiPage = 0
         self.contentPage = 0
+        self.postStream = .init(sortType: sortType)
+        self.commentStream = .init(sortType: sortType)
         try await loadMoreItems()
     }
     
