@@ -212,11 +212,8 @@ public class UserContentFeedLoader: FeedLoading {
             }
         }
         
-        print("Loaded \(newItems.count) new items")
-        
         await addItems(newItems)
         
-        print("There are now \(items.count) items")
         if loadingState != .done {
             loadingState = .idle
             updateThresholds()
@@ -251,11 +248,19 @@ public class UserContentFeedLoader: FeedLoading {
         
         if let nextPost {
             if let nextComment {
+                if nextPost > nextComment {
+                    print("Post date \(nextPost) > comment date \(nextComment)")
+                } else {
+                    print("Comment date \(nextComment) > post date \(nextPost)")
+                }
+                
                 return nextPost > nextComment ? postStream.consumeNextItem() : commentStream.consumeNextItem()
             } else {
+                print("No next comment found")
                 return postStream.consumeNextItem()
             }
         } else if nextComment != nil {
+            print("No next post found")
             return commentStream.consumeNextItem()
         }
         return nil

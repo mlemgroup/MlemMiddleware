@@ -73,7 +73,6 @@ public extension Comment1Providing {
     }
 }
 
-
 public extension Comment1Providing {
     var depth: Int { parentCommentIds.count }
     
