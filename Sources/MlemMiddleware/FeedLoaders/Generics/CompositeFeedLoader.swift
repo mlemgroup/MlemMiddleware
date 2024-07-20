@@ -139,6 +139,7 @@ public struct UserContentStream<Item: FeedLoadable> {
     }
 }
 
+@Observable
 public class UserContentFeedLoader: FeedLoading {
     public var api: ApiClient
     public var items: [UserContent]
@@ -212,7 +213,6 @@ public class UserContentFeedLoader: FeedLoading {
         while newItems.count < 50, loadingState != .done {
             if let nextItem = try await computeNextItem() {
                 newItems.append(nextItem)
-                print("\(newItems.count)")
             } else {
                 loadingState = .done
             }
@@ -221,6 +221,8 @@ public class UserContentFeedLoader: FeedLoading {
         print("Loaded \(newItems.count) new items")
         
         await addItems(newItems)
+        
+        print("There are now \(items.count) items")
         if loadingState != .done {
             loadingState = .idle
             updateThresholds()
