@@ -70,15 +70,8 @@ public struct UserContentStream<Item: FeedLoadable> {
     var doneLoading: Bool = false
     let sortType: FeedLoaderSort.SortType
     
-    /// This function is passed in from UserContentFeedLoader, and triggers a load on UserContentFeedLoader.
-    var load: () async throws -> Void
-    
-    init(
-        sortType: FeedLoaderSort.SortType,
-        load: @escaping () async throws -> Void
-    ) {
+    init(sortType: FeedLoaderSort.SortType) {
         self.sortType = sortType
-        self.load = load
     }
     
     mutating func addItems(_ newItems: [Item]) {
@@ -91,7 +84,7 @@ public struct UserContentStream<Item: FeedLoadable> {
     /// Gets the sort value of the next item in stream for a given sort type without affecting the cursor.
     /// - Returns: sorting value of the next tracker item corresponding to the given sort type
     /// - Warning: This is NOT a thread-safe function! Only one thread at a time per stream may call this function!
-    func nextItemSortVal() async throws -> FeedLoaderSort? {
+    func nextItemSortVal(load: @escaping () async throws -> Void) async throws -> FeedLoaderSort? {
         assert(sortType == self.sortType, "Conflicting types for sortType! This should not be possible!")
         
         if cursor < items.count {
@@ -156,9 +149,8 @@ public class UserContentFeedLoader: FeedLoading {
     private var contentLoadingSemaphore: AsyncSemaphore
     private var thresholds: (standard: UserContent?, fallback: UserContent?)
     
-    // These are lazy so that we can pass loadMoreItems in at init
-    lazy var postStream: UserContentStream<Post2> = .init(sortType: sortType, load: self.loadNextApiPage)
-    lazy var commentStream: UserContentStream<Comment2> = .init(sortType: sortType, load: self.loadNextApiPage)
+    var postStream: UserContentStream<Post2>
+    var commentStream: UserContentStream<Comment2>
     
     public init(
         api: ApiClient,
@@ -173,6 +165,8 @@ public class UserContentFeedLoader: FeedLoading {
         self.contentLoadingSemaphore = .init(value: 1)
         self.thresholds = (nil, nil)
         self.loadingState = .idle
+        self.postStream = .init(sortType: sortType)
+        self.commentStream = .init(sortType: sortType)
     }
     
     public func loadIfThreshold(_ item: UserContent) throws {
@@ -192,8 +186,6 @@ public class UserContentFeedLoader: FeedLoading {
         self.items = .init()
         self.apiPage = 0
         self.contentPage = 0
-        self.postStream = .init(sortType: sortType, load: self.loadNextApiPage)
-        self.commentStream = .init(sortType: sortType, load: self.loadNextApiPage)
         try await loadMoreItems()
     }
     
@@ -252,8 +244,8 @@ public class UserContentFeedLoader: FeedLoading {
     
     /// Returns the next post or comment, depending on which is sorted first
     internal func computeNextItem() async throws -> UserContent? {
-        let nextPost = try await postStream.nextItemSortVal()
-        let nextComment = try await commentStream.nextItemSortVal()
+        let nextPost = try await postStream.nextItemSortVal(load: loadNextApiPage)
+        let nextComment = try await commentStream.nextItemSortVal(load: loadNextApiPage)
         
         if let nextPost {
             if let nextComment {
@@ -270,8 +262,8 @@ public class UserContentFeedLoader: FeedLoading {
     public func changeSortType(to sortType: FeedLoaderSort.SortType) {
         self.sortType = sortType
         items = .init()
-        postStream = .init(sortType: sortType, load: loadNextApiPage)
-        commentStream = .init(sortType: sortType, load: loadNextApiPage)
+        postStream = .init(sortType: sortType)
+        commentStream = .init(sortType: sortType)
     }
     
     // MARK: Helpers
