@@ -37,9 +37,11 @@ extension Post2: CacheIdentifiable {
             .init(from: post.counts, myVote: ScoringOperation.guaranteedInit(from: post.myVote)),
             semaphore: semaphore
         )
+        
         unreadCommentCount = post.unreadComments
         savedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
         readManager.updateWithReceivedValue(post.read, semaphore: semaphore)
+        hiddenManager.updateWithReceivedValue(post.hidden ?? false, semaphore: semaphore)
 
         post1.update(with: post.post)
         creator.update(with: post.creator)

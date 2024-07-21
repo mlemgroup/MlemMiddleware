@@ -21,7 +21,7 @@ public class ApiClient {
     public let baseUrl: URL
     let endpointUrl: URL
     public private(set) var token: String?
-    private(set) var fetchedVersion: SiteVersion?
+    public private(set) var fetchedVersion: SiteVersion?
     private var fetchSiteTask: Task<SiteVersion, Error>?
     
     /// When `true`, the token will not be attatched to any API requests. This is useful for ensuring that inactive accounts don't accidentally make requests

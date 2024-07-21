@@ -77,9 +77,18 @@ public extension Message1Providing {
     private var readManager: StateManager<Bool> { message1.readManager }
     
     // `toggleRead` is defined in `InboxItemProviding`
-    func updateRead(_ newValue: Bool) {
+    @discardableResult
+    func updateRead(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         readManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.markMessageAsRead(id: self.id, read: newValue, semaphore: semaphore)
         }
+    }
+    
+    func reply(content: String) async throws -> Message2 {
+        try await api.createMessage(personId: recipientId, content: content)
+    }
+    
+    func report(reason: String) async throws {
+        try await api.reportMessage(id: id, reason: reason)
     }
 }

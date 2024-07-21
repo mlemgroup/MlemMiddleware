@@ -68,4 +68,12 @@ public extension Comment1Providing {
     func upgrade() async throws -> any Comment {
         try await api.getComment(id: id)
     }
+    
+    func reply(content: String, languageId: Int? = nil) async throws -> Comment2 {
+        try await api.replyToComment(postId: postId, parentId: id, content: content, languageId: languageId)
+    }
+    
+    func report(reason: String) async throws {
+        try await api.reportComment(id: id, reason: reason)
+    }
 }

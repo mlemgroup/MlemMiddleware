@@ -47,14 +47,15 @@ public extension Comment2Providing {
     
     func upgrade() async throws -> any Comment { self }
     
-    func updateVote(_ newValue: ScoringOperation) {
-        guard newValue != self.votes.myVote else { return }
+    @discardableResult
+    func updateVote(_ newValue: ScoringOperation) -> Task<StateUpdateResult, Never> {
         votesManager.performRequest(expectedResult: self.votes.applyScoringOperation(operation: newValue)) { semaphore in
             try await self.api.voteOnComment(id: self.id, score: newValue, semaphore: semaphore)
         }
     }
     
-    func updateSaved(_ newValue: Bool) {
+    @discardableResult
+    func updateSaved(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         savedManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.saveComment(id: self.id, save: newValue, semaphore: semaphore)
         }

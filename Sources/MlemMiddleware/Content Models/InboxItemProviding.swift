@@ -11,11 +11,13 @@ public protocol InboxItemProviding: ContentIdentifiable, ContentModel {
     var created: Date { get }
     var read: Bool { get }
     
-    func updateRead(_ newValue: Bool)
+    @discardableResult
+    func updateRead(_ newValue: Bool) -> Task<StateUpdateResult, Never>
 }
 
 public extension InboxItemProviding {
-    func toggleRead() {
+    @discardableResult
+    func toggleRead() -> Task<StateUpdateResult, Never> {
         updateRead(!read)
     }
 }

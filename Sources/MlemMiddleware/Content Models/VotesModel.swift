@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct VotesModel: Hashable {
+public struct VotesModel: Hashable, Equatable {
     public var total: Int { upvotes - downvotes }
     public var upvotes: Int
     public var downvotes: Int
@@ -31,6 +31,10 @@ public struct VotesModel: Hashable {
         hasher.combine(upvotes)
         hasher.combine(downvotes)
         hasher.combine(myVote)
+    }
+    
+    static func == (lhs: VotesModel, rhs: VotesModel) {
+        lhs.hashValue == rhs.hashValue
     }
 }
 

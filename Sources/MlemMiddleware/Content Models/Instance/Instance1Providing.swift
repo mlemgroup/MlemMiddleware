@@ -73,7 +73,8 @@ public extension Instance1Providing {
         .getApiClient(for: local ? api.baseUrl : actorId, with: nil)
     }
     
-    func updateBlocked(_ newValue: Bool) {
+    @discardableResult
+    func updateBlocked(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         blockedManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.blockInstance(
                 actorId: self.actorId,
@@ -83,7 +84,8 @@ public extension Instance1Providing {
         }
     }
     
-    func toggleBlocked() {
+    @discardableResult
+    func toggleBlocked() -> Task<StateUpdateResult, Never> {
         updateBlocked(!blocked)
     }
 }

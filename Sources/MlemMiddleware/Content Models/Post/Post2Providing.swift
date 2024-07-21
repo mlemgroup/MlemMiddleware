@@ -15,6 +15,7 @@ public protocol Post2Providing: Post1Providing, Interactable2Providing {
     var community: Community1 { get }
     var unreadCommentCount: Int { get }
     var read: Bool { get }
+    var hidden: Bool { get }
 }
 
 public extension Post2Providing {
@@ -27,6 +28,7 @@ public extension Post2Providing {
     var unreadCommentCount: Int { post2.unreadCommentCount }
     var saved: Bool { post2.saved }
     var read: Bool { post2.read }
+    var hidden: Bool { post2.hidden }
     
     var creator_: Person1? { post2.creator }
     var community_: Community1? { post2.community }
@@ -35,18 +37,21 @@ public extension Post2Providing {
     var unreadCommentCount_: Int? { post2.unreadCommentCount }
     var saved_: Bool? { post2.saved }
     var read_: Bool? { post2.read }
+    var hidden_: Bool? { post2.hidden }
 }
 
 public extension Post2Providing {
     private var votesManager: StateManager<VotesModel> { post2.votesManager }
     private var readManager: StateManager<Bool> { post2.readManager }
     private var savedManager: StateManager<Bool> { post2.savedManager }
+    private var hiddenManager: StateManager<Bool> { post2.hiddenManager }
     
     func upgrade() async throws -> any Post { self }
     
-    func updateRead(_ newValue: Bool, shouldQueue: Bool = false) {
+    @discardableResult
+    func updateRead(_ newValue: Bool, shouldQueue: Bool = false) -> Task<StateUpdateResult, Never> {
         if shouldQueue {
-            Task {
+            return Task {
                 if newValue {
                     await api.markReadQueue.add(self.id)
                     post2.readQueued = true
@@ -54,20 +59,22 @@ public extension Post2Providing {
                     await api.markReadQueue.remove(self.id)
                     post2.readQueued = false
                 }
+                return .deferred
             }
         } else {
-            readManager.performRequest(expectedResult: newValue) { semaphore in
+            return readManager.performRequest(expectedResult: newValue) { semaphore in
                 try await self.api.markPostAsRead(id: self.id, read: newValue, semaphore: semaphore)
             }
         }
     }
     
-    func toggleRead(shouldQueue: Bool = false) {
+    @discardableResult
+    func toggleRead(shouldQueue: Bool = false) -> Task<StateUpdateResult, Never> {
         updateRead(!read, shouldQueue: shouldQueue)
     }
 
-    func updateVote(_ newValue: ScoringOperation) {
-        guard newValue != self.votes.myVote else { return }
+    @discardableResult
+    func updateVote(_ newValue: ScoringOperation) -> Task<StateUpdateResult, Never> {
         groupStateRequest(
             votesManager.ticket(self.votes.applyScoringOperation(operation: newValue)),
             readManager.ticket(true)
@@ -76,7 +83,8 @@ public extension Post2Providing {
         }
     }
     
-    func updateSaved(_ newValue: Bool) {
+    @discardableResult
+    func updateSaved(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         groupStateRequest(
             savedManager.ticket(newValue),
             readManager.ticket(true)
@@ -87,6 +95,19 @@ public extension Post2Providing {
     
     var queuedForMarkAsRead: Bool {
         get async { await api.markReadQueue.ids.contains(self.id) }
+    }
+    
+    @discardableResult
+    func toggleHidden() -> Task<StateUpdateResult, Never> {
+        updateHidden(!hidden)
+    }
+    
+    @discardableResult
+    func updateHidden(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        // Unlike other
+        hiddenManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.hidePost(id: self.id, hide: newValue, semaphore: semaphore)
+        }
     }
     
     /// Generates an array of image requests to fetch all images associated with this Post2Providing

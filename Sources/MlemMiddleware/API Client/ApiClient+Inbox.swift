@@ -102,4 +102,30 @@ public extension ApiClient {
         self.unreadCount = unreadCount
         return unreadCount
     }
+    
+    func createMessage(personId: Int, content: String) async throws -> Message2 {
+        let request = CreatePrivateMessageRequest(content: content, recipientId: personId)
+        let response = try await perform(request)
+        return caches.message2.getModel(api: self, from: response.privateMessageView)
+    }
+    
+    @discardableResult
+    func editMessage(id: Int, content: String) async throws -> Message2 {
+        let request = EditPrivateMessageRequest(privateMessageId: id, content: content)
+        let response = try await perform(request)
+        return caches.message2.getModel(api: self, from: response.privateMessageView)
+    }
+    
+    func reportMessage(id: Int, reason: String) async throws {
+        let request = CreatePrivateMessageReportRequest(privateMessageId: id, reason: reason)
+        let response = try await perform(request)
+        // TODO: return message report
+    }
+    
+    @discardableResult
+    func deleteMessage(id: Int, delete: Bool, semaphore: UInt? = nil) async throws -> Message2 {
+        let request = DeletePrivateMessageRequest(privateMessageId: id, deleted: delete)
+        let response = try await perform(request)
+        return caches.message2.getModel(api: self, from: response.privateMessageView, semaphore: semaphore)
+    }
 }

@@ -200,4 +200,99 @@ public extension ApiClient {
         let response = try await perform(request)
         return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
+    
+    @discardableResult
+    func deletePost(id: Int, delete: Bool, semaphore: UInt? = nil) async throws -> Post2 {
+        let request = DeletePostRequest(postId: id, deleted: delete)
+        let response = try await perform(request)
+        return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
+    }
+    
+    /// Added in 0.19.4
+    func hidePosts(
+        ids: any Collection<Int>,
+        hide: Bool,
+        semaphore: UInt? = nil
+    ) async throws {
+        let request = HidePostRequest(postIds: Array(ids), hide: hide)
+        let response = try await perform(request)
+        if !response.success {
+            throw ApiClientError.unsuccessful
+        }
+        for post in ids.compactMap({ caches.post2.retrieveModel(cacheId: $0) }) {
+            post.hiddenManager.updateWithReceivedValue(hide, semaphore: semaphore)
+        }
+    }
+    
+    func hidePost(id: Int, hide: Bool, semaphore: UInt? = nil) async throws {
+        try await self.hidePosts(ids: [id], hide: hide, semaphore: semaphore)
+    }
+    
+    func createPost(
+        communityId: Int,
+        title: String,
+        content: String? = nil,
+        linkUrl: URL? = nil,
+        altText: String? = nil,
+        thumbnail: URL? = nil,
+        nsfw: Bool,
+        languageId: Int? = nil
+    ) async throws -> Post2 {
+        let request = CreatePostRequest(
+            name: title,
+            communityId: communityId,
+            url: linkUrl?.absoluteString,
+            body: content,
+            honeypot: nil,
+            nsfw: nsfw,
+            languageId: languageId,
+            altText: altText,
+            customThumbnail: thumbnail?.absoluteString
+        )
+        let response = try await perform(request)
+        return caches.post2.getModel(api: self, from: response.postView)
+    }
+    
+    @discardableResult
+    func editPost(
+        id: Int,
+        title: String,
+        content: String? = nil,
+        linkUrl: URL? = nil,
+        altText: String? = nil,
+        thumbnail: URL? = nil,
+        nsfw: Bool,
+        languageId: Int? = nil
+    ) async throws -> Post2 {
+        let request = EditPostRequest(
+            postId: id,
+            name: title,
+            url: linkUrl?.absoluteString,
+            body: content,
+            nsfw: nsfw,
+            languageId: languageId,
+            altText: altText,
+            customThumbnail: thumbnail?.absoluteString
+        )
+        let response = try await perform(request)
+        return caches.post2.getModel(api: self, from: response.postView)
+    }
+
+    func replyToPost(id: Int, content: String, languageId: Int? = nil) async throws -> Comment2 {
+        let request = CreateCommentRequest(
+            content: content,
+            postId: id,
+            parentId: nil,
+            languageId: languageId,
+            formId: nil
+        )
+        let response = try await perform(request)
+        return caches.comment2.getModel(api: self, from: response.commentView)
+    }
+    
+    func reportPost(id: Int, reason: String) async throws {
+        let request = CreatePostReportRequest(postId: id, reason: reason)
+        let response = try await perform(request)
+        // TODO: return post report
+    }
 }

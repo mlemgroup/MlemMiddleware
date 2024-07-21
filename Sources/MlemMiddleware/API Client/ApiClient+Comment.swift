@@ -65,4 +65,46 @@ public extension ApiClient {
         let response = try await perform(request)
         return caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
+    
+    @discardableResult
+    func deleteComment(id: Int, delete: Bool, semaphore: UInt? = nil) async throws -> Comment2 {
+        let request = DeleteCommentRequest(commentId: id, deleted: delete)
+        let response = try await perform(request)
+        return caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
+    }
+    
+    @discardableResult
+    func editComment(
+        id: Int,
+        content: String,
+        languageId: Int?
+    ) async throws -> Comment2 {
+        let request = EditCommentRequest(
+            commentId: id,
+            content: content,
+            languageId: languageId,
+            formId: nil
+        )
+        let response = try await perform(request)
+        return caches.comment2.getModel(api: self, from: response.commentView)
+    }
+    
+    // There's also a `replyToPost` method in `ApiClient+Post` for creating a comment on a post
+    func replyToComment(postId: Int, parentId: Int?, content: String, languageId: Int? = nil) async throws -> Comment2 {
+        let request = CreateCommentRequest(
+            content: content,
+            postId: postId,
+            parentId: parentId,
+            languageId: languageId,
+            formId: nil
+        )
+        let response = try await perform(request)
+        return caches.comment2.getModel(api: self, from: response.commentView)
+    }
+    
+    func reportComment(id: Int, reason: String) async throws {
+        let request = CreateCommentReportRequest(commentId: id, reason: reason)
+        let response = try await perform(request)
+        // TODO: return comment report
+    }
 }

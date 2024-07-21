@@ -128,4 +128,12 @@ public extension Post1Providing {
             filter: filter
         )
     }
+    
+    func reply(content: String, languageId: Int? = nil) async throws -> Comment2 {
+        try await api.replyToPost(id: id, content: content, languageId: languageId)
+    }
+    
+    func report(reason: String) async throws {
+        try await api.reportPost(id: id, reason: reason)
+    }
 }

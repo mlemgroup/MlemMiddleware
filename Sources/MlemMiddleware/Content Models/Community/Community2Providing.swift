@@ -17,10 +17,12 @@ public protocol Community2Providing: Community1Providing {
     var commentCount: Int { get }
     var activeUserCount: ActiveUserCount { get }
     
-    func toggleSubscribe()
+    @discardableResult
+    func toggleSubscribe() -> Task<StateUpdateResult, Never>
     
     /// Favoriting a community also subscribes to it, if it is not subscribed already.
-    func toggleFavorite()
+    @discardableResult
+    func toggleFavorite() -> Task<StateUpdateResult, Never>
 }
 
 public extension Community2Providing {
@@ -51,11 +53,13 @@ public extension Community2Providing {
         return .unsubscribed
     }
     
-    func toggleSubscribe() {
+    @discardableResult
+    func toggleSubscribe() -> Task<StateUpdateResult, Never> {
         updateSubscribe(!subscribed)
     }
     
-    func updateSubscribe(_ newValue: Bool) {
+    @discardableResult
+    func updateSubscribe(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         subscribedManager.performRequest(expectedResult: newValue) { semaphore in
             if !newValue {
                 self.community2.shouldBeFavorited = false
@@ -64,18 +68,20 @@ public extension Community2Providing {
         }
     }
     
-    func toggleFavorite() {
+    @discardableResult
+    func toggleFavorite() -> Task<StateUpdateResult, Never> {
         updateFavorite(!favorited)
     }
     
-    func updateFavorite(_ newValue: Bool) {
+    @discardableResult
+    func updateFavorite(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         guard let subscriptions = self.api.subscriptions else {
             print("Tried to toggle favorite, but no SubscriptionList found!")
-            return
+            return Task { .failure }
         }
         self.community2.shouldBeFavorited = newValue
         if !subscribed, newValue {
-            subscribedManager.performRequest(expectedResult: true) { semaphore in
+            return subscribedManager.performRequest(expectedResult: true) { semaphore in
                 subscriptions.updateCommunitySubscription(community: self.community2)
                 try await self.api.subscribeToCommunity(id: self.id, subscribe: true, semaphore: semaphore)
             } onRollback: { _ in
@@ -83,6 +89,7 @@ public extension Community2Providing {
             }
         } else {
             subscriptions.updateCommunitySubscription(community: self.community2)
+            return Task { .success }
         }
     }
 }

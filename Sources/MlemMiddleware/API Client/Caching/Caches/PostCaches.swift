@@ -45,7 +45,8 @@ class Post2Cache: ApiTypeBackedCache<Post2, ApiPostView> {
             commentCount: apiType.counts.comments,
             unreadCommentCount: apiType.unreadComments,
             saved: apiType.saved,
-            read: apiType.read
+            read: apiType.read,
+            hidden: apiType.hidden ?? false
         )
     }
     

@@ -32,6 +32,7 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     var unreadCommentCount_: Int? { get }
     var saved_: Bool? { get }
     var read_: Bool? { get }
+    var hidden_: Bool? { get }
     
     func upgrade() async throws -> any Post
 }
@@ -59,6 +60,7 @@ public extension PostStubProviding {
     var unreadCommentCount_: Int? { nil }
     var saved_: Bool? { nil }
     var read_: Bool? { nil }
+    var hidden_: Bool? { nil }
 }
 
 public extension PostStubProviding {

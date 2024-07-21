@@ -58,7 +58,7 @@ struct StateManagerTicket<Value: Equatable>: StateManagerTickerProtocol {
 @Observable
 public class StateManager<Value: Equatable> {
     /// The state-faked value that should be shown to the user.
-    private(set) var wrappedValue: Value
+    public private(set) var wrappedValue: Value
     
     internal var onSet: (Value, _ type: StateManagerUpdateType) -> Void
     
@@ -68,7 +68,13 @@ public class StateManager<Value: Equatable> {
     /// Responsible for tracking the last verified value. If the current value is in sync with the server, this will be nil.
     private var lastVerifiedValue: Value?
     
-    init(wrappedValue: Value, onSet: @escaping (Value, _ type: StateManagerUpdateType) -> Void = { _, _ in }) {
+    public var isInSync: Bool { lastVerifiedValue == nil }
+    public var verifiedValue: Value { lastVerifiedValue ?? wrappedValue }
+    
+    init(
+        wrappedValue: Value,
+        onSet: @escaping (Value, _ type: StateManagerUpdateType) -> Void = { _, _ in }
+    ) {
         self.wrappedValue = wrappedValue
         self.onSet = onSet
     }
@@ -143,18 +149,22 @@ public class StateManager<Value: Equatable> {
         expectedResult: Value,
         operation: @escaping (_ semaphore: UInt) async throws -> Void,
         onRollback: @escaping (_ value: Value) -> Void = { _ in }
-    ) {
-        guard wrappedValue != expectedResult else { return }
-        let semaphore = beginOperation(expectedResult: expectedResult)
-        Task {
+    ) -> Task<StateUpdateResult, Never> {
+        Task(priority: .userInitiated) {
+            // Considered to be a success even though we didn't do anything
+            guard wrappedValue != expectedResult else { return .ignored }
+            
+            let semaphore = beginOperation(expectedResult: expectedResult)
             do {
                 try await operation(semaphore)
+                return .success
             } catch {
                 print("DEBUG [\(semaphore)] failed!")
                 if let newValue = self.rollback(semaphore: semaphore) {
                     onRollback(newValue)
                 }
             }
+            return .failure
         }
     }
     
@@ -166,7 +176,7 @@ public class StateManager<Value: Equatable> {
 func groupStateRequest(
     _ tickets: [any StateManagerTickerProtocol],
     operation: @escaping (_ semaphore: UInt) async throws -> Void
-) {
+) -> Task<StateUpdateResult, Never> {
     let semaphore = SemaphoreServer.next()
     
     let tickets = tickets.filter(\.valid)
@@ -174,13 +184,15 @@ func groupStateRequest(
     for ticket in tickets {
         ticket.begin(semaphore: semaphore)
     }
-    Task {
+    return Task(priority: .userInitiated) {
         do {
             try await operation(semaphore)
+            return .success
         } catch {
             for ticket in tickets {
                 ticket.rollback(semaphore: semaphore)
             }
+            return .failure
         }
     }
 }
@@ -188,6 +200,14 @@ func groupStateRequest(
 func groupStateRequest(
     _ tickets: (any StateManagerTickerProtocol)...,
     operation: @escaping (_ semaphore: UInt) async throws -> Void
-) {
-    groupStateRequest(tickets, operation: operation)
+) -> Task<StateUpdateResult, Never> {
+    return groupStateRequest(tickets, operation: operation)
+}
+
+public enum StateUpdateResult {
+    case success
+    case failure
+    /// Returned when the action is queued for later, as in the case of marking as read.
+    case deferred
+    case ignored
 }

@@ -31,6 +31,9 @@ public final class Post2: Post2Providing {
     internal var savedManager: StateManager<Bool>
     public var saved: Bool { savedManager.wrappedValue }
     
+    internal var hiddenManager: StateManager<Bool>
+    public var hidden: Bool { hiddenManager.wrappedValue }
+    
     internal init(
         api: ApiClient,
         post1: Post1,
@@ -40,7 +43,8 @@ public final class Post2: Post2Providing {
         commentCount: Int = 0,
         unreadCommentCount: Int = 0,
         saved: Bool = false,
-        read: Bool = false
+        read: Bool = false,
+        hidden: Bool = false
     ) {
         self.api = api
         self.post1 = post1
@@ -51,5 +55,6 @@ public final class Post2: Post2Providing {
         self.unreadCommentCount = unreadCommentCount
         self.savedManager = .init(wrappedValue: saved)
         self.readManager = .init(wrappedValue: read)
+        self.hiddenManager = .init(wrappedValue: hidden)
     }
 }
