@@ -77,7 +77,7 @@ public extension Community2Providing {
     func updateFavorite(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         guard let subscriptions = self.api.subscriptions else {
             print("Tried to toggle favorite, but no SubscriptionList found!")
-            return Task { .failure }
+            return Task { .failed }
         }
         self.community2.shouldBeFavorited = newValue
         if !subscribed, newValue {
@@ -89,7 +89,7 @@ public extension Community2Providing {
             }
         } else {
             subscriptions.updateCommunitySubscription(community: self.community2)
-            return Task { .success }
+            return Task { .succeeded }
         }
     }
 }

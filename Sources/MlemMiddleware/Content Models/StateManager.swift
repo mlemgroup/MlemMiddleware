@@ -157,14 +157,14 @@ public class StateManager<Value: Equatable> {
             let semaphore = beginOperation(expectedResult: expectedResult)
             do {
                 try await operation(semaphore)
-                return .success
+                return .succeeded
             } catch {
                 print("DEBUG [\(semaphore)] failed!")
                 if let newValue = self.rollback(semaphore: semaphore) {
                     onRollback(newValue)
                 }
             }
-            return .failure
+            return .failed
         }
     }
     
@@ -187,12 +187,12 @@ func groupStateRequest(
     return Task(priority: .userInitiated) {
         do {
             try await operation(semaphore)
-            return .success
+            return .succeeded
         } catch {
             for ticket in tickets {
                 ticket.rollback(semaphore: semaphore)
             }
-            return .failure
+            return .failed
         }
     }
 }
@@ -205,9 +205,9 @@ func groupStateRequest(
 }
 
 public enum StateUpdateResult {
-    case success
-    case failure
-    /// Returned when the action is queued for later, as in the case of marking as read.
+    case succeeded
+    case failed
+    /// Returned when the action is queued for later, e.g. when a post is marked as read.
     case deferred
     case ignored
 }
