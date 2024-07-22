@@ -69,7 +69,7 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
         if items.isEmpty {
             threshold = nil
         } else {
-            let thresholdIndex = max(0, items.count + MiddlewareConstants.infiniteLoadThresholdOffset)
+            let thresholdIndex = max(0, items.count - MiddlewareConstants.infiniteLoadThresholdOffset)
             threshold = items[thresholdIndex].actorId
             fallbackThreshold = items.last?.actorId
         }

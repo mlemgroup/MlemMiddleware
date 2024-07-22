@@ -12,11 +12,13 @@ public struct UserContentStream<Item: FeedLoadable> {
     var items: [Item] = .init()
     var cursor: Int = 0
     var doneLoading: Bool = false
+    var thresholds: Thresholds<Item> = .init()
     
     var needsMoreItems: Bool { !doneLoading && cursor >= items.count }
     
     mutating func addItems(_ newItems: [Item]) {
         items.append(contentsOf: newItems)
+        thresholds.update(with: newItems)
         if newItems.isEmpty {
             doneLoading = true
         }

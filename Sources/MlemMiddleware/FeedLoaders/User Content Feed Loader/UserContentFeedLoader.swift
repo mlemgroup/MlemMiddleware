@@ -7,6 +7,7 @@
 
 import Foundation
 import Semaphore
+import Nuke
 
 /// This is a special type of FeedLoader built for user content, which is uniquely challenging because you cannot load
 /// just posts or just comments, and thus the standard Parent/Child FeedLoader construction does not work without
@@ -28,22 +29,42 @@ public class UserContentFeedLoader: FeedLoading {
     private var userId: Int
     private var savedOnly: Bool
     
+    // prefetching
+    private let smallAvatarIconSize: Int
+    private let largeAvatarIconSize: Int
+    private let urlCache: URLCache
+    private let prefetcher: ImagePrefetcher = .init(
+        pipeline: ImagePipeline.shared,
+        destination: .memoryCache,
+        maxConcurrentRequestCount: 40
+    )
+    
     /// Last page fetched from the API
     internal var apiPage: Int
     /// Last page of content loaded, used to avoid duplicate loads
     internal var contentPage: Int
     
     private var contentLoadingSemaphore: AsyncSemaphore
-    private var thresholds: (standard: UserContent?, fallback: UserContent?)
+    private var thresholds: Thresholds<UserContent> = .init()
     
-    var postStream: UserContentStream<Post2>
-    var commentStream: UserContentStream<Comment2>
+    private var postStream: UserContentStream<Post2>
+    private var commentStream: UserContentStream<Comment2>
+    
+    // these are used to allow refresh without clear
+    private var tempPostStream: UserContentStream<Post2>?
+    private var tempCommentStream: UserContentStream<Comment2>?
+    
+    var posts: [Post2] { tempPostStream?.items ?? postStream.items }
+    var comments: [Comment2] { tempCommentStream?.items ?? commentStream.items }
     
     public init(
         api: ApiClient,
         userId: Int,
         sortType: FeedLoaderSort.SortType,
-        savedOnly: Bool
+        savedOnly: Bool,
+        smallAvatarSize: CGFloat,
+        largeAvatarSize: CGFloat,
+        urlCache: URLCache
     ) {
         self.api = api
         self.userId = userId
@@ -53,16 +74,38 @@ public class UserContentFeedLoader: FeedLoading {
         self.contentPage = 0
         self.items = .init()
         self.contentLoadingSemaphore = .init(value: 1)
-        self.thresholds = (nil, nil)
         self.loadingState = .idle
         self.postStream = .init()
         self.commentStream = .init()
+        self.smallAvatarIconSize = Int(smallAvatarSize * 2)
+        self.largeAvatarIconSize = Int(largeAvatarSize * 2)
+        self.urlCache = urlCache
     }
     
     // MARK: Public Methods
     
+    // protocol conformance
     public func loadIfThreshold(_ item: UserContent) throws {
-        if thresholds.standard == item || thresholds.fallback == item {
+        try loadIfThreshold(item, asChild: false)
+    }
+    
+    /// Given a UserContent, loads more items if that content is a threshold item
+    /// - Parameters:
+    ///   - item: UserContent
+    ///   - loadChildOnly: if true, the item will be evaluated against the relevant stream threshold rather than the parent threshold
+    public func loadIfThreshold(_ item: UserContent, asChild: Bool) throws {
+        var shouldLoad: Bool = false
+        if asChild {
+            shouldLoad = switch item.wrappedValue {
+            case let .post(post): postStream.thresholds.isThreshold(post)
+            case let .comment(comment): commentStream.thresholds.isThreshold(comment)
+            }
+        } else {
+            shouldLoad = thresholds.isThreshold(item)
+        }
+        
+        // regardless of which threshold triggers this, always call loadMoreItems() because there's no item-specific endpoint
+        if shouldLoad {
             Task(priority: .userInitiated) {
                 try await loadMoreItems()
             }
@@ -82,12 +125,21 @@ public class UserContentFeedLoader: FeedLoading {
     }
     
     public func refresh(clearBeforeRefresh: Bool) async throws {
-        self.items = .init()
-        self.apiPage = 0
-        self.contentPage = 0
-        self.postStream = .init()
-        self.commentStream = .init()
+        if clearBeforeRefresh {
+            items = .init()
+        } else {
+            tempPostStream = postStream
+            tempCommentStream = commentStream
+        }
+        postStream = .init()
+        commentStream = .init()
+        apiPage = 0
+        contentPage = 0
+        
         try await loadMoreItems()
+        
+        tempPostStream = nil
+        tempCommentStream = nil
     }
     
     // MARK: Private Methods
@@ -113,11 +165,15 @@ public class UserContentFeedLoader: FeedLoading {
             }
         }
         
-        await addItems(newItems)
+        if pageToLoad == 1 {
+            await setItems(newItems)
+        } else {
+            await addItems(newItems)
+        }
         
         if loadingState != .done {
             loadingState = .idle
-            updateThresholds()
+            thresholds.update(with: newItems)
         }
     }
     
@@ -158,6 +214,11 @@ public class UserContentFeedLoader: FeedLoading {
         items.append(contentsOf: newItems)
     }
     
+    @MainActor
+    private func setItems(_ newItems: [UserContent]) {
+        items = newItems
+    }
+    
     private func fetchItems() async throws -> (posts: [Post2], comments: [Comment2]) {
         return try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: savedOnly)
     }
@@ -171,10 +232,12 @@ public class UserContentFeedLoader: FeedLoading {
         commentStream.addItems(response.comments)
     }
     
-    private func updateThresholds() {
-        thresholds = (
-            standard: items[items.count - 10],
-            fallback: items.last
-        )
+    /// Preloads images for the given post
+    private func preloadImages(_ posts: [Post2]) {
+        prefetcher.startPrefetching(with: posts.flatMap {
+            $0.imageRequests(
+                smallAvatarIconSize: smallAvatarIconSize,
+                largeAvatarIconSize: largeAvatarIconSize)
+        })
     }
 }
