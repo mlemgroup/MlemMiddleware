@@ -40,6 +40,7 @@ public final class UnreadCount {
         try await self.api.refreshUnreadCount()
     }
     
+    @MainActor
     internal func update(with response: ApiGetUnreadCountResponse) {
         if [
             self.replies, self.mentions, self.messages
