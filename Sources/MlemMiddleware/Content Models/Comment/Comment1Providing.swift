@@ -87,7 +87,7 @@ public extension Comment1Providing {
     }
     
     @discardableResult
-    func toggleDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+    func toggleDeleted() -> Task<StateUpdateResult, Never> {
         updateDeleted(!deleted)
     }
 }
