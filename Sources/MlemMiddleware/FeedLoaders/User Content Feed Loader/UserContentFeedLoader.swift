@@ -125,6 +125,8 @@ public class UserContentFeedLoader: FeedLoading {
     }
     
     public func refresh(clearBeforeRefresh: Bool) async throws {
+        loadingState = .loading
+        
         if clearBeforeRefresh {
             items = .init()
         } else {
@@ -228,6 +230,7 @@ public class UserContentFeedLoader: FeedLoading {
     private func loadNextApiPage() async throws {
         apiPage += 1
         let response = try await fetchItems()
+        preloadImages(response.posts) // TODO: comment images?
         postStream.addItems(response.posts)
         commentStream.addItems(response.comments)
     }
