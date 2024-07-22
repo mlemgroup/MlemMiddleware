@@ -23,6 +23,7 @@ public protocol InstanceStubProviding: ActorIdentifiable, ContentModel {
     var publicKey_: String? { get }
     var lastRefresh_: Date? { get }
     var contentWarning_: String? { get }
+    var blocked_: Bool? { get }
     
     // From Instance2Providing. These are defined as nil in the extension below
     var setup_: Bool? { get }
@@ -105,6 +106,7 @@ public extension InstanceStubProviding {
     var commentCount_: Int? { nil }
     var communityCount_: Int? { nil }
     var activeUserCount_: ActiveUserCount? { nil }
+    var blocked_: Bool? { nil }
     
     var version_: SiteVersion? { nil }
     var allLanguages_: [ApiLanguage]? { nil }
@@ -118,4 +120,12 @@ public extension InstanceStubProviding {
 public enum InstanceUpgradeError: Error {
     case noPostReturned
     case noSiteReturned
+}
+
+public extension InstanceStubProviding {
+    /// Upgrade to an ``Instance3``, using the instance's local ``ApiClient``. This will not work for locally running instances.
+    func upgradeLocal() async throws -> Instance3 {
+        let externalApi: ApiClient = .getApiClient(for: actorId, with: nil)
+        return try await externalApi.getMyInstance()
+    }
 }

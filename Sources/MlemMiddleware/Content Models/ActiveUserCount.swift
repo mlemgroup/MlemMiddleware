@@ -8,10 +8,10 @@
 import Foundation
 
 public struct ActiveUserCount {
-    let sixMonths: Int
-    let month: Int
-    let week: Int
-    let day: Int
+    public let sixMonths: Int
+    public let month: Int
+    public let week: Int
+    public let day: Int
     
     public static let zero: ActiveUserCount = .init(sixMonths: 0, month: 0, week: 0, day: 0)
 }

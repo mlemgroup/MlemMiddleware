@@ -32,6 +32,7 @@ public class ApiClient {
     internal weak var myInstance: Instance3?
     internal weak var myPerson: Person4?
     internal weak var subscriptions: SubscriptionList?
+    internal weak var blocks: BlockList?
     internal weak var unreadCount: UnreadCount?
     
     /// Stores the IDs of posts that are queued to be marked read.

@@ -51,7 +51,7 @@ public final class Person1: Person1Providing {
         deleted: Bool = false,
         isBot: Bool = false,
         instanceBan: InstanceBanType = .notBanned,
-        blocked: Bool = false
+        blocked: Bool? = nil
     ) {
         self.api = api
         self.actorId = actorId
@@ -67,6 +67,15 @@ public final class Person1: Person1Providing {
         self.deleted = deleted
         self.isBot = isBot
         self.instanceBan = instanceBan
-        self.blockedManager = .init(wrappedValue: blocked)
+        self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.people.keys.contains(actorId) ?? false)
+        self.blockedManager.onSet = { newValue, type in
+            if type != .receive {
+                if newValue {
+                    api.blocks?.people[actorId] = id
+                } else {
+                    api.blocks?.people.removeValue(forKey: actorId)
+                }
+            }
+        }
     }
 }
