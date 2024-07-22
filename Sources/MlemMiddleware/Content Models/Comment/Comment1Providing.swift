@@ -12,6 +12,7 @@ public protocol Comment1Providing:
         CommentStubProviding,
         ContentIdentifiable,
         Interactable1Providing,
+        DeletableProviding,
         SelectableContentProviding {
     
     var comment1: Comment1 { get }
@@ -84,10 +85,5 @@ public extension Comment1Providing {
         deletedManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.deleteComment(id: self.id, delete: newValue, semaphore: semaphore)
         }
-    }
-    
-    @discardableResult
-    func toggleDeleted() -> Task<StateUpdateResult, Never> {
-        updateDeleted(!deleted)
     }
 }

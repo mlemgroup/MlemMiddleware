@@ -22,6 +22,8 @@ public final class Post1: Post1Providing {
     
     public let actorId: URL
     public let id: Int
+    public let creatorId: Int
+    public let communityId: Int
     
     public var title: String
     public var content: String?
@@ -43,6 +45,8 @@ public final class Post1: Post1Providing {
         api: ApiClient,
         actorId: URL,
         id: Int,
+        creatorId: Int,
+        communityId: Int,
         created: Date,
         title: String = "",
         content: String? = "",
@@ -60,6 +64,8 @@ public final class Post1: Post1Providing {
         self.api = api
         self.actorId = actorId
         self.id = id
+        self.creatorId = creatorId
+        self.communityId = communityId
         self.created = created
         self.title = title
         self.content = content

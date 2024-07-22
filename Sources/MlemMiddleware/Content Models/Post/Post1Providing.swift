@@ -12,10 +12,13 @@ public protocol Post1Providing:
         ContentIdentifiable,
         Interactable1Providing,
         SelectableContentProviding,
+        DeletableProviding,
         FeedLoadable where FilterType == PostFilterType {
     var post1: Post1 { get }
     
     var id: Int { get }
+    var creatorId: Int { get }
+    var communityId: Int { get }
     var title: String { get }
     var content: String? { get }
     var linkUrl: URL? { get }
@@ -39,6 +42,8 @@ public extension Post1Providing {
     var actorId: URL { post1.actorId }
     
     var id: Int { post1.id }
+    var creatorId: Int { post1.creatorId }
+    var communityId: Int { post1.communityId }
     var title: String { post1.title }
     var content: String? { post1.content }
     var linkUrl: URL? { post1.linkUrl }
@@ -54,6 +59,8 @@ public extension Post1Providing {
     var updated: Date? { post1.updated }
     
     var id_: Int? { post1.id }
+    var creatorId_: Int? { post1.creatorId }
+    var communityId_: Int? { post1.communityId }
     var title_: String? { post1.title }
     var content_: String? { post1.content }
     var linkUrl_: URL? { post1.linkUrl }
@@ -144,10 +151,5 @@ public extension Post1Providing {
         deletedManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.deletePost(id: self.id, delete: newValue, semaphore: semaphore)
         }
-    }
-    
-    @discardableResult
-    func toggleDeleted() -> Task<StateUpdateResult, Never> {
-        updateDeleted(!deleted)
     }
 }

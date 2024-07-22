@@ -10,6 +10,8 @@ import Foundation
 public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     // From Post1Providing. These are defined as nil in the extension below
     var id_: Int? { get }
+    var creatorId_: Int? { get }
+    var communityId_: Int? { get }
     var title_: String? { get }
     var content_: String? { get }
     var linkUrl_: URL? { get }
@@ -39,6 +41,8 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
 
 public extension PostStubProviding {
     var id_: Int? { nil }
+    var creatorId_: Int? { nil }
+    var communityId_: Int? { nil }
     var title_: String? { nil }
     var content_: String? { nil }
     var linkUrl_: URL? { nil }

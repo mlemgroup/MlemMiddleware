@@ -13,6 +13,8 @@ class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
             api: api,
             actorId: apiType.actorId,
             id: apiType.id,
+            creatorId: apiType.creatorId,
+            communityId: apiType.communityId,
             created: apiType.published,
             title: apiType.name,
             content: apiType.body,

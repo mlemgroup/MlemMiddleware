@@ -12,6 +12,7 @@ public protocol Message1Providing:
         ActorIdentifiable,
         ContentIdentifiable,
         InboxItemProviding,
+        DeletableProviding,
         SelectableContentProviding
     {
     
@@ -98,10 +99,5 @@ public extension Message1Providing {
         deletedManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.deleteMessage(id: self.id, delete: newValue, semaphore: semaphore)
         }
-    }
-    
-    @discardableResult
-    func toggleDeleted() -> Task<StateUpdateResult, Never> {
-        updateDeleted(!deleted)
     }
 }

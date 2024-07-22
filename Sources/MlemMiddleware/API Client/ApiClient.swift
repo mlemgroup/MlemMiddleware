@@ -29,11 +29,11 @@ public class ApiClient {
     
     public var willSendToken: Bool { permissions == .all && token != nil }
     
-    internal weak var myInstance: Instance3?
-    internal weak var myPerson: Person4?
-    internal weak var subscriptions: SubscriptionList?
-    internal weak var blocks: BlockList?
-    internal weak var unreadCount: UnreadCount?
+    public internal(set) weak var myInstance: Instance3?
+    public internal(set) weak var myPerson: Person4?
+    public internal(set) weak var subscriptions: SubscriptionList?
+    public internal(set) weak var blocks: BlockList?
+    public internal(set) weak var unreadCount: UnreadCount?
     
     /// Stores the IDs of posts that are queued to be marked read.
     internal var markReadQueue: MarkReadQueue = .init()
