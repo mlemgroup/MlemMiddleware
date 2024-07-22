@@ -30,7 +30,7 @@ class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
     }
     
     override func updateModel(_ item: Post1, with apiType: ApiPost, semaphore: UInt? = nil) {
-        item.update(with: apiType)
+        item.update(with: apiType, semaphore: semaphore)
     }
 }
 

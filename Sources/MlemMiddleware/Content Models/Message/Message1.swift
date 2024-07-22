@@ -19,12 +19,14 @@ public final class Message1: Message1Providing {
     public let creatorId: Int
     public let recipientId: Int
     public var content: String
-    public var deleted: Bool
     public let created: Date
     public var updated: Date?
     
     internal let readManager: StateManager<Bool>
     public var read: Bool { readManager.wrappedValue }
+    
+    internal var deletedManager: StateManager<Bool>
+    public var deleted: Bool { deletedManager.wrappedValue }
     
     init(api: ApiClient, 
          actorId: URL,
@@ -43,7 +45,7 @@ public final class Message1: Message1Providing {
         self.creatorId = creatorId
         self.recipientId = recipientId
         self.content = content
-        self.deleted = deleted
+        self.deletedManager = .init(wrappedValue: deleted)
         self.created = created
         self.updated = updated
         self.readManager = .init(wrappedValue: read)

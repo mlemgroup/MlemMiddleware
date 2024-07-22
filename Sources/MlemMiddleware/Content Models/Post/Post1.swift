@@ -23,19 +23,21 @@ public final class Post1: Post1Providing {
     public let actorId: URL
     public let id: Int
     
-    public var title: String = ""
-    public var content: String? = ""
+    public var title: String
+    public var content: String?
     public var linkUrl: URL?
-    public var deleted: Bool = false
     public var embed: PostEmbed?
-    public var pinnedCommunity: Bool = false
-    public var pinnedInstance: Bool = false
-    public var locked: Bool = false
-    public var nsfw: Bool = false
-    public var removed: Bool = false
+    public var pinnedCommunity: Bool
+    public var pinnedInstance: Bool
+    public var locked: Bool
+    public var nsfw: Bool
+    public var removed: Bool
     public var thumbnailUrl: URL?
     public let created: Date
     public var updated: Date?
+    
+    internal var deletedManager: StateManager<Bool>
+    public var deleted: Bool { deletedManager.wrappedValue }
     
     internal init(
         api: ApiClient,
@@ -62,7 +64,7 @@ public final class Post1: Post1Providing {
         self.title = title
         self.content = content
         self.linkUrl = linkUrl
-        self.deleted = deleted
+        self.deletedManager = .init(wrappedValue: deleted)
         self.embed = embed
         self.pinnedCommunity = pinnedCommunity
         self.pinnedInstance = pinnedInstance

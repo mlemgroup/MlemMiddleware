@@ -108,6 +108,8 @@ public extension Post1Providing {
 }
 
 public extension Post1Providing {
+    private var deletedManager: StateManager<Bool> { post1.deletedManager }
+
     func upgrade() async throws -> any Post {
         try await api.getPost(id: id)
     }
@@ -135,5 +137,17 @@ public extension Post1Providing {
     
     func report(reason: String) async throws {
         try await api.reportPost(id: id, reason: reason)
+    }
+    
+    @discardableResult
+    func updateDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        deletedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.deletePost(id: self.id, delete: newValue, semaphore: semaphore)
+        }
+    }
+    
+    @discardableResult
+    func toggleDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        updateDeleted(!deleted)
     }
 }

@@ -63,6 +63,8 @@ public extension Comment1Providing {
 }
 
 public extension Comment1Providing {
+    private var deletedManager: StateManager<Bool> { comment1.deletedManager }
+
     var depth: Int { parentCommentIds.count }
     
     func upgrade() async throws -> any Comment {
@@ -75,5 +77,17 @@ public extension Comment1Providing {
     
     func report(reason: String) async throws {
         try await api.reportComment(id: id, reason: reason)
+    }
+    
+    @discardableResult
+    func updateDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        deletedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.deleteComment(id: self.id, delete: newValue, semaphore: semaphore)
+        }
+    }
+    
+    @discardableResult
+    func toggleDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        updateDeleted(!deleted)
     }
 }

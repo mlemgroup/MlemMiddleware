@@ -75,6 +75,7 @@ public extension Message1Providing {
 
 public extension Message1Providing {
     private var readManager: StateManager<Bool> { message1.readManager }
+    private var deletedManager: StateManager<Bool> { message1.deletedManager }
     
     // `toggleRead` is defined in `InboxItemProviding`
     @discardableResult
@@ -90,5 +91,17 @@ public extension Message1Providing {
     
     func report(reason: String) async throws {
         try await api.reportMessage(id: id, reason: reason)
+    }
+    
+    @discardableResult
+    func updateDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        deletedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.deleteMessage(id: self.id, delete: newValue, semaphore: semaphore)
+        }
+    }
+    
+    @discardableResult
+    func toggleDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        updateDeleted(!deleted)
     }
 }
