@@ -81,7 +81,9 @@ public class SubscriptionList {
                 instanceSections[section.key] = section.value.sorted(by: { $0.name < $1.name })
             }
         }
-        instanceSections[nil] = otherSection.sorted(by: { $0.name < $1.name })
+        if !otherSection.isEmpty {
+            instanceSections[nil] = otherSection.sorted(by: { $0.name < $1.name })
+        }
         self.instanceSections = instanceSections
     }
     
