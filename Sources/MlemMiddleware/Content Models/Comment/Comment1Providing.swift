@@ -25,6 +25,7 @@ public protocol Comment1Providing:
     var postId: Int { get }
     var parentCommentIds: [Int] { get }
     var distinguished: Bool { get }
+    var removed: Bool { get }
     var languageId: Int { get }
 }
 
@@ -44,6 +45,7 @@ public extension Comment1Providing {
     var postId: Int { comment1.postId }
     var parentCommentIds: [Int] { comment1.parentCommentIds }
     var distinguished: Bool { comment1.distinguished }
+    var removed: Bool { comment1.distinguished }
     var languageId: Int { comment1.languageId }
     
     var id_: Int? { comment1.id }
@@ -55,6 +57,7 @@ public extension Comment1Providing {
     var postId_: Int? { comment1.postId }
     var parentCommentIds_: [Int]? { comment1.parentCommentIds }
     var distinguished_: Bool? { comment1.distinguished }
+    var removed_: Bool? { comment1.distinguished }
     var languageId_: Int? { comment1.languageId }
 }
 

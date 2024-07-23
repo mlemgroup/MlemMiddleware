@@ -18,6 +18,7 @@ public protocol CommentStubProviding: ActorIdentifiable, ContentModel {
     var postId_: Int? { get }
     var parentCommentIds_: [Int]? { get }
     var distinguished_: Bool? { get }
+    var removed_: Bool? { get }
     var languageId_: Int? { get }
     
     // From Comment2Providing. These are defined as nil in the extension below
@@ -40,6 +41,7 @@ public extension CommentStubProviding {
     var postId_: Int? { nil }
     var parentCommentIds_: [Int]? { nil }
     var distinguished_: Bool? { nil }
+    var removed_: Bool? { nil }
     var languageId_: Int? { nil }
     
     var creator_: Person1? { nil }
