@@ -8,7 +8,7 @@
 import Foundation
 
 // This struct is just a convenience wrapper to handle stream state--all loading operations happen at the FeedLoader level to avoid parent/child concurrency control hell
-public struct UserContentStream<Item: FeedLoadable> {
+public struct UserContentStream<Item: UserContentProviding> {
     var items: [Item] = .init()
     var cursor: Int = 0
     var doneLoading: Bool = false
@@ -46,21 +46,9 @@ public struct UserContentStream<Item: FeedLoadable> {
 
         if cursor < items.count {
             cursor += 1
-            return toParent(item: items[cursor - 1])
+            return items[cursor - 1].toUserContent()
         }
 
-        return nil
-    }
-    
-    private func toParent(item: Item) -> UserContent? {
-        if let post = item as? Post2 {
-            return .init(wrappedValue: .post(post))
-        }
-        if let comment = item as? Comment2 {
-            return .init(wrappedValue: .comment(comment))
-        }
-        // shouldn't ever get here because we know we're getting either Post2 or Comment2
-        assertionFailure("Could not convert to parent or comment!")
         return nil
     }
 }

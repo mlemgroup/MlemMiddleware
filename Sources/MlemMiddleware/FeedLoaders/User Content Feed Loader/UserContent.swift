@@ -37,7 +37,6 @@ public class UserContent: Hashable, Equatable, FeedLoadable {
     }
     
     public func hash(into hasher: inout Hasher) {
-        // TODO: better conformance
         switch wrappedValue {
         case let .post(post2):
             hasher.combine(post2)

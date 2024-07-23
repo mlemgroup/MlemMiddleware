@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Comment2Providing: Comment1Providing, Interactable2Providing {
+public protocol Comment2Providing: Comment1Providing, Interactable2Providing, UserContentProviding {
     var comment2: Comment2 { get }
     
     var creator: Person1 { get }
@@ -58,5 +58,12 @@ public extension Comment2Providing {
         savedManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.saveComment(id: self.id, save: newValue, semaphore: semaphore)
         }
+    }
+}
+
+/// UserContentProviding conformance
+public extension Comment2Providing {
+    func toUserContent() -> UserContent {
+        .init(wrappedValue: .comment(comment2))
     }
 }
