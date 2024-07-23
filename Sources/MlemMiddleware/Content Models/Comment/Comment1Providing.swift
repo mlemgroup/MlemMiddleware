@@ -13,6 +13,7 @@ public protocol Comment1Providing:
         ContentIdentifiable,
         Interactable1Providing,
         DeletableProviding,
+        ReportableProviding,
         SelectableContentProviding {
     
     var comment1: Comment1 { get }

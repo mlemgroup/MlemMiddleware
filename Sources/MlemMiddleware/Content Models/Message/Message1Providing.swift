@@ -13,6 +13,7 @@ public protocol Message1Providing:
         ContentIdentifiable,
         InboxItemProviding,
         DeletableProviding,
+        ReportableProviding,
         SelectableContentProviding
     {
     
