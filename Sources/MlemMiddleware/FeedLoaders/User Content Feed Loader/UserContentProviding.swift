@@ -9,5 +9,5 @@ import Foundation
 
 /// Protocol for items that can be converted into a generic UserContent
 public protocol UserContentProviding: FeedLoadable {
-    func toUserContent() -> UserContent
+    var userContent: UserContent { get }
 }

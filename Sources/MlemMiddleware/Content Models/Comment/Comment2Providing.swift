@@ -63,7 +63,5 @@ public extension Comment2Providing {
 
 /// UserContentProviding conformance
 public extension Comment2Providing {
-    func toUserContent() -> UserContent {
-        .init(wrappedValue: .comment(comment2))
-    }
+    var userContent: UserContent { .init(wrappedValue: .comment(comment2)) }
 }

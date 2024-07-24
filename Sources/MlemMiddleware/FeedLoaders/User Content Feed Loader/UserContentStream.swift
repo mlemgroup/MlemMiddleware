@@ -39,16 +39,11 @@ public struct UserContentStream<Item: UserContentProviding> {
     /// - Returns: next item in the feed stream
     /// - Warning: This is NOT a thread-safe function! Only one thread at a time per stream may call this function!
     mutating func consumeNextItem() -> UserContent? {
-        assert(
-            cursor < items.count,
-            "consumeNextItem called on a stream without a next item (cursor: \(cursor), count: \(items.count))!"
-        )
-
-        if cursor < items.count {
-            cursor += 1
-            return items[cursor - 1].toUserContent()
+        guard cursor < items.count else {
+            return nil
         }
-
-        return nil
+        
+        cursor += 1
+        return items[cursor - 1].userContent
     }
 }

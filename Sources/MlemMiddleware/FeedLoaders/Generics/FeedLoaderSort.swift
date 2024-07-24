@@ -32,7 +32,7 @@ public extension FeedLoaderSort {
     }
     
     
-    /// Compares two FeedLoaderSorts. Returns true if rhs should be sorted after rhs. Assumes that higher items should be sorted first; thus for some sorts (e.g., "old"), the result will be "flipped," since _lower_ dates should be sorted ahead of higher ones.
+    /// Compares two FeedLoaderSorts. Returns true if rhs should be sorted after lhs. Assumes that higher items should be sorted first; thus for some sorts (e.g., "old"), the result will be "flipped," since _lower_ dates should be sorted ahead of higher ones.
     static func < (lhs: FeedLoaderSort, rhs: FeedLoaderSort) -> Bool {
         guard lhs.sortType == rhs.sortType else {
             assertionFailure("Compare called on TrackerSorts with different types")

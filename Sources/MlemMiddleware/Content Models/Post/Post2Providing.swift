@@ -126,7 +126,5 @@ public extension Post2Providing {
 
 // UserContentProviding conformance
 public extension Post2Providing {
-    func toUserContent() -> UserContent {
-        .init(wrappedValue: .post(post2))
-    }
+    var userContent: UserContent { .init(wrappedValue: .post(post2)) }
 }

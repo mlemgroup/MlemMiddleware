@@ -14,9 +14,9 @@ import Nuke
 /// severe API waste. This solution is a simplified variant of that architecture.
 ///
 /// The UserContentFeedLoader is the parent loader. It is responsible for all data fetching, and keeps track of two
-/// UserContentStreams, one for Posts and one for Comments. To load a page of items, it consumes the child streams, just as
-/// in the standard Parent/Child FeedLoader. To load a new page, however, the stream calls the load method of the
-/// UserContentFeedLoader, which performs the call and pushes the results down to the child streams
+/// UserContentStreams, one for Posts and one for Comments. To load a page of items, it consumes and merges the child streams, just as
+/// in the standard Parent/Child FeedLoader; if either stream reaches the end of its items, it triggers a new load, the response from
+/// which is then incorporated into both child streams.
 
 @Observable
 public class UserContentFeedLoader: FeedLoading {
@@ -191,22 +191,16 @@ public class UserContentFeedLoader: FeedLoading {
         
         if let nextPost {
             if let nextComment {
-                if nextPost > nextComment {
-                    print("Post date \(nextPost) > comment date \(nextComment)")
-                } else {
-                    print("Comment date \(nextComment) > post date \(nextPost)")
-                }
-                
+                // if both next post and next comment, return higher sort
                 return nextPost > nextComment ? postStream.consumeNextItem() : commentStream.consumeNextItem()
             } else {
-                print("No next comment found")
+                // if next post but no next comment, return next post
                 return postStream.consumeNextItem()
             }
-        } else if nextComment != nil {
-            print("No next post found")
-            return commentStream.consumeNextItem()
         }
-        return nil
+        
+        // if no next post, always return next comment (this returns nil if no next comment)
+        return commentStream.consumeNextItem()
     }
     
     // MARK: Helpers
