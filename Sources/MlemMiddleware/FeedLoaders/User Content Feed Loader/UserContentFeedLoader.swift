@@ -94,7 +94,7 @@ public class UserContentFeedLoader: FeedLoading {
     ///   - item: UserContent
     ///   - loadChildOnly: if true, the item will be evaluated against the relevant stream threshold rather than the parent threshold
     public func loadIfThreshold(_ item: UserContent, asChild: Bool) throws {
-        var shouldLoad: Bool = false
+        let shouldLoad: Bool
         if asChild {
             shouldLoad = switch item.wrappedValue {
             case let .post(post): postStream.thresholds.isThreshold(post)
@@ -137,11 +137,11 @@ public class UserContentFeedLoader: FeedLoading {
         commentStream = .init()
         apiPage = 0
         contentPage = 0
-        
+        defer {
+            tempPostStream = nil
+            tempCommentStream = nil
+        }
         try await loadMoreItems()
-        
-        tempPostStream = nil
-        tempCommentStream = nil
     }
     
     // MARK: Private Methods
