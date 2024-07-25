@@ -63,19 +63,19 @@ public class PersonContentFeedLoader: FeedLoading {
         savedOnly: Bool,
         smallAvatarSize: CGFloat,
         largeAvatarSize: CGFloat,
-        withContent: (posts: [Post2]?, comments: [Comment2]?) = (nil, nil)
+        withContent: (posts: [Post2], comments: [Comment2])? = nil
     ) {
         self.api = api
         self.userId = userId
         self.sortType = sortType
         self.savedOnly = savedOnly
-        self.apiPage = 0
+        self.apiPage = withContent != nil ? 1 : 0
         self.contentPage = 0
         self.items = .init()
         self.contentLoadingSemaphore = .init(value: 1)
         self.loadingState = .idle
-        self.postStream = .init(items: withContent.posts)
-        self.commentStream = .init(items: withContent.comments)
+        self.postStream = .init(items: withContent?.posts)
+        self.commentStream = .init(items: withContent?.comments)
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
     }
