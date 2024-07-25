@@ -25,7 +25,7 @@ public class UserContentFeedLoader: FeedLoading {
     public var loadingState: LoadingState
     
     // loading configuration
-    private(set) var sortType: FeedLoaderSort.SortType
+    public private(set) var sortType: FeedLoaderSort.SortType
     private var userId: Int
     private var savedOnly: Bool
     
