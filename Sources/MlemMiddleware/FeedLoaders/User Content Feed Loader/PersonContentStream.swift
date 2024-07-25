@@ -9,10 +9,20 @@ import Foundation
 
 // This struct is just a convenience wrapper to handle stream state--all loading operations happen at the FeedLoader level to avoid parent/child concurrency control hell
 public struct PersonContentStream<Item: PersonContentProviding> {
-    var items: [Item] = .init()
+    var items: [Item]
     var cursor: Int = 0
     var doneLoading: Bool = false
-    var thresholds: Thresholds<Item> = .init()
+    var thresholds: Thresholds<Item>
+    
+    init(items: [Item]? = nil) {
+        self.thresholds = .init()
+        if let items {
+            self.items = items
+            self.thresholds.update(with: items)
+        } else {
+            self.items = .init()
+        }
+    }
     
     var needsMoreItems: Bool { !doneLoading && cursor >= items.count }
     
