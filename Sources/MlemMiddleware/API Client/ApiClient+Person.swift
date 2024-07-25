@@ -102,7 +102,7 @@ public extension ApiClient {
         limit: Int,
         savedOnly: Bool? = nil,
         communityId: Int? = nil
-    ) async throws -> (posts: [Post2], comments: [Comment2]) {
+    ) async throws -> (person: Person3, posts: [Post2], comments: [Comment2]) {
         let request = GetPersonDetailsRequest(
             personId: id,
             username: nil,
@@ -113,9 +113,10 @@ public extension ApiClient {
             savedOnly: savedOnly
         )
         let response = try await perform(request)
+        let person = caches.person3.getModel(api: self, from: response)
         let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
         let comments = response.comments.map { caches.comment2.getModel(api: self, from: $0) }
-        return (posts: posts, comments: comments)
+        return (person: person, posts: posts, comments: comments)
     }
     
     func getMyPerson() async throws -> (person: Person4?, instance: Instance3, blocks: BlockList?) {

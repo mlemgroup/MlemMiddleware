@@ -81,20 +81,20 @@ public extension Person1Providing {
         try await api.getPerson(id: id)
     }
     
-    func getPosts(
+    func getContent(
         community: (any Community)? = nil,
         sort: ApiSortType = .new,
         page: Int,
         limit: Int,
         savedOnly: Bool = false
-    ) async throws -> (person: Person3, posts: [Post2]) {
-        return try await api.getPosts(
-            personId: id,
-            communityId: community?.id,
+    ) async throws -> (person: Person3, posts: [Post2], comments: [Comment2]) {
+        return try await api.getContent(
+            authorId: id,
+            sort: sort,
             page: page,
             limit: limit,
-            savedOnly: savedOnly
-        )
+            savedOnly: savedOnly,
+            communityId: community?.id)
     }
     
     func updateBlocked(_ newValue: Bool) {

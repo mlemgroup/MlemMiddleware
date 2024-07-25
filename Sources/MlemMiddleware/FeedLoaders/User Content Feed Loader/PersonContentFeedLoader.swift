@@ -213,7 +213,8 @@ public class PersonContentFeedLoader: FeedLoading {
     }
     
     private func fetchItems() async throws -> (posts: [Post2], comments: [Comment2]) {
-        return try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: savedOnly)
+        let response = try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: savedOnly)
+        return (posts: response.posts, comments: response.comments)
     }
     
     /// Loads the next page from the API
