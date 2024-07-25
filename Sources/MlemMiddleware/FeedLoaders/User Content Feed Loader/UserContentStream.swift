@@ -1,5 +1,5 @@
 //
-//  UserContentStream.swift
+//  PersonContentStream.swift
 //
 //
 //  Created by Eric Andrews on 2024-07-21.
@@ -8,7 +8,7 @@
 import Foundation
 
 // This struct is just a convenience wrapper to handle stream state--all loading operations happen at the FeedLoader level to avoid parent/child concurrency control hell
-public struct UserContentStream<Item: UserContentProviding> {
+public struct PersonContentStream<Item: PersonContentProviding> {
     var items: [Item] = .init()
     var cursor: Int = 0
     var doneLoading: Bool = false
@@ -38,7 +38,7 @@ public struct UserContentStream<Item: UserContentProviding> {
     /// Gets the next item in the stream and increments the cursor
     /// - Returns: next item in the feed stream
     /// - Warning: This is NOT a thread-safe function! Only one thread at a time per stream may call this function!
-    mutating func consumeNextItem() -> UserContent? {
+    mutating func consumeNextItem() -> PersonContent? {
         guard cursor < items.count else {
             return nil
         }
