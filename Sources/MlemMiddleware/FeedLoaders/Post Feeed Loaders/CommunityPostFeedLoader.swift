@@ -27,8 +27,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
             showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
             smallAvatarSize: smallAvatarSize,
-            largeAvatarSize: largeAvatarSize,
-            urlCache: urlCache
+            largeAvatarSize: largeAvatarSize
         )
     }
     

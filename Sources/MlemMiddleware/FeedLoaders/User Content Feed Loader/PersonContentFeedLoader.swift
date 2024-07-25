@@ -1,5 +1,5 @@
 //
-//  CompositeFeedLoader.swift
+//  PersonContentFeedLoader.swift
 //
 //
 //  Created by Eric Andrews on 2024-07-09.
@@ -13,15 +13,15 @@ import Nuke
 /// just posts or just comments, and thus the standard Parent/Child FeedLoader construction does not work without
 /// severe API waste. This solution is a simplified variant of that architecture.
 ///
-/// The UserContentFeedLoader is the parent loader. It is responsible for all data fetching, and keeps track of two
-/// UserContentStreams, one for Posts and one for Comments. To load a page of items, it consumes and merges the child streams, just as
+/// The PersonContentFeedLoader is the parent loader. It is responsible for all data fetching, and keeps track of two
+/// PersonContentStreams, one for Posts and one for Comments. To load a page of items, it consumes and merges the child streams, just as
 /// in the standard Parent/Child FeedLoader; if either stream reaches the end of its items, it triggers a new load, the response from
 /// which is then incorporated into both child streams.
 
 @Observable
-public class UserContentFeedLoader: FeedLoading {
+public class PersonContentFeedLoader: FeedLoading {
     public var api: ApiClient
-    public var items: [UserContent]
+    public var items: [PersonContent]
     public var loadingState: LoadingState
     
     // loading configuration
@@ -32,7 +32,6 @@ public class UserContentFeedLoader: FeedLoading {
     // prefetching
     private let smallAvatarIconSize: Int
     private let largeAvatarIconSize: Int
-    private let urlCache: URLCache
     private let prefetcher: ImagePrefetcher = .init(
         pipeline: ImagePipeline.shared,
         destination: .memoryCache,
@@ -45,14 +44,14 @@ public class UserContentFeedLoader: FeedLoading {
     internal var contentPage: Int
     
     private var contentLoadingSemaphore: AsyncSemaphore
-    private var thresholds: Thresholds<UserContent> = .init()
+    private var thresholds: Thresholds<PersonContent> = .init()
     
-    private var postStream: UserContentStream<Post2>
-    private var commentStream: UserContentStream<Comment2>
+    private var postStream: PersonContentStream<Post2>
+    private var commentStream: PersonContentStream<Comment2>
     
     // these are used to allow refresh without clear
-    private var tempPostStream: UserContentStream<Post2>?
-    private var tempCommentStream: UserContentStream<Comment2>?
+    private var tempPostStream: PersonContentStream<Post2>?
+    private var tempCommentStream: PersonContentStream<Comment2>?
     
     var posts: [Post2] { tempPostStream?.items ?? postStream.items }
     var comments: [Comment2] { tempCommentStream?.items ?? commentStream.items }
@@ -63,8 +62,7 @@ public class UserContentFeedLoader: FeedLoading {
         sortType: FeedLoaderSort.SortType,
         savedOnly: Bool,
         smallAvatarSize: CGFloat,
-        largeAvatarSize: CGFloat,
-        urlCache: URLCache
+        largeAvatarSize: CGFloat
     ) {
         self.api = api
         self.userId = userId
@@ -79,21 +77,20 @@ public class UserContentFeedLoader: FeedLoading {
         self.commentStream = .init()
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
-        self.urlCache = urlCache
     }
     
     // MARK: Public Methods
     
     // protocol conformance
-    public func loadIfThreshold(_ item: UserContent) throws {
+    public func loadIfThreshold(_ item: PersonContent) throws {
         try loadIfThreshold(item, asChild: false)
     }
     
-    /// Given a UserContent, loads more items if that content is a threshold item
+    /// Given a PersonContent, loads more items if that content is a threshold item
     /// - Parameters:
-    ///   - item: UserContent
+    ///   - item: PersonContent
     ///   - loadChildOnly: if true, the item will be evaluated against the relevant stream threshold rather than the parent threshold
-    public func loadIfThreshold(_ item: UserContent, asChild: Bool) throws {
+    public func loadIfThreshold(_ item: PersonContent, asChild: Bool) throws {
         let shouldLoad: Bool
         if asChild {
             shouldLoad = switch item.wrappedValue {
@@ -158,7 +155,7 @@ public class UserContentFeedLoader: FeedLoading {
         }
         
         contentPage += 1
-        var newItems: [UserContent] = .init()
+        var newItems: [PersonContent] = .init()
         while newItems.count < 50, loadingState != .done {
             if let nextItem = try await computeNextItem() {
                 newItems.append(nextItem)
@@ -180,7 +177,7 @@ public class UserContentFeedLoader: FeedLoading {
     }
     
     /// Returns the next post or comment, depending on which is sorted first
-    private func computeNextItem() async throws -> UserContent? {
+    private func computeNextItem() async throws -> PersonContent? {
         // if either postStream or commentStream needs items, load
         if postStream.needsMoreItems || commentStream.needsMoreItems {
             try await loadNextApiPage()
@@ -206,12 +203,12 @@ public class UserContentFeedLoader: FeedLoading {
     // MARK: Helpers
     
     @MainActor
-    private func addItems(_ newItems: [UserContent]) {
+    private func addItems(_ newItems: [PersonContent]) {
         items.append(contentsOf: newItems)
     }
     
     @MainActor
-    private func setItems(_ newItems: [UserContent]) {
+    private func setItems(_ newItems: [PersonContent]) {
         items = newItems
     }
     

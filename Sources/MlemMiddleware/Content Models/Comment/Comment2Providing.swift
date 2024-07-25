@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Comment2Providing: Comment1Providing, Interactable2Providing, UserContentProviding {
+public protocol Comment2Providing: Comment1Providing, Interactable2Providing, PersonContentProviding {
     var comment2: Comment2 { get }
     
     var creator: Person1 { get }
@@ -61,7 +61,7 @@ public extension Comment2Providing {
     }
 }
 
-/// UserContentProviding conformance
+/// PersonContentProviding conformance
 public extension Comment2Providing {
-    var userContent: UserContent { .init(wrappedValue: .comment(comment2)) }
+    var userContent: PersonContent { .init(wrappedValue: .comment(comment2)) }
 }

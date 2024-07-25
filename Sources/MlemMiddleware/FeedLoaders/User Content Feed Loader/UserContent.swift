@@ -1,5 +1,5 @@
 //
-//  UserContent.swift
+//  PersonContent.swift
 //  
 //
 //  Created by Eric Andrews on 2024-07-21.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-public class UserContent: Hashable, Equatable, FeedLoadable {
-    public typealias FilterType = UserContentFilterType
+public class PersonContent: Hashable, Equatable, FeedLoadable {
+    public typealias FilterType = PersonContentFilterType
     
     public let wrappedValue: Value
     
@@ -18,7 +18,7 @@ public class UserContent: Hashable, Equatable, FeedLoadable {
         case comment(Comment2)
     }
     
-    public init(wrappedValue: UserContent.Value) {
+    public init(wrappedValue: PersonContent.Value) {
         self.wrappedValue = wrappedValue
     }
     
@@ -47,7 +47,7 @@ public class UserContent: Hashable, Equatable, FeedLoadable {
         }
     }
     
-    public static func == (lhs: UserContent, rhs: UserContent) -> Bool {
+    public static func == (lhs: PersonContent, rhs: PersonContent) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
 }
