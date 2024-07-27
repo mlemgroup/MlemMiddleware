@@ -12,7 +12,7 @@ extension Message1: CacheIdentifiable {
     
     func update(with message: ApiPrivateMessage, semaphore: UInt? = nil) {
         self.content = message.content
-        self.deleted = message.deleted
+        self.deletedManager.updateWithReceivedValue(message.deleted, semaphore: semaphore)
         self.updated = message.updated
         self.readManager.updateWithReceivedValue(message.read, semaphore: semaphore)
     }

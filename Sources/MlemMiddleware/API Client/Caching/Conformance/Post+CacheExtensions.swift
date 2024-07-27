@@ -10,13 +10,12 @@ import Foundation
 extension Post1: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with post: ApiPost) {
+    func update(with post: ApiPost, semaphore: UInt? = nil) {
         updated = post.updated
         title = post.name
         // We can't name this 'body' because @Observable uses that property name already
         content = post.body
         linkUrl = post.linkUrl
-        deleted = post.deleted
         embed = post.embed
         
         pinnedCommunity = post.featuredCommunity
@@ -25,6 +24,8 @@ extension Post1: CacheIdentifiable {
         nsfw = post.nsfw
         removed = post.removed
         thumbnailUrl = post.thumbnailImageUrl
+        
+        deletedManager.updateWithReceivedValue(post.deleted, semaphore: semaphore)
     }
 }
 
@@ -37,13 +38,15 @@ extension Post2: CacheIdentifiable {
             .init(from: post.counts, myVote: ScoringOperation.guaranteedInit(from: post.myVote)),
             semaphore: semaphore
         )
+        
         unreadCommentCount = post.unreadComments
         savedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
         readManager.updateWithReceivedValue(post.read, semaphore: semaphore)
+        hiddenManager.updateWithReceivedValue(post.hidden ?? false, semaphore: semaphore)
 
-        post1.update(with: post.post)
-        creator.update(with: post.creator)
-        community.update(with: post.community)
+        post1.update(with: post.post, semaphore: semaphore)
+        creator.update(with: post.creator, semaphore: semaphore)
+        community.update(with: post.community, semaphore: semaphore)
         
         creator.blockedManager.updateWithReceivedValue(post.creatorBlocked, semaphore: semaphore)
     }

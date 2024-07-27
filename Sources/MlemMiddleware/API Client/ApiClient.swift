@@ -21,7 +21,7 @@ public class ApiClient {
     public let baseUrl: URL
     let endpointUrl: URL
     public private(set) var token: String?
-    private(set) var fetchedVersion: SiteVersion?
+    public private(set) var fetchedVersion: SiteVersion?
     private var fetchSiteTask: Task<SiteVersion, Error>?
     
     /// When `true`, the token will not be attatched to any API requests. This is useful for ensuring that inactive accounts don't accidentally make requests
@@ -29,11 +29,11 @@ public class ApiClient {
     
     public var willSendToken: Bool { permissions == .all && token != nil }
     
-    internal weak var myInstance: Instance3?
-    internal weak var myPerson: Person4?
-    internal weak var subscriptions: SubscriptionList?
-    internal weak var blocks: BlockList?
-    internal weak var unreadCount: UnreadCount?
+    public internal(set) weak var myInstance: Instance3?
+    public internal(set) weak var myPerson: Person4?
+    public internal(set) weak var subscriptions: SubscriptionList?
+    public internal(set) weak var blocks: BlockList?
+    public internal(set) weak var unreadCount: UnreadCount?
     
     /// Stores the IDs of posts that are queued to be marked read.
     internal var markReadQueue: MarkReadQueue = .init()

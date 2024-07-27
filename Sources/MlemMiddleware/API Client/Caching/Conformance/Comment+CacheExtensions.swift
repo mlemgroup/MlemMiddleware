@@ -10,12 +10,12 @@ import Foundation
 extension Comment1: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with comment: ApiComment) {
+    func update(with comment: ApiComment, semaphore: UInt? = nil) {
         self.content = comment.content
         self.removed = comment.removed
         self.created = comment.published
         self.updated = comment.updated
-        self.deleted = comment.deleted
+        self.deletedManager.updateWithReceivedValue(comment.deleted, semaphore: semaphore)
         self.distinguished = comment.distinguished
         self.languageId = comment.languageId
     }
@@ -25,10 +25,10 @@ extension Comment2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with comment: ApiCommentView, semaphore: UInt? = nil) {
-        self.comment1.update(with: comment.comment)
-        self.creator.update(with: comment.creator)
-        self.post.update(with: comment.post)
-        self.community.update(with: comment.community)
+        self.comment1.update(with: comment.comment, semaphore: semaphore)
+        self.creator.update(with: comment.creator, semaphore: semaphore)
+        self.post.update(with: comment.post, semaphore: semaphore)
+        self.community.update(with: comment.community, semaphore: semaphore)
         votesManager.updateWithReceivedValue(
             .init(from: comment.counts, myVote: ScoringOperation.guaranteedInit(from: comment.myVote)),
             semaphore: semaphore

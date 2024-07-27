@@ -24,9 +24,11 @@ public final class Comment1: Comment1Providing {
     public var removed: Bool
     public var created: Date
     public var updated: Date?
-    public var deleted: Bool
     public var distinguished: Bool
     public var languageId: Int
+    
+    internal var deletedManager: StateManager<Bool>
+    public var deleted: Bool { deletedManager.wrappedValue }
     
     internal init(
         api: ApiClient,
@@ -50,7 +52,7 @@ public final class Comment1: Comment1Providing {
         self.removed = removed
         self.created = created
         self.updated = updated
-        self.deleted = deleted
+        self.deletedManager = .init(wrappedValue: deleted)
         self.creatorId = creatorId
         self.postId = postId
         self.parentCommentIds = parentCommentIds

@@ -84,7 +84,8 @@ public extension Reply1Providing {
     private var readManager: StateManager<Bool> { reply1.readManager }
     
     // `toggleRead` is defined in `InboxItemProviding`
-    func updateRead(_ newValue: Bool) {
+    @discardableResult
+    func updateRead(_ newValue: Bool)-> Task<StateUpdateResult, Never> {
         readManager.performRequest(expectedResult: newValue) { semaphore in
             if self.isMention {
                 try await self.api.markMentionAsRead(id: self.id, read: newValue, semaphore: semaphore)
@@ -93,8 +94,6 @@ public extension Reply1Providing {
             }
         }
     }
-    
- 
 }
 
 // Override the `ContentIdentifiable` implementation to include `isMention`, because a reply

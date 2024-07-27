@@ -12,10 +12,14 @@ public protocol Post1Providing:
         ContentIdentifiable,
         Interactable1Providing,
         SelectableContentProviding,
+        DeletableProviding,
+        ReportableProviding,
         FeedLoadable where FilterType == PostFilterType {
     var post1: Post1 { get }
     
     var id: Int { get }
+    var creatorId: Int { get }
+    var communityId: Int { get }
     var title: String { get }
     var content: String? { get }
     var linkUrl: URL? { get }
@@ -39,6 +43,8 @@ public extension Post1Providing {
     var actorId: URL { post1.actorId }
     
     var id: Int { post1.id }
+    var creatorId: Int { post1.creatorId }
+    var communityId: Int { post1.communityId }
     var title: String { post1.title }
     var content: String? { post1.content }
     var linkUrl: URL? { post1.linkUrl }
@@ -54,6 +60,8 @@ public extension Post1Providing {
     var updated: Date? { post1.updated }
     
     var id_: Int? { post1.id }
+    var creatorId_: Int? { post1.creatorId }
+    var communityId_: Int? { post1.communityId }
     var title_: String? { post1.title }
     var content_: String? { post1.content }
     var linkUrl_: URL? { post1.linkUrl }
@@ -108,6 +116,8 @@ public extension Post1Providing {
 }
 
 public extension Post1Providing {
+    private var deletedManager: StateManager<Bool> { post1.deletedManager }
+
     func upgrade() async throws -> any Post {
         try await api.getPost(id: id)
     }
@@ -127,5 +137,20 @@ public extension Post1Providing {
             limit: limit,
             filter: filter
         )
+    }
+    
+    func reply(content: String, languageId: Int? = nil) async throws -> Comment2 {
+        try await api.replyToPost(id: id, content: content, languageId: languageId)
+    }
+    
+    func report(reason: String) async throws {
+        try await api.reportPost(id: id, reason: reason)
+    }
+    
+    @discardableResult
+    func updateDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        deletedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.deletePost(id: self.id, delete: newValue, semaphore: semaphore)
+        }
     }
 }

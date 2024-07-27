@@ -13,6 +13,8 @@ class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
             api: api,
             actorId: apiType.actorId,
             id: apiType.id,
+            creatorId: apiType.creatorId,
+            communityId: apiType.communityId,
             created: apiType.published,
             title: apiType.name,
             content: apiType.body,
@@ -30,7 +32,7 @@ class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
     }
     
     override func updateModel(_ item: Post1, with apiType: ApiPost, semaphore: UInt? = nil) {
-        item.update(with: apiType)
+        item.update(with: apiType, semaphore: semaphore)
     }
 }
 
@@ -45,7 +47,8 @@ class Post2Cache: ApiTypeBackedCache<Post2, ApiPostView> {
             commentCount: apiType.counts.comments,
             unreadCommentCount: apiType.unreadComments,
             saved: apiType.saved,
-            read: apiType.read
+            read: apiType.read,
+            hidden: apiType.hidden ?? false
         )
     }
     

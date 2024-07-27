@@ -12,9 +12,10 @@ public protocol Comment1Providing:
         CommentStubProviding,
         ContentIdentifiable,
         Interactable1Providing,
+        DeletableProviding,
+        ReportableProviding,
         SelectableContentProviding,
-        FeedLoadable where FilterType == CommentFilterType{
-    
+        FeedLoadable where FilterType == CommentFilterType {
     var comment1: Comment1 { get }
     var id: Int { get }
     var content: String { get }
@@ -25,6 +26,7 @@ public protocol Comment1Providing:
     var postId: Int { get }
     var parentCommentIds: [Int] { get }
     var distinguished: Bool { get }
+    var removed: Bool { get }
     var languageId: Int { get }
 }
 
@@ -44,6 +46,7 @@ public extension Comment1Providing {
     var postId: Int { comment1.postId }
     var parentCommentIds: [Int] { comment1.parentCommentIds }
     var distinguished: Bool { comment1.distinguished }
+    var removed: Bool { comment1.distinguished }
     var languageId: Int { comment1.languageId }
     
     var id_: Int? { comment1.id }
@@ -55,6 +58,7 @@ public extension Comment1Providing {
     var postId_: Int? { comment1.postId }
     var parentCommentIds_: [Int]? { comment1.parentCommentIds }
     var distinguished_: Bool? { comment1.distinguished }
+    var removed_: Bool? { comment1.distinguished }
     var languageId_: Int? { comment1.languageId }
 }
 
@@ -74,9 +78,26 @@ public extension Comment1Providing {
 }
 
 public extension Comment1Providing {
+    private var deletedManager: StateManager<Bool> { comment1.deletedManager }
+
     var depth: Int { parentCommentIds.count }
     
     func upgrade() async throws -> any Comment {
         try await api.getComment(id: id)
+    }
+    
+    func reply(content: String, languageId: Int? = nil) async throws -> Comment2 {
+        try await api.replyToComment(postId: postId, parentId: id, content: content, languageId: languageId)
+    }
+    
+    func report(reason: String) async throws {
+        try await api.reportComment(id: id, reason: reason)
+    }
+    
+    @discardableResult
+    func updateDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        deletedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.deleteComment(id: self.id, delete: newValue, semaphore: semaphore)
+        }
     }
 }

@@ -12,6 +12,8 @@ public protocol Message1Providing:
         ActorIdentifiable,
         ContentIdentifiable,
         InboxItemProviding,
+        DeletableProviding,
+        ReportableProviding,
         SelectableContentProviding
     {
     
@@ -75,11 +77,28 @@ public extension Message1Providing {
 
 public extension Message1Providing {
     private var readManager: StateManager<Bool> { message1.readManager }
+    private var deletedManager: StateManager<Bool> { message1.deletedManager }
     
     // `toggleRead` is defined in `InboxItemProviding`
-    func updateRead(_ newValue: Bool) {
+    @discardableResult
+    func updateRead(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         readManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.markMessageAsRead(id: self.id, read: newValue, semaphore: semaphore)
+        }
+    }
+    
+    func reply(content: String) async throws -> Message2 {
+        try await api.createMessage(personId: recipientId, content: content)
+    }
+    
+    func report(reason: String) async throws {
+        try await api.reportMessage(id: id, reason: reason)
+    }
+    
+    @discardableResult
+    func updateDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        deletedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.deleteMessage(id: self.id, delete: newValue, semaphore: semaphore)
         }
     }
 }

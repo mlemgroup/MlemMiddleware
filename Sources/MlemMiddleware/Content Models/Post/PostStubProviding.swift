@@ -10,6 +10,8 @@ import Foundation
 public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     // From Post1Providing. These are defined as nil in the extension below
     var id_: Int? { get }
+    var creatorId_: Int? { get }
+    var communityId_: Int? { get }
     var title_: String? { get }
     var content_: String? { get }
     var linkUrl_: URL? { get }
@@ -32,12 +34,15 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     var unreadCommentCount_: Int? { get }
     var saved_: Bool? { get }
     var read_: Bool? { get }
+    var hidden_: Bool? { get }
     
     func upgrade() async throws -> any Post
 }
 
 public extension PostStubProviding {
     var id_: Int? { nil }
+    var creatorId_: Int? { nil }
+    var communityId_: Int? { nil }
     var title_: String? { nil }
     var content_: String? { nil }
     var linkUrl_: URL? { nil }
@@ -59,6 +64,7 @@ public extension PostStubProviding {
     var unreadCommentCount_: Int? { nil }
     var saved_: Bool? { nil }
     var read_: Bool? { nil }
+    var hidden_: Bool? { nil }
 }
 
 public extension PostStubProviding {

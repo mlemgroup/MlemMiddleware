@@ -10,7 +10,7 @@ import Foundation
 extension Community1: CacheIdentifiable {
     public var cacheId: Int { id }
     
-    func update(with community: ApiCommunity) {
+    func update(with community: ApiCommunity, semaphore: UInt? = nil) {
         updated = community.updated
         displayName = community.title
         description = community.description
@@ -38,7 +38,7 @@ extension Community2: CacheIdentifiable {
             week: communityView.counts.usersActiveWeek,
             day: communityView.counts.usersActiveDay
         )
-        community1.update(with: communityView.community)
+        community1.update(with: communityView.community, semaphore: semaphore)
     }
 }
 
