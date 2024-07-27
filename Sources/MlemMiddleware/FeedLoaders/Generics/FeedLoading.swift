@@ -7,11 +7,12 @@
 
 import Foundation
 
-public protocol FeedLoading {
+public protocol FeedLoading<Item> {
     associatedtype Item: FeedLoadable
     
     var items: [Item] { get }
     var loadingState: LoadingState { get }
     
     func loadMoreItems() async throws
+    func loadIfThreshold(_ item: Item) throws
 }

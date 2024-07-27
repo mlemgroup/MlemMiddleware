@@ -12,7 +12,8 @@ public protocol Comment1Providing:
         CommentStubProviding,
         ContentIdentifiable,
         Interactable1Providing,
-        SelectableContentProviding {
+        SelectableContentProviding,
+        FeedLoadable where FilterType == CommentFilterType{
     
     var comment1: Comment1 { get }
     var id: Int { get }
@@ -60,6 +61,16 @@ public extension Comment1Providing {
 // SelectableContentProviding conformance
 public extension Comment1Providing {
     var selectableContent: String? { content }
+}
+
+// FeedLoadable conformance
+public extension Comment1Providing {
+    func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
+        switch sortType {
+        case .new:
+            return .new(created)
+        }
+    }
 }
 
 public extension Comment1Providing {

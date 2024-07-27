@@ -95,24 +95,28 @@ public extension ApiClient {
         return person
     }
     
-    func getContent(authorId id: Int) async throws -> Person3 {
-        //    feed: ApiListingType,
-        //    sort: ApiSortType,
-        //    page: Int,
-        //    cursor: String?,
-        //    limit: Int,
-        //    savedOnly: Bool = false
+    func getContent(
+        authorId id: Int,
+        sort: ApiSortType,
+        page: Int,
+        limit: Int,
+        savedOnly: Bool? = nil,
+        communityId: Int? = nil
+    ) async throws -> (person: Person3, posts: [Post2], comments: [Comment2]) {
         let request = GetPersonDetailsRequest(
             personId: id,
             username: nil,
-            sort: .new,
-            page: 1,
-            limit: 1,
+            sort: sort,
+            page: page,
+            limit: limit,
             communityId: nil,
-            savedOnly: nil
+            savedOnly: savedOnly
         )
         let response = try await perform(request)
-        return caches.person3.getModel(api: self, from: response)
+        let person = caches.person3.getModel(api: self, from: response)
+        let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
+        let comments = response.comments.map { caches.comment2.getModel(api: self, from: $0) }
+        return (person: person, posts: posts, comments: comments)
     }
     
     func getMyPerson() async throws -> (person: Person4?, instance: Instance3, blocks: BlockList?) {

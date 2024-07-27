@@ -8,5 +8,5 @@
 import Foundation
 
 enum MiddlewareConstants {
-    static let infiniteLoadThresholdOffset: Int = -10
+    static let infiniteLoadThresholdOffset: Int = 10
 }

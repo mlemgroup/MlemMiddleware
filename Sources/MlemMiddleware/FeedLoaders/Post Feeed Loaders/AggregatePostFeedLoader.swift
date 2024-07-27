@@ -30,8 +30,7 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
             showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
             smallAvatarSize: smallAvatarSize,
-            largeAvatarSize: largeAvatarSize,
-            urlCache: urlCache
+            largeAvatarSize: largeAvatarSize
         )
     }
     

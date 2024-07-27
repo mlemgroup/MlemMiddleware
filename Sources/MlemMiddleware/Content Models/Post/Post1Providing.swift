@@ -71,10 +71,10 @@ public extension Post1Providing {
 
 // FeedLoadable conformance
 public extension Post1Providing {
-    func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal {
+    func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
         switch sortType {
-        case .published:
-            return .published(created)
+        case .new:
+            return .new(created)
         }
     }
 }

@@ -15,4 +15,12 @@ public extension Array {
     mutating func sortedInsert(_ newElement: Element, for predicate: (Element) -> Bool) {
         insert(newElement, at: insertionIndex(for: predicate))
     }
+    
+    subscript(safeIndex index: Int) -> Element? {
+        guard index >= 0, index < endIndex else {
+            return nil
+        }
+        
+        return self[index]
+    }
 }

@@ -14,9 +14,7 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     private(set) public var items: [Item] = .init()
     private(set) public var loadingState: LoadingState = .idle
     
-    // uids of items that should trigger loading. threshold is several items before the end, to give the illusion of infinite loading. fallbackThreshold is the last item in feed, and exists to catch loading if the user scrolled too fast to trigger threshold
-    private(set) var threshold: URL?
-    private(set) var fallbackThreshold: URL?
+    private(set) var thresholds: Thresholds<Item> = .init()
     
     private(set) var pageSize: Int
 
@@ -27,7 +25,7 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     /// If the given item is the loading threshold item, loads more content
     /// This should be called as an .onAppear of every item in a feed that should support infinite scrolling
     public func loadIfThreshold(_ item: Item) throws {
-        if loadingState == .idle, item.actorId == threshold || item.actorId == fallbackThreshold {
+        if loadingState == .idle, thresholds.isThreshold(item) {
             // this is a synchronous function that wraps the loading as a task so that the task is attached to the loader itself, not the view that calls it, and is therefore safe from being cancelled by view redraws
             Task(priority: .userInitiated) {
                 try await loadMoreItems()
@@ -49,7 +47,7 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     @MainActor
     func setItems(_ newItems: [Item]) {
         items = newItems
-        updateThresholds()
+        thresholds.update(with: newItems)
     }
     
     /// Adds the given items to the items array
@@ -57,21 +55,11 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     @MainActor
     func addItems(_ newItems: [Item]) async {
         items.append(contentsOf: newItems)
-        updateThresholds()
+        thresholds.update(with: newItems)
     }
     
     @MainActor
     func prependItem(_ newItem: Item) async {
         items.prepend(newItem)
-    }
-    
-    private func updateThresholds() {
-        if items.isEmpty {
-            threshold = nil
-        } else {
-            let thresholdIndex = max(0, items.count + MiddlewareConstants.infiniteLoadThresholdOffset)
-            threshold = items[thresholdIndex].actorId
-            fallbackThreshold = items.last?.actorId
-        }
     }
 }
