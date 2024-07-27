@@ -17,7 +17,6 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     // prefetching
     private let smallAvatarIconSize: Int
     private let largeAvatarIconSize: Int
-    private let urlCache: URLCache
     private let prefetcher: ImagePrefetcher = .init(
         pipeline: ImagePipeline.shared,
         destination: .memoryCache,
@@ -30,14 +29,12 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         showReadPosts: Bool,
         filteredKeywords: [String],
         smallAvatarSize: CGFloat,
-        largeAvatarSize: CGFloat,
-        urlCache: URLCache
+        largeAvatarSize: CGFloat
     ) {
         self.postSortType = sortType
     
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
-        self.urlCache = urlCache
         
         super.init(
             pageSize: pageSize,

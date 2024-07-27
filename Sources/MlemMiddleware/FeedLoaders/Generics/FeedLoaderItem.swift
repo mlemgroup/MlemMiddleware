@@ -7,10 +7,10 @@
 
 import Foundation
 
-public protocol FeedLoadable: ActorIdentifiable, AnyObject, Filterable {
+public protocol FeedLoadable: ActorIdentifiable, AnyObject, Filterable, Equatable {
     associatedtype FilterType
     
-    func sortVal(sortType: FeedLoaderSortType) -> FeedLoaderSortVal
+    func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort
     
     static func == (lhs: any FeedLoadable, rhs: any FeedLoadable) -> Bool
 }

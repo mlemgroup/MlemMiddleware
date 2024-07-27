@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Comment2Providing: Comment1Providing, Interactable2Providing {
+public protocol Comment2Providing: Comment1Providing, Interactable2Providing, PersonContentProviding {
     var comment2: Comment2 { get }
     
     var creator: Person1 { get }
@@ -60,4 +60,9 @@ public extension Comment2Providing {
             try await self.api.saveComment(id: self.id, save: newValue, semaphore: semaphore)
         }
     }
+}
+
+/// PersonContentProviding conformance
+public extension Comment2Providing {
+    var userContent: PersonContent { .init(wrappedValue: .comment(comment2)) }
 }
