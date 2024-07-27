@@ -104,7 +104,7 @@ public extension Post2Providing {
     
     @discardableResult
     func updateHidden(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
-        // Unlike other
+        // Unlike other post operations, this one does not mark the post as read
         hiddenManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.hidePost(id: self.id, hide: newValue, semaphore: semaphore)
         }

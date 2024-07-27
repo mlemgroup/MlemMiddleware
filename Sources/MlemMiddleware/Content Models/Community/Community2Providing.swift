@@ -76,7 +76,7 @@ public extension Community2Providing {
     @discardableResult
     func updateFavorite(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         guard let subscriptions = self.api.subscriptions else {
-            print("Tried to toggle favorite, but no SubscriptionList found!")
+            assertionFailure("Tried to toggle favorite, but no SubscriptionList found!")
             return Task { .failed }
         }
         self.community2.shouldBeFavorited = newValue
