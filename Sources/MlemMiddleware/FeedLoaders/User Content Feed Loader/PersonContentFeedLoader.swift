@@ -195,14 +195,17 @@ public class PersonContentFeedLoader: FeedLoading {
         
         if let nextPost {
             if let nextComment {
+                print("DEBUG post and comment")
                 // if both next post and next comment, return higher sort
                 return nextPost > nextComment ? postStream.consumeNextItem() : commentStream.consumeNextItem()
             } else {
+                print("DEBUG post, no comment")
                 // if next post but no next comment, return next post
                 return postStream.consumeNextItem()
             }
         }
         
+        print("DEBUG no post")
         // if no next post, always return next comment (this returns nil if no next comment)
         return commentStream.consumeNextItem()
     }
