@@ -82,6 +82,12 @@ public class PersonContentFeedLoader: FeedLoading {
     
     // MARK: Public Methods
     
+    public func switchUser(api: ApiClient, userId: Int) {
+        self.api = api
+        self.userId = userId
+        self.loadingState = .done // prevent loading more items until refresh
+    }
+    
     // protocol conformance
     public func loadIfThreshold(_ item: PersonContent) throws {
         try loadIfThreshold(item, asChild: false)
