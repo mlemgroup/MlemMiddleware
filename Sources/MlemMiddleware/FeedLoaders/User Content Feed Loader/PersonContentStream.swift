@@ -38,7 +38,7 @@ public struct PersonContentStream<Item: PersonContentProviding> {
     /// - Returns: sorting value of the next tracker item corresponding to the given sort type
     /// - Warning: This is NOT a thread-safe function! Only one thread at a time per stream may call this function!
     func nextItemSortVal(sortType: FeedLoaderSort.SortType) async throws -> FeedLoaderSort? {
-        guard !doneLoading else {
+        guard cursor < items.count else {
             return nil
         }
         
