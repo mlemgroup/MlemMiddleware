@@ -148,6 +148,15 @@ public class PersonContentFeedLoader: FeedLoading {
         try await loadMoreItems()
     }
     
+    public func clear() {
+        items = .init()
+        postStream = .init()
+        commentStream = .init()
+        apiPage = 0
+        contentPage = 0
+        loadingState = .idle
+    }
+    
     // MARK: Private Methods
     
     private func loadContentPage(_ pageToLoad: Int) async throws {
@@ -195,17 +204,14 @@ public class PersonContentFeedLoader: FeedLoading {
         
         if let nextPost {
             if let nextComment {
-                print("DEBUG post and comment")
                 // if both next post and next comment, return higher sort
                 return nextPost > nextComment ? postStream.consumeNextItem() : commentStream.consumeNextItem()
             } else {
-                print("DEBUG post, no comment")
                 // if next post but no next comment, return next post
                 return postStream.consumeNextItem()
             }
         }
         
-        print("DEBUG no post")
         // if no next post, always return next comment (this returns nil if no next comment)
         return commentStream.consumeNextItem()
     }
@@ -233,7 +239,6 @@ public class PersonContentFeedLoader: FeedLoading {
         apiPage += 1
         let response = try await fetchItems()
         preloadImages(response.posts) // TODO: comment images?
-        print("DEBUG Adding \(response.posts.count) posts, \(response.comments.count) comments")
         postStream.addItems(response.posts)
         commentStream.addItems(response.comments)
     }
