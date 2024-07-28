@@ -230,7 +230,7 @@ public class PersonContentFeedLoader: FeedLoading {
         apiPage += 1
         let response = try await fetchItems()
         preloadImages(response.posts) // TODO: comment images?
-        print("Adding \(response.posts.count) posts, \(response.comments.count) comments")
+        print("DEBUG Adding \(response.posts.count) posts, \(response.comments.count) comments")
         postStream.addItems(response.posts)
         commentStream.addItems(response.comments)
     }
