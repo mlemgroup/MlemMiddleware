@@ -48,13 +48,13 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
     
     @MainActor
     public func changeFeedType(to newFeedType: ApiListingType) async throws {
-        let feedTypeChanged = feedType != newFeedType
+        let shouldRefresh = items.isEmpty || feedType != newFeedType
         
         // always perform assignment--if account changed, feed type will look unchanged but API will be different
         feedType = newFeedType
         
         // only refresh if nominal feed type changed
-        if feedTypeChanged {
+        if shouldRefresh {
             try await refresh(clearBeforeRefresh: true)
         }
     }

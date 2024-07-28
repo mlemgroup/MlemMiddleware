@@ -73,11 +73,11 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         }
     }
     
-    func refresh(clearBeforeRefresh: Bool) async throws {
+    public func refresh(clearBeforeRefresh: Bool) async throws {
         try await load(action: .refresh(clearBeforeRefresh))
     }
 
-    func clear() async {
+    public func clear() async {
         do {
             try await load(action: .clear)
         } catch {

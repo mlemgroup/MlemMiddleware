@@ -148,6 +148,15 @@ public class PersonContentFeedLoader: FeedLoading {
         try await loadMoreItems()
     }
     
+    public func clear() {
+        items = .init()
+        postStream = .init()
+        commentStream = .init()
+        apiPage = 0
+        contentPage = 0
+        loadingState = .idle
+    }
+    
     // MARK: Private Methods
     
     private func loadContentPage(_ pageToLoad: Int) async throws {
