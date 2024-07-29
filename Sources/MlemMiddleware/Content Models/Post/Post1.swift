@@ -9,9 +9,9 @@ import Foundation
 import Observation
 
 public struct PostEmbed {
-    let title: String?
-    let description: String?
-    let videoUrl: URL?
+    public let title: String?
+    public let description: String?
+    public let videoUrl: URL?
 }
 
 @Observable
