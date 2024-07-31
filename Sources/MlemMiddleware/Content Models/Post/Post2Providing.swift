@@ -128,13 +128,13 @@ public extension Post2Providing {
         case let .image(url):
             // images: only load the image
             ret.append(ImageRequest(url: url, priority: .high))
-        case let .link(url):
+        case let .link(link):
             // websites: load image and favicon
             if let baseURL = linkUrl?.host,
                let favIconURL = URL(string: "https://www.google.com/s2/favicons?sz=64&domain=\(baseURL)") {
                 ret.append(ImageRequest(url: favIconURL))
             }
-            if let url {
+            if let url = link.thumbnail {
                 ret.append(ImageRequest(url: url, priority: .high))
             }
         default:

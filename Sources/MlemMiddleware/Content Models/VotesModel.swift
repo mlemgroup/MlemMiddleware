@@ -33,7 +33,7 @@ public struct VotesModel: Hashable, Equatable {
         hasher.combine(myVote)
     }
     
-    static func == (lhs: VotesModel, rhs: VotesModel) {
+    public static func == (lhs: VotesModel, rhs: VotesModel) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
 }

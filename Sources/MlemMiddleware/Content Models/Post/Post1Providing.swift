@@ -103,7 +103,9 @@ public extension Post1Providing {
         // post with URL: either image or link
         if let linkUrl {
             // if image, return image link, otherwise return thumbnail
-            return linkUrl.isImage ? .image(linkUrl) : .link(thumbnailUrl)
+            return linkUrl.isImage ? 
+                .image(linkUrl) :
+                .link(.init(content: linkUrl, thumbnail: thumbnailUrl, label: embed?.title ?? title))
         }
 
         // otherwise text, but post.body needs to be present, even if it's an empty string
