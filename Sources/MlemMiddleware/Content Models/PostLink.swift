@@ -17,7 +17,7 @@ public struct PostLink: Equatable {
         }
         return nil
     }
-    public var host: String? {
+    public var host: String {
         if var host = content.host() {
             host.trimPrefix("www.")
             return host
