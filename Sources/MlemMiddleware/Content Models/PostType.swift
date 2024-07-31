@@ -10,7 +10,7 @@ import Foundation
 public enum PostType: Equatable {
     case text(String)
     case image(URL)
-    case link(URL?)
+    case link(PostLink)
     case titleOnly
     
     public var isText: Bool {
