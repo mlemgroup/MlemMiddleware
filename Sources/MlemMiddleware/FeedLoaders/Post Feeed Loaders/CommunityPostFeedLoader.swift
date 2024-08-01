@@ -8,7 +8,7 @@
 import Foundation
 
 public class CommunityPostFeedLoader: CorePostFeedLoader {
-    private var community: any Community
+    public var community: any Community
     
     public init(
         pageSize: Int,
