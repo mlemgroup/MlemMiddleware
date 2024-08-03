@@ -9,6 +9,7 @@ import Foundation
 
 public protocol FeedLoadable: ActorIdentifiable, AnyObject, Filterable, Equatable {
     associatedtype FilterType
+    var api: ApiClient { get }
     
     func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort
     

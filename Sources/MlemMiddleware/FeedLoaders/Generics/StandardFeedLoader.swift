@@ -73,7 +73,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         }
     }
     
-    public func refresh(clearBeforeRefresh: Bool) async throws {
+    override public func refresh(clearBeforeRefresh: Bool) async throws {
         try await load(action: .refresh(clearBeforeRefresh))
     }
 
