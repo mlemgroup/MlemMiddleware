@@ -67,4 +67,8 @@ class Community3Cache: ApiTypeBackedCache<Community3, ApiGetCommunityResponse> {
             discussionLanguages: apiType.discussionLanguages
         )
     }
+    
+    override func updateModel(_ item: Community3, with apiType: ApiGetCommunityResponse, semaphore: UInt? = nil) {
+        item.update(with: apiType, semaphore: semaphore)
+    }
 }

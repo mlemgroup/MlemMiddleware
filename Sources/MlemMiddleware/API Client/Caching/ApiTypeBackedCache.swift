@@ -24,10 +24,10 @@ class ApiTypeBackedCache<Content: CacheIdentifiable & AnyObject & ContentModel, 
     /// - Warning: This method DOES NOT CACHE! You almost certainly want to be using `getModel` instead.
     func performModelTranslation(api: ApiClient, from apiType: ApiType) -> Content {
         // the name of this method is intentionally unwieldy to further discourage accidental use
-        preconditionFailure("This method must be overridden by the instantiating class")
+        preconditionFailure("This method must be overridden by the instantiating class: \(self)")
     }
     
     func updateModel(_ item: Content, with apiType: ApiType, semaphore: UInt? = nil) {
-        preconditionFailure("This method must be overridden by the instantiating class")
+        preconditionFailure("This method must be overridden by the instantiating class: \(self)")
     }
 }
