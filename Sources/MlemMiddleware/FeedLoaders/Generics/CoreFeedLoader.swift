@@ -37,6 +37,10 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
         preconditionFailure("This method must be overridden by the inheriting class")
     }
     
+    public func refresh(clearBeforeRefresh: Bool) async throws {
+        preconditionFailure("This method must be implemented by the inheriting class")
+    }
+    
     /// Updates the loading state
     @MainActor
     func setLoading(_ newState: LoadingState) {

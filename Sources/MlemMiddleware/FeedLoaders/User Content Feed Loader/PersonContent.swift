@@ -36,6 +36,13 @@ public class PersonContent: Hashable, Equatable, FeedLoadable {
         }
     }
     
+    public var api: ApiClient {
+        switch wrappedValue {
+        case let .post(post2): post2.api
+        case let .comment(comment2): comment2.api
+        }
+    }
+    
     public func hash(into hasher: inout Hasher) {
         switch wrappedValue {
         case let .post(post2):

@@ -15,4 +15,5 @@ public protocol FeedLoading<Item> {
     
     func loadMoreItems() async throws
     func loadIfThreshold(_ item: Item) throws
+    func refresh(clearBeforeRefresh: Bool) async throws
 }
