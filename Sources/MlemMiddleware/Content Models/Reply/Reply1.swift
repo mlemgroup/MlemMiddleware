@@ -23,6 +23,9 @@ public final class Reply1: Reply1Providing {
     internal let readManager: StateManager<Bool>
     public var read: Bool { readManager.wrappedValue }
     
+    // ApiBackedCacheIdentifiable conformance
+    internal var apiTypeHash: Int = 0
+    
     init(
         api: ApiClient,
         id: Int,

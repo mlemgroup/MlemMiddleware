@@ -41,6 +41,9 @@ public final class Post1: Post1Providing {
     internal var deletedManager: StateManager<Bool>
     public var deleted: Bool { deletedManager.wrappedValue }
     
+    // ApiBackedCacheIdentifiable conformance
+    internal var apiTypeHash: Int = 0
+    
     internal init(
         api: ApiClient,
         actorId: URL,

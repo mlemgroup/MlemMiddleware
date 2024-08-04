@@ -7,9 +7,16 @@
 
 import Foundation
 
-extension Message1: CacheIdentifiable {
+extension Message1Providing {
     public var cacheId: Int { id }
     
+    internal var apiTypeHash: Int {
+        get { message1.apiTypeHash }
+        set { message1.apiTypeHash = newValue }
+    }
+}
+
+extension Message1: ApiBackedCacheIdentifiable {
     func update(with message: ApiPrivateMessage, semaphore: UInt? = nil) {
         self.content = message.content
         self.deletedManager.updateWithReceivedValue(message.deleted, semaphore: semaphore)
@@ -18,9 +25,7 @@ extension Message1: CacheIdentifiable {
     }
 }
 
-extension Message2: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Message2: ApiBackedCacheIdentifiable {
     func update(with message: ApiPrivateMessageView, semaphore: UInt? = nil) {
         self.message1.update(with: message.privateMessage, semaphore: semaphore)
         self.creator.update(with: message.creator, semaphore: semaphore)

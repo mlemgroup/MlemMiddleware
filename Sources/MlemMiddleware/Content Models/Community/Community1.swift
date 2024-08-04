@@ -34,6 +34,9 @@ public final class Community1: Community1Providing {
     // This isn't included in ApiCommunity - it's included in ApiCommunityView, but defined here to maintain similarity with Person models. Person models don't have the `blocked` property defined in any of the Api types, annoyingly. Instead, certain parent models such as ApiPostView contain the value.
     internal var blockedManager: StateManager<Bool>
     public var blocked: Bool { blockedManager.wrappedValue }
+    
+    // ApiBackedCacheIdentifiable conformance
+    internal var apiTypeHash: Int = 0
   
     internal init(
         api: ApiClient,

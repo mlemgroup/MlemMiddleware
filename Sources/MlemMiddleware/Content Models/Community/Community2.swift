@@ -29,6 +29,8 @@ public final class Community2: Community2Providing {
     public var postCount: Int = 0
     public var commentCount: Int = 0
     public var activeUserCount: ActiveUserCount = .zero
+    
+    internal var apiTypeHash: Int = 0
 
     internal init(
         api: ApiClient,

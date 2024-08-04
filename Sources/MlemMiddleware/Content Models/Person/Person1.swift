@@ -36,6 +36,9 @@ public final class Person1: Person1Providing {
     internal var blockedManager: StateManager<Bool>
     public var blocked: Bool { blockedManager.wrappedValue }
     
+    // ApiBackedCacheIdentifiable conformance
+    internal var apiTypeHash: Int = 0
+    
     internal init(
         api: ApiClient,
         actorId: URL,

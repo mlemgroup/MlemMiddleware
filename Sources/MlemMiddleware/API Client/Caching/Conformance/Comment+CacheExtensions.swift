@@ -7,9 +7,16 @@
 
 import Foundation
 
-extension Comment1: CacheIdentifiable {
+extension Comment1Providing {
     public var cacheId: Int { id }
     
+    internal var apiTypeHash: Int {
+        get { comment1.apiTypeHash }
+        set { comment1.apiTypeHash = newValue }
+    }
+}
+
+extension Comment1: ApiBackedCacheIdentifiable {
     func update(with comment: ApiComment, semaphore: UInt? = nil) {
         self.content = comment.content
         self.removed = comment.removed
@@ -21,9 +28,7 @@ extension Comment1: CacheIdentifiable {
     }
 }
 
-extension Comment2: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Comment2: ApiBackedCacheIdentifiable {
     func update(with comment: ApiCommentView, semaphore: UInt? = nil) {
         self.comment1.update(with: comment.comment, semaphore: semaphore)
         self.creator.update(with: comment.creator, semaphore: semaphore)

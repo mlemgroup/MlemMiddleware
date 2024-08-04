@@ -7,9 +7,16 @@
 
 import Foundation
 
-extension Person1: CacheIdentifiable {
+extension Person1Providing {
     public var cacheId: Int { id }
     
+    internal var apiTypeHash: Int {
+        get { person1.apiTypeHash }
+        set { person1.apiTypeHash = newValue }
+    }
+}
+
+extension Person1: ApiBackedCacheIdentifiable {
     func update(with person: ApiPerson, semaphore: UInt? = nil) {
         updated = person.updated
         displayName = person.displayName ?? person.name
@@ -32,9 +39,7 @@ extension Person1: CacheIdentifiable {
     }
 }
 
-extension Person2: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Person2: ApiBackedCacheIdentifiable {
     func update(with apiType: any Person2ApiBacker, semaphore: UInt? = nil) {
         postCount = apiType.counts.postCount
         commentCount = apiType.counts.commentCount
@@ -42,18 +47,14 @@ extension Person2: CacheIdentifiable {
     }
 }
 
-extension Person3: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Person3: ApiBackedCacheIdentifiable {
     func update(moderatedCommunities: [Community1], person2ApiBacker: any Person2ApiBacker, semaphore: UInt? = nil) {
         self.moderatedCommunities = moderatedCommunities
         person2.update(with: person2ApiBacker, semaphore: semaphore)
     }
 }
 
-extension Person4: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Person4: ApiBackedCacheIdentifiable {
     func update(with apiMyUserInfo: ApiMyUserInfo, semaphore: UInt? = nil) {
         let moderates = apiMyUserInfo.moderates.map { moderatorView in
             api.caches.community1.performModelTranslation(api: api, from: moderatorView.community)

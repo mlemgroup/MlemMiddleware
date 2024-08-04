@@ -19,6 +19,10 @@ public protocol CacheIdentifiable {
     var cacheId: Int { get }
 }
 
+internal protocol ApiBackedCacheIdentifiable: CacheIdentifiable, AnyObject {
+    var apiTypeHash: Int { get set }
+}
+
 extension ApiClient {
     struct BaseCacheGroup {
         var instance1: Instance1Cache = .init()

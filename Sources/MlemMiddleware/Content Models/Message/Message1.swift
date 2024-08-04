@@ -28,6 +28,9 @@ public final class Message1: Message1Providing {
     internal var deletedManager: StateManager<Bool>
     public var deleted: Bool { deletedManager.wrappedValue }
     
+    // ApiBackedCacheIdentifiable conformance
+    internal var apiTypeHash: Int = 0
+    
     init(api: ApiClient, 
          actorId: URL,
          id: Int,

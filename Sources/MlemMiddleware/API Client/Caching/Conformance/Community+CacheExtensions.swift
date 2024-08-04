@@ -7,9 +7,16 @@
 
 import Foundation
 
-extension Community1: CacheIdentifiable {
+extension Community1Providing {
     public var cacheId: Int { id }
     
+    internal var apiTypeHash: Int {
+        get { community1.apiTypeHash }
+        set { community1.apiTypeHash = newValue }
+    }
+}
+
+extension Community1: ApiBackedCacheIdentifiable {
     func update(with community: ApiCommunity, semaphore: UInt? = nil) {
         updated = community.updated
         displayName = community.title
@@ -24,9 +31,7 @@ extension Community1: CacheIdentifiable {
     }
 }
 
-extension Community2: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Community2: ApiBackedCacheIdentifiable {
     func update(with communityView: ApiCommunityView, semaphore: UInt? = nil) {
         subscribedManager.updateWithReceivedValue(communityView.subscribed.isSubscribed, semaphore: semaphore)
         subscriberCount = communityView.counts.subscribers
@@ -42,9 +47,7 @@ extension Community2: CacheIdentifiable {
     }
 }
 
-extension Community3: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Community3: ApiBackedCacheIdentifiable {
     func update(with response: ApiGetCommunityResponse, semaphore: UInt? = nil) {
         moderators = response.moderators.map { moderatorView in
             api.caches.person1.performModelTranslation(api: api, from: moderatorView.moderator)

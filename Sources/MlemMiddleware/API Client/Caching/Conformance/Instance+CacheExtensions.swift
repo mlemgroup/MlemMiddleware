@@ -7,9 +7,16 @@
 
 import Foundation
 
-extension Instance1: CacheIdentifiable {
+extension Instance1Providing {
     public var cacheId: Int { id }
     
+    internal var apiTypeHash: Int {
+        get { instance1.apiTypeHash }
+        set { instance1.apiTypeHash = newValue }
+    }
+}
+
+extension Instance1: ApiBackedCacheIdentifiable {
     func update(with site: ApiSite) {
         displayName = site.name
         description = site.sidebar
@@ -21,9 +28,7 @@ extension Instance1: CacheIdentifiable {
     }
 }
 
-extension Instance2: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Instance2: ApiBackedCacheIdentifiable {
     func update(with siteView: ApiSiteView) {
         instance1.update(with: siteView.site)
         
@@ -62,9 +67,7 @@ extension Instance2: CacheIdentifiable {
     }
 }
 
-extension Instance3: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Instance3: ApiBackedCacheIdentifiable {
     func update(with response: ApiGetSiteResponse) {
         version = SiteVersion(response.version)
         instance2.update(with: response.siteView)

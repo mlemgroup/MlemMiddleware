@@ -7,17 +7,22 @@
 
 import Foundation
 
-extension Reply1: CacheIdentifiable {
+extension Reply1Providing {
     public var cacheId: Int { id }
     
+    internal var apiTypeHash: Int {
+        get { reply1.apiTypeHash }
+        set { reply1.apiTypeHash = newValue }
+    }
+}
+
+extension Reply1: ApiBackedCacheIdentifiable {
     func update(with reply: any Reply1ApiBacker, semaphore: UInt? = nil) {
         self.readManager.updateWithReceivedValue(reply.read, semaphore: semaphore)
     }
 }
 
-extension Reply2: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Reply2: ApiBackedCacheIdentifiable {
     func update(with reply: any Reply2ApiBacker, semaphore: UInt? = nil) {
         self.reply1.update(with: reply.reply, semaphore: semaphore)
         self.comment.update(with: reply.comment)

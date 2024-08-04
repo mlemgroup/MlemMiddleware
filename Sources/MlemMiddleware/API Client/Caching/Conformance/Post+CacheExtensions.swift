@@ -7,9 +7,16 @@
 
 import Foundation
 
-extension Post1: CacheIdentifiable {
+extension Post1Providing {
     public var cacheId: Int { id }
     
+    internal var apiTypeHash: Int {
+        get { post1.apiTypeHash }
+        set { post1.apiTypeHash = newValue }
+    }
+}
+
+extension Post1: ApiBackedCacheIdentifiable {
     func update(with post: ApiPost, semaphore: UInt? = nil) {
         updated = post.updated
         title = post.name
@@ -29,9 +36,7 @@ extension Post1: CacheIdentifiable {
     }
 }
 
-extension Post2: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
+extension Post2: ApiBackedCacheIdentifiable {
     func update(with post: ApiPostView, semaphore: UInt? = nil) {
         commentCount = post.counts.comments
         votesManager.updateWithReceivedValue(
