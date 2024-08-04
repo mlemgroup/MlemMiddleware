@@ -142,7 +142,7 @@ public class ApiClient {
             // their own error models when necessary, or drop back to this as the default...
             
             if apiError.isNotLoggedIn {
-                throw ApiClientError.invalidSession
+                throw ApiClientError.invalidSession(self)
             }
             
             let statusCode = (response as? HTTPURLResponse)?.statusCode

@@ -12,6 +12,14 @@ public protocol ContentModel {
     var api: ApiClient { get }
 }
 
+internal extension ContentModel {
+    func setIfChanged<T: Equatable>(_ keyPath: ReferenceWritableKeyPath<Self, T>, _ value: T) {
+        if self[keyPath: keyPath] != value {
+            self[keyPath: keyPath] = value
+        }
+    }
+}
+
 public extension ContentModel where Self: ActorIdentifiable {
     var apiIsLocal: Bool { api.host == host }
 }

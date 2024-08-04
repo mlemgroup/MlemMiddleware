@@ -11,10 +11,11 @@ extension Message1: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with message: ApiPrivateMessage, semaphore: UInt? = nil) {
-        self.content = message.content
-        self.deletedManager.updateWithReceivedValue(message.deleted, semaphore: semaphore)
-        self.updated = message.updated
-        self.readManager.updateWithReceivedValue(message.read, semaphore: semaphore)
+        setIfChanged(\.content, message.content)
+        setIfChanged(\.updated, message.updated)
+        
+        deletedManager.updateWithReceivedValue(message.deleted, semaphore: semaphore)
+        readManager.updateWithReceivedValue(message.read, semaphore: semaphore)
     }
 }
 
@@ -22,8 +23,8 @@ extension Message2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with message: ApiPrivateMessageView, semaphore: UInt? = nil) {
-        self.message1.update(with: message.privateMessage, semaphore: semaphore)
-        self.creator.update(with: message.creator, semaphore: semaphore)
-        self.recipient.update(with: message.recipient, semaphore: semaphore)
+        message1.update(with: message.privateMessage, semaphore: semaphore)
+        creator.update(with: message.creator, semaphore: semaphore)
+        recipient.update(with: message.recipient, semaphore: semaphore)
     }
 }
