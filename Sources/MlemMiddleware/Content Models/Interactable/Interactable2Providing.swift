@@ -10,8 +10,10 @@ import Foundation
 // Content that can be upvoted, downvoted, saved etc
 public protocol Interactable2Providing: Interactable1Providing {
     var creator: Person1 { get }
+    var creatorIsModerator: Bool? { get }
+    var creatorIsAdmin: Bool? { get }
+    var bannedFromCommunity: Bool? { get }
     var commentCount: Int { get }
-    
     var votes: VotesModel { get }
     var saved: Bool { get }
     

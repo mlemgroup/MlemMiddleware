@@ -23,18 +23,24 @@ public extension Post2Providing {
     
     var creator: Person1 { post2.creator }
     var community: Community1 { post2.community }
+    var creatorIsModerator: Bool? { post2.creatorIsModerator }
+    var creatorIsAdmin: Bool? { post2.creatorIsAdmin }
+    var bannedFromCommunity: Bool? { post2.bannedFromCommunity }
     var commentCount: Int { post2.commentCount }
-    var votes: VotesModel { post2.votes }
     var unreadCommentCount: Int { post2.unreadCommentCount }
+    var votes: VotesModel { post2.votes }
     var saved: Bool { post2.saved }
     var read: Bool { post2.read }
     var hidden: Bool { post2.hidden }
     
     var creator_: Person1? { post2.creator }
     var community_: Community1? { post2.community }
+    var creatorIsModerator_: Bool? { post2.creatorIsModerator }
+    var creatorIsAdmin_: Bool? { post2.creatorIsAdmin }
+    var bannedFromCommunity_: Bool? { post2.bannedFromCommunity }
     var commentCount_: Int? { post2.commentCount }
-    var votes_: VotesModel? { post2.votes }
     var unreadCommentCount_: Int? { post2.unreadCommentCount }
+    var votes_: VotesModel? { post2.votes }
     var saved_: Bool? { post2.saved }
     var read_: Bool? { post2.read }
     var hidden_: Bool? { post2.hidden }

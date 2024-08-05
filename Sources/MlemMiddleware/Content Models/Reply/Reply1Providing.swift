@@ -41,6 +41,8 @@ public protocol Reply1Providing:
     var creatorIsModerator_: Bool? { get }
     var creatorIsAdmin_: Bool? { get }
     var bannedFromCommunity_: Bool? { get }
+    var votes_: VotesModel? { get }
+    var saved_: Bool? { get }
 }
 
 public typealias Reply = Reply1Providing
@@ -78,6 +80,8 @@ public extension Reply1Providing {
     var creatorIsModerator_: Bool? { nil }
     var creatorIsAdmin_: Bool? { nil }
     var bannedFromCommunity_: Bool? { nil }
+    var votes_: VotesModel? { nil }
+    var saved_: Bool? { nil }
 }
 
 public extension Reply1Providing {

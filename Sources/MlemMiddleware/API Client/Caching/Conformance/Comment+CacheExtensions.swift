@@ -28,10 +28,7 @@ extension Comment2: CacheIdentifiable {
     func update(with comment: ApiCommentView, semaphore: UInt? = nil) {
         setIfChanged(\.creatorIsModerator, comment.creatorIsModerator)
         setIfChanged(\.creatorIsAdmin, comment.creatorIsAdmin)
-        setIfChanged(\.creatorIsModerator, comment.creatorIsModerator)
-        setIfChanged(\.creatorIsModerator, comment.creatorIsModerator)
-        setIfChanged(\.creatorIsAdmin, comment.creatorIsAdmin)
-        setIfChanged(\.bannedFromCommunity, comment.bannedFromCommunity)
+        setIfChanged(\.bannedFromCommunity, comment.bannedFromCommunity ?? comment.creatorBannedFromCommunity)
         setIfChanged(\.commentCount, comment.counts.childCount)
 
         votesManager.updateWithReceivedValue(
