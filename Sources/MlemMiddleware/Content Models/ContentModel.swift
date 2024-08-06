@@ -39,7 +39,7 @@ public extension ContentIdentifiable {
 
 public extension ContentIdentifiable {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(api.actorId)
+        hasher.combine(api)
         hasher.combine(id)
         hasher.combine(Self.modelTypeId)
         hasher.combine(Self.tierNumber)
