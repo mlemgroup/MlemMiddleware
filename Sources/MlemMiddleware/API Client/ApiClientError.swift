@@ -17,7 +17,7 @@ public enum ApiClientError: Error {
     case networking(Error)
     case response(ApiErrorResponse, Int?)
     case cancelled
-    case invalidSession
+    case invalidSession(ApiClient)
     case decoding(Data, Error?)
     case insufficientPermissions
     /// Thrown when a `false` value of `SuccessResponse` is returned

@@ -66,7 +66,7 @@ public class StateManager<Value: Equatable> {
     private var lastSemaphore: UInt = 0
     
     /// Responsible for tracking the last verified value. If the current value is in sync with the server, this will be nil.
-    private var lastVerifiedValue: Value?
+    @ObservationIgnored private var lastVerifiedValue: Value?
     
     public var isInSync: Bool { lastVerifiedValue == nil }
     public var verifiedValue: Value { lastVerifiedValue ?? wrappedValue }
@@ -93,8 +93,6 @@ public class StateManager<Value: Equatable> {
             if self.wrappedValue != expectedResult {
                 self.wrappedValue = expectedResult
                 self.onSet(expectedResult, .begin)
-            } else {
-                self.wrappedValue = expectedResult
             }
         }
         return lastSemaphore
@@ -108,7 +106,6 @@ public class StateManager<Value: Equatable> {
                 self.wrappedValue = newState
                 self.onSet(newState, .receive)
             }
-            self.wrappedValue = newState
             return false
         }
         
@@ -136,7 +133,6 @@ public class StateManager<Value: Equatable> {
                 self.wrappedValue = lastVerifiedValue
                 self.onSet(lastVerifiedValue, .rollback)
             }
-            self.wrappedValue = lastVerifiedValue
             defer { self.lastVerifiedValue = nil }
             return lastVerifiedValue
         } else {

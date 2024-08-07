@@ -8,7 +8,7 @@
 import Foundation
 import Observation
 
-public struct PostEmbed {
+public struct PostEmbed: Equatable {
     public let title: String?
     public let description: String?
     public let videoUrl: URL?
@@ -26,6 +26,8 @@ public final class Post1: Post1Providing {
     public let communityId: Int
     
     public var title: String
+    
+    // We can't name this 'body' because @Observable uses that property name already
     public var content: String?
     public var linkUrl: URL?
     public var embed: PostEmbed?

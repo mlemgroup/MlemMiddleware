@@ -12,6 +12,14 @@ public protocol ContentModel {
     var api: ApiClient { get }
 }
 
+internal extension ContentModel {
+    func setIfChanged<T: Equatable>(_ keyPath: ReferenceWritableKeyPath<Self, T>, _ value: T) {
+        if self[keyPath: keyPath] != value {
+            self[keyPath: keyPath] = value
+        }
+    }
+}
+
 public extension ContentModel where Self: ActorIdentifiable {
     var apiIsLocal: Bool { api.host == host }
 }
@@ -31,7 +39,7 @@ public extension ContentIdentifiable {
 
 public extension ContentIdentifiable {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(api.actorId)
+        hasher.combine(api)
         hasher.combine(id)
         hasher.combine(Self.modelTypeId)
         hasher.combine(Self.tierNumber)

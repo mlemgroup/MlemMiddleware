@@ -11,13 +11,13 @@ extension Instance1: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with site: ApiSite) {
-        displayName = site.name
-        description = site.sidebar
-        shortDescription = site.description
-        avatar = site.icon
-        banner = site.banner
-        lastRefresh = site.lastRefreshedAt
-        contentWarning = site.contentWarning
+        setIfChanged(\.displayName, site.name)
+        setIfChanged(\.description, site.sidebar)
+        setIfChanged(\.shortDescription, site.description)
+        setIfChanged(\.avatar, site.icon)
+        setIfChanged(\.banner, site.banner)
+        setIfChanged(\.lastRefresh, site.lastRefreshedAt)
+        setIfChanged(\.contentWarning, site.contentWarning)
     }
 }
 
@@ -25,40 +25,40 @@ extension Instance2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with siteView: ApiSiteView) {
-        instance1.update(with: siteView.site)
-        
-        setup = siteView.localSite.siteSetup
-        downvotesEnabled = siteView.localSite.enableDownvotes
-        nsfwContentEnabled = siteView.localSite.enableNsfw
-        communityCreationRestrictedToAdmins = siteView.localSite.communityCreationAdminOnly
-        emailVerificationRequired = siteView.localSite.requireEmailVerification
-        applicationQuestion = siteView.localSite.applicationQuestion
-        isPrivate = siteView.localSite.privateInstance
-        defaultTheme = siteView.localSite.defaultTheme
-        defaultFeed = siteView.localSite.defaultPostListingType
-        legalInformation = siteView.localSite.legalInformation
-        hideModlogNames = siteView.localSite.hideModlogModNames
-        emailApplicationsToAdmins = siteView.localSite.applicationEmailAdmins
-        emailReportsToAdmins = siteView.localSite.reportsEmailAdmins
-        slurFilterRegex = siteView.localSite.slurFilterRegex
-        actorNameMaxLength = siteView.localSite.actorNameMaxLength
-        federationEnabled = siteView.localSite.federationEnabled
-        captchaEnabled = siteView.localSite.captchaEnabled
-        captchaDifficulty = .init(rawValue: siteView.localSite.captchaDifficulty)
-        registrationMode = siteView.localSite.registrationMode
-        federationSignedFetch = siteView.localSite.federationSignedFetch
-        defaultPostListingMode = siteView.localSite.defaultPostListingMode
-        defaultSortType = siteView.localSite.defaultSortType
-        userCount = siteView.counts.users
-        postCount = siteView.counts.posts
-        commentCount = siteView.counts.comments
-        communityCount = siteView.counts.communities
-        activeUserCount = .init(
+        setIfChanged(\.setup, siteView.localSite.siteSetup)
+        setIfChanged(\.downvotesEnabled, siteView.localSite.enableDownvotes)
+        setIfChanged(\.nsfwContentEnabled, siteView.localSite.enableNsfw)
+        setIfChanged(\.communityCreationRestrictedToAdmins, siteView.localSite.communityCreationAdminOnly)
+        setIfChanged(\.emailVerificationRequired, siteView.localSite.requireEmailVerification)
+        setIfChanged(\.applicationQuestion, siteView.localSite.applicationQuestion)
+        setIfChanged(\.isPrivate, siteView.localSite.privateInstance)
+        setIfChanged(\.defaultTheme, siteView.localSite.defaultTheme)
+        setIfChanged(\.defaultFeed, siteView.localSite.defaultPostListingType)
+        setIfChanged(\.legalInformation, siteView.localSite.legalInformation)
+        setIfChanged(\.hideModlogNames, siteView.localSite.hideModlogModNames)
+        setIfChanged(\.emailApplicationsToAdmins, siteView.localSite.applicationEmailAdmins)
+        setIfChanged(\.emailReportsToAdmins, siteView.localSite.reportsEmailAdmins)
+        setIfChanged(\.slurFilterRegex, siteView.localSite.slurFilterRegex)
+        setIfChanged(\.actorNameMaxLength, siteView.localSite.actorNameMaxLength)
+        setIfChanged(\.federationEnabled, siteView.localSite.federationEnabled)
+        setIfChanged(\.captchaEnabled, siteView.localSite.captchaEnabled)
+        setIfChanged(\.captchaDifficulty, .init(rawValue: siteView.localSite.captchaDifficulty))
+        setIfChanged(\.registrationMode, siteView.localSite.registrationMode)
+        setIfChanged(\.federationSignedFetch, siteView.localSite.federationSignedFetch)
+        setIfChanged(\.defaultPostListingMode, siteView.localSite.defaultPostListingMode)
+        setIfChanged(\.defaultSortType, siteView.localSite.defaultSortType)
+        setIfChanged(\.userCount, siteView.counts.users)
+        setIfChanged(\.postCount, siteView.counts.posts)
+        setIfChanged(\.commentCount, siteView.counts.comments)
+        setIfChanged(\.communityCount, siteView.counts.communities)
+        setIfChanged(\.activeUserCount, .init(
             sixMonths: siteView.counts.usersActiveHalfYear,
             month: siteView.counts.usersActiveMonth,
             week: siteView.counts.usersActiveWeek,
             day: siteView.counts.usersActiveDay
-        )
+        ))
+        
+        instance1.update(with: siteView.site)
     }
 }
 
@@ -66,13 +66,14 @@ extension Instance3: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with response: ApiGetSiteResponse) {
-        version = SiteVersion(response.version)
+        setIfChanged(\.version, SiteVersion(response.version))
+        setIfChanged(\.allLanguages, response.allLanguages)
+        setIfChanged(\.discussionLanguages, response.discussionLanguages)
+        setIfChanged(\.taglines, response.taglines)
+        setIfChanged(\.customEmojis, response.customEmojis)
+        setIfChanged(\.blockedUrls, response.blockedUrls)
+        setIfChanged(\.administrators, response.admins.map { api.caches.person2.getModel(api: api, from: $0) })
+        
         instance2.update(with: response.siteView)
-        allLanguages = response.allLanguages
-        discussionLanguages = response.discussionLanguages
-        taglines = response.taglines
-        customEmojis = response.customEmojis
-        blockedUrls = response.blockedUrls
-        administrators = response.admins.map { api.caches.person2.getModel(api: api, from: $0) }
     }
 }

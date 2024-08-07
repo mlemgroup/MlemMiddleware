@@ -11,4 +11,12 @@ import Foundation
 public protocol Interactable1Providing: AnyObject, ContentModel, ContentIdentifiable {
     var created: Date { get }
     var updated: Date? { get }
+    
+    var creator_: Person1? { get }
+    var creatorIsModerator_: Bool? { get }
+    var creatorIsAdmin_: Bool? { get }
+    var bannedFromCommunity_: Bool? { get }
+    var commentCount_: Int? { get }
+    var votes_: VotesModel? { get }
+    var saved_: Bool? { get }
 }

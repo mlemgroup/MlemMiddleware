@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ActiveUserCount {
+public struct ActiveUserCount: Equatable {
     public let sixMonths: Int
     public let month: Int
     public let week: Int

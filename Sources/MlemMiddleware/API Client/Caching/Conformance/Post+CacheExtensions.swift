@@ -11,19 +11,19 @@ extension Post1: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with post: ApiPost, semaphore: UInt? = nil) {
-        updated = post.updated
-        title = post.name
+        setIfChanged(\.updated, post.updated)
+        setIfChanged(\.title, post.name)
         // We can't name this 'body' because @Observable uses that property name already
-        content = post.body
-        linkUrl = post.linkUrl
-        embed = post.embed
+        setIfChanged(\.content, post.body)
+        setIfChanged(\.linkUrl, post.linkUrl)
+        setIfChanged(\.embed, post.embed)
         
-        pinnedCommunity = post.featuredCommunity
-        pinnedInstance = post.featuredLocal
-        locked = post.locked
-        nsfw = post.nsfw
-        removed = post.removed
-        thumbnailUrl = post.thumbnailImageUrl
+        setIfChanged(\.pinnedCommunity, post.featuredCommunity)
+        setIfChanged(\.pinnedInstance, post.featuredLocal)
+        setIfChanged(\.locked, post.locked)
+        setIfChanged(\.nsfw, post.nsfw)
+        setIfChanged(\.removed, post.removed)
+        setIfChanged(\.thumbnailUrl, post.thumbnailImageUrl)
         
         deletedManager.updateWithReceivedValue(post.deleted, semaphore: semaphore)
     }
@@ -33,21 +33,23 @@ extension Post2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with post: ApiPostView, semaphore: UInt? = nil) {
-        commentCount = post.counts.comments
+        setIfChanged(\.creatorIsModerator, post.creatorIsModerator)
+        setIfChanged(\.creatorIsAdmin, post.creatorIsAdmin)
+        setIfChanged(\.bannedFromCommunity, post.bannedFromCommunity ?? post.creatorBannedFromCommunity)
+        setIfChanged(\.commentCount, post.counts.comments)
+        setIfChanged(\.unreadCommentCount, post.unreadComments)
+        
+        savedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
+        readManager.updateWithReceivedValue(post.read, semaphore: semaphore)
+        hiddenManager.updateWithReceivedValue(post.hidden ?? false, semaphore: semaphore)
         votesManager.updateWithReceivedValue(
             .init(from: post.counts, myVote: ScoringOperation.guaranteedInit(from: post.myVote)),
             semaphore: semaphore
         )
-        
-        unreadCommentCount = post.unreadComments
-        savedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
-        readManager.updateWithReceivedValue(post.read, semaphore: semaphore)
-        hiddenManager.updateWithReceivedValue(post.hidden ?? false, semaphore: semaphore)
+        creator.blockedManager.updateWithReceivedValue(post.creatorBlocked, semaphore: semaphore)
 
         post1.update(with: post.post, semaphore: semaphore)
         creator.update(with: post.creator, semaphore: semaphore)
         community.update(with: post.community, semaphore: semaphore)
-        
-        creator.blockedManager.updateWithReceivedValue(post.creatorBlocked, semaphore: semaphore)
     }
 }

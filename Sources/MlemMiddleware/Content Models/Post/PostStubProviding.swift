@@ -29,9 +29,12 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     // From Post2Providing. These are defined as nil in the extension below
     var creator_: Person1? { get }
     var community_: Community1? { get }
+    var creatorIsModerator_: Bool? { get }
+    var creatorIsAdmin_: Bool? { get }
+    var bannedFromCommunity_: Bool? { get }
     var commentCount_: Int? { get }
-    var votes_: VotesModel? { get }
     var unreadCommentCount_: Int? { get }
+    var votes_: VotesModel? { get }
     var saved_: Bool? { get }
     var read_: Bool? { get }
     var hidden_: Bool? { get }
@@ -59,6 +62,9 @@ public extension PostStubProviding {
     
     var creator_: Person1? { nil }
     var community_: Community1? { nil }
+    var creatorIsModerator_: Bool? { nil }
+    var creatorIsAdmin_: Bool? { nil }
+    var bannedFromCommunity_: Bool? { nil }
     var commentCount_: Int? { nil }
     var votes_: VotesModel? { nil }
     var unreadCommentCount_: Int? { nil }

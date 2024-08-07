@@ -11,24 +11,26 @@ extension Person1: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with person: ApiPerson, semaphore: UInt? = nil) {
-        updated = person.updated
-        displayName = person.displayName ?? person.name
-        description = person.bio
-        avatar = person.avatar
-        banner = person.banner
+        setIfChanged(\.updated, person.updated)
+        setIfChanged(\.displayName, person.displayName ?? person.name)
+        setIfChanged(\.description, person.bio)
+        setIfChanged(\.avatar, person.avatar)
+        setIfChanged(\.banner, person.banner)
         
-        deleted = person.deleted
-        isBot = person.botAccount
+        setIfChanged(\.deleted, person.deleted)
+        setIfChanged(\.isBot, person.botAccount)
         
+        let newInstanceBan: InstanceBanType
         if person.banned {
             if let expires = person.banExpires {
-                instanceBan = .temporarilyBanned(expires: expires)
+                newInstanceBan = .temporarilyBanned(expires: expires)
             } else {
-                instanceBan = .permanentlyBanned
+                newInstanceBan = .permanentlyBanned
             }
         } else {
-            instanceBan = .notBanned
+            newInstanceBan = .notBanned
         }
+        setIfChanged(\.instanceBan, newInstanceBan)
     }
 }
 
@@ -36,8 +38,8 @@ extension Person2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with apiType: any Person2ApiBacker, semaphore: UInt? = nil) {
-        postCount = apiType.counts.postCount
-        commentCount = apiType.counts.commentCount
+        setIfChanged(\.postCount, apiType.counts.postCount)
+        setIfChanged(\.commentCount, apiType.counts.commentCount)
         person1.update(with: apiType.person, semaphore: semaphore)
     }
 }
@@ -46,7 +48,7 @@ extension Person3: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(moderatedCommunities: [Community1], person2ApiBacker: any Person2ApiBacker, semaphore: UInt? = nil) {
-        self.moderatedCommunities = moderatedCommunities
+        setIfChanged(\.self.moderatedCommunities, moderatedCommunities)
         person2.update(with: person2ApiBacker, semaphore: semaphore)
     }
 }

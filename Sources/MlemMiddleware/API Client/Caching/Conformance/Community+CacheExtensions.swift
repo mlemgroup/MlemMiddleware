@@ -11,16 +11,16 @@ extension Community1: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with community: ApiCommunity, semaphore: UInt? = nil) {
-        updated = community.updated
-        displayName = community.title
-        description = community.description
-        removed = community.removed
-        deleted = community.deleted
-        nsfw = community.nsfw
-        avatar = community.icon
-        banner = community.banner
-        hidden = community.hidden
-        onlyModeratorsCanPost = community.postingRestrictedToMods
+        setIfChanged(\.updated, community.updated)
+        setIfChanged(\.displayName, community.title)
+        setIfChanged(\.description, community.description)
+        setIfChanged(\.removed, community.removed)
+        setIfChanged(\.deleted, community.deleted)
+        setIfChanged(\.nsfw, community.nsfw)
+        setIfChanged(\.avatar, community.icon)
+        setIfChanged(\.banner, community.banner)
+        setIfChanged(\.hidden, community.hidden)
+        setIfChanged(\.onlyModeratorsCanPost, community.postingRestrictedToMods)
     }
 }
 
@@ -28,16 +28,18 @@ extension Community2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with communityView: ApiCommunityView, semaphore: UInt? = nil) {
-        subscribedManager.updateWithReceivedValue(communityView.subscribed.isSubscribed, semaphore: semaphore)
-        subscriberCount = communityView.counts.subscribers
-        postCount = communityView.counts.posts
-        commentCount = communityView.counts.comments
-        activeUserCount = .init(
+        setIfChanged(\.subscriberCount, communityView.counts.subscribers)
+        setIfChanged(\.postCount, communityView.counts.posts)
+        setIfChanged(\.commentCount, communityView.counts.comments)
+        setIfChanged(\.activeUserCount, .init(
             sixMonths: communityView.counts.usersActiveHalfYear,
             month: communityView.counts.usersActiveMonth,
             week: communityView.counts.usersActiveWeek,
             day: communityView.counts.usersActiveDay
-        )
+        ))
+        
+        subscribedManager.updateWithReceivedValue(communityView.subscribed.isSubscribed, semaphore: semaphore)
+        
         community1.update(with: communityView.community, semaphore: semaphore)
     }
 }
@@ -46,10 +48,11 @@ extension Community3: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with response: ApiGetCommunityResponse, semaphore: UInt? = nil) {
-        moderators = response.moderators.map { moderatorView in
+        setIfChanged(\.moderators, response.moderators.map { moderatorView in
             api.caches.person1.performModelTranslation(api: api, from: moderatorView.moderator)
-        }
-        discussionLanguages = response.discussionLanguages
+        })
+        setIfChanged(\.discussionLanguages, response.discussionLanguages)
+
         community2.update(with: response.communityView, semaphore: semaphore)
     }
 }

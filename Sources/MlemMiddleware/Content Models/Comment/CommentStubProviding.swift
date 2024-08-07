@@ -23,12 +23,15 @@ public protocol CommentStubProviding: ActorIdentifiable, ContentModel {
     
     // From Comment2Providing. These are defined as nil in the extension below
     var creator_: Person1? { get }
+    var post_: Post1? { get }
     var community_: Community1? { get }
-    var commentCount_: Int? { get }
     var votes_: VotesModel? { get }
-    var unreadCommentCount_: Int? { get }
     var saved_: Bool? { get }
-    var read_: Bool? { get }
+    var creatorIsModerator_: Bool? { get }
+    var creatorIsAdmin_: Bool? { get }
+    var bannedFromCommunity_: Bool? { get }
+    var commentCount_: Int? { get }
+    
 }
 
 public extension CommentStubProviding {
@@ -45,12 +48,14 @@ public extension CommentStubProviding {
     var languageId_: Int? { nil }
     
     var creator_: Person1? { nil }
+    var post_: Post1? { nil }
     var community_: Community1? { nil }
-    var commentCount_: Int? { nil }
     var votes_: VotesModel? { nil }
-    var unreadCommentCount_: Int? { nil }
     var saved_: Bool? { nil }
-    var read_: Bool? { nil }
+    var creatorIsModerator_: Bool? { nil }
+    var creatorIsAdmin_: Bool? { nil }
+    var bannedFromCommunity_: Bool? { nil }
+    var commentCount_: Int? { nil }
     
     var depth_: Int? { parentCommentIds_?.count }
 }

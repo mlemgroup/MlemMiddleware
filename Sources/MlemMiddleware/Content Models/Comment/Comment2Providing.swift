@@ -35,6 +35,7 @@ public extension Comment2Providing {
     var post_: Post1? { comment2.post }
     var community_: Community1? { comment2.community }
     var votes_: VotesModel? { comment2.votes }
+    var saved_: Bool? { comment2.saved }
     var creatorIsModerator_: Bool? { comment2.creatorIsModerator }
     var creatorIsAdmin_: Bool? { comment2.creatorIsAdmin }
     var bannedFromCommunity_: Bool? { comment2.bannedFromCommunity }
