@@ -39,8 +39,7 @@ class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
         .init(
             api: api,
             community1: api.caches.community1.getModel(api: api, from: apiType.community),
-            subscribed: apiType.subscribed.isSubscribed,
-            subscriberCount: apiType.counts.subscribers,
+            subscription: .init(from: apiType.counts, subscribedType: apiType.subscribed),
             postCount: apiType.counts.posts,
             commentCount: apiType.counts.comments,
             activeUserCount: .init(
