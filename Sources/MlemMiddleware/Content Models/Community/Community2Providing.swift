@@ -31,7 +31,7 @@ public extension Community2Providing {
     var subscribed: Bool { community2.subscription.subscribed }
     var favorited: Bool { community2.favorited }
     var subscriberCount: Int { community2.subscription.total }
-    var localSubscriberCount: Int? { community2.subscription.local }
+    var localSubscriberCount: Int? { community2.subscription.local(communityIsLocal: apiIsLocal) }
     var postCount: Int { community2.postCount }
     var commentCount: Int { community2.commentCount }
     var activeUserCount: ActiveUserCount { community2.activeUserCount }
@@ -39,7 +39,7 @@ public extension Community2Providing {
     var subscribed_: Bool? { community2.subscription.subscribed }
     var favorited_: Bool? { community2.favorited }
     var subscriberCount_: Int? { community2.subscription.total }
-    var localSubscriberCount_: Int? { community2.subscription.local }
+    var localSubscriberCount_: Int? { community2.subscription.local(communityIsLocal: apiIsLocal) }
     var postCount_: Int? { community2.postCount }
     var commentCount_: Int? { community2.commentCount }
     var activeUserCount_: ActiveUserCount? { community2.activeUserCount }

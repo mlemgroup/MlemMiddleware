@@ -24,9 +24,9 @@ internal struct SubscriptionModel: Hashable, Equatable {
     
     // This accounts for the `actualLocal` not taking your own pending subscription into account.
     /// Added in 0.19.4.
-    var local: Int? {
+    func local(communityIsLocal: Bool) -> Int? {
         guard let actualLocal else { return nil }
-        return subscribedType == .pending ? (actualLocal + 1) : actualLocal
+        return (communityIsLocal && subscribedType == .pending) ? (actualLocal + 1) : actualLocal
     }
     
     init(from aggregates: ApiCommunityAggregates, subscribedType: ApiSubscribedType) {
@@ -42,8 +42,8 @@ internal struct SubscriptionModel: Hashable, Equatable {
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(total)
-        hasher.combine(local)
+        hasher.combine(actualTotal)
+        hasher.combine(actualLocal)
         hasher.combine(subscribedType)
     }
     
