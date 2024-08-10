@@ -15,10 +15,11 @@ internal struct SubscriptionModel: Hashable, Equatable {
     var subscribed: Bool
     
     // When you subscribe, your instance asks the community host to confirm the subscription.
-    // Until a confirmation is received from the host, `ApiSubscribedType.pending` is returned.
-    // The subscription count of the community doesn't change until the subscription status
-    // is confirmed by the community host. There also appears to exist a "pending" state for
-    // unsubscribing, but the API doesn't tell us when it's in this state.
+    // Until a confirmation is received from the host, the subscription state is
+    // `ApiSubscribedType.pending`. The subscription count of the community doesn't change
+    // until the subscription status is confirmed by the community host. There also appears
+    // to exist a "pending" state for unsubscribing, but the API doesn't tell us when it's
+    // in this state.
     //
     // This property is "true" when the subscription is thought to be pending in **either**
     // direction. Because we don't actually know whether an unsubscription is pending, this
