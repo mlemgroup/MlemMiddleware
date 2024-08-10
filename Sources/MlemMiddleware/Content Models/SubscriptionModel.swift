@@ -27,29 +27,23 @@ internal struct SubscriptionModel: Hashable, Equatable {
     var pending: Bool
     
     // This accounts for the `actualTotal` not taking your own pending subscription into account.
-    var total: Int {
-        switch (subscribed, pending) {
-        case (true, true):
-            return actualTotal + 1
-        case (false, true):
-            return actualTotal - 1
-        case (_, false):
-            return actualTotal
-        }
-    }
+    var total: Int { actualTotal + pendingSubscriptionValue }
     
     // This accounts for the `actualLocal` not taking your own pending subscription into account.
     /// Added in 0.19.4.
-    func local(communityIsLocal: Bool) -> Int? {
+    var local: Int? {
         guard let actualLocal else { return nil }
-        if !communityIsLocal { return actualLocal }
+        return actualLocal + pendingSubscriptionValue
+    }
+    
+    private var pendingSubscriptionValue: Int {
         switch (subscribed, pending) {
         case (true, true):
-            return actualLocal + 1
+            return 1
         case (false, true):
-            return actualLocal - 1
+            return -1
         case (_, false):
-            return actualLocal
+            return 0
         }
     }
     
