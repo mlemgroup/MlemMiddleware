@@ -15,8 +15,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
         sortType: ApiSortType,
         showReadPosts: Bool,
         filteredKeywords: [String],
-        smallAvatarSize: CGFloat,
-        largeAvatarSize: CGFloat,
+        prefetchingConfiguration: PrefetchingConfiguration,
         urlCache: URLCache,
         community: any Community
     ) {
@@ -26,8 +25,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
             sortType: sortType,
             showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
-            smallAvatarSize: smallAvatarSize,
-            largeAvatarSize: largeAvatarSize
+            prefetchingConfiguration: prefetchingConfiguration
         )
     }
     

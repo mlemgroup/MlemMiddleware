@@ -13,10 +13,9 @@ extension URL: Identifiable {
 
 public extension URL {
     // Spec described here: https://join-lemmy.org/docs/contributors/04-api.html#images
-    func withIconSize(_ size: Int) -> URL {
-        var result = self
-        result.append(queryItems: [URLQueryItem(name: "thumbnail", value: "\(size)")])
-        return result
+    func withIconSize(_ size: Int?) -> URL {
+        guard let size else { return self }
+        return appending(queryItems: [URLQueryItem(name: "thumbnail", value: "\(size)")])
     }
     
     func removingPathComponents() -> URL {

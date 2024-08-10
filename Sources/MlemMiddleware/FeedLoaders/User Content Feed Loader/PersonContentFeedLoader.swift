@@ -29,14 +29,7 @@ public class PersonContentFeedLoader: FeedLoading {
     private var userId: Int
     private var savedOnly: Bool
     
-    // prefetching
-    private let smallAvatarIconSize: Int
-    private let largeAvatarIconSize: Int
-    private let prefetcher: ImagePrefetcher = .init(
-        pipeline: ImagePipeline.shared,
-        destination: .memoryCache,
-        maxConcurrentRequestCount: 40
-    )
+    public var prefetchingConfiguration: PrefetchingConfiguration
     
     /// Last page fetched from the API
     internal var apiPage: Int
@@ -61,8 +54,7 @@ public class PersonContentFeedLoader: FeedLoading {
         userId: Int,
         sortType: FeedLoaderSort.SortType,
         savedOnly: Bool,
-        smallAvatarSize: CGFloat,
-        largeAvatarSize: CGFloat,
+        prefetchingConfiguration: PrefetchingConfiguration,
         withContent: (posts: [Post2], comments: [Comment2])? = nil
     ) {
         self.api = api
@@ -76,8 +68,7 @@ public class PersonContentFeedLoader: FeedLoading {
         self.loadingState = .idle
         self.postStream = .init(items: withContent?.posts)
         self.commentStream = .init(items: withContent?.comments)
-        self.smallAvatarIconSize = Int(smallAvatarSize * 2)
-        self.largeAvatarIconSize = Int(largeAvatarSize * 2)
+        self.prefetchingConfiguration = prefetchingConfiguration
     }
     
     // MARK: Public Methods
@@ -245,10 +236,8 @@ public class PersonContentFeedLoader: FeedLoading {
     
     /// Preloads images for the given post
     private func preloadImages(_ posts: [Post2]) {
-        prefetcher.startPrefetching(with: posts.flatMap {
-            $0.imageRequests(
-                smallAvatarIconSize: smallAvatarIconSize,
-                largeAvatarIconSize: largeAvatarIconSize)
+        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
+            $0.imageRequests(configuration: prefetchingConfiguration)
         })
     }
 }
