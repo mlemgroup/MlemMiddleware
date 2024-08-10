@@ -12,7 +12,7 @@ import Observation
 /// Post tracker for use with single feeds. Can easily be extended to load any pure post feed by creating an inheriting class that overrides getPosts().
 @Observable
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
-    public private(set) var sortType: ApiSortType
+    public var sortType: ApiSortType
     
     // prefetching
     private let smallAvatarIconSize: Int
