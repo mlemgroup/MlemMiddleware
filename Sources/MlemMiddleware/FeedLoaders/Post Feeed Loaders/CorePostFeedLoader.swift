@@ -12,7 +12,7 @@ import Observation
 /// Post tracker for use with single feeds. Can easily be extended to load any pure post feed by creating an inheriting class that overrides getPosts().
 @Observable
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
-    private(set) var postSortType: ApiSortType
+    public private(set) var sortType: ApiSortType
     
     // prefetching
     private let smallAvatarIconSize: Int
@@ -31,7 +31,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         smallAvatarSize: CGFloat,
         largeAvatarSize: CGFloat
     ) {
-        self.postSortType = sortType
+        self.sortType = sortType
     
         self.smallAvatarIconSize = Int(smallAvatarSize * 2)
         self.largeAvatarIconSize = Int(largeAvatarSize * 2)
@@ -73,11 +73,11 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     /// Changes the post sort type to the specified value and reloads the feed
     public func changeSortType(to newSortType: ApiSortType, forceRefresh: Bool = false) async throws {
         // don't do anything if sort type not changed
-        guard postSortType != newSortType || forceRefresh else {
+        guard sortType != newSortType || forceRefresh else {
             return
         }
         
-        postSortType = newSortType
+        sortType = newSortType
         try await refresh(clearBeforeRefresh: true)
     }
     

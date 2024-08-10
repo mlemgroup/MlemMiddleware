@@ -113,11 +113,6 @@ public class StateManager<Value: Equatable> {
         if lastSemaphore == semaphore {
             print("DEBUG [\(semaphore?.description ?? "nil")] is the last caller! Resetting lastVerifiedValue.")
             lastVerifiedValue = nil
-            if self.wrappedValue != newState {
-                print("DEBUG [\(semaphore?.description ?? "nil")] Unexpected value returned from API: \(newState)")
-                self.wrappedValue = newState
-                self.onSet(newState, .receive)
-            }
             return true
         }
         

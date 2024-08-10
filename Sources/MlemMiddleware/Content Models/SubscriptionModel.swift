@@ -12,39 +12,65 @@ internal struct SubscriptionModel: Hashable, Equatable {
     private var actualTotal: Int
     private var actualLocal: Int?
     
-    private var subscribedType: ApiSubscribedType
+    var subscribed: Bool
     
-    var subscribed: Bool { subscribedType != .notSubscribed }
-    var pending: Bool { subscribedType == .pending }
+    // When you subscribe, your instance asks the community host to confirm the subscription.
+    // Until a confirmation is received from the host, `ApiSubscribedType.pending` is returned.
+    // The subscription count of the community doesn't change until the subscription status
+    // is confirmed by the community host. There also appears to exist a "pending" state for
+    // unsubscribing, but the API doesn't tell us when it's in this state.
+    //
+    // This property is "true" when the subscription is thought to be pending in **either**
+    // direction. Because we don't actually know whether an unsubscription is pending, this
+    // may not always be accurate.
+    var pending: Bool
     
     // This accounts for the `actualTotal` not taking your own pending subscription into account.
     var total: Int {
-        subscribedType == .pending ? (actualTotal + 1) : actualTotal
+        switch (subscribed, pending) {
+        case (true, true):
+            return actualTotal + 1
+        case (false, true):
+            return actualTotal - 1
+        case (_, false):
+            return actualTotal
+        }
     }
     
     // This accounts for the `actualLocal` not taking your own pending subscription into account.
     /// Added in 0.19.4.
     func local(communityIsLocal: Bool) -> Int? {
         guard let actualLocal else { return nil }
-        return (communityIsLocal && subscribedType == .pending) ? (actualLocal + 1) : actualLocal
+        if !communityIsLocal { return actualLocal }
+        switch (subscribed, pending) {
+        case (true, true):
+            return actualLocal + 1
+        case (false, true):
+            return actualLocal - 1
+        case (_, false):
+            return actualLocal
+        }
     }
     
     init(from aggregates: ApiCommunityAggregates, subscribedType: ApiSubscribedType) {
         self.actualTotal = aggregates.subscribers
         self.actualLocal = aggregates.subscribersLocal
-        self.subscribedType = subscribedType
+        self.subscribed = subscribedType.isSubscribed
+        self.pending = subscribedType == .pending
     }
     
-    init(total: Int, local: Int? = nil, subscribedType: ApiSubscribedType) {
+    init(total: Int, local: Int? = nil, subscribed: Bool, pending: Bool) {
         self.actualTotal = total
         self.actualLocal = local
-        self.subscribedType = subscribedType
+        self.subscribed = subscribed
+        self.pending = pending
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(actualTotal)
         hasher.combine(actualLocal)
-        hasher.combine(subscribedType)
+        hasher.combine(subscribed)
+        hasher.combine(pending)
     }
     
     static func == (lhs: SubscriptionModel, rhs: SubscriptionModel) -> Bool {
@@ -56,34 +82,16 @@ extension SubscriptionModel {
     func withSubscriptionStatus(subscribed shouldSubscribe: Bool, isLocal: Bool) -> SubscriptionModel {
         guard shouldSubscribe != self.subscribed else { return self }
         
-        let newSubscribedType: ApiSubscribedType
-        if shouldSubscribe {
-            // When you subscribe, your instance asks the community host to confirm the subscription.
-            // Until a confirmation is received from the host, `.pending` is returned. Therefore we
-            // assume `.pending` will be returned for non-local communities when state-faking the status.
-            // The subscription count doesn't change either until the subscription status is confirmed
-            // by the community host.
-            newSubscribedType = isLocal ? .subscribed : .pending
-        } else {
-            newSubscribedType = .notSubscribed
-        }
-        
         let diff: Int
-        switch newSubscribedType {
-        case .notSubscribed:
-            // It appears there is also a "pending" state when unsubscribing, but we don't get to know
-            // when it's in this state. The consequence of this is that the count may not update when
-            // unsubscribing until confirmation is received.
-            diff = isLocal ? -1 : 0
-        case .pending:
+        if isLocal {
+            diff = shouldSubscribe ? 1 : -1
+        } else {
             diff = 0
-        case .subscribed:
-            diff = 1
         }
         
         let newLocal: Int?
         if let actualLocal {
-            newLocal = isLocal ? (actualLocal + diff) : actualLocal
+            newLocal = actualLocal + diff
         } else {
             newLocal = nil
         }
@@ -91,7 +99,8 @@ extension SubscriptionModel {
         return SubscriptionModel(
             total: actualTotal + diff,
             local: newLocal,
-            subscribedType: newSubscribedType
+            subscribed: shouldSubscribe,
+            pending:  !(pending || isLocal)
         )
     }
 }
