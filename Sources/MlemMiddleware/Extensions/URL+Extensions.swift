@@ -15,7 +15,15 @@ public extension URL {
     // Spec described here: https://join-lemmy.org/docs/contributors/04-api.html#images
     func withIconSize(_ size: Int?) -> URL {
         guard let size else { return self }
-        return appending(queryItems: [URLQueryItem(name: "thumbnail", value: "\(size)")])
+        guard var components = URLComponents(url: self, resolvingAgainstBaseURL: true) else {
+            print("Failed to create URLComponents")
+            return self.appending(queryItems: [.init(name: "thumbnail", value: String(size))])
+        }
+        var queryItems = components.queryItems ?? []
+        queryItems.removeFirst(where: { $0.name == "thumbnail" })
+        queryItems.append(.init(name: "thumbnail", value: String(size)))
+        components.queryItems = queryItems
+        return components.url ?? self
     }
     
     func removingPathComponents() -> URL {
