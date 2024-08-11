@@ -19,4 +19,6 @@ public protocol Interactable1Providing: AnyObject, ContentModel, ContentIdentifi
     var commentCount_: Int? { get }
     var votes_: VotesModel? { get }
     var saved_: Bool? { get }
+    
+    func report(reason: String) async throws
 }
