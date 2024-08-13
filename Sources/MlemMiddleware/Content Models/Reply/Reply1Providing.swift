@@ -98,6 +98,10 @@ public extension Reply1Providing {
             }
         }
     }
+    
+    func report(reason: String) async throws {
+        try await api.reportComment(id: commentId, reason: reason)
+    }
 }
 
 // Override the `ContentIdentifiable` implementation to include `isMention`, because a reply

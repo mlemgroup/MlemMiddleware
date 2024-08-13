@@ -28,7 +28,6 @@ extension Community2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with communityView: ApiCommunityView, semaphore: UInt? = nil) {
-        setIfChanged(\.subscriberCount, communityView.counts.subscribers)
         setIfChanged(\.postCount, communityView.counts.posts)
         setIfChanged(\.commentCount, communityView.counts.comments)
         setIfChanged(\.activeUserCount, .init(
@@ -38,7 +37,10 @@ extension Community2: CacheIdentifiable {
             day: communityView.counts.usersActiveDay
         ))
         
-        subscribedManager.updateWithReceivedValue(communityView.subscribed.isSubscribed, semaphore: semaphore)
+        subscriptionManager.updateWithReceivedValue(
+            .init(from: communityView.counts, subscribedType: communityView.subscribed),
+            semaphore: semaphore
+        )
         
         community1.update(with: communityView.community, semaphore: semaphore)
     }

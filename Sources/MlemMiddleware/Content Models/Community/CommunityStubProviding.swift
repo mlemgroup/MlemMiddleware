@@ -27,6 +27,7 @@ public protocol CommunityStubProviding: CommunityOrPersonStub {
     var subscribed_: Bool? { get }
     var favorited_: Bool? { get }
     var subscriberCount_: Int? { get }
+    var localSubscriberCount_: Int? { get }
     var postCount_: Int? { get }
     var commentCount_: Int? { get }
     var activeUserCount_: ActiveUserCount? { get }
@@ -63,6 +64,7 @@ public extension CommunityStubProviding {
     var subscribed_: Bool? { nil }
     var favorited_: Bool? { nil }
     var subscriberCount_: Int? { nil }
+    var localSubscriberCount_: Int? { nil }
     var postCount_: Int? { nil }
     var commentCount_: Int? { nil }
     var activeUserCount_: ActiveUserCount? { nil }

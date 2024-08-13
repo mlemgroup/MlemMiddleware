@@ -10,6 +10,6 @@ import Foundation
 /// - idle: not currently loading, but more items available to load
 /// - loading: currently loading more items
 /// - done: no more items available to load
-public enum LoadingState {
+public enum LoadingState: Hashable {
     case idle, loading, done
 }

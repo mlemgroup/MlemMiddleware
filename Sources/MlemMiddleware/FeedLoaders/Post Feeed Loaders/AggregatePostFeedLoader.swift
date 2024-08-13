@@ -37,7 +37,7 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
     override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
         return try await api.getPosts(
             feed: feedType,
-            sort: postSortType,
+            sort: sortType,
             page: page,
             cursor: cursor,
             limit: pageSize,

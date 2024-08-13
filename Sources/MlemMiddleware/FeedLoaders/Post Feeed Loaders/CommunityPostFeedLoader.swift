@@ -33,7 +33,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     
     override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
         return try await community.getPosts(
-            sort: postSortType,
+            sort: sortType,
             page: page,
             cursor: cursor,
             limit: pageSize,
