@@ -13,7 +13,6 @@ public protocol Post1Providing:
         Interactable1Providing,
         SelectableContentProviding,
         DeletableProviding,
-        ReportableProviding,
         FeedLoadable where FilterType == PostFilterType {
     var post1: Post1 { get }
     

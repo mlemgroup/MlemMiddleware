@@ -13,7 +13,6 @@ public protocol Comment1Providing:
         ContentIdentifiable,
         Interactable1Providing,
         DeletableProviding,
-        ReportableProviding,
         SelectableContentProviding,
         FeedLoadable where FilterType == CommentFilterType {
     var comment1: Comment1 { get }

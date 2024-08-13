@@ -28,16 +28,18 @@ public protocol Community2Providing: Community1Providing {
 public extension Community2Providing {
     var community1: Community1 { community2.community1 }
     
-    var subscribed: Bool { community2.subscribed }
+    var subscribed: Bool { community2.subscription.subscribed }
     var favorited: Bool { community2.favorited }
-    var subscriberCount: Int { community2.subscriberCount }
+    var subscriberCount: Int { community2.subscription.total }
+    var localSubscriberCount: Int? { community2.subscription.local }
     var postCount: Int { community2.postCount }
     var commentCount: Int { community2.commentCount }
     var activeUserCount: ActiveUserCount { community2.activeUserCount }
     
-    var subscribed_: Bool? { community2.subscribed }
+    var subscribed_: Bool? { community2.subscription.subscribed }
     var favorited_: Bool? { community2.favorited }
-    var subscriberCount_: Int? { community2.subscriberCount }
+    var subscriberCount_: Int? { community2.subscription.total }
+    var localSubscriberCount_: Int? { community2.subscription.local }
     var postCount_: Int? { community2.postCount }
     var commentCount_: Int? { community2.commentCount }
     var activeUserCount_: ActiveUserCount? { community2.activeUserCount }
@@ -45,7 +47,7 @@ public extension Community2Providing {
 }
 
 public extension Community2Providing {
-    private var subscribedManager: StateManager<Bool> { community2.subscribedManager }
+    private var subscriptionManager: StateManager<SubscriptionModel> { community2.subscriptionManager }
     
     var subscriptionTier: SubscriptionTier {
         if favorited { return .favorited }
@@ -60,7 +62,9 @@ public extension Community2Providing {
     
     @discardableResult
     func updateSubscribe(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
-        subscribedManager.performRequest(expectedResult: newValue) { semaphore in
+        subscriptionManager.performRequest(
+            expectedResult: community2.subscription.withSubscriptionStatus(subscribed: newValue, isLocal: self.apiIsLocal)
+        ) { semaphore in
             if !newValue {
                 self.community2.shouldBeFavorited = false
             }
@@ -81,7 +85,9 @@ public extension Community2Providing {
         }
         self.community2.shouldBeFavorited = newValue
         if !subscribed, newValue {
-            return subscribedManager.performRequest(expectedResult: true) { semaphore in
+            return subscriptionManager.performRequest(
+                expectedResult: community2.subscription.withSubscriptionStatus(subscribed: true, isLocal: self.apiIsLocal)
+            ) { semaphore in
                 subscriptions.updateCommunitySubscription(community: self.community2)
                 try await self.api.subscribeToCommunity(id: self.id, subscribe: true, semaphore: semaphore)
             } onRollback: { _ in

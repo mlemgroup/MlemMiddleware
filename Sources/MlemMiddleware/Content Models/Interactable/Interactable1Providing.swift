@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents a post/comment that you *should* be able to interact with, but you cannot actually interact with due to the model being too low-tier.
-public protocol Interactable1Providing: AnyObject, ContentModel, ContentIdentifiable {
+public protocol Interactable1Providing: AnyObject, ContentModel, ReportableProviding, ContentIdentifiable {
     var created: Date { get }
     var updated: Date? { get }
     

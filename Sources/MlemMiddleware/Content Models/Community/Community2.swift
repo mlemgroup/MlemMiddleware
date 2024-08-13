@@ -15,8 +15,8 @@ public final class Community2: Community2Providing {
 
     public let community1: Community1
     
-    internal var subscribedManager: StateManager<Bool>
-    public var subscribed: Bool { subscribedManager.wrappedValue }
+    internal var subscriptionManager: StateManager<SubscriptionModel>
+    internal var subscription: SubscriptionModel { subscriptionManager.wrappedValue }
     
     public var favorited: Bool {
         api.subscriptions?.isFavorited(self) ?? false
@@ -25,7 +25,6 @@ public final class Community2: Community2Providing {
     /// Used to state-fake internally.
     internal var shouldBeFavorited: Bool = false
 
-    public var subscriberCount: Int = 0
     public var postCount: Int = 0
     public var commentCount: Int = 0
     public var activeUserCount: ActiveUserCount = .zero
@@ -33,16 +32,14 @@ public final class Community2: Community2Providing {
     internal init(
         api: ApiClient,
         community1: Community1,
-        subscribed: Bool = false,
-        subscriberCount: Int = 0,
+        subscription: SubscriptionModel,
         postCount: Int = 0,
         commentCount: Int = 0,
         activeUserCount: ActiveUserCount = .zero
     ) {
         self.api = api
         self.community1 = community1
-        self.subscribedManager = .init(wrappedValue: subscribed)
-        self.subscriberCount = subscriberCount
+        self.subscriptionManager = .init(wrappedValue: subscription)
         self.postCount = postCount
         self.commentCount = commentCount
         self.activeUserCount = activeUserCount
@@ -50,10 +47,10 @@ public final class Community2: Community2Providing {
         if favorited, !subscribed {
             self.api.subscriptions?.favoriteIDs.remove(self.id)
         }
-        self.subscribedManager.onSet = { newValue, _ in
+        self.subscriptionManager.onSet = { _, _ in
             self.api.subscriptions?.updateCommunitySubscription(community: self)
         }
         self.shouldBeFavorited = favorited
-        self.subscribedManager.onSet(subscribed, .receive)
+        self.subscriptionManager.onSet(subscription, .receive)
     }
 }

@@ -92,6 +92,7 @@ public class StateManager<Value: Equatable> {
         DispatchQueue.main.async {
             if self.wrappedValue != expectedResult {
                 self.wrappedValue = expectedResult
+                print("DEBUG [\(self.lastSemaphore)] Set wrappedValue to \(expectedResult).")
                 self.onSet(expectedResult, .begin)
             }
         }
