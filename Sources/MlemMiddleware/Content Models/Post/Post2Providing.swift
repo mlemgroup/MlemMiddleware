@@ -117,23 +117,30 @@ public extension Post2Providing {
     }
     
     /// Generates an array of image requests to fetch all images associated with this Post2Providing
-    func imageRequests(smallAvatarIconSize: Int, largeAvatarIconSize: Int) -> [ImageRequest] {
+    func imageRequests(configuration config: PrefetchingConfiguration) -> [ImageRequest] {
         var ret: [ImageRequest] = .init()
         
         // preload user and community avatars--fetching both because we don't know which we'll need, but these are super tiny
         // so it's probably not an API crime, right?
-        if let communityAvatarLink = community.avatar {
-            ret.append(ImageRequest(url: communityAvatarLink.withIconSize(smallAvatarIconSize)))
-        }
-        
-        if let userAvatarLink = creator.avatar {
-            ret.append(ImageRequest(url: userAvatarLink.withIconSize(largeAvatarIconSize * 2)))
+        if let avatarSize = config.avatarSize {
+            if let communityAvatarLink = community.avatar {
+                ret.append(ImageRequest(url: communityAvatarLink.withIconSize(avatarSize)))
+            }
+            
+            if let userAvatarLink = creator.avatar {
+                ret.append(ImageRequest(url: userAvatarLink.withIconSize(avatarSize)))
+            }
         }
         
         switch type {
         case let .image(url):
             // images: only load the image
-            ret.append(ImageRequest(url: url, priority: .high))
+            switch config.imageSize {
+            case .unlimited:
+                ret.append(ImageRequest(url: url, priority: .high))
+            case let .limited(size):
+                ret.append(ImageRequest(url: url.withIconSize(size), priority: .high))
+            }
         case let .link(link):
             // websites: load image and favicon
             if let baseURL = linkUrl?.host,
@@ -141,7 +148,12 @@ public extension Post2Providing {
                 ret.append(ImageRequest(url: favIconURL))
             }
             if let url = link.thumbnail {
-                ret.append(ImageRequest(url: url, priority: .high))
+                switch config.imageSize {
+                case .unlimited:
+                    ret.append(ImageRequest(url: url, priority: .high))
+                case let .limited(size):
+                    ret.append(ImageRequest(url: url.withIconSize(size), priority: .high))
+                }
             }
         default:
             break

@@ -13,28 +13,17 @@ import Observation
 @Observable
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public var sortType: ApiSortType
-    
-    // prefetching
-    private let smallAvatarIconSize: Int
-    private let largeAvatarIconSize: Int
-    private let prefetcher: ImagePrefetcher = .init(
-        pipeline: ImagePipeline.shared,
-        destination: .memoryCache,
-        maxConcurrentRequestCount: 40
-    )
+    public private(set) var prefetchingConfiguration: PrefetchingConfiguration
     
     public init(
         pageSize: Int,
         sortType: ApiSortType,
         showReadPosts: Bool,
         filteredKeywords: [String],
-        smallAvatarSize: CGFloat,
-        largeAvatarSize: CGFloat
+        prefetchingConfiguration: PrefetchingConfiguration
     ) {
         self.sortType = sortType
-    
-        self.smallAvatarIconSize = Int(smallAvatarSize * 2)
-        self.largeAvatarIconSize = Int(largeAvatarSize * 2)
+        self.prefetchingConfiguration = prefetchingConfiguration
         
         super.init(
             pageSize: pageSize,
@@ -106,10 +95,13 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     
     /// Preloads images for the given post
     private func preloadImages(_ posts: [Post2]) {
-        prefetcher.startPrefetching(with: posts.flatMap { 
-            $0.imageRequests(
-                smallAvatarIconSize: smallAvatarIconSize,
-                largeAvatarIconSize: largeAvatarIconSize)
+        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
+            $0.imageRequests(configuration: prefetchingConfiguration)
         })
+    }
+    
+    public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {
+        prefetchingConfiguration = config
+        preloadImages(items)
     }
 }
