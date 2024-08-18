@@ -39,18 +39,28 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     
     override public func fetchPage(page: Int) async throws -> FetchResponse<Post2> {
         let result = try await getPosts(page: page, cursor: nil)
-        
+
         let filteredPosts = filter.filter(result.posts)
         preloadImages(filteredPosts)
-        return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
+        return .init(
+            items: filteredPosts,
+            prevCursor: nil,
+            nextCursor: result.cursor,
+            numFiltered: result.posts.count - filteredPosts.count
+        )
     }
     
     override public func fetchCursor(cursor: String?) async throws -> FetchResponse<Post2> {
         let result = try await getPosts(page: page, cursor: cursor)
-        
+
         let filteredPosts = filter.filter(result.posts)
         preloadImages(filteredPosts)
-        return .init(items: filteredPosts, cursor: result.cursor, numFiltered: result.posts.count - filteredPosts.count)
+        return .init(
+            items: filteredPosts,
+            prevCursor: cursor,
+            nextCursor: result.cursor,
+            numFiltered: result.posts.count - filteredPosts.count
+        )
     }
     
     internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
