@@ -118,8 +118,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             print("[\(Item.self) tracker] loading cursor \(cursorToLoad)")
             try await loadCursorHelper(cursorToLoad)
         }
-        
-        print("[\(Item.self) tracker] finished \(action)")
     }
     
     /// Fetches the given page of items. This method must be overridden by the instantiating class because different items are loaded differently. The instantiating class is responsible for handling fetch parameters (e.g., page size, unread only) and performing filtering
@@ -169,8 +167,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     /// - Parameter pageToLoad: page to load
     /// - Warning: **DO NOT** call this method from anywhere but `load`! This is *purely* a helper function for `load` and *will* lead to unexpected behavior if called elsewhere!
     private func loadPageHelper(_ pageToLoad: Int) async throws {
-        print("[\(Item.self) tracker] loading page \(pageToLoad)")
-        
         // There isn't a scenario in which we have cursor available but want to load a specific page of content; either we are loading the first
         // page or the cursor is unavailable.
         assert(loadingCursor == nil || pageToLoad == 1, "loadPageHelper called when valid cursor available!")
@@ -226,8 +222,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     }
     
     private func loadCursorHelper(_ cursor: String) async throws {
-        print("[\(Item.self) tracker] loading cursor \(cursor)")
-        
         // do not continue to load if done
         guard loadingState != .done else {
             print("[\(Item.self) tracker] done loading, will not continue")
