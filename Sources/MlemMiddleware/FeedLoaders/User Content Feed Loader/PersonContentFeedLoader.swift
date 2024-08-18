@@ -46,8 +46,8 @@ public class PersonContentFeedLoader: FeedLoading {
     private var tempPostStream: PersonContentStream<Post2>?
     private var tempCommentStream: PersonContentStream<Comment2>?
     
-    var posts: [Post2] { tempPostStream?.items ?? postStream.items }
-    var comments: [Comment2] { tempCommentStream?.items ?? commentStream.items }
+    public var posts: [Post2] { tempPostStream?.items ?? postStream.items }
+    public var comments: [Comment2] { tempCommentStream?.items ?? commentStream.items }
     
     public init(
         api: ApiClient,
