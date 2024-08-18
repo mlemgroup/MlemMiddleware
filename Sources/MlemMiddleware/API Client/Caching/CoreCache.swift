@@ -34,7 +34,7 @@ open class CoreCache<Content: CacheIdentifiable & AnyObject> {
         }
         
         public func remove(_ cacheId: Int) {
-            print("Removed \(cacheId)")
+            // print("Removed \(cacheId)")
             cachedItems.value[cacheId] = nil
         }
         

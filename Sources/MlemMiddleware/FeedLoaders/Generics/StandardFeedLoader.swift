@@ -29,14 +29,20 @@ public struct FetchResponse<Item: FeedLoadable> {
     /// Items returned
     public let items: [Item]
     
+    /// Cursor used to fetch this response, if applicable
+    public let prevCursor: String?
+    
     /// New cursor, if applicable
-    public let cursor: String?
+    public let nextCursor: String?
     
     /// Number of items filtered out
     public let numFiltered: Int
     
     /// True if the response has content, false otherwise. It is possible for a filter to remove all fetched items; this avoids that triggering an erroneous end of feed.
-    public var hasContent: Bool { items.count + numFiltered > 0 }
+    public var hasContent: Bool {
+        (prevCursor == nil || nextCursor != prevCursor) && // if cursor used to fetch, ensure same cursor not returned
+        items.count + numFiltered > 0 // total sum of fetched items non-zero
+    }
 }
 
 @Observable
@@ -59,14 +65,15 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     override public func loadMoreItems() async throws {
         // declare this once here to avoid nasty race conditions
         let pageToLoad = page + 1
+        let cursorToLoad = loadingCursor
         
         if pageToLoad == 1 {
             // for loading first page, always use refresh--functions identically for page and cursor
             try await load(action: .refresh(false))
         } else {
             // for loading subsequent pages, use cursor if available, page otherwise
-            if let loadingCursor {
-                try await load(action: .loadCursor(loadingCursor))
+            if let cursorToLoad {
+                try await load(action: .loadCursor(cursorToLoad))
             } else {
                 try await load(action: .loadPage(pageToLoad))
             }
@@ -111,6 +118,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             print("[\(Item.self) tracker] loading cursor \(cursorToLoad)")
             try await loadCursorHelper(cursorToLoad)
         }
+        
+        print("[\(Item.self) tracker] finished \(action)")
     }
     
     /// Fetches the given page of items. This method must be overridden by the instantiating class because different items are loaded differently. The instantiating class is responsible for handling fetch parameters (e.g., page size, unread only) and performing filtering
@@ -160,6 +169,12 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     /// - Parameter pageToLoad: page to load
     /// - Warning: **DO NOT** call this method from anywhere but `load`! This is *purely* a helper function for `load` and *will* lead to unexpected behavior if called elsewhere!
     private func loadPageHelper(_ pageToLoad: Int) async throws {
+        print("[\(Item.self) tracker] loading page \(pageToLoad)")
+        
+        // There isn't a scenario in which we have cursor available but want to load a specific page of content; either we are loading the first
+        // page or the cursor is unavailable.
+        assert(loadingCursor == nil || pageToLoad == 1, "loadPageHelper called when valid cursor available!")
+        
         // do not continue to load if done
         guard loadingState != .done else {
             print("[\(Item.self) tracker] done loading, will not continue")
@@ -176,11 +191,18 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         
         var newState: LoadingState = .idle
         
+        var cursor: String? = nil // used to track
         var newItems: [Item] = .init()
         while newItems.count < pageSize {
-            let fetched = try await fetchPage(page: page + 1)
+            // use cursor-based fetching if a cursor was returned from the
+            let fetched: FetchResponse<Item>
+            if let cursor {
+                fetched = try await fetchCursor(cursor: cursor)
+            } else {
+                fetched = try await fetchPage(page: page + 1)
+            }
             page += 1
-            loadingCursor = fetched.cursor
+            cursor = fetched.nextCursor
             
             if !fetched.hasContent {
                 print("[\(Item.self) tracker] fetch returned no items, setting loading state to done")
@@ -190,6 +212,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             
             newItems.append(contentsOf: fetched.items)
         }
+        
+        loadingCursor = cursor
 
         // if loading page 1, we can just do a straight assignment regardless of whether we did clearBeforeReset
         if pageToLoad == 1 {
@@ -202,6 +226,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     }
     
     private func loadCursorHelper(_ cursor: String) async throws {
+        print("[\(Item.self) tracker] loading cursor \(cursor)")
+        
         // do not continue to load if done
         guard loadingState != .done else {
             print("[\(Item.self) tracker] done loading, will not continue")
@@ -218,20 +244,24 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         
         var newState: LoadingState = .idle
         
+        var cursor: String = cursor // make this mutable
         var newItems: [Item] = .init()
         while newItems.count < pageSize {
             let fetched = try await fetchCursor(cursor: cursor)
-            if !fetched.hasContent || fetched.cursor == loadingCursor {
+            
+            guard let fetchedCursor = fetched.nextCursor, fetched.hasContent else {
                 print("[\(Item.self) tracker] fetch returned no items or EOF cursor, setting loading state to done")
                 newState = .done
                 break
             }
             
-            loadingCursor = fetched.cursor
+            cursor = fetchedCursor
             page += 1 // not strictly necessary but good for tracking number of loaded pages
             
             newItems.append(contentsOf: fetched.items)
         }
+        
+        loadingCursor = cursor
         
         await addItems(newItems)
         await setLoading(newState)
