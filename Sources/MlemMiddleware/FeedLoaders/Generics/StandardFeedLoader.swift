@@ -187,18 +187,18 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         
         var newState: LoadingState = .idle
         
-        var cursor: String? = nil // used to track
+        // var cursor: String? = nil // used to track
         var newItems: [Item] = .init()
         while newItems.count < pageSize {
             // use cursor-based fetching if a cursor was returned from the
             let fetched: FetchResponse<Item>
-            if let cursor {
-                fetched = try await fetchCursor(cursor: cursor)
+            if let loadingCursor {
+                fetched = try await fetchCursor(cursor: loadingCursor)
             } else {
                 fetched = try await fetchPage(page: page + 1)
             }
             page += 1
-            cursor = fetched.nextCursor
+            loadingCursor = fetched.nextCursor
             
             if !fetched.hasContent {
                 print("[\(Item.self) tracker] fetch returned no items, setting loading state to done")
@@ -208,8 +208,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             
             newItems.append(contentsOf: fetched.items)
         }
-        
-        loadingCursor = cursor
 
         // if loading page 1, we can just do a straight assignment regardless of whether we did clearBeforeReset
         if pageToLoad == 1 {
