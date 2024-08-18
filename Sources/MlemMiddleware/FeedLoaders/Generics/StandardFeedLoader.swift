@@ -187,16 +187,16 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         
         var newState: LoadingState = .idle
         
-        // var cursor: String? = nil // used to track
         var newItems: [Item] = .init()
         while newItems.count < pageSize {
-            // use cursor-based fetching if a cursor was returned from the
+            // use cursor-based fetching if available
             let fetched: FetchResponse<Item>
             if let loadingCursor {
                 fetched = try await fetchCursor(cursor: loadingCursor)
             } else {
                 fetched = try await fetchPage(page: page + 1)
             }
+            
             page += 1
             loadingCursor = fetched.nextCursor
             
