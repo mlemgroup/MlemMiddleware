@@ -7,18 +7,22 @@
 
 import Foundation
 
-// This struct is just a convenience wrapper to handle stream state--all loading operations happen at the FeedLoader level to avoid parent/child concurrency control hell
+// This struct is just a convenience wrapper to handle stream state--all loading operations happen at the FeedLoader level to 
+// avoid parent/child concurrency control hell
 public struct PersonContentStream<Item: PersonContentProviding> {
-    var items: [Item]
+    // From the frontend it is more ergonomic to have these be PersonContent. These are guaranteed to all be of type Item by
+    // guarding assignment behind `init` and `addItems`, which can only take Item.
+    private(set) var items: [PersonContent]
     var cursor: Int = 0
     var doneLoading: Bool = false
-    var thresholds: Thresholds<Item>
+    var thresholds: Thresholds<PersonContent>
     
     init(items: [Item]? = nil) {
         self.thresholds = .init()
         if let items {
-            self.items = items
-            self.thresholds.update(with: items)
+            let personContentItems: [PersonContent] = items.map { $0.userContent }
+            self.items = personContentItems
+            self.thresholds.update(with: personContentItems)
         } else {
             self.items = .init()
         }
@@ -27,8 +31,9 @@ public struct PersonContentStream<Item: PersonContentProviding> {
     var needsMoreItems: Bool { !doneLoading && cursor >= items.count }
     
     mutating func addItems(_ newItems: [Item]) {
-        items.append(contentsOf: newItems)
-        thresholds.update(with: newItems)
+        let personContentItems: [PersonContent] = newItems.map { $0.userContent }
+        items.append(contentsOf: personContentItems)
+        thresholds.update(with: personContentItems)
         if newItems.isEmpty {
             doneLoading = true
         }
@@ -54,6 +59,6 @@ public struct PersonContentStream<Item: PersonContentProviding> {
         }
         
         cursor += 1
-        return items[cursor - 1].userContent
+        return items[cursor - 1]
     }
 }
