@@ -139,4 +139,9 @@ public extension ApiClient {
         myInstance = instance
         return (person: person, instance: instance, blocks: blocks)
     }
+    
+    func deleteAccount(password: String, deleteContent: Bool?) async throws {
+        let request = DeleteAccountRequest(password: password, deleteContent: deleteContent)
+        try await perform(request)
+    }
 }
