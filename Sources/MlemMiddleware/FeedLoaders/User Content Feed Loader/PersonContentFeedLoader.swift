@@ -46,8 +46,12 @@ public class PersonContentFeedLoader: FeedLoading {
     private var tempPostStream: PersonContentStream<Post2>?
     private var tempCommentStream: PersonContentStream<Comment2>?
     
-    var posts: [Post2] { tempPostStream?.items ?? postStream.items }
-    var comments: [Comment2] { tempCommentStream?.items ?? commentStream.items }
+    // convenience accessors for child types
+    public var posts: [PersonContent] { tempPostStream?.items ?? postStream.items }
+    public var postLoadingState: LoadingState { postStream.doneLoading ? .done : loadingState }
+    
+    public var comments: [PersonContent] { tempCommentStream?.items ?? commentStream.items }
+    public var commentLoadingState: LoadingState { commentStream.doneLoading ? .done : loadingState }
     
     public init(
         api: ApiClient,
@@ -73,10 +77,10 @@ public class PersonContentFeedLoader: FeedLoading {
     
     // MARK: Public Methods
     
-    public func switchUser(api: ApiClient, userId: Int) {
+    public func switchUser(api: ApiClient, userId: Int) async {
         self.api = api
         self.userId = userId
-        self.loadingState = .done // prevent loading more items until refresh
+        await setLoadingState(.done) // prevent loading more items until refresh
     }
     
     // protocol conformance
@@ -92,8 +96,8 @@ public class PersonContentFeedLoader: FeedLoading {
         let shouldLoad: Bool
         if asChild {
             shouldLoad = switch item.wrappedValue {
-            case let .post(post): postStream.thresholds.isThreshold(post)
-            case let .comment(comment): commentStream.thresholds.isThreshold(comment)
+            case .post: postStream.thresholds.isThreshold(item)
+            case .comment: commentStream.thresholds.isThreshold(item)
             }
         } else {
             shouldLoad = thresholds.isThreshold(item)
@@ -120,7 +124,7 @@ public class PersonContentFeedLoader: FeedLoading {
     }
     
     public func refresh(clearBeforeRefresh: Bool) async throws {
-        loadingState = .loading
+        await setLoadingState(.loading)
         
         if clearBeforeRefresh {
             items = .init()
@@ -139,6 +143,7 @@ public class PersonContentFeedLoader: FeedLoading {
         try await loadMoreItems()
     }
     
+    @MainActor
     public func clear() {
         items = .init()
         postStream = .init()
@@ -154,7 +159,7 @@ public class PersonContentFeedLoader: FeedLoading {
         await contentLoadingSemaphore.wait()
         defer { contentLoadingSemaphore.signal() }
         
-        loadingState = .loading
+        await setLoadingState(.loading)
         
         guard pageToLoad == contentPage + 1 else {
             print("Unexpected content page \(pageToLoad) encountered (expected \(contentPage + 1), skipping load")
@@ -167,7 +172,7 @@ public class PersonContentFeedLoader: FeedLoading {
             if let nextItem = try await computeNextItem() {
                 newItems.append(nextItem)
             } else {
-                loadingState = .done
+                await setLoadingState(.done)
             }
         }
         
@@ -178,7 +183,7 @@ public class PersonContentFeedLoader: FeedLoading {
         }
         
         if loadingState != .done {
-            loadingState = .idle
+            await setLoadingState(.idle)
             thresholds.update(with: newItems)
         }
     }
@@ -208,6 +213,11 @@ public class PersonContentFeedLoader: FeedLoading {
     }
     
     // MARK: Helpers
+    
+    @MainActor
+    private func setLoadingState(_ newState: LoadingState) {
+        loadingState = newState
+    }
     
     @MainActor
     private func addItems(_ newItems: [PersonContent]) {
