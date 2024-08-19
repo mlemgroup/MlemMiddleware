@@ -77,10 +77,10 @@ public class PersonContentFeedLoader: FeedLoading {
     
     // MARK: Public Methods
     
-    public func switchUser(api: ApiClient, userId: Int) {
+    public func switchUser(api: ApiClient, userId: Int) async {
         self.api = api
         self.userId = userId
-        self.loadingState = .done // prevent loading more items until refresh
+        await setLoadingState(.done) // prevent loading more items until refresh
     }
     
     // protocol conformance
@@ -124,7 +124,7 @@ public class PersonContentFeedLoader: FeedLoading {
     }
     
     public func refresh(clearBeforeRefresh: Bool) async throws {
-        loadingState = .loading
+        await setLoadingState(.loading)
         
         if clearBeforeRefresh {
             items = .init()
