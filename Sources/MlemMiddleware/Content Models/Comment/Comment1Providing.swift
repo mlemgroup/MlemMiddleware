@@ -99,4 +99,19 @@ public extension Comment1Providing {
             try await self.api.deleteComment(id: self.id, delete: newValue, semaphore: semaphore)
         }
     }
+    
+    func edit(
+        content: String,
+        languageId: Int?
+    ) async throws {
+        try await api.editComment(id: id, content: content, languageId: languageId)
+    }
+    
+    // Get the parent comment, or return `nil` if there is no parent
+    func getParent() async throws -> Comment2? {
+        if let parentId = parentCommentIds.last {
+            return try await api.getComment(id: parentId)
+        }
+        return nil
+    }
 }

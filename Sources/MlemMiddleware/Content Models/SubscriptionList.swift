@@ -85,6 +85,8 @@ public class SubscriptionList {
             instanceSections[nil] = otherSection.sorted(by: { $0.name < $1.name })
         }
         self.instanceSections = instanceSections
+        
+        self.favorites = communities.filter { favoriteIDs.contains($0.id) }
     }
     
     func updateCommunitySubscription(community: Community2) {

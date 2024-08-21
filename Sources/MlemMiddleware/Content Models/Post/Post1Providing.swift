@@ -159,4 +159,25 @@ public extension Post1Providing {
             try await self.api.deletePost(id: self.id, delete: newValue, semaphore: semaphore)
         }
     }
+    
+    func edit(
+        title: String,
+        content: String?,
+        linkUrl: URL?,
+        altText: String?,
+        thumbnail: URL?,
+        nsfw: Bool,
+        languageId: Int?
+    ) async throws {
+        try await api.editPost(
+            id: id,
+            title: title,
+            content: content,
+            linkUrl: linkUrl,
+            altText: altText,
+            thumbnail: thumbnail,
+            nsfw: nsfw,
+            languageId: languageId
+        )
+    }
 }

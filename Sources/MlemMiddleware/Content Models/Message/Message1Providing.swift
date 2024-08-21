@@ -101,4 +101,8 @@ public extension Message1Providing {
             try await self.api.deleteMessage(id: self.id, delete: newValue, semaphore: semaphore)
         }
     }
+    
+    func edit(content: String) async throws {
+        try await api.editMessage(id: id, content: content)
+    }
 }
