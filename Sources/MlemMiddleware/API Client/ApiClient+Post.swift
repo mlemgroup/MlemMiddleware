@@ -288,7 +288,7 @@ public extension ApiClient {
         )
         let response = try await perform(request)
         let comment = caches.comment2.getModel(api: self, from: response.commentView)
-        comment.getCachedInboxReply()?.reply1.readManager.updateWithReceivedValue(true, semaphore: nil)
+        comment.getCachedInboxReply()?.setKnownReadState(newValue: true)
         return comment
     }
     
