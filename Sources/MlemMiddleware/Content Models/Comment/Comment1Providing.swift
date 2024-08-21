@@ -114,4 +114,14 @@ public extension Comment1Providing {
         }
         return nil
     }
+    
+    var parentCommentId: Int? { parentCommentIds.last }
+    
+    /// If one is cached, return the `Reply2` matching this model.
+    func getCachedInboxReply() -> Reply2? {
+        if let parentCommentId {
+            return api.caches.reply2.retrieveModel(commentId: parentCommentId)
+        }
+        return nil
+    }
 }
