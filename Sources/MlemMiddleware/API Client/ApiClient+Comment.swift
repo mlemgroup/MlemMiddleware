@@ -8,8 +8,7 @@
 import Foundation
 
 public extension ApiClient {
-    func getComment(id: Int, cachedValueAcceptable: Bool = false) async throws -> Comment2 {
-        if cachedValueAcceptable, let comment = caches.comment2.retrieveModel(cacheId: id) { return comment }
+    func getComment(id: Int) async throws -> Comment2 {
         let request = GetCommentRequest(id: id)
         let response = try await perform(request)
         return caches.comment2.getModel(api: self, from: response.commentView)
