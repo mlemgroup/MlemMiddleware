@@ -110,7 +110,7 @@ public extension Comment1Providing {
     // Get the parent comment, or return `nil` if there is no parent
     func getParent(cachedValueAcceptable: Bool = false) async throws -> Comment2? {
         if let parentId = parentCommentIds.last {
-            if cachedValueAcceptable, let comment = api.caches.comment2.retrieveModel(cacheId: id) { return comment }
+            if cachedValueAcceptable, let comment = api.caches.comment2.retrieveModel(cacheId: parentId) { return comment }
             return try await api.getComment(id: parentId)
         }
         return nil
