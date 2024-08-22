@@ -11,8 +11,8 @@ import Foundation
 public final class UnreadCount {
     public let api: ApiClient
     
-    private var verifiedCount: Counts = .init()
-    private var unverifiedCount: Counts = .init()
+    internal var verifiedCount: UnreadCountValues = .init()
+    internal var unverifiedCount: UnreadCountValues = .init()
     
     public var replies: Int { verifiedCount.replies + unverifiedCount.replies }
     public var mentions: Int { verifiedCount.mentions + unverifiedCount.mentions }
@@ -52,40 +52,30 @@ public final class UnreadCount {
     
     internal func updateUnverifiedItem(itemType: InboxItemType, isRead: Bool) {
         let diff = isRead ? -1 : 1
-        print("UP", itemType, isRead)
         self.unverifiedCount[itemType] += diff
     }
     
     internal func verifyItem(itemType: InboxItemType, isRead: Bool) {
         let diff = isRead ? -1 : 1
-        print("VERIFY", itemType, isRead)
         self.verifiedCount[itemType] += diff
         self.unverifiedCount[itemType] -= diff
     }
 }
 
-// Send count
-// Send mark (updates unread count)
-// Server recv count, sends back
-// Server recv mark, sends back
-// Recv count
-// Recv mark
-// Count does not include updated mark
-
-private struct Counts: Equatable {
+internal struct UnreadCountValues: Equatable {
     var replies: Int = 0
     var mentions: Int = 0
     var messages: Int = 0
 }
 
-extension Counts {
+extension UnreadCountValues {
     init(from response: ApiGetUnreadCountResponse) {
         self.replies = response.replies
         self.mentions = response.mentions
         self.messages = response.privateMessages
     }
     
-    public static func + (lhs: Counts, rhs: Counts) -> Counts {
+    public static func + (lhs: Self, rhs: Self) -> Self {
         return .init(
             replies: lhs.replies + rhs.replies,
             mentions: lhs.mentions + rhs.mentions,
