@@ -27,7 +27,6 @@ public final class UnreadCount {
     public var total: Int { replies + mentions + messages }
     
     internal init(api: ApiClient) {
-        print("INIT UNREAD")
         self.api = api
     }
     
@@ -41,11 +40,9 @@ public final class UnreadCount {
             self.verifiedCount = .init(from: response)
             updateId += 1
         }
-        print("UnreadCount UPDT")
     }
     
     internal func clear() {
-        print("CLEAR")
         self.verifiedCount = .init()
         self.unverifiedCount = .init()
     }
