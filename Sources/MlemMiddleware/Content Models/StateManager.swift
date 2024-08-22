@@ -114,12 +114,12 @@ public class StateManager<Value: Equatable> {
                 self.wrappedValue = newState
                 self.onSet(newState, .receive, semaphore)
             }
-            self.onVerify(newState, semaphore)
             return false
         }
         
         if lastSemaphore == semaphore {
             print("DEBUG [\(semaphore?.description ?? "nil")] is the last caller! Resetting lastVerifiedValue.")
+            self.onVerify(newState, semaphore)
             lastVerifiedValue = nil
             return true
         }

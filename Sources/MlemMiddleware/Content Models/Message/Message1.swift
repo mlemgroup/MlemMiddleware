@@ -50,7 +50,12 @@ public final class Message1: Message1Providing {
         self.updated = updated
         self.readManager = .init(wrappedValue: read)
         self.readManager.onSet = { newValue, type, semaphore in
-            api.unreadCount?.updateItem(itemType: .message, isRead: newValue, updateType: type, semaphore: semaphore)
+            if type == .begin || type == .rollback {
+                api.unreadCount?.updateUnverifiedItem(itemType: .message, isRead: newValue)
+            }
+        }
+        self.readManager.onVerify = { newValue, semaphore in
+            api.unreadCount?.verifyItem(itemType: .message, isRead: newValue)
         }
     }
 }

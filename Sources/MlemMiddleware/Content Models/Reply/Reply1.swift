@@ -40,19 +40,17 @@ public final class Reply1: Reply1Providing {
         self.isMention = isMention
         self.readManager = .init(wrappedValue: read)
         self.readManager.onSet = { newValue, type, semaphore in
-            api.unreadCount?.updateItem(
-                itemType: isMention ? .mention : .reply,
-                isRead: newValue,
-                updateType: type,
-                semaphore: semaphore
-            )
+            if type == .begin || type == .rollback {
+                api.unreadCount?.updateUnverifiedItem(
+                    itemType: isMention ? .mention : .reply,
+                    isRead: newValue
+                )
+            }
         }
         self.readManager.onVerify = { newValue, semaphore in
-            api.unreadCount?.updateItem(
+            api.unreadCount?.verifyItem(
                 itemType: isMention ? .mention : .reply,
-                isRead: newValue,
-                updateType: .receive,
-                semaphore: semaphore
+                isRead: newValue
             )
         }
     }

@@ -88,7 +88,6 @@ public extension ApiClient {
     
     @discardableResult
     internal func refreshUnreadCount() async throws -> ApiGetUnreadCountResponse {
-        self.unreadCount?.beginUpdate()
         let request = GetUnreadCountRequest()
         let response = try await perform(request)
         await self.unreadCount?.update(with: response)

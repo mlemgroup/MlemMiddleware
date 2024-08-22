@@ -24,20 +24,15 @@ public final class UnreadCount {
     /// refresh the inbox.
     public private(set) var updateId: UInt = 0
     
-    private var lastUpdateSemaphore: UInt = 0
-    
     public var total: Int { replies + mentions + messages }
     
     internal init(api: ApiClient) {
+        print("INIT UNREAD")
         self.api = api
     }
     
     public func refresh() async throws {
         try await self.api.refreshUnreadCount()
-    }
-    
-    internal func beginUpdate() {
-        lastUpdateSemaphore = SemaphoreServer.next()
     }
     
     @MainActor
@@ -50,21 +45,22 @@ public final class UnreadCount {
     }
     
     internal func clear() {
+        print("CLEAR")
         self.verifiedCount = .init()
         self.unverifiedCount = .init()
     }
     
-    internal func updateItem(itemType: InboxItemType, isRead: Bool, updateType: StateManagerUpdateType, semaphore: UInt?) {
-        // print("SEM", isRead, semaphore, lastUpdateSemaphore)
-//        if let semaphore, semaphore < lastUpdateSemaphore { return }
+    internal func updateUnverifiedItem(itemType: InboxItemType, isRead: Bool) {
         let diff = isRead ? -1 : 1
-        switch updateType {
-        case .begin, .rollback:
-            self.unverifiedCount[itemType] += diff
-        case .receive:
-            self.unverifiedCount[itemType] += diff
-            self.verifiedCount[itemType] -= diff
-        }
+        print("UP", itemType, isRead)
+        self.unverifiedCount[itemType] += diff
+    }
+    
+    internal func verifyItem(itemType: InboxItemType, isRead: Bool) {
+        let diff = isRead ? -1 : 1
+        print("VERIFY", itemType, isRead)
+        self.verifiedCount[itemType] += diff
+        self.unverifiedCount[itemType] -= diff
     }
 }
 
