@@ -287,7 +287,9 @@ public extension ApiClient {
             formId: nil
         )
         let response = try await perform(request)
-        return caches.comment2.getModel(api: self, from: response.commentView)
+        let comment = caches.comment2.getModel(api: self, from: response.commentView)
+        comment.getCachedInboxReply()?.setKnownReadState(newValue: true)
+        return comment
     }
     
     func reportPost(id: Int, reason: String) async throws {
