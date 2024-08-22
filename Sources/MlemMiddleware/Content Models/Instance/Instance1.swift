@@ -75,7 +75,7 @@ public final class Instance1: Instance1Providing {
         self.blockedManager = .init(
             wrappedValue: blocked ?? api.blocks?.instances.keys.contains(actorId) ?? false
         )
-        self.blockedManager.onSet = { newValue, type in
+        self.blockedManager.onSet = { newValue, type, _ in
             if type != .receive {
                 if newValue {
                     api.blocks?.instances[actorId] = instanceId

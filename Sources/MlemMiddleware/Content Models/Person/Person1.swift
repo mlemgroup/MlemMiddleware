@@ -68,7 +68,7 @@ public final class Person1: Person1Providing {
         self.isBot = isBot
         self.instanceBan = instanceBan
         self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.people.keys.contains(actorId) ?? false)
-        self.blockedManager.onSet = { newValue, type in
+        self.blockedManager.onSet = { newValue, type, _ in
             if type != .receive {
                 if newValue {
                     api.blocks?.people[actorId] = id
