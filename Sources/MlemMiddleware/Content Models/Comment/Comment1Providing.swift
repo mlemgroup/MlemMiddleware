@@ -108,9 +108,20 @@ public extension Comment1Providing {
     }
     
     // Get the parent comment, or return `nil` if there is no parent
-    func getParent() async throws -> Comment2? {
+    func getParent(cachedValueAcceptable: Bool = false) async throws -> Comment2? {
         if let parentId = parentCommentIds.last {
+            if cachedValueAcceptable, let comment = api.caches.comment2.retrieveModel(cacheId: parentId) { return comment }
             return try await api.getComment(id: parentId)
+        }
+        return nil
+    }
+    
+    var parentCommentId: Int? { parentCommentIds.last }
+    
+    /// If one is cached, return the `Reply2` matching this model.
+    func getCachedInboxReply() -> Reply2? {
+        if let parentCommentId {
+            return api.caches.reply2.retrieveModel(commentId: parentCommentId)
         }
         return nil
     }
