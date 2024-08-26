@@ -69,7 +69,7 @@ public final class Community1: Community1Providing {
         self.hidden = hidden
         self.onlyModeratorsCanPost = onlyModeratorsCanPost
         self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.communities.keys.contains(actorId) ?? false)
-        self.blockedManager.onSet = { newValue, type in
+        self.blockedManager.onSet = { newValue, type, _ in
             if type != .receive {
                 if newValue {
                     api.blocks?.communities[actorId] = id

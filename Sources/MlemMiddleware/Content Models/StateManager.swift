@@ -60,7 +60,11 @@ public class StateManager<Value: Equatable> {
     /// The state-faked value that should be shown to the user.
     public private(set) var wrappedValue: Value
     
-    internal var onSet: (Value, _ type: StateManagerUpdateType) -> Void
+    /// Called when `wrappedValue` is changed.
+    internal var onSet: (Value, _ type: StateManagerUpdateType, _ semaphore: UInt?) -> Void
+    
+    /// Called whenever `wrappedValue` is verified.
+    internal var onVerify: (Value, _ semaphore: UInt?) -> Void
     
     /// Responsible for tracking who the most recent caller is. Every time the state is changed, `lastSemaphore` is incremented by one.
     private var lastSemaphore: UInt = 0
@@ -73,27 +77,30 @@ public class StateManager<Value: Equatable> {
     
     init(
         wrappedValue: Value,
-        onSet: @escaping (Value, _ type: StateManagerUpdateType) -> Void = { _, _ in }
+        onSet: @escaping (Value, _ type: StateManagerUpdateType, _ semaphore: UInt?) -> Void = { _, _, _ in },
+        onVerify: @escaping (Value, _ semaphore: UInt?) -> Void = { _, _ in }
     ) {
         self.wrappedValue = wrappedValue
         self.onSet = onSet
+        self.onVerify = onVerify
     }
         
     /// Call at the start of a voting operation, BEFORE state faking is performed. Updates the clean state if nil and increments semaphore.
     /// - Returns: new sempaphore value
     @discardableResult
     func beginOperation(expectedResult: Value, semaphore: UInt? = nil) -> UInt {
-        lastSemaphore = semaphore ?? SemaphoreServer.next()
-        print("DEBUG [\(lastSemaphore)] began operation.")
+        let semaphore = semaphore ?? SemaphoreServer.next()
+        self.lastSemaphore = semaphore
+        print("DEBUG [\(semaphore)] began operation.")
         if lastVerifiedValue == nil {
-            print("DEBUG [\(lastSemaphore)] Set lastVerifiedValue to \(wrappedValue).")
+            print("DEBUG [\(semaphore)] Set lastVerifiedValue to \(wrappedValue).")
             lastVerifiedValue = wrappedValue
         }
         DispatchQueue.main.async {
             if self.wrappedValue != expectedResult {
                 self.wrappedValue = expectedResult
-                print("DEBUG [\(self.lastSemaphore)] Set wrappedValue to \(expectedResult).")
-                self.onSet(expectedResult, .begin)
+                print("DEBUG [\(semaphore)] Set wrappedValue to \(expectedResult).")
+                self.onSet(expectedResult, .begin, semaphore)
             }
         }
         return lastSemaphore
@@ -105,13 +112,14 @@ public class StateManager<Value: Equatable> {
         if lastVerifiedValue == nil {
             if self.wrappedValue != newState {
                 self.wrappedValue = newState
-                self.onSet(newState, .receive)
+                self.onSet(newState, .receive, semaphore)
             }
             return false
         }
         
         if lastSemaphore == semaphore {
             print("DEBUG [\(semaphore?.description ?? "nil")] is the last caller! Resetting lastVerifiedValue.")
+            self.onVerify(newState, semaphore)
             lastVerifiedValue = nil
             return true
         }
@@ -132,7 +140,7 @@ public class StateManager<Value: Equatable> {
             print("DEBUG [\(semaphore)] is the most recent caller! Resetting lastVerifiedValue.")
             if self.wrappedValue != lastVerifiedValue {
                 self.wrappedValue = lastVerifiedValue
-                self.onSet(lastVerifiedValue, .rollback)
+                self.onSet(lastVerifiedValue, .rollback, semaphore)
             }
             defer { self.lastVerifiedValue = nil }
             return lastVerifiedValue
