@@ -65,3 +65,5 @@ protocol ApiPostRequest: ApiRequestBodyProviding {}
 // MARK: - ApiPutRequest
 
 protocol ApiPutRequest: ApiRequestBodyProviding {}
+
+protocol ApiDeleteRequest: ApiRequest {}
