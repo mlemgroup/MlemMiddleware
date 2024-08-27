@@ -8,6 +8,9 @@
 import Foundation
 import Observation
 
+// There are no higher tiers of this model yet - in future `ImageUpload2` will be
+// created from `ApiLocalImage` and `ImageUpload3` will be created from `ApiLocalImageView`.
+
 @Observable
 public class ImageUpload1: ImageUpload1Providing {
     public static let tierNumber: Int = 1
