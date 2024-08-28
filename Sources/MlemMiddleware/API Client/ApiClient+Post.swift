@@ -111,7 +111,7 @@ public extension ApiClient {
     func markPostAsRead(
         id: Int,
         read: Bool = true,
-        includeQueuedPosts: Bool = false,
+        includeQueuedPosts: Bool = true,
         semaphore: UInt? = nil
     ) async throws {
         // We *must* use `postId` in 0.18 versions, and we *must* use `postIds` from 0.19.4 onwards.

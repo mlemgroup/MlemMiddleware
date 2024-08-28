@@ -81,7 +81,7 @@ public extension Post2Providing {
             }
         } else {
             return readManager.performRequest(expectedResult: newValue) { semaphore in
-                try await self.api.markPostAsRead(id: self.id, read: newValue, semaphore: semaphore)
+                try await self.api.markPostAsRead(id: self.id, read: newValue, includeQueuedPosts: false, semaphore: semaphore)
             }
         }
     }
