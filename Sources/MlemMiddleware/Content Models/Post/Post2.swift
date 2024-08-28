@@ -29,6 +29,7 @@ public final class Post2: Post2Providing {
     
     internal var readManager: StateManager<Bool>
     public var read: Bool { readManager.wrappedValue || readQueued }
+    internal var readStaged: Bool = false
     internal var readQueued: Bool = false
     
     internal var savedManager: StateManager<Bool>

@@ -54,6 +54,18 @@ public extension Post2Providing {
     
     func upgrade() async throws -> any Post { self }
     
+    /// Stages this post to be marked as read. Supports mark read on scroll.
+    func stageMarkRead() {
+        post2.readStaged = true
+    }
+    
+    /// Marks this post to be read only if already staged for mark read.
+    func markReadIfStaged() {
+        if post2.readStaged {
+            updateRead(true, shouldQueue: true)
+        }
+    }
+    
     @discardableResult
     func updateRead(_ newValue: Bool, shouldQueue: Bool = false) -> Task<StateUpdateResult, Never> {
         if shouldQueue {

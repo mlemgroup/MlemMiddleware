@@ -107,18 +107,17 @@ public extension ApiClient {
     }
     
     /// Mark the given post as read. Works on all versions.
-    /// On v0.19.0 and above, calling this will also mark any queued posts as read unless `includeQueuedPosts` is set to `false`.
+    /// On v0.19.0 and above, if `includeQueuedPosts` is set to `true`, any queued posts will be marked read as well.
     func markPostAsRead(
         id: Int,
         read: Bool = true,
-        includeQueuedPosts: Bool = true,
+        includeQueuedPosts: Bool = false,
         semaphore: UInt? = nil
     ) async throws {
         // We *must* use `postId` in 0.18 versions, and we *must* use `postIds` from 0.19.4 onwards.
         // On versions 0.19.0 to 0.19.3, either parameter is allowed.
-        let version = try await version
         let request: MarkPostAsReadRequest
-        if version >= .v19_0 {
+        if try await batchMarkReadEnabled {
             try await self.markPostsAsRead(
                 ids: [id],
                 read: read,

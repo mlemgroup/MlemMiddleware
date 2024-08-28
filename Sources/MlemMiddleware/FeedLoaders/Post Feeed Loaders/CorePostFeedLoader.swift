@@ -69,6 +69,19 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     
     // MARK: Custom Behavior
     
+    /// Given an index and a threshold, stages posts before that index to be marked read.
+    /// - Parameter index: index to mark read before
+    /// - Parameter threshold: how many posts back to mark
+    public func stageForMarkRead(before index: Int, offset: Int) {
+        // If index less than offset, don't do anything since there are no posts at (index - offset); otherwise stage offset post
+        items[safeIndex: index - offset]?.stageMarkRead()
+        
+        // If we're within offset of end-of-feed, the post needs to stage itself because no later post will stage it
+        if index >= items.count - offset {
+            items[safeIndex: index]?.stageMarkRead()
+        }
+    }
+    
     /// Changes the post sort type to the specified value and reloads the feed
     public func changeSortType(to newSortType: ApiSortType, forceRefresh: Bool = false) async throws {
         // don't do anything if sort type not changed
