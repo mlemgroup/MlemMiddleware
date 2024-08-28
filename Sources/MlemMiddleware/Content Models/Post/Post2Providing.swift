@@ -134,13 +134,20 @@ public extension Post2Providing {
         
         switch type {
         case let .image(url):
+            ret.append(ImageRequest(
+                url: url,
+                priority: .high,
+                userInfo: [ImageRequest.UserInfoKey(stringLiteral: "size"): "standard"]
+            ))
+            
+            
             // images: only load the image
-            switch config.imageSize {
-            case .unlimited:
-                ret.append(ImageRequest(url: url, priority: .high))
-            case let .limited(size):
-                ret.append(ImageRequest(url: url.withIconSize(size), priority: .high))
-            }
+//            switch config.imageSize {
+//            case .unlimited:
+//                ret.append(ImageRequest(url: url, priority: .high))
+//            case let .limited(size):
+//                ret.append(ImageRequest(url: url.withIconSize(size), priority: .high))
+//            }
         case let .link(link):
             // websites: load image and favicon
             if let baseURL = linkUrl?.host,
