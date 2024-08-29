@@ -54,6 +54,12 @@ public class ApiClient {
         }
     }
     
+    public var batchMarkReadEnabled: Bool {
+        get async throws {
+            try await version >= .v19_0
+        }
+    }
+    
     // MARK: caching
     
     /// Caches of objects stored per ApiClient instance
