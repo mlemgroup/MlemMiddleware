@@ -103,13 +103,12 @@ public extension Reply1Providing {
         try await api.reportComment(id: commentId, reason: reason)
     }
     
-    // This hopefully won't be needed once `UnreadCount` is properly state-faked
     internal func setKnownReadState(newValue: Bool) {
         readManager.updateWithReceivedValue(newValue, semaphore: nil)
         if isMention {
-            api.unreadCount?.mentions += newValue ? -1 : 1
+            api.unreadCount?.verifiedCount.mentions += newValue ? -1 : 1
         } else {
-            api.unreadCount?.replies += newValue ? -1 : 1
+            api.unreadCount?.verifiedCount.replies += newValue ? -1 : 1
         }
     }
 }
