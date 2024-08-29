@@ -12,4 +12,6 @@ public struct ApiPictrsFile: Codable, Equatable, ImageUpload1Backer {
     public let deleteToken: String
     
     public var alias: String { file }
+    
+    public var cacheId: Int { alias.hashValue }
 }
