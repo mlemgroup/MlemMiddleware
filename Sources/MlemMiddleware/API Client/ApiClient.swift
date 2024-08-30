@@ -127,15 +127,10 @@ public class ApiClient {
     }
     
     @discardableResult
-    func perform<Request: ApiResponsiveRequest>(_ request: Request) async throws -> Request.Response {
-        return try decode(Request.Response.self, from: await perform(request))
-    }
-    
-    @discardableResult
-    func perform<Request: ApiRequest>(_ request: Request) async throws -> Data {
+    func perform<Request: ApiRequest>(_ request: Request) async throws -> Request.Response {
         let urlRequest = try urlRequest(from: request)
         // this line intentionally left commented for convenient future debugging
-        // urlRequest.debug()
+        urlRequest.debug()
         let (data, response) = try await execute(urlRequest)
         if let response = response as? HTTPURLResponse {
             if response.statusCode >= 500 { // Error code for server being offline.
@@ -144,6 +139,7 @@ public class ApiClient {
                     response.statusCode
                 )
             }
+            print(response.statusCode)
         }
         
         if let apiError = try? decoder.decode(ApiErrorResponse.self, from: data) {
@@ -160,10 +156,10 @@ public class ApiClient {
             throw ApiClientError.response(apiError, statusCode)
         }
         
-        return data
+        return try decode(Request.Response.self, from: data)
     }
     
-    private func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
+    internal func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
         do {
             return try await urlSession.data(for: urlRequest)
         } catch {

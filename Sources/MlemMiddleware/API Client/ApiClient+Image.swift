@@ -57,8 +57,14 @@ public extension ApiClient {
     }
     
     func deleteImage(alias: String, deleteToken: String) async throws {
-        let request = ImageDeleteRequest(file: alias, deleteToken: deleteToken)
-        try await perform(request)
+        var request = URLRequest(url: baseUrl.appending(path: "pictrs/image/delete/\(deleteToken)/\(alias)"))
+        request.httpMethod = "DELETE"
+        let response = try await execute(request)
+        if let response = response.1 as? HTTPURLResponse {
+            if response.statusCode != 200 {
+                throw ApiClientError.response(.init(error: "Failed"), response.statusCode)
+            }
+        }
     }
         
 }

@@ -15,14 +15,12 @@ enum ApiRequestError: Error {
 }
 
 protocol ApiRequest {
+    associatedtype Response: Decodable
+
     var path: String { get }
     var headers: [String: String] { get }
     
     func endpoint(base: URL) -> URL
-}
-
-protocol ApiResponsiveRequest: ApiRequest {
-    associatedtype Response: Decodable
 }
 
 extension ApiRequest {
@@ -35,7 +33,7 @@ extension ApiRequest {
 
 // MARK: - ApiGetRequest
 
-protocol ApiGetRequest: ApiResponsiveRequest {
+protocol ApiGetRequest: ApiRequest {
     var queryItems: [URLQueryItem] { get }
 }
 
@@ -63,10 +61,8 @@ protocol ApiRequestBodyProviding: ApiRequest {
 
 // MARK: - ApiPostRequest
 
-protocol ApiPostRequest: ApiResponsiveRequest, ApiRequestBodyProviding {}
+protocol ApiPostRequest: ApiRequestBodyProviding {}
 
 // MARK: - ApiPutRequest
 
-protocol ApiPutRequest: ApiResponsiveRequest, ApiRequestBodyProviding {}
-
-protocol ApiDeleteRequest: ApiRequest {}
+protocol ApiPutRequest: ApiRequestBodyProviding {}
