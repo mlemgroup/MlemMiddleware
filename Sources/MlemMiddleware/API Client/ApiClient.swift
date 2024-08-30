@@ -127,7 +127,12 @@ public class ApiClient {
     }
     
     @discardableResult
-    func perform<Request: ApiRequest>(_ request: Request) async throws -> Request.Response {
+    func perform<Request: ApiResponsiveRequest>(_ request: Request) async throws -> Request.Response {
+        return try decode(Request.Response.self, from: await perform(request))
+    }
+    
+    @discardableResult
+    func perform<Request: ApiRequest>(_ request: Request) async throws -> Data {
         let urlRequest = try urlRequest(from: request)
         // this line intentionally left commented for convenient future debugging
         // urlRequest.debug()
@@ -155,7 +160,7 @@ public class ApiClient {
             throw ApiClientError.response(apiError, statusCode)
         }
         
-        return try decode(Request.Response.self, from: data)
+        return data
     }
     
     private func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {

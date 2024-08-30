@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol ImageUpload1Providing: ContentModel {
+public protocol ImageUpload1Providing: ContentModel, Hashable {
     var mediaUpload1: ImageUpload1 { get }
     var url: URL { get }
     var deleted: Bool { get }
@@ -18,6 +18,14 @@ public extension ImageUpload1Providing {
     func delete() async throws {
         try await api.deleteImage(alias: mediaUpload1.alias, deleteToken: mediaUpload1.deleteToken)
         mediaUpload1.deleted = true
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(url)
+    }
+    
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.hashValue == rhs.hashValue
     }
 }
 

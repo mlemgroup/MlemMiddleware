@@ -17,7 +17,7 @@ struct ImageDeleteRequest: ApiDeleteRequest {
         file: String,
         deleteToken: String
     ) {
-        self.path = "delete/\(deleteToken)/\(file)"
+        self.path = "pictrs/image/delete/\(deleteToken)/\(file)"
         self.queryItems = []
     }
 }

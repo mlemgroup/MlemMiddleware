@@ -10,7 +10,7 @@ import Foundation
 public extension ApiClient {
     func uploadImage(
         _ imageData: Data,
-        onProgress progressCallback: @escaping (_ progress: Double) -> Void
+        onProgress progressCallback: @escaping (_ progress: Double) -> Void = { _ in }
     ) async throws -> ImageUpload1 {
         guard let token else { throw ApiClientError.notLoggedIn }
         var url = baseUrl.appending(path: "pictrs/image")
