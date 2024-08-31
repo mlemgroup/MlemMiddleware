@@ -139,7 +139,6 @@ public class ApiClient {
                     response.statusCode
                 )
             }
-            print(response.statusCode)
         }
         
         if let apiError = try? decoder.decode(ApiErrorResponse.self, from: data) {
