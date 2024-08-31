@@ -60,7 +60,6 @@ public extension ApiClient {
         // TODO: 0.18 deprecation: see comments in method above
         request.setValue("jwt=\(token)", forHTTPHeaderField: "Cookie")
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.debug()
         let response = try await execute(request)
         if let response = response.1 as? HTTPURLResponse {
             if response.statusCode != 204 {
