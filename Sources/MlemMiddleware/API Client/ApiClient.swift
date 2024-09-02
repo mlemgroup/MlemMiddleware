@@ -162,7 +162,7 @@ public class ApiClient {
     private func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
         var urlRequest: URLRequest = urlRequest // make mutable
         
-        // add 0.18x "auth" param if on 18.x (or unrecognized) instance and we have a token to send
+        // add 0.18x "auth" param if on 18.x (or unrecognized) instance
         let apiVersionRecognized: Bool
         if case .other = fetchedVersion {
             apiVersionRecognized = false
@@ -170,9 +170,9 @@ public class ApiClient {
             apiVersionRecognized = true
         }
 
-        if urlRequest.httpMethod != "GET",
+        if urlRequest.httpMethod != "GET", // GET requests do not support body
            !apiVersionRecognized || fetchedVersion ?? .v18_0 < .v19_0,
-           let token {
+           let token { // only add if we have a token
             let authBody: JSON = .init(dictionaryLiteral: ("auth", token))
             let newBody: JSON
             if let httpBody = urlRequest.httpBody {
