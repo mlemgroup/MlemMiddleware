@@ -166,6 +166,8 @@ public class ApiClient {
             print("DEBUG \(body)")
             body = try body.merged(with: JSON.init(dictionaryLiteral: ("auth", token)))
             print("DEBUG post-merge \(body)")
+        } else {
+            print("DEBUG will not add to \(urlRequest.description)")
         }
         
         do {
