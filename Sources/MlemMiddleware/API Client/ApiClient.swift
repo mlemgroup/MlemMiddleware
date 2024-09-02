@@ -161,7 +161,7 @@ public class ApiClient {
     
     private func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
         var urlRequest: URLRequest = urlRequest // make mutable
-        print("DEBUG executing \(urlRequest.httpMethod)...")
+        print("DEBUG executing \(urlRequest.httpMethod) | \(fetchedVersion) | \(token)...")
         
         // add 0.18x "auth" param if on 18.x instance and token defined
         // need to use fetched
