@@ -167,7 +167,16 @@ public class ApiClient {
         // need to use fetched
         // if version < .v19_0, let token, let httpBody = urlRequest.httpBody {
         
-        if urlRequest.httpMethod != "GET", fetchedVersion ?? .v18_0 < .v19_0, let token {
+        let apiVersionRecognized: Bool
+        if case .other = fetchedVersion {
+            apiVersionRecognized = false
+        } else {
+            apiVersionRecognized = true
+        }
+
+        if urlRequest.httpMethod != "GET",
+           !apiVersionRecognized || fetchedVersion ?? .v18_0 < .v19_0,
+           let token {
             let authBody: JSON = .init(dictionaryLiteral: ("auth", token))
             let newBody: JSON
             if let httpBody = urlRequest.httpBody {
@@ -195,7 +204,7 @@ public class ApiClient {
             }
         }
     }
-
+    
     func urlRequest(from definition: any ApiRequest) throws -> URLRequest {
         guard permissions != .none else { throw ApiClientError.insufficientPermissions }
         let url = definition.endpoint(base: endpointUrl)
@@ -213,7 +222,7 @@ public class ApiClient {
             urlRequest.httpMethod = "PUT"
             urlRequest.httpBody = try createBodyData(for: putDefinition)
         }
-
+        
         if let token, permissions == .all {
             // TODO: 0.18 deprecation remove this
             urlRequest.url?.append(queryItems: [.init(name: "auth", value: token)])
