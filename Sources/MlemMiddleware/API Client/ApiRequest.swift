@@ -16,6 +16,7 @@ enum ApiRequestError: Error {
 
 protocol ApiRequest {
     associatedtype Response: Decodable
+
     var path: String { get }
     var headers: [String: String] { get }
     

@@ -11,6 +11,7 @@ public struct PostLink: Equatable {
     public let content: URL
     public let thumbnail: URL?
     public let label: String
+    
     public var favicon: URL? {
         if let baseUrl = content.host {
             return URL(string: "https://www.google.com/s2/favicons?sz=64&domain=\(baseUrl)")
@@ -23,5 +24,11 @@ public struct PostLink: Equatable {
             return host
         }
         return "website"
+    }
+    
+    public init(content: URL, thumbnail: URL?, label: String) {
+        self.content = content
+        self.thumbnail = thumbnail
+        self.label = label
     }
 }

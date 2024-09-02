@@ -17,6 +17,7 @@ public enum ApiClientError: Error {
     case networking(Error)
     case response(ApiErrorResponse, Int?)
     case cancelled
+    case notLoggedIn
     case invalidSession(ApiClient)
     case decoding(Data, Error?)
     case insufficientPermissions
@@ -25,6 +26,7 @@ public enum ApiClientError: Error {
     case unsupportedLemmyVersion
     case noEntityFound
     case invalidInput
+    case imageTooLarge
 }
 
 extension ApiClientError: CustomStringConvertible {
@@ -44,7 +46,11 @@ extension ApiClientError: CustomStringConvertible {
         case .cancelled:
             return "Cancelled"
         case .invalidSession:
-            return "Invalid session"
+            return "Invalid session. There is a token applied to the ApiClient, but it has expired."
+        case .notLoggedIn:
+            return "Tried to perform an action that requires authentication on a guest ApiClient."
+        case .imageTooLarge:
+            return "Image too large"
         case let .decoding(data, error):
             guard let string = String(data: data, encoding: .utf8) else {
                 return localizedDescription
