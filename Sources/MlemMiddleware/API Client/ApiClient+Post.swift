@@ -117,7 +117,7 @@ public extension ApiClient {
         // We *must* use `postId` in 0.18 versions, and we *must* use `postIds` from 0.19.4 onwards.
         // On versions 0.19.0 to 0.19.3, either parameter is allowed.
         let request: MarkPostAsReadRequest
-        if try await batchMarkReadEnabled {
+        if try await supports(.batchMarkRead) {
             try await self.markPostsAsRead(
                 ids: [id],
                 read: read,
