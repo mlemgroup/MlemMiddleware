@@ -56,7 +56,7 @@ public class ApiClient {
     }
     
     /// Returns whether the version supports the given feature
-    func supports(_ feature: SiteVersion.Feature) async throws -> Bool {
+    public func supports(_ feature: SiteVersion.Feature) async throws -> Bool {
         try await version.suppports(feature)
     }
     
