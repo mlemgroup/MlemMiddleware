@@ -50,6 +50,27 @@ public enum SiteVersion: Equatable, Hashable {
     public static let v19_4: Self = .init("0.19.4")
 }
 
+public extension SiteVersion {
+    enum Feature {
+        case headerAuthentication, batchMarkRead
+        
+        var minimumVersion: SiteVersion {
+            switch self {
+            case .headerAuthentication: .v19_0
+            case .batchMarkRead: .v19_0
+            }
+        }
+    }
+    
+    /// Checks whether this SiteVersion supports the given feature. Always returns false if version unknown.
+    func suppports(_ feature: Feature) -> Bool {
+        switch self {
+        case .other: false
+        default: feature.minimumVersion <= self
+        }
+    }
+}
+
 extension SiteVersion: CustomStringConvertible {
     public var description: String {
         switch self {

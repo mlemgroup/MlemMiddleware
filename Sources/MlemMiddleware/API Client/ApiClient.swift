@@ -55,10 +55,14 @@ public class ApiClient {
         }
     }
     
-    public var batchMarkReadEnabled: Bool {
-        get async throws {
-            try await version >= .v19_0
-        }
+    /// Returns whether the version supports the given feature
+    func supports(_ feature: SiteVersion.Feature) async throws -> Bool {
+        try await version.suppports(feature)
+    }
+    
+    /// Returns whether the fetched version supports the given feature. Defaults to false if no fetched version available.
+    public func fetchedVersionSupports(_ feature: SiteVersion.Feature) -> Bool {
+        return fetchedVersion?.suppports(feature) ?? false
     }
     
     // MARK: caching
@@ -161,17 +165,9 @@ public class ApiClient {
     
     private func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
         var urlRequest: URLRequest = urlRequest // make mutable
-        
-        // add 0.18x "auth" param if on 18.x (or unrecognized) instance
-        let apiVersionRecognized: Bool
-        if case .other = fetchedVersion {
-            apiVersionRecognized = false
-        } else {
-            apiVersionRecognized = true
-        }
 
         if urlRequest.httpMethod != "GET", // GET requests do not support body
-           !apiVersionRecognized || fetchedVersion ?? .v18_0 < .v19_0,
+           !fetchedVersionSupports(.headerAuthentication),
            let token { // only add if we have a token
             let authBody: JSON = .init(dictionaryLiteral: ("auth", token))
             let newBody: JSON
