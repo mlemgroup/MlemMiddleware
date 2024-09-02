@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import SwiftyJSON
 
 @Observable
 public class ApiClient {
@@ -159,6 +160,14 @@ public class ApiClient {
     }
     
     private func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
+        // add 0.18x "auth" param if on 18.x instance and token defined
+        if try await version < .v19_0, let token, let httpBody = urlRequest.httpBody {
+            var body = JSON(httpBody)
+            print("DEBUG \(body)")
+            body = try body.merged(with: JSON.init(dictionaryLiteral: ("auth", token)))
+            print("DEBUG post-merge \(body)")
+        }
+        
         do {
             return try await urlSession.data(for: urlRequest)
         } catch {
