@@ -161,8 +161,13 @@ public class ApiClient {
     
     private func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
         print("DEBUG executing...")
+        
+        let version = try await version
+        
+        print("DEBUG got version \(version  )")
+        
         // add 0.18x "auth" param if on 18.x instance and token defined
-        if try await version < .v19_0, let token, let httpBody = urlRequest.httpBody {
+        if version < .v19_0, let token, let httpBody = urlRequest.httpBody {
             var body = JSON(httpBody)
             print("DEBUG \(body)")
             body = try body.merged(with: JSON.init(dictionaryLiteral: ("auth", token)))
