@@ -161,12 +161,8 @@ public class ApiClient {
     
     private func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
         var urlRequest: URLRequest = urlRequest // make mutable
-        print("DEBUG executing \(urlRequest.httpMethod) | \(fetchedVersion) | \(token)...")
         
-        // add 0.18x "auth" param if on 18.x instance and token defined
-        // need to use fetched
-        // if version < .v19_0, let token, let httpBody = urlRequest.httpBody {
-        
+        // add 0.18x "auth" param if on 18.x (or unrecognized) instance and we have a token to send
         let apiVersionRecognized: Bool
         if case .other = fetchedVersion {
             apiVersionRecognized = false
@@ -180,18 +176,12 @@ public class ApiClient {
             let authBody: JSON = .init(dictionaryLiteral: ("auth", token))
             let newBody: JSON
             if let httpBody = urlRequest.httpBody {
-                print("DEBUG adding to \(httpBody)")
                 newBody = try JSON(httpBody).merged(with: authBody)
             } else {
-                print("DEBUG creating new body")
                 newBody = authBody
             }
             
-            print("DEBUG post-merge \(newBody)")
-            
             urlRequest.httpBody = try newBody.rawData()
-        } else {
-            print("DEBUG will not add to \(urlRequest.description)")
         }
         
         do {
