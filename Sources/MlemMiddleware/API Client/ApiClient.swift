@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import SwiftyJSON
 
 @Observable
 public class ApiClient {
@@ -54,10 +55,14 @@ public class ApiClient {
         }
     }
     
-    public var batchMarkReadEnabled: Bool {
-        get async throws {
-            try await version >= .v19_0
-        }
+    /// Returns whether the version supports the given feature
+    public func supports(_ feature: SiteVersion.Feature) async throws -> Bool {
+        try await version.suppports(feature)
+    }
+    
+    /// Returns whether the fetched version supports the given feature. Defaults to false if no fetched version available.
+    public func fetchedVersionSupports(_ feature: SiteVersion.Feature) -> Bool {
+        return fetchedVersion?.suppports(feature) ?? false
     }
     
     // MARK: caching
@@ -159,6 +164,22 @@ public class ApiClient {
     }
     
     internal func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
+        var urlRequest: URLRequest = urlRequest // make mutable
+
+        if urlRequest.httpMethod != "GET", // GET requests do not support body
+           !fetchedVersionSupports(.headerAuthentication),
+           let token { // only add if we have a token
+            let authBody: JSON = .init(dictionaryLiteral: ("auth", token))
+            let newBody: JSON
+            if let httpBody = urlRequest.httpBody {
+                newBody = try JSON(httpBody).merged(with: authBody)
+            } else {
+                newBody = authBody
+            }
+            
+            urlRequest.httpBody = try newBody.rawData()
+        }
+        
         do {
             return try await urlSession.data(for: urlRequest)
         } catch {
@@ -169,7 +190,7 @@ public class ApiClient {
             }
         }
     }
-
+    
     func urlRequest(from definition: any ApiRequest) throws -> URLRequest {
         guard permissions != .none else { throw ApiClientError.insufficientPermissions }
         let url = definition.endpoint(base: endpointUrl)
@@ -187,7 +208,7 @@ public class ApiClient {
             urlRequest.httpMethod = "PUT"
             urlRequest.httpBody = try createBodyData(for: putDefinition)
         }
-
+        
         if let token, permissions == .all {
             // TODO: 0.18 deprecation remove this
             urlRequest.url?.append(queryItems: [.init(name: "auth", value: token)])
