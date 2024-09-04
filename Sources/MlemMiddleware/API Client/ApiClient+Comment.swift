@@ -52,6 +52,32 @@ public extension ApiClient {
         return response.comments.map { caches.comment2.getModel(api: self, from: $0) }
     }
     
+    func getComments(
+        parentId: Int,
+        sort: ApiCommentSortType,
+        page: Int,
+        maxDepth: Int? = nil,
+        limit: Int,
+        filter: GetContentFilter? = nil
+    ) async throws -> [Comment2] {
+        let request = GetCommentsRequest(
+            type_: .all,
+            sort: sort,
+            maxDepth: maxDepth,
+            page: page,
+            limit: limit,
+            communityId: nil,
+            communityName: nil,
+            postId: nil,
+            parentId: parentId,
+            savedOnly: filter == .saved,
+            likedOnly: filter == .upvoted,
+            dislikedOnly: filter == .downvoted
+        )
+        let response = try await perform(request)
+        return response.comments.map { caches.comment2.getModel(api: self, from: $0) }
+    }
+    
     @discardableResult
     func voteOnComment(id: Int, score: ScoringOperation, semaphore: UInt? = nil) async throws -> Comment2 {
         let request = LikeCommentRequest(commentId: id, score: score.rawValue)
