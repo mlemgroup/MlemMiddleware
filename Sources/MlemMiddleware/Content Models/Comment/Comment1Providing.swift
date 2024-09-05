@@ -85,6 +85,35 @@ public extension Comment1Providing {
         try await api.getComment(id: id)
     }
     
+    func getChildren(
+        sort: ApiCommentSortType = .hot,
+        includedParentCount: Int = 0,
+        page: Int,
+        maxDepth: Int? = nil,
+        limit: Int,
+        filter: GetContentFilter? = nil
+    ) async throws -> [Comment2] {
+        let parentId: Int
+        if includedParentCount <= 0 {
+            parentId = id
+        } else {
+            parentId = parentCommentIds.dropLast(includedParentCount-1).last ?? parentCommentIds.first ?? id
+        }
+        let comments = try await api.getComments(
+            parentId: parentId,
+            sort: sort,
+            page: page,
+            maxDepth: maxDepth,
+            limit: limit,
+            filter: filter
+        )
+        if includedParentCount <= 0 {
+            return comments
+        }
+        
+        return comments.filter { $0.parentCommentIds.contains(id) || parentCommentIds.contains($0.id) || $0 === self }
+    }
+    
     func reply(content: String, languageId: Int? = nil) async throws -> Comment2 {
         try await api.replyToComment(postId: postId, parentId: id, content: content, languageId: languageId)
     }
@@ -114,6 +143,25 @@ public extension Comment1Providing {
             return try await api.getComment(id: parentId)
         }
         return nil
+    }
+    
+    func getParents() async throws -> [Comment2] {
+        guard let first = parentCommentIds.first else { return [] }
+        let comments = try await api.getComments(
+            parentId: first,
+            sort: .new,
+            page: 1,
+            maxDepth: parentCommentIds.count,
+            limit: 1000
+        )
+        var i = 0
+        return comments.filter { comment in
+            if comment.id == parentCommentIds[i] {
+                i += 1
+                return true
+            }
+            return false
+        }
     }
     
     var parentCommentId: Int? { parentCommentIds.last }
