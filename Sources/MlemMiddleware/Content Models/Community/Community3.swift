@@ -15,7 +15,7 @@ public final class Community3: Community3Providing {
     
     public let community2: Community2
     
-    public var instance: Instance1! // TODO: no force unwrapping
+    public var instance: Instance1?
     public var moderators: [Person1] = .init()
     public var discussionLanguages: [Int] = .init()
   
