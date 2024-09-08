@@ -11,7 +11,9 @@ public protocol Person1Providing:
         PersonStubProviding,
         Profile2Providing,
         ContentIdentifiable,
-        SelectableContentProviding {
+        SelectableContentProviding,
+        FeedLoadable where FilterType == PersonFilterType
+{
     var api: ApiClient { get }
     
     var person1: Person1 { get }

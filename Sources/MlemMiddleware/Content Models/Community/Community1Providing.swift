@@ -7,7 +7,12 @@
 
 import Foundation
 
-public protocol Community1Providing: CommunityStubProviding, Profile2Providing, ContentIdentifiable {
+public protocol Community1Providing:
+    CommunityStubProviding,
+    Profile2Providing,
+    ContentIdentifiable,
+    FeedLoadable where FilterType == CommunityFilterType
+{
     var community1: Community1 { get }
     
     var removed: Bool { get }
@@ -17,7 +22,6 @@ public protocol Community1Providing: CommunityStubProviding, Profile2Providing, 
     var onlyModeratorsCanPost: Bool { get }
     var blocked: Bool { get }
 }
-
 public typealias Community = Community1Providing
 
 public extension Community1Providing {
@@ -53,6 +57,16 @@ public extension Community1Providing {
     var hidden_: Bool? { community1.hidden }
     var onlyModeratorsCanPost_: Bool? { community1.onlyModeratorsCanPost }
     var blocked_: Bool? { community1.blocked }
+}
+
+// FeedLoadable conformance
+public extension Community1Providing {
+    func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
+        switch sortType {
+        case .new:
+            return .new(created)
+        }
+    }
 }
 
 // SelectableContentProviding conformance

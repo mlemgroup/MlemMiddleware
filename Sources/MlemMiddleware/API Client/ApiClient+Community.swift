@@ -35,7 +35,8 @@ public extension ApiClient {
         query: String,
         page: Int = 1,
         limit: Int = 20,
-        filter: ApiListingType = .all
+        filter: ApiListingType = .all,
+        sort: ApiSortType = .topAll
     ) async throws -> [Community2] {
         let request = SearchRequest(
             q: query,
@@ -43,7 +44,7 @@ public extension ApiClient {
             communityName: nil,
             creatorId: nil,
             type_: .communities,
-            sort: .topAll,
+            sort: sort,
             listingType: filter,
             page: page,
             limit: limit
