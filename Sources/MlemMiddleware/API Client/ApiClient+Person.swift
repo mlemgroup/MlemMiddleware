@@ -66,6 +66,7 @@ public extension ApiClient {
         return try await getPerson(id: person.id)
     }
     
+    /// `filter` can be set to `.local` from 0.19.4 onwards.
     func searchPeople(
         query: String,
         page: Int = 1,

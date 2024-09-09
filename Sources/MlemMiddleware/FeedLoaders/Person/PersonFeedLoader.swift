@@ -11,6 +11,7 @@ import Foundation
 public class PersonFeedLoader: StandardFeedLoader<Person2> {
     public var api: ApiClient
     public private(set) var query: String
+    /// `listing` can be set to `.local` from 0.19.4 onwards.
     public private(set) var listing: ApiListingType
     public private(set) var sort: ApiSortType
     
