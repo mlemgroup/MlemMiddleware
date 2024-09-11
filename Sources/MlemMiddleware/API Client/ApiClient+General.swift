@@ -8,6 +8,53 @@
 import Foundation
 
 public extension ApiClient {
+    // Returns a raw API type :(
+    // Probably OK because it's part of onboarding, which is cursed and bootstrappy
+    func logIn(username: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {
+        let request = LoginRequest(
+            usernameOrEmail: username,
+            password: password,
+            totp2faToken: totpToken
+        )
+        return try await perform(request)
+    }
+    
+    func signUp(
+        username: String,
+        password: String,
+        confirmPassword: String,
+        showNsfw: Bool,
+        email: String?,
+        captcha: Captcha?,
+        captchaAnswer: String?,
+        applicationQuestionResponse: String?
+    ) async throws -> ApiLoginResponse {
+        let request = RegisterRequest(
+            username: username,
+            password: password,
+            passwordVerify: confirmPassword,
+            showNsfw: showNsfw,
+            email: email,
+            captchaUuid: captcha?.id.uuidString,
+            captchaAnswer: captchaAnswer,
+            honeypot: nil,
+            answer: applicationQuestionResponse
+        )
+        return try await perform(request)
+    }
+    
+    func getCaptcha() async throws -> Captcha {
+        let request = GetCaptchaRequest()
+        let response = try await perform(request)
+        
+        guard let info = response.ok,
+              let uuid = UUID(uuidString: info.uuid),
+              let data = Data(base64Encoded: info.png)
+        else { throw ApiClientError.unsuccessful }
+        
+        return .init(id: uuid, imageData: data)
+    }
+    
     func resolve(actorId: URL) async throws -> (any ActorIdentifiable)? {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
         let response = try await perform(request)

@@ -8,18 +8,6 @@
 import Foundation
 
 public extension ApiClient {
-    // Returns a raw API type :(
-    // Probably OK because it's part of onboarding, which is cursed and bootstrappy
-    func login(username: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {
-        let request = LoginRequest(
-            usernameOrEmail: username,
-            password: password,
-            totp2faToken: totpToken
-        )
-        let response = try await perform(request)
-        return response
-    }
-    
     func getPerson(id: Int) async throws -> Person3 {
         let request = GetPersonDetailsRequest(
             personId: id,
@@ -56,9 +44,13 @@ public extension ApiClient {
             communityId: nil,
             savedOnly: nil
         )
-        let response = try await perform(request)
         
-        return caches.person3.getModel(api: self, from: response)
+        do {
+            let response = try await perform(request)
+            return caches.person3.getModel(api: self, from: response)
+        } catch let ApiClientError.response(response, _) where response.couldntFindObject {
+            throw ApiClientError.noEntityFound
+        }
     }
     
     func getPerson(actorId: URL) async throws -> Person3 {

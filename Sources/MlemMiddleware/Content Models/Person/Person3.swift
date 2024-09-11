@@ -15,7 +15,7 @@ public final class Person3: Person3Providing {
 
     public let person2: Person2
 
-    public var instance: Instance1!
+    public var instance: Instance1?
     public var moderatedCommunities: [Community1] = .init()
     
     internal init(

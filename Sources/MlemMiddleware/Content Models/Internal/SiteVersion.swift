@@ -48,6 +48,9 @@ public enum SiteVersion: Equatable, Hashable {
     public static let v19_2: Self = .init("0.19.2")
     public static let v19_3: Self = .init("0.19.3")
     public static let v19_4: Self = .init("0.19.4")
+    public static let v19_5: Self = .init("0.19.5")
+    public static let v19_6: Self = .init("0.19.6")
+
 }
 
 public extension SiteVersion {

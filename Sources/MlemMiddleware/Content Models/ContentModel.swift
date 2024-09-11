@@ -21,7 +21,9 @@ internal extension ContentModel {
 }
 
 public extension ContentModel where Self: ActorIdentifiable {
-    var apiIsLocal: Bool { api.host == host }
+    var apiIsLocal: Bool {
+        api.host == "localhost" || api.host == host
+    }
 }
 
 public protocol ContentIdentifiable: AnyObject, ContentModel, Hashable, Identifiable {
