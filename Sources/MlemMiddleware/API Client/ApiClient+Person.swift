@@ -58,11 +58,13 @@ public extension ApiClient {
         return try await getPerson(id: person.id)
     }
     
+    /// `filter` can be set to `.local` from 0.19.4 onwards.
     func searchPeople(
         query: String,
         page: Int = 1,
         limit: Int = 20,
-        filter: ApiListingType = .all
+        filter: ApiListingType = .all,
+        sort: ApiSortType = .topAll
     ) async throws -> [Person2] {
         let request = SearchRequest(
             q: query,
@@ -70,7 +72,7 @@ public extension ApiClient {
             communityName: nil,
             creatorId: nil,
             type_: .users,
-            sort: .topAll,
+            sort: sort,
             listingType: filter,
             page: page,
             limit: limit

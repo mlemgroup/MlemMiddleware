@@ -10,3 +10,11 @@ import Foundation
 public enum CommentFilterType {
     case todo
 }
+
+public enum CommunityFilterType {
+    case todo
+}
+
+public enum PersonFilterType {
+    case todo
+}
