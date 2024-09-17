@@ -266,7 +266,8 @@ public extension ApiClient {
         let request = EditPostRequest(
             postId: id,
             name: title,
-            url: linkUrl?.absoluteString,
+            // Submitting `nil` doesn't remove the link, but submitting an empty string does.
+            url: linkUrl?.absoluteString ?? "",
             body: content,
             nsfw: nsfw,
             languageId: languageId,
