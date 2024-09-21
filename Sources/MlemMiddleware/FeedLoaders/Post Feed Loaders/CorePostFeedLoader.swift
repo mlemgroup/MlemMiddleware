@@ -8,6 +8,7 @@
 import Foundation
 import Nuke
 import Observation
+import SDWebImage
 
 /// Post tracker for use with single feeds. Can easily be extended to load any pure post feed by creating an inheriting class that overrides getPosts().
 @Observable
@@ -105,9 +106,23 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     
     /// Preloads images for the given post
     private func preloadImages(_ posts: [Post2]) {
-        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
-            $0.imageRequests(configuration: prefetchingConfiguration)
-        })
+        var nukeRequests: [ImageRequest] = .init()
+        var sdWebImageRequests: [URL] = .init()
+        
+        posts.forEach { post in
+            if let url = post.linkUrl, url.mediaType == .animatedImage {
+                sdWebImageRequests.append(url)
+            } else {
+                nukeRequests.append(contentsOf: post.imageRequests(configuration: prefetchingConfiguration))
+            }
+        }
+        
+        prefetchingConfiguration.prefetcher.startPrefetching(with: nukeRequests)
+        SDWebImagePrefetcher.shared.prefetchURLs(sdWebImageRequests)
+        
+//        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
+//            $0.imageRequests(configuration: prefetchingConfiguration)
+//        })
     }
     
     public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {

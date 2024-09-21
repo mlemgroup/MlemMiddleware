@@ -11,6 +11,10 @@ extension URL: Identifiable {
     public var id: URL { absoluteURL }
 }
 
+public enum MediaType {
+    case image, animatedImage, video, unsupported
+}
+
 public extension URL {
     // Spec described here: https://join-lemmy.org/docs/contributors/04-api.html#images
     func withIconSize(_ size: Int?) -> URL {
@@ -33,8 +37,36 @@ public extension URL {
         return components.url!
     }
     
-    // TODO: rename to isMedia
+    /// Path extension of this URL, taking into account image proxy behavior
+    var proxyAwarePathExtension: String? {
+        var ret = pathExtension
+        
+        // image proxies that use url query param don't have pathExtension so we extract it from the embedded url
+        if ret.isEmpty,
+           let components = URLComponents(url: self, resolvingAgainstBaseURL: true),
+           let queryItems = components.queryItems,
+           let baseUrlString = queryItems.first(where: { $0.name == "url" })?.value,
+           let baseUrl = URL(string: baseUrlString) {
+            ret = baseUrl.pathExtension
+        }
+        
+        return ret.isEmpty ? nil : ret.lowercased()
+    }
+    
     var isMedia: Bool {
-        pathExtension.lowercased().contains(["jpg", "jpeg", "png", "webp", "gif"])
+        proxyAwarePathExtension?.contains(["jpg", "jpeg", "png", "webp", "gif", "mp4"]) ?? false
+    }
+    
+    var mediaType: MediaType {
+        let type = proxyAwarePathExtension
+        if ["jpg", "jpeg", "png"].contains(type) {
+            return .image
+        } else if ["webp", "gif"].contains(type) {
+            return .animatedImage
+        } else if ["mp4"].contains(type) {
+            return .video
+        } else {
+            return .unsupported
+        }
     }
 }
