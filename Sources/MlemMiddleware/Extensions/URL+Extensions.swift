@@ -33,7 +33,8 @@ public extension URL {
         return components.url!
     }
     
-    var isImage: Bool {
-        pathExtension.lowercased().contains(["jpg", "jpeg", "png", "webp"])
+    // TODO: rename to isMedia
+    var isMedia: Bool {
+        pathExtension.lowercased().contains(["jpg", "jpeg", "png", "webp", "gif"])
     }
 }

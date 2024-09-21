@@ -102,7 +102,7 @@ public extension Post1Providing {
         // post with URL: either image or link
         if let linkUrl {
             // if image, return image link, otherwise return thumbnail
-            if linkUrl.isImage {
+            if linkUrl.isMedia {
                 if let thumbnailUrl {
                     // lemmy-ui always shows the `thumbnailUrl` if available even in expanded view
                     return .image(thumbnailUrl)
