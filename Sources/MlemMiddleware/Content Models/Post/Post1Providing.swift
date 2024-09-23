@@ -32,6 +32,8 @@ public protocol Post1Providing:
     var removed: Bool { get }
     var thumbnailUrl: URL? { get }
     var updated: Date? { get }
+    var languageId: Int { get }
+    var altText: String? { get }
 }
 
 public typealias Post = Post1Providing
@@ -57,6 +59,8 @@ public extension Post1Providing {
     var removed: Bool { post1.removed }
     var thumbnailUrl: URL? { post1.thumbnailUrl }
     var updated: Date? { post1.updated }
+    var languageId: Int { post1.languageId }
+    var altText: String? { post1.altText }
     
     var id_: Int? { post1.id }
     var creatorId_: Int? { post1.creatorId }
@@ -74,6 +78,8 @@ public extension Post1Providing {
     var removed_: Bool? { post1.removed }
     var thumbnailUrl_: URL? { post1.thumbnailUrl }
     var updated_: Date? { post1.updated }
+    var languageId_: Int? { post1.languageId }
+    var altText_: String? { post1.altText }
 }
 
 // FeedLoadable conformance
