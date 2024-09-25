@@ -29,8 +29,8 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     var altText_: String? { get }
     
     // From Post2Providing. These are defined as nil in the extension below
-    var creator_: Person1? { get }
-    var community_: Community1? { get }
+    var creator_: (any Person)? { get }
+    var community_: (any Community)? { get }
     var creatorIsModerator_: Bool? { get }
     var creatorIsAdmin_: Bool? { get }
     var bannedFromCommunity_: Bool? { get }
@@ -40,6 +40,10 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     var saved_: Bool? { get }
     var read_: Bool? { get }
     var hidden_: Bool? { get }
+    
+    // From Post3Providing. These are defined as nil in the extension below
+    var communityModerators_: [Person1]? { get }
+    var crossPosts_: [Post2]? { get }
     
     func upgrade() async throws -> any Post
 }
@@ -64,8 +68,8 @@ public extension PostStubProviding {
     var languageId_: Int? { nil }
     var altText_: String? { nil }
     
-    var creator_: Person1? { nil }
-    var community_: Community1? { nil }
+    var creator_: (any Person)? { nil }
+    var community_: (any Community)? { nil }
     var creatorIsModerator_: Bool? { nil }
     var creatorIsAdmin_: Bool? { nil }
     var bannedFromCommunity_: Bool? { nil }
@@ -75,6 +79,9 @@ public extension PostStubProviding {
     var saved_: Bool? { nil }
     var read_: Bool? { nil }
     var hidden_: Bool? { nil }
+    
+    var communityModerators_: [Person1]? { nil }
+    var crossPosts_: [Post2]? { nil }
 }
 
 public extension PostStubProviding {

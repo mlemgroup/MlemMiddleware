@@ -61,3 +61,19 @@ class Post2Cache: ApiTypeBackedCache<Post2, ApiPostView> {
         item.update(with: apiType, semaphore: semaphore)
     }
 }
+
+class Post3Cache: ApiTypeBackedCache<Post3, ApiGetPostResponse> {
+    override func performModelTranslation(api: ApiClient, from apiType: ApiGetPostResponse) -> Post3 {
+        .init(
+            api: api,
+            post2: api.caches.post2.getModel(api: api, from: apiType.postView),
+            community: api.caches.community2.getModel(api: api, from: apiType.communityView),
+            communityModerators: apiType.moderators.map { api.caches.person1.getModel(api: api, from: $0.moderator) },
+            crossPosts: apiType.crossPosts.map { api.caches.post2.getModel(api: api, from: $0) }
+        )
+    }
+    
+    override func updateModel(_ item: Post3, with apiType: ApiGetPostResponse, semaphore: UInt? = nil) {
+        item.update(with: apiType, semaphore: semaphore)
+    }
+}

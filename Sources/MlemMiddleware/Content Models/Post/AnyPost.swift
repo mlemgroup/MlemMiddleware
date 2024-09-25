@@ -11,7 +11,7 @@ import Foundation
 public class AnyPost: Hashable, Upgradable {
     public typealias Base = PostStubProviding
     public typealias MinimumRenderable = Post1Providing
-    public typealias Upgraded = Post2Providing
+    public typealias Upgraded = Post3Providing
     
     public var wrappedValue: any PostStubProviding
     

@@ -88,10 +88,10 @@ public extension ApiClient {
         )
     }
         
-    func getPost(id: Int) async throws -> Post2 {
+    func getPost(id: Int) async throws -> Post3 {
         let request = GetPostRequest(id: id, commentId: nil)
         let response = try await perform(request)
-        return caches.post2.getModel(api: self, from: response.postView)
+        return caches.post3.getModel(api: self, from: response)
     }
     
     func getPost(actorId: URL) async throws -> Post2 {

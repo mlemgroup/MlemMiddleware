@@ -53,3 +53,20 @@ extension Post2: CacheIdentifiable {
         community.update(with: post.community, semaphore: semaphore)
     }
 }
+
+extension Post3: CacheIdentifiable {
+    public var cacheId: Int { id }
+    
+    func update(with post: ApiGetPostResponse, semaphore: UInt? = nil) {
+        setIfChanged(\.communityModerators, post.moderators.map { moderatorView in
+            api.caches.person1.performModelTranslation(api: api, from: moderatorView.moderator)
+        })
+        
+        setIfChanged(\.crossPosts, post.crossPosts.map { crossPost in
+            api.caches.post2.performModelTranslation(api: api, from: crossPost)
+        })
+        
+        post2.update(with: post.postView, semaphore: semaphore)
+        community.update(with: post.communityView, semaphore: semaphore)
+    }
+}
