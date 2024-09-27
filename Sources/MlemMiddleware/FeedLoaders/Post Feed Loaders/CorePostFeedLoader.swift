@@ -109,20 +109,22 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         var nukeRequests: [ImageRequest] = .init()
         var sdWebImageRequests: [URL] = .init()
         
-        posts.forEach { post in
-            if let url = post.linkUrl, url.mediaType == .animatedImage {
-                sdWebImageRequests.append(url)
-            } else {
-                nukeRequests.append(contentsOf: post.imageRequests(configuration: prefetchingConfiguration))
-            }
-        }
+//        posts.forEach { post in
+//            if let url = post.linkUrl, url.mediaType == .animatedImage {
+//                sdWebImageRequests.append(url)
+//            } else {
+//                nukeRequests.append(contentsOf: post.imageRequests(configuration: prefetchingConfiguration))
+//            }
+//        }
         
-        prefetchingConfiguration.prefetcher.startPrefetching(with: nukeRequests)
-        SDWebImagePrefetcher.shared.prefetchURLs(sdWebImageRequests)
+        // print("DEBUG prefetfching \(sdWebImageRequests.count) urls")
+        // prefetchingConfiguration.prefetcher.startPrefetching(with: nukeRequests)
+        // SDWebImagePrefetcher.shared.prefetchURLs(sdWebImageRequests)
+        // SDWebImagePrefetcher.shared.prefetchURLs(sdWebImageRequests, options: .init(arrayLiteral: .wa)
         
-//        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
-//            $0.imageRequests(configuration: prefetchingConfiguration)
-//        })
+        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
+            $0.imageRequests(configuration: prefetchingConfiguration)
+        })
     }
     
     public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {
