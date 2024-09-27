@@ -39,6 +39,8 @@ public final class Post1: Post1Providing {
     public var thumbnailUrl: URL?
     public let created: Date
     public var updated: Date?
+    public var languageId: Int
+    public var altText: String?
     
     internal var deletedManager: StateManager<Bool>
     public var deleted: Bool { deletedManager.wrappedValue }
@@ -61,7 +63,9 @@ public final class Post1: Post1Providing {
         nsfw: Bool = false,
         removed: Bool = false,
         thumbnailUrl: URL? = nil,
-        updated: Date? = nil
+        updated: Date? = nil,
+        languageId: Int,
+        altText: String?
     ) {
         self.api = api
         self.actorId = actorId
@@ -81,5 +85,7 @@ public final class Post1: Post1Providing {
         self.removed = removed
         self.thumbnailUrl = thumbnailUrl
         self.updated = updated
+        self.languageId = languageId
+        self.altText = altText
     }
 }

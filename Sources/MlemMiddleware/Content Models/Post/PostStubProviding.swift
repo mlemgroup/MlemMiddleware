@@ -25,6 +25,8 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     var removed_: Bool? { get }
     var thumbnailUrl_: URL? { get }
     var updated_: Date? { get }
+    var languageId_: Int? { get }
+    var altText_: String? { get }
     
     // From Post2Providing. These are defined as nil in the extension below
     var creator_: Person1? { get }
@@ -59,6 +61,8 @@ public extension PostStubProviding {
     var removed_: Bool? { nil }
     var thumbnailUrl_: URL? { nil }
     var updated_: Date? { nil }
+    var languageId_: Int? { nil }
+    var altText_: String? { nil }
     
     var creator_: Person1? { nil }
     var community_: Community1? { nil }

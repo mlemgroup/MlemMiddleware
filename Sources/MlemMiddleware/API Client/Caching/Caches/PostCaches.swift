@@ -27,7 +27,9 @@ class Post1Cache: ApiTypeBackedCache<Post1, ApiPost> {
             nsfw: apiType.nsfw,
             removed: apiType.removed,
             thumbnailUrl: apiType.thumbnailImageUrl,
-            updated: apiType.updated
+            updated: apiType.updated,
+            languageId: apiType.languageId,
+            altText: apiType.altText
         )
     }
     
