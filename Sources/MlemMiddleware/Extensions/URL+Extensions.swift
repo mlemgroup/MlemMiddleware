@@ -11,10 +11,6 @@ extension URL: Identifiable {
     public var id: URL { absoluteURL }
 }
 
-public enum MediaType {
-    case image, animatedImage, video, unsupported
-}
-
 public extension URL {
     // Spec described here: https://join-lemmy.org/docs/contributors/04-api.html#images
     func withIconSize(_ size: Int?) -> URL {
@@ -55,18 +51,5 @@ public extension URL {
     
     var isMedia: Bool {
         proxyAwarePathExtension?.contains(["jpg", "jpeg", "png", "webp", "gif", "mp4"]) ?? false
-    }
-    
-    var mediaType: MediaType {
-        let type = proxyAwarePathExtension
-        if ["jpg", "jpeg", "png"].contains(type) {
-            return .image
-        } else if ["webp", "gif"].contains(type) {
-            return .animatedImage
-        } else if ["mp4"].contains(type) {
-            return .video
-        } else {
-            return .unsupported
-        }
     }
 }

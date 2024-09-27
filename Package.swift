@@ -15,8 +15,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/groue/Semaphore.git", .upToNextMajor(from: "0.0.8")),
         .package(url: "https://github.com/kean/Nuke.git", .upToNextMajor(from: "12.6.0")),
-        .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", .upToNextMajor(from: "4.0.0")),
-        .package(url: "https://github.com/SDWebImage/SDWebImage.git", .upToNextMajor(from: "5.1.0"))
+        .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", .upToNextMajor(from: "4.0.0"))
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -26,8 +25,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Semaphore", package: "Semaphore"),
                 .product(name: "Nuke", package: "Nuke"),
-                .product(name: "SwiftyJSON", package: "SwiftyJSON"),
-                .product(name: "SDWebImage", package: "SDWebImage")
+                .product(name: "SwiftyJSON", package: "SwiftyJSON")
             ],
             swiftSettings: [.enableUpcomingFeature("BareSlashRegexLiterals")]
         ),

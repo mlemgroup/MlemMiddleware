@@ -7,7 +7,6 @@
 
 import Foundation
 import Nuke
-import SDWebImage
 
 public struct PrefetchingConfiguration {
     public enum ImageResolution {
