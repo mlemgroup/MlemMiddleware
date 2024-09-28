@@ -20,7 +20,7 @@ public enum PostType: Equatable {
         return false
     }
     
-    public var isImage: Bool {
+    public var isMedia: Bool {
         if case .image = self {
             return true
         }
