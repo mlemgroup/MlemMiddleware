@@ -33,7 +33,23 @@ public extension URL {
         return components.url!
     }
     
-    var isImage: Bool {
-        pathExtension.lowercased().contains(["jpg", "jpeg", "png", "webp"])
+    /// Path extension of this URL, taking into account image proxy behavior
+    var proxyAwarePathExtension: String? {
+        var ret = pathExtension
+        
+        // image proxies that use url query param don't have pathExtension so we extract it from the embedded url
+        if ret.isEmpty,
+           let components = URLComponents(url: self, resolvingAgainstBaseURL: true),
+           let queryItems = components.queryItems,
+           let baseUrlString = queryItems.first(where: { $0.name == "url" })?.value,
+           let baseUrl = URL(string: baseUrlString) {
+            ret = baseUrl.pathExtension
+        }
+        
+        return ret.isEmpty ? nil : ret.lowercased()
+    }
+    
+    var isMedia: Bool {
+        proxyAwarePathExtension?.contains(["jpg", "jpeg", "png", "webp", "gif", "mp4"]) ?? false
     }
 }
