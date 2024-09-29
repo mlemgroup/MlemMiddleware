@@ -32,9 +32,9 @@ public protocol Reply1Providing:
     
     // From Reply2Providing
     var comment_: Comment1? { get }
-    var creator_: Person1? { get }
+    var creator_: (any Person)? { get }
     var post_: Post1? { get }
-    var community_: Community1? { get }
+    var community_: (any Community)? { get }
     var recipient_: Person1? { get }
     var subscribed_: Bool? { get }
     var commentCount_: Int? { get }
@@ -71,9 +71,9 @@ public extension Reply1Providing {
     
     // From Reply2Providing
     var comment_: Comment1? { nil }
-    var creator_: Person1? { nil }
+    var creator_: (any Person)? { nil }
     var post_: Post1? { nil }
-    var community_: Community1? { nil }
+    var community_: (any Community)? { nil }
     var recipient_: Person1? { nil }
     var subscribed_: Bool? { nil }
     var commentCount_: Int? { nil }

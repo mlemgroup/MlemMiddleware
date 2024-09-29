@@ -10,9 +10,9 @@ import Foundation
 public protocol Comment2Providing: Comment1Providing, Interactable2Providing, PersonContentProviding {
     var comment2: Comment2 { get }
     
-    var creator: Person1 { get }
+    var creator: any Person { get }
     var post: Post1 { get }
-    var community: Community1 { get }
+    var community: any Community { get }
     var creatorIsModerator: Bool? { get }
     var creatorIsAdmin: Bool? { get }
     var bannedFromCommunity: Bool? { get }
@@ -21,9 +21,9 @@ public protocol Comment2Providing: Comment1Providing, Interactable2Providing, Pe
 public extension Comment2Providing {
     var comment1: Comment1 { comment2.comment1 }
     
-    var creator: Person1 { comment2.creator }
+    var creator: any Person { comment2.creator }
     var post: Post1 { comment2.post }
-    var community: Community1 { comment2.community }
+    var community: any Community { comment2.community }
     var votes: VotesModel { comment2.votes }
     var saved: Bool { comment2.saved }
     var creatorIsModerator: Bool? { comment2.creatorIsModerator }
@@ -31,7 +31,7 @@ public extension Comment2Providing {
     var bannedFromCommunity: Bool? { comment2.bannedFromCommunity }
     var commentCount: Int { comment2.commentCount }
     
-    var creator_: Person1? { comment2.creator }
+    var creator_: (any Person)? { comment2.creator }
     var post_: Post1? { comment2.post }
     var community_: Community1? { comment2.community }
     var votes_: VotesModel? { comment2.votes }

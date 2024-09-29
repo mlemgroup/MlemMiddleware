@@ -111,7 +111,7 @@ public extension Comment1Providing {
             return comments
         }
         
-        return comments.filter { $0.parentCommentIds.contains(id) || parentCommentIds.contains($0.id) || $0 === self }
+        return comments.filter { $0.parentCommentIds.contains(id) || self.parentCommentIds.contains($0.id) || $0.id == self.id }
     }
     
     func reply(content: String, languageId: Int? = nil) async throws -> Comment2 {

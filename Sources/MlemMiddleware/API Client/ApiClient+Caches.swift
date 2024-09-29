@@ -36,6 +36,7 @@ extension ApiClient {
         
         var post1: Post1Cache = .init()
         var post2: Post2Cache = .init()
+        var post3: Post3Cache = .init()
         
         var comment1: Comment1Cache = .init()
         var comment2: Comment2Cache = .init()
@@ -58,6 +59,7 @@ extension ApiClient {
             person4.clean()
             post1.clean()
             post2.clean()
+            post3.clean()
             comment1.clean()
             comment2.clean()
             reply1.clean()

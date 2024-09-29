@@ -11,8 +11,8 @@ import Nuke
 public protocol Post2Providing: Post1Providing, Interactable2Providing, PersonContentProviding {
     var post2: Post2 { get }
     
-    var creator: Person1 { get }
-    var community: Community1 { get }
+    var creator: any Person { get }
+    var community: any Community { get }
     var unreadCommentCount: Int { get }
     var read: Bool { get }
     var hidden: Bool { get }
@@ -21,8 +21,8 @@ public protocol Post2Providing: Post1Providing, Interactable2Providing, PersonCo
 public extension Post2Providing {
     var post1: Post1 { post2.post1 }
     
-    var creator: Person1 { post2.creator }
-    var community: Community1 { post2.community }
+    var creator: any Person { post2.creator }
+    var community: any Community { post2.community }
     var creatorIsModerator: Bool? { post2.creatorIsModerator }
     var creatorIsAdmin: Bool? { post2.creatorIsAdmin }
     var bannedFromCommunity: Bool? { post2.bannedFromCommunity }
@@ -33,8 +33,8 @@ public extension Post2Providing {
     var read: Bool { post2.read }
     var hidden: Bool { post2.hidden }
     
-    var creator_: Person1? { post2.creator }
-    var community_: Community1? { post2.community }
+    var creator_: (any Person)? { post2.creator }
+    var community_: (any Community)? { post2.community }
     var creatorIsModerator_: Bool? { post2.creatorIsModerator }
     var creatorIsAdmin_: Bool? { post2.creatorIsAdmin }
     var bannedFromCommunity_: Bool? { post2.bannedFromCommunity }
@@ -51,9 +51,7 @@ public extension Post2Providing {
     private var readManager: StateManager<Bool> { post2.readManager }
     private var savedManager: StateManager<Bool> { post2.savedManager }
     private var hiddenManager: StateManager<Bool> { post2.hiddenManager }
-    
-    func upgrade() async throws -> any Post { self }
-    
+        
     @discardableResult
     func updateRead(_ newValue: Bool, shouldQueue: Bool = false) -> Task<StateUpdateResult, Never> {
         if shouldQueue {
