@@ -54,6 +54,9 @@ public extension Post1Providing {
     var pinnedCommunity: Bool { post1.pinnedCommunity }
     var pinnedInstance: Bool { post1.pinnedInstance }
     var locked: Bool { post1.locked }
+    var pinnedCommunityManager: StateManager<Bool> { post1.pinnedCommunityManager }
+    var pinnedInstanceManager: StateManager<Bool> { post1.pinnedInstanceManager }
+    var lockedManager: StateManager<Bool> { post1.lockedManager }
     var nsfw: Bool { post1.nsfw }
     var created: Date { post1.created }
     var removed: Bool { post1.removed }
@@ -73,6 +76,9 @@ public extension Post1Providing {
     var pinnedCommunity_: Bool? { post1.pinnedCommunity }
     var pinnedInstance_: Bool? { post1.pinnedInstance }
     var locked_: Bool? { post1.locked }
+    var pinnedCommunityManager_: StateManager<Bool>? { post1.pinnedCommunityManager }
+    var pinnedInstanceManager_: StateManager<Bool>? { post1.pinnedInstanceManager }
+    var lockedManager_: StateManager<Bool>? { post1.lockedManager }
     var nsfw_: Bool? { post1.nsfw }
     var created_: Date? { post1.created }
     var removed_: Bool? { post1.removed }
@@ -185,5 +191,41 @@ public extension Post1Providing {
             nsfw: nsfw,
             languageId: languageId
         )
+    }
+    
+    @discardableResult
+    func updateLocked(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        lockedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.lockPost(id: self.id, lock: newValue, semaphore: semaphore)
+        }
+    }
+    
+    @discardableResult
+    func toggleLocked() -> Task<StateUpdateResult, Never> {
+        updateLocked(!locked)
+    }
+    
+    @discardableResult
+    func updatePinnedCommunity(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        pinnedCommunityManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.pinPost(id: self.id, pin: newValue, to: .community, semaphore: semaphore)
+        }
+    }
+    
+    @discardableResult
+    func togglePinnedCommunity() -> Task<StateUpdateResult, Never> {
+        updatePinnedCommunity(!pinnedCommunity)
+    }
+    
+    @discardableResult
+    func updatePinnedInstance(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        pinnedInstanceManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.pinPost(id: self.id, pin: newValue, to: .local, semaphore: semaphore)
+        }
+    }
+    
+    @discardableResult
+    func togglePinnedInstance() -> Task<StateUpdateResult, Never> {
+        updatePinnedInstance(!pinnedInstance)
     }
 }

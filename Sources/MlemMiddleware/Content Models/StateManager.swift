@@ -70,7 +70,7 @@ public class StateManager<Value: Equatable> {
     private var lastSemaphore: UInt = 0
     
     /// Responsible for tracking the last verified value. If the current value is in sync with the server, this will be nil.
-    @ObservationIgnored private var lastVerifiedValue: Value?
+    private var lastVerifiedValue: Value?
     
     public var isInSync: Bool { lastVerifiedValue == nil }
     public var verifiedValue: Value { lastVerifiedValue ?? wrappedValue }
@@ -96,12 +96,10 @@ public class StateManager<Value: Equatable> {
             print("DEBUG [\(semaphore)] Set lastVerifiedValue to \(wrappedValue).")
             lastVerifiedValue = wrappedValue
         }
-        DispatchQueue.main.async {
-            if self.wrappedValue != expectedResult {
-                self.wrappedValue = expectedResult
-                print("DEBUG [\(semaphore)] Set wrappedValue to \(expectedResult).")
-                self.onSet(expectedResult, .begin, semaphore)
-            }
+        if self.wrappedValue != expectedResult {
+            self.wrappedValue = expectedResult
+            print("DEBUG [\(semaphore)] Set wrappedValue to \(expectedResult).")
+            self.onSet(expectedResult, .begin, semaphore)
         }
         return lastSemaphore
     }
@@ -155,8 +153,7 @@ public class StateManager<Value: Equatable> {
         operation: @escaping (_ semaphore: UInt) async throws -> Void,
         onRollback: @escaping (_ value: Value) -> Void = { _ in }
     ) -> Task<StateUpdateResult, Never> {
-        Task(priority: .userInitiated) {
-            // Considered to be a success even though we didn't do anything
+        Task(priority: .userInitiated) { @MainActor in
             guard wrappedValue != expectedResult else { return .ignored }
             
             let semaphore = beginOperation(expectedResult: expectedResult)
@@ -168,8 +165,8 @@ public class StateManager<Value: Equatable> {
                 if let newValue = self.rollback(semaphore: semaphore) {
                     onRollback(newValue)
                 }
+                return .failed
             }
-            return .failed
         }
     }
     

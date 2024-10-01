@@ -28,6 +28,10 @@ public extension Person3Providing {
 public extension Person3Providing {  
     func upgrade() async throws -> any Person { self }
     
+    func moderates(communityId: Int) -> Bool {
+        self.moderatedCommunities.contains { $0.id == communityId }
+    }
+    
     func moderates(community: any CommunityStubProviding) -> Bool {
         self.moderatedCommunities.contains { $0.actorId == community.actorId }
     }
