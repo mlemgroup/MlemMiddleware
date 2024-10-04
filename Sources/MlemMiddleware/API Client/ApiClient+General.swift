@@ -8,6 +8,10 @@
 import Foundation
 
 public extension ApiClient {
+    var isAdmin: Bool {
+        myInstance?.administrators.contains(where: { $0.id == myPerson?.id }) ?? false
+    }
+    
     // Returns a raw API type :(
     // Probably OK because it's part of onboarding, which is cursed and bootstrappy
     func logIn(username: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {

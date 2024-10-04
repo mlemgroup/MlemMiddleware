@@ -296,4 +296,19 @@ public extension ApiClient {
         let response = try await perform(request)
         // TODO: return post report
     }
+    
+    @discardableResult
+    func pinPost(id: Int, pin: Bool, to target: ApiPostFeatureType, semaphore: UInt? = nil) async throws -> Post2 {
+        let request = FeaturePostRequest(postId: id, featured: pin, featureType: target)
+        let response = try await perform(request)
+        return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
+    }
+    
+    @discardableResult
+    func lockPost(id: Int, lock: Bool, semaphore: UInt? = nil) async throws -> Post2 {
+        let request = LockPostRequest(postId: id, locked: lock)
+        let response = try await perform(request)
+        return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
+    }
 }
+
