@@ -31,9 +31,6 @@ public final class Post1: Post1Providing {
     public var content: String?
     public var linkUrl: URL?
     public var embed: PostEmbed?
-    public var pinnedCommunity: Bool
-    public var pinnedInstance: Bool
-    public var locked: Bool
     public var nsfw: Bool
     public var removed: Bool
     public var thumbnailUrl: URL?
@@ -41,6 +38,16 @@ public final class Post1: Post1Providing {
     public var updated: Date?
     public var languageId: Int
     public var altText: String?
+    
+    public var lockedManager: StateManager<Bool>
+    public var locked: Bool { lockedManager.wrappedValue }
+    public var verifiedLocked: Bool { lockedManager.verifiedValue }
+    
+    public var pinnedCommunityManager: StateManager<Bool>
+    public var pinnedCommunity: Bool { pinnedCommunityManager.wrappedValue }
+    
+    public var pinnedInstanceManager: StateManager<Bool>
+    public var pinnedInstance: Bool { pinnedInstanceManager.wrappedValue }
     
     internal var deletedManager: StateManager<Bool>
     public var deleted: Bool { deletedManager.wrappedValue }
@@ -78,9 +85,9 @@ public final class Post1: Post1Providing {
         self.linkUrl = linkUrl
         self.deletedManager = .init(wrappedValue: deleted)
         self.embed = embed
-        self.pinnedCommunity = pinnedCommunity
-        self.pinnedInstance = pinnedInstance
-        self.locked = locked
+        self.pinnedCommunityManager = .init(wrappedValue: pinnedCommunity)
+        self.pinnedInstanceManager = .init(wrappedValue: pinnedInstance)
+        self.lockedManager = .init(wrappedValue: locked)
         self.nsfw = nsfw
         self.removed = removed
         self.thumbnailUrl = thumbnailUrl

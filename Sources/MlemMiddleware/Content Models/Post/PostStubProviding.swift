@@ -20,6 +20,9 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     var pinnedCommunity_: Bool? { get }
     var pinnedInstance_: Bool? { get }
     var locked_: Bool? { get }
+    var pinnedCommunityManager_: StateManager<Bool>? { get }
+    var pinnedInstanceManager_: StateManager<Bool>? { get }
+    var lockedManager_: StateManager<Bool>? { get }
     var nsfw_: Bool? { get }
     var created_: Date? { get }
     var removed_: Bool? { get }
@@ -60,6 +63,9 @@ public extension PostStubProviding {
     var pinnedCommunity_: Bool? { nil }
     var pinnedInstance_: Bool? { nil }
     var locked_: Bool? { nil }
+    var pinnedCommunityManager_: StateManager<Bool>? { nil }
+    var pinnedInstanceManager_: StateManager<Bool>? { nil }
+    var lockedManager_: StateManager<Bool>? { nil }
     var nsfw_: Bool? { nil }
     var created_: Date? { nil }
     var removed_: Bool? { nil }
