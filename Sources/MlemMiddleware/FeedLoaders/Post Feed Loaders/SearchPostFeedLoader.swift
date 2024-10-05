@@ -11,12 +11,16 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
     public var api: ApiClient
     public var query: String
     public var listing: ApiListingType
+    public var creatorId: Int?
+    public var communityId: Int?
     
     public init(
         api: ApiClient,
         query: String = "",
         pageSize: Int = 20,
         sortType: ApiSortType = .topAll,
+        creatorId: Int? = nil,
+        communityId: Int? = nil,
         filteredKeywords: [String] = [],
         prefetchingConfiguration: PrefetchingConfiguration,
         urlCache: URLCache,
@@ -25,6 +29,8 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
         self.api = api
         self.query = query
         self.listing = listing
+        self.creatorId = creatorId
+        self.communityId = communityId
         super.init(
             pageSize: pageSize,
             sortType: sortType,
@@ -39,8 +45,8 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
             query: query,
             page: page,
             limit: pageSize,
-            communityId: nil,
-            creatorId: nil,
+            communityId: communityId,
+            creatorId: creatorId,
             filter: listing,
             sort: sortType
         )
