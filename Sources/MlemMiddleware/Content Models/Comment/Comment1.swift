@@ -21,7 +21,6 @@ public final class Comment1: Comment1Providing {
     public let postId: Int
     
     public var content: String
-    public var removed: Bool
     public var created: Date
     public var updated: Date?
     public var distinguished: Bool
@@ -29,6 +28,9 @@ public final class Comment1: Comment1Providing {
     
     internal var deletedManager: StateManager<Bool>
     public var deleted: Bool { deletedManager.wrappedValue }
+    
+    public var removedManager: StateManager<Bool>
+    public var removed: Bool { removedManager.wrappedValue }
     
     internal init(
         api: ApiClient,
@@ -49,7 +51,7 @@ public final class Comment1: Comment1Providing {
         self.actorId = actorId
         self.id = id
         self.content = content
-        self.removed = removed
+        self.removedManager = .init(wrappedValue: removed)
         self.created = created
         self.updated = updated
         self.deletedManager = .init(wrappedValue: deleted)

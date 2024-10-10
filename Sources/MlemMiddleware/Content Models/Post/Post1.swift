@@ -32,7 +32,6 @@ public final class Post1: Post1Providing {
     public var linkUrl: URL?
     public var embed: PostEmbed?
     public var nsfw: Bool
-    public var removed: Bool
     public var thumbnailUrl: URL?
     public let created: Date
     public var updated: Date?
@@ -51,6 +50,9 @@ public final class Post1: Post1Providing {
     
     internal var deletedManager: StateManager<Bool>
     public var deleted: Bool { deletedManager.wrappedValue }
+    
+    public var removedManager: StateManager<Bool>
+    public var removed: Bool { removedManager.wrappedValue }
     
     internal init(
         api: ApiClient,
@@ -89,7 +91,7 @@ public final class Post1: Post1Providing {
         self.pinnedInstanceManager = .init(wrappedValue: pinnedInstance)
         self.lockedManager = .init(wrappedValue: locked)
         self.nsfw = nsfw
-        self.removed = removed
+        self.removedManager = .init(wrappedValue: removed)
         self.thumbnailUrl = thumbnailUrl
         self.updated = updated
         self.languageId = languageId

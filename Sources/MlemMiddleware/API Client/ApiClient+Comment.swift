@@ -135,4 +135,16 @@ public extension ApiClient {
         let response = try await perform(request)
         // TODO: return comment report
     }
+    
+    @discardableResult
+    func removeComment(
+        id: Int,
+        remove: Bool,
+        reason: String?,
+        semaphore: UInt? = nil
+    ) async throws -> Comment2 {
+        let request = RemoveCommentRequest(commentId: id, removed: remove, reason: reason)
+        let response = try await perform(request)
+        return caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
+    }
 }

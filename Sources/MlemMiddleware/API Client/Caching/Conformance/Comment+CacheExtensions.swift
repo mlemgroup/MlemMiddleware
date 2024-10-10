@@ -12,13 +12,13 @@ extension Comment1: CacheIdentifiable {
     
     func update(with comment: ApiComment, semaphore: UInt? = nil) {
         setIfChanged(\.content, comment.content)
-        setIfChanged(\.removed, comment.removed)
         setIfChanged(\.created, comment.published)
         setIfChanged(\.updated, comment.updated)
         setIfChanged(\.distinguished, comment.distinguished)
         setIfChanged(\.languageId, comment.languageId)
 
-        self.deletedManager.updateWithReceivedValue(comment.deleted, semaphore: semaphore)
+        deletedManager.updateWithReceivedValue(comment.deleted, semaphore: semaphore)
+        removedManager.updateWithReceivedValue(comment.removed, semaphore: semaphore)
     }
 }
 

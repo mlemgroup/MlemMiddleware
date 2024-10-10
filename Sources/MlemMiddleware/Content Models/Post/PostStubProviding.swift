@@ -26,6 +26,7 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
     var nsfw_: Bool? { get }
     var created_: Date? { get }
     var removed_: Bool? { get }
+    var removedManager_: StateManager<Bool>? { get }
     var thumbnailUrl_: URL? { get }
     var updated_: Date? { get }
     var languageId_: Int? { get }
@@ -69,6 +70,7 @@ public extension PostStubProviding {
     var nsfw_: Bool? { nil }
     var created_: Date? { nil }
     var removed_: Bool? { nil }
+    var removedManager_: StateManager<Bool>? { nil }
     var thumbnailUrl_: URL? { nil }
     var updated_: Date? { nil }
     var languageId_: Int? { nil }

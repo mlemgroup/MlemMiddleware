@@ -17,11 +17,17 @@ public protocol Interactable2Providing: Interactable1Providing {
     var commentCount: Int { get }
     var votes: VotesModel { get }
     var saved: Bool { get }
+    var removedManager: StateManager<Bool> { get }
+    var removed: Bool { get }
     
     @discardableResult
     func updateVote(_ newVote: ScoringOperation) -> Task<StateUpdateResult, Never>
+    
     @discardableResult
     func updateSaved(_ newValue: Bool) -> Task<StateUpdateResult, Never>
+    
+    @discardableResult
+    func updateRemoved(_ newValue: Bool, reason: String?) -> Task<StateUpdateResult, Never>
     
     func reply(content: String, languageId: Int?) async throws -> Comment2
 }
@@ -41,4 +47,10 @@ public extension Interactable2Providing {
     func toggleSaved() -> Task<StateUpdateResult, Never> {
         updateSaved(!saved)
     }
+    
+    @discardableResult
+    func toggleRemoved(reason: String?) -> Task<StateUpdateResult, Never> {
+        updateRemoved(!removed, reason: reason)
+    }
 }
+

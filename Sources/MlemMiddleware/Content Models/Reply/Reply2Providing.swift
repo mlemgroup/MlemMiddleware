@@ -21,6 +21,8 @@ public protocol Reply2Providing: Reply1Providing, Interactable2Providing {
     var creatorIsModerator: Bool? { get }
     var creatorIsAdmin: Bool? { get }
     var bannedFromCommunity: Bool? { get }
+    var removed: Bool { get }
+    var removedManager: StateManager<Bool> { get }
 }
 
 public extension Reply2Providing {
@@ -35,6 +37,8 @@ public extension Reply2Providing {
     var creatorIsModerator: Bool? { reply2.creatorIsModerator }
     var creatorIsAdmin: Bool? { reply2.creatorIsAdmin }
     var bannedFromCommunity: Bool? { reply2.bannedFromCommunity }
+    var removed: Bool { reply2.comment.removed }
+    var removedManager: StateManager<Bool> { reply2.comment.removedManager }
     
     var reply1_: Reply1? { reply2.reply1 }
     var comment_: Comment1? { reply2.comment }
@@ -69,5 +73,10 @@ public extension Reply2Providing {
     
     func reply(content: String, languageId: Int? = nil) async throws -> Comment2 {
         try await api.replyToComment(postId: post.id, parentId: commentId, content: content, languageId: languageId)
+    }
+    
+    @discardableResult
+    func updateRemoved(_ newValue: Bool, reason: String?) -> Task<StateUpdateResult, Never> {
+        comment.updateRemoved(newValue, reason: reason)
     }
 }

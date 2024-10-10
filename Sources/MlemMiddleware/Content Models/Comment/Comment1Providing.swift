@@ -26,6 +26,7 @@ public protocol Comment1Providing:
     var parentCommentIds: [Int] { get }
     var distinguished: Bool { get }
     var removed: Bool { get }
+    var removedManager: StateManager<Bool> { get }
     var languageId: Int { get }
 }
 
@@ -45,7 +46,8 @@ public extension Comment1Providing {
     var postId: Int { comment1.postId }
     var parentCommentIds: [Int] { comment1.parentCommentIds }
     var distinguished: Bool { comment1.distinguished }
-    var removed: Bool { comment1.distinguished }
+    var removed: Bool { comment1.removed }
+    var removedManager: StateManager<Bool> { comment1.removedManager }
     var languageId: Int { comment1.languageId }
     
     var id_: Int? { comment1.id }
@@ -58,6 +60,7 @@ public extension Comment1Providing {
     var parentCommentIds_: [Int]? { comment1.parentCommentIds }
     var distinguished_: Bool? { comment1.distinguished }
     var removed_: Bool? { comment1.distinguished }
+    var removedManager_: StateManager<Bool>? { comment1.removedManager }
     var languageId_: Int? { comment1.languageId }
 }
 
@@ -112,6 +115,13 @@ public extension Comment1Providing {
         }
         
         return comments.filter { $0.parentCommentIds.contains(id) || self.parentCommentIds.contains($0.id) || $0.id == self.id }
+    }
+    
+    @discardableResult
+    func updateRemoved(_ newValue: Bool, reason: String?) -> Task<StateUpdateResult, Never> {
+        removedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.removeComment(id: self.id, remove: newValue, reason: reason, semaphore: semaphore)
+        }
     }
     
     func reply(content: String, languageId: Int? = nil) async throws -> Comment2 {
