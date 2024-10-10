@@ -46,7 +46,7 @@ public extension Comment1Providing {
     var postId: Int { comment1.postId }
     var parentCommentIds: [Int] { comment1.parentCommentIds }
     var distinguished: Bool { comment1.distinguished }
-    var removed: Bool { comment1.distinguished }
+    var removed: Bool { comment1.removed }
     var removedManager: StateManager<Bool> { comment1.removedManager }
     var languageId: Int { comment1.languageId }
     
