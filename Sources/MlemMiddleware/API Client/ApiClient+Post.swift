@@ -106,6 +106,29 @@ public extension ApiClient {
         throw ApiClientError.noEntityFound
     }
     
+    func searchPosts(
+        query: String,
+        page: Int = 1,
+        limit: Int = 20,
+        communityId: Int? = nil,
+        creatorId: Int? = nil,
+        filter: ApiListingType = .all,
+        sort: ApiSortType = .topAll
+    ) async throws -> [Post2] {
+        let request = SearchRequest(
+            q: query,
+            communityId: communityId,
+            communityName: nil,
+            creatorId: creatorId,
+            type_: .posts,
+            sort: sort,
+            listingType: filter,
+            page: page,
+            limit: limit
+        )
+        return try await perform(request).posts.map { caches.post2.getModel(api: self, from: $0) }
+    }
+    
     /// Mark the given post as read. Works on all versions.
     /// On v0.19.0 and above, if `includeQueuedPosts` is set to `true`, any queued posts will be marked read as well.
     func markPostAsRead(
