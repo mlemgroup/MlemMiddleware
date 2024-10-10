@@ -298,6 +298,18 @@ public extension ApiClient {
     }
     
     @discardableResult
+    func removePost(
+        id: Int,
+        remove: Bool,
+        reason: String?,
+        semaphore: UInt? = nil
+    ) async throws -> Post2 {
+        let request = RemovePostRequest(postId: id, removed: remove, reason: reason)
+        let response = try await perform(request)
+        return caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
+    }
+    
+    @discardableResult
     func pinPost(id: Int, pin: Bool, to target: ApiPostFeatureType, semaphore: UInt? = nil) async throws -> Post2 {
         let request = FeaturePostRequest(postId: id, featured: pin, featureType: target)
         let response = try await perform(request)

@@ -19,13 +19,13 @@ extension Post1: CacheIdentifiable {
         setIfChanged(\.embed, post.embed)
         
         setIfChanged(\.nsfw, post.nsfw)
-        setIfChanged(\.removed, post.removed)
         setIfChanged(\.thumbnailUrl, post.thumbnailImageUrl)
         
         deletedManager.updateWithReceivedValue(post.deleted, semaphore: semaphore)
         pinnedCommunityManager.updateWithReceivedValue(post.featuredCommunity, semaphore: semaphore)
         pinnedInstanceManager.updateWithReceivedValue(post.featuredLocal, semaphore: semaphore)
         lockedManager.updateWithReceivedValue(post.locked, semaphore: semaphore)
+        removedManager.updateWithReceivedValue(post.removed, semaphore: semaphore)
     }
 }
 

@@ -41,6 +41,8 @@ public protocol Reply1Providing:
     var creatorIsModerator_: Bool? { get }
     var creatorIsAdmin_: Bool? { get }
     var bannedFromCommunity_: Bool? { get }
+    var removed_: Bool? { get }
+    var removedManager_: StateManager<Bool>? { get }
     var votes_: VotesModel? { get }
     var saved_: Bool? { get }
 }
@@ -82,6 +84,8 @@ public extension Reply1Providing {
     var bannedFromCommunity_: Bool? { nil }
     var votes_: VotesModel? { nil }
     var saved_: Bool? { nil }
+    var removed_: Bool? { nil }
+    var removedManager_: StateManager<Bool>? { nil }
 }
 
 public extension Reply1Providing {
