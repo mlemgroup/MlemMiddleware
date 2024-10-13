@@ -33,7 +33,7 @@ public extension Comment2Providing {
     
     var creator_: (any Person)? { comment2.creator }
     var post_: Post1? { comment2.post }
-    var community_: Community1? { comment2.community }
+    var community_: (any Community)? { comment2.community }
     var votes_: VotesModel? { comment2.votes }
     var saved_: Bool? { comment2.saved }
     var creatorIsModerator_: Bool? { comment2.creatorIsModerator }

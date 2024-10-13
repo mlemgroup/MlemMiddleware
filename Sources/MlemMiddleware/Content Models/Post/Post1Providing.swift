@@ -27,9 +27,13 @@ public protocol Post1Providing:
     var pinnedCommunity: Bool { get }
     var pinnedInstance: Bool { get }
     var locked: Bool { get }
+    var pinnedCommunityManager: StateManager<Bool> { get }
+    var pinnedInstanceManager: StateManager<Bool> { get }
+    var lockedManager: StateManager<Bool> { get }
     var nsfw: Bool { get }
     var created: Date { get }
     var removed: Bool { get }
+    var removedManager: StateManager<Bool> { get }
     var thumbnailUrl: URL? { get }
     var updated: Date? { get }
     var languageId: Int { get }
@@ -60,6 +64,7 @@ public extension Post1Providing {
     var nsfw: Bool { post1.nsfw }
     var created: Date { post1.created }
     var removed: Bool { post1.removed }
+    var removedManager: StateManager<Bool> { post1.removedManager }
     var thumbnailUrl: URL? { post1.thumbnailUrl }
     var updated: Date? { post1.updated }
     var languageId: Int { post1.languageId }
@@ -82,6 +87,7 @@ public extension Post1Providing {
     var nsfw_: Bool? { post1.nsfw }
     var created_: Date? { post1.created }
     var removed_: Bool? { post1.removed }
+    var removedManager_: StateManager<Bool>? { post1.removedManager }
     var thumbnailUrl_: URL? { post1.thumbnailUrl }
     var updated_: Date? { post1.updated }
     var languageId_: Int? { post1.languageId }
@@ -227,5 +233,12 @@ public extension Post1Providing {
     @discardableResult
     func togglePinnedInstance() -> Task<StateUpdateResult, Never> {
         updatePinnedInstance(!pinnedInstance)
+    }
+    
+    @discardableResult
+    func updateRemoved(_ newValue: Bool, reason: String?) -> Task<StateUpdateResult, Never> {
+        removedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.removePost(id: self.id, remove: newValue, reason: reason, semaphore: semaphore)
+        }
     }
 }
