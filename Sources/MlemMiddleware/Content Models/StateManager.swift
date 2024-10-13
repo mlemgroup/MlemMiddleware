@@ -109,8 +109,10 @@ public class StateManager<Value: Equatable> {
     func updateWithReceivedValue(_ newState: Value, semaphore: UInt?) -> Bool {
         if lastVerifiedValue == nil {
             if self.wrappedValue != newState {
-                self.wrappedValue = newState
-                self.onSet(newState, .receive, semaphore)
+                Task { @MainActor in
+                    self.wrappedValue = newState
+                    self.onSet(newState, .receive, semaphore)
+                }
             }
             return false
         }
