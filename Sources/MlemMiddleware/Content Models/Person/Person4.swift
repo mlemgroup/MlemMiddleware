@@ -5,6 +5,7 @@
 //  Created by Sjmarf on 20/05/2024.
 //
 
+import Foundation
 import Observation
 
 @Observable
@@ -103,7 +104,12 @@ public final class Person4: Person4Providing {
     
     public func updateSettings(
         email: String? = nil,
+        displayName: String? = nil,
+        avatar: URL? = nil,
+        banner: URL? = nil,
+        matrixId: String? = nil,
         showNsfw: Bool? = nil,
+        blurNsfw: Bool? = nil,
         showBotAccounts: Bool? = nil,
         sendNotificationsToEmail: Bool? = nil,
         isBot: Bool? = nil
@@ -118,20 +124,20 @@ public final class Person4: Person4Providing {
             defaultSortType: self.defaultSortType,
             defaultListingType: self.defaultListingType,
             interfaceLanguage: self.interfaceLanguage,
-            avatar: self.avatar,
-            banner: self.banner,
-            displayName: self.displayName,
+            avatar: avatar ?? self.avatar,
+            banner: banner ?? self.banner,
+            displayName: displayName ?? self.displayName,
             email: email ?? self.email,
-            bio: self.description,
-            matrixUserId: self.matrixId,
+            bio: description ?? self.description,
+            matrixUserId: matrixId ?? self.matrixId,
             showAvatars: self.showAvatars,
-            sendNotificationsToEmail: self.sendNotificationsToEmail,
+            sendNotificationsToEmail: sendNotificationsToEmail ?? self.sendNotificationsToEmail,
             botAccount: isBot ?? self.isBot,
             showBotAccounts: showBotAccounts ?? self.showBotAccounts,
             showReadPosts: self.showReadPosts,
             discussionLanguages: nil,
             openLinksInNewTab: self.openLinksInNewTab,
-            blurNsfw: self.blurNsfw,
+            blurNsfw: blurNsfw ?? self.blurNsfw,
             autoExpand: self.autoExpandImages,
             infiniteScrollEnabled: self.infiniteScrollEnabled,
             postListingMode: self.postListingMode,
@@ -143,7 +149,12 @@ public final class Person4: Person4Providing {
             showUpvotePercentage: self.voteDisplayMode?.upvotePercentage
         )
         self.email = email ?? self.email
+        self.person1.displayName = displayName ?? self.displayName
+        self.person1.avatar = avatar ?? self.avatar
+        self.person1.banner = banner ?? self.banner
+        self.person1.matrixId = matrixId ?? self.matrixId
         self.showNsfw = showNsfw ?? self.showNsfw
+        self.blurNsfw = blurNsfw ?? self.blurNsfw
         self.showBotAccounts = showBotAccounts ?? self.showBotAccounts
         self.sendNotificationsToEmail = sendNotificationsToEmail ?? self.sendNotificationsToEmail
         self.person1.isBot = isBot ?? self.isBot
