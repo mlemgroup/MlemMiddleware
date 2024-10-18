@@ -89,7 +89,36 @@ class Person3Cache: CoreCache<Person3> {
 // Person4 can be created from any Person4ApiBacker, so can't use ApiTypeBackedCache
 class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
     override func performModelTranslation(api: ApiClient, from apiType: ApiMyUserInfo) -> Person4 {
-        .init(api: api, person3: api.caches.person3.getModel(api: api, from: apiType))
+        let user = apiType.localUserView.localUser
+        return .init(
+            api: api,
+            person3: api.caches.person3.getModel(api: api, from: apiType),
+            isAdmin: user.admin,
+            voteDisplayMode: apiType.localUserView.localUserVoteDisplayMode,
+            email: user.email,
+            showNsfw: user.showNsfw,
+            theme: user.theme,
+            defaultSortType: user.defaultSortType,
+            defaultListingType: user.defaultListingType,
+            interfaceLanguage: user.interfaceLanguage,
+            showAvatars: user.showAvatars,
+            sendNotificationsToEmail: user.sendNotificationsToEmail,
+            showScores: user.showScores,
+            showBotAccounts: user.showBotAccounts,
+            showReadPosts: user.showReadPosts,
+            showNewPostNotifs: user.showNewPostNotifs,
+            emailVerified: user.emailVerified,
+            acceptedApplication: user.acceptedApplication,
+            openLinksInNewTab: user.openLinksInNewTab,
+            blurNsfw: user.blurNsfw,
+            autoExpandImages: user.autoExpand,
+            infiniteScrollEnabled: user.infiniteScrollEnabled,
+            postListingMode: user.postListingMode,
+            totp2faEnabled: user.totp2faEnabled,
+            enableKeyboardNavigation: user.enableKeyboardNavigation,
+            enableAnimatedImages: user.enableAnimatedImages,
+            collapseBotComments: user.collapseBotComments
+        )
     }
     
     override func updateModel(_ item: Person4, with apiType: ApiMyUserInfo, semaphore: UInt? = nil) {

@@ -60,6 +60,35 @@ extension Person4: CacheIdentifiable {
         let moderates = apiMyUserInfo.moderates.map { moderatorView in
             api.caches.community1.performModelTranslation(api: api, from: moderatorView.community)
         }
+        
+        let user = apiMyUserInfo.localUserView.localUser
+        
+        setIfChanged(\.isAdmin, user.admin)
+        setIfChanged(\.voteDisplayMode, apiMyUserInfo.localUserView.localUserVoteDisplayMode)
+        setIfChanged(\.email, user.email)
+        setIfChanged(\.showNsfw, user.showNsfw)
+        setIfChanged(\.theme, user.theme)
+        setIfChanged(\.defaultSortType, user.defaultSortType)
+        setIfChanged(\.defaultListingType, user.defaultListingType)
+        setIfChanged(\.interfaceLanguage, user.interfaceLanguage)
+        setIfChanged(\.showAvatars, user.showAvatars)
+        setIfChanged(\.sendNotificationsToEmail, user.sendNotificationsToEmail)
+        setIfChanged(\.showScores, user.showScores)
+        setIfChanged(\.showBotAccounts, user.showBotAccounts)
+        setIfChanged(\.showReadPosts, user.showReadPosts)
+        setIfChanged(\.showNewPostNotifs, user.showNewPostNotifs)
+        setIfChanged(\.emailVerified, user.emailVerified)
+        setIfChanged(\.acceptedApplication, user.acceptedApplication)
+        setIfChanged(\.openLinksInNewTab, user.openLinksInNewTab)
+        setIfChanged(\.blurNsfw, user.blurNsfw)
+        setIfChanged(\.autoExpandImages, user.autoExpand)
+        setIfChanged(\.infiniteScrollEnabled, user.infiniteScrollEnabled)
+        setIfChanged(\.postListingMode, user.postListingMode)
+        setIfChanged(\.totp2faEnabled, user.totp2faEnabled)
+        setIfChanged(\.enableKeyboardNavigation, user.enableKeyboardNavigation)
+        setIfChanged(\.enableAnimatedImages, user.enableAnimatedImages)
+        setIfChanged(\.collapseBotComments, user.collapseBotComments)
+        
         person3.update(
             moderatedCommunities: moderates,
             person2ApiBacker: apiMyUserInfo.localUserView,
