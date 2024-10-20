@@ -17,7 +17,7 @@ let developerNames = [
 ]
 
 public protocol PersonStubProviding: CommunityOrPersonStub {
-    // From User1Providing.
+    // From Person1Providing.
     var id_: Int? { get }
     var created_: Date? { get }
     var updated_: Date? { get }
@@ -31,13 +31,40 @@ public protocol PersonStubProviding: CommunityOrPersonStub {
     var instanceBan_: InstanceBanType? { get }
     var blocked_: Bool? { get }
     
-    // From User2Providing.
+    // From Person2Providing.
     var postCount_: Int? { get }
     var commentCount_: Int? { get }
     
-    // From User3Providing.
+    // From Person3Providing.
     var instance_: Instance1? { get }
     var moderatedCommunities_: [Community1]? { get }
+    
+    // From Person4Providing.
+    var isAdmin_: Bool? { get }
+    var voteDisplayMode_: ApiLocalUserVoteDisplayMode? { get }
+    var email_: String? { get }
+    var showNsfw_: Bool? { get }
+    var theme_: String? { get }
+    var defaultSortType_: ApiSortType? { get }
+    var defaultListingType_: ApiListingType? { get }
+    var interfaceLanguage_: String? { get }
+    var showAvatars_: Bool? { get }
+    var sendNotificationsToEmail_: Bool? { get }
+    var showScores_: Bool? { get }
+    var showBotAccounts_: Bool? { get }
+    var showReadPosts_: Bool? { get }
+    var showNewPostNotifs_: Bool? { get }
+    var emailVerified_: Bool? { get }
+    var acceptedApplication_: Bool? { get }
+    var openLinksInNewTab_: Bool? { get }
+    var blurNsfw_: Bool? { get }
+    var autoExpandImages_: Bool? { get }
+    var infiniteScrollEnabled_: Bool? { get }
+    var postListingMode_: ApiPostListingMode? { get }
+    var totp2faEnabled_: Bool? { get }
+    var enableKeyboardNavigation_: Bool? { get }
+    var enableAnimatedImages_: Bool? { get }
+    var collapseBotComments_: Bool? { get }
     
     func upgrade() async throws -> any Person
 }
@@ -63,6 +90,32 @@ public extension PersonStubProviding {
     
     var instance_: Instance1? { nil }
     var moderatedCommunities_: [Community1]? { nil }
+    
+    var isAdmin_: Bool? { nil }
+    var voteDisplayMode_: ApiLocalUserVoteDisplayMode? { nil }
+    var email_: String? { nil }
+    var showNsfw_: Bool? { nil }
+    var theme_: String? { nil }
+    var defaultSortType_: ApiSortType? { nil }
+    var defaultListingType_: ApiListingType? { nil }
+    var interfaceLanguage_: String? { nil }
+    var showAvatars_: Bool? { nil }
+    var sendNotificationsToEmail_: Bool? { nil }
+    var showScores_: Bool? { nil }
+    var showBotAccounts_: Bool? { nil }
+    var showReadPosts_: Bool? { nil }
+    var showNewPostNotifs_: Bool? { nil }
+    var emailVerified_: Bool? { nil }
+    var acceptedApplication_: Bool? { nil }
+    var openLinksInNewTab_: Bool? { nil }
+    var blurNsfw_: Bool? { nil }
+    var autoExpandImages_: Bool? { nil }
+    var infiniteScrollEnabled_: Bool? { nil }
+    var postListingMode_: ApiPostListingMode? { nil }
+    var totp2faEnabled_: Bool? { nil }
+    var enableKeyboardNavigation_: Bool? { nil }
+    var enableAnimatedImages_: Bool? { nil }
+    var collapseBotComments_: Bool? { nil }
     
     var isMlemDeveloper: Bool { developerNames.contains(actorId.absoluteString) }
 }
