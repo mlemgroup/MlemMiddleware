@@ -107,6 +107,10 @@ public extension Reply1Providing {
         try await api.reportComment(id: commentId, reason: reason)
     }
     
+    func purge(reason: String?) async throws {
+        try await api.purgeComment(id: commentId, reason: reason)
+    }
+    
     internal func setKnownReadState(newValue: Bool) {
         readManager.updateWithReceivedValue(newValue, semaphore: nil)
         if isMention {

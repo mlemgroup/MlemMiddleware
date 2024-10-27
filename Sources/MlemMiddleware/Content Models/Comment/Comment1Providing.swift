@@ -132,6 +132,10 @@ public extension Comment1Providing {
         try await api.reportComment(id: id, reason: reason)
     }
     
+    func purge(reason: String?) async throws {
+        try await api.purgeComment(id: id, reason: reason)
+    }
+    
     @discardableResult
     func updateDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         deletedManager.performRequest(expectedResult: newValue) { semaphore in

@@ -171,6 +171,10 @@ public extension Post1Providing {
         try await api.reportPost(id: id, reason: reason)
     }
     
+    func purge(reason: String?) async throws {
+        try await api.purgePost(id: id, reason: reason)
+    }
+    
     @discardableResult
     func updateDeleted(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         deletedManager.performRequest(expectedResult: newValue) { semaphore in
