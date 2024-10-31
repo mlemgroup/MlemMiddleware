@@ -38,6 +38,8 @@ public final class Post1: Post1Providing {
     public var languageId: Int
     public var altText: String?
     
+    public var purged: Bool = false
+    
     public var lockedManager: StateManager<Bool>
     public var locked: Bool { lockedManager.wrappedValue }
     public var verifiedLocked: Bool { lockedManager.verifiedValue }

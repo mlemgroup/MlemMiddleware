@@ -11,7 +11,8 @@ public protocol Reply1Providing:
         ContentModel,
         ContentIdentifiable,
         Interactable1Providing,
-        InboxItemProviding
+        InboxItemProviding,
+        PurgableProviding
     {
     
     var reply1: Reply1 { get }
@@ -63,6 +64,8 @@ public extension Reply1Providing {
     var read: Bool { reply1.read }
     var created: Date { reply1.created }
     var isMention: Bool { reply1.isMention }
+    
+    var purged: Bool { reply1.purged }
     
     var id_: Int? { id }
     var recipientId_: Int? { recipientId }

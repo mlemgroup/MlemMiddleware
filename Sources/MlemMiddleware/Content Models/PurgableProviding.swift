@@ -8,5 +8,6 @@
 import Foundation
 
 public protocol PurgableProviding: ContentIdentifiable {
+    var purged: Bool { get }
     func purge(reason: String?) async throws
 }

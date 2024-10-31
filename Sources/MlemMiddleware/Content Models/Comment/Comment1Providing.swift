@@ -13,6 +13,7 @@ public protocol Comment1Providing:
         ContentIdentifiable,
         Interactable1Providing,
         DeletableProviding,
+        PurgableProviding,
         SelectableContentProviding,
         FeedLoadable where FilterType == CommentFilterType {
     var comment1: Comment1 { get }
@@ -49,6 +50,7 @@ public extension Comment1Providing {
     var removed: Bool { comment1.removed }
     var removedManager: StateManager<Bool> { comment1.removedManager }
     var languageId: Int { comment1.languageId }
+    var purged: Bool { comment1.purged }
     
     var id_: Int? { comment1.id }
     var content_: String? { comment1.content }
@@ -134,6 +136,7 @@ public extension Comment1Providing {
     
     func purge(reason: String?) async throws {
         try await api.purgeComment(id: id, reason: reason)
+        self.comment1.purged = true
     }
     
     @discardableResult

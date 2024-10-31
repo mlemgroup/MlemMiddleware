@@ -324,7 +324,7 @@ public extension ApiClient {
         let request = PurgePostRequest(postId: id, reason: reason)
         let response = try await perform(request)
         guard response.success else { throw ApiClientError.unsuccessful }
-        // caches.post1.retrieveModel(cacheId: id)
+        caches.post1.retrieveModel(cacheId: id)?.purged = true
     }
     
     @discardableResult
