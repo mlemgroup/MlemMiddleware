@@ -32,6 +32,7 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
         self.creatorId = creatorId
         self.communityId = communityId
         super.init(
+            api: api,
             pageSize: pageSize,
             sortType: sortType,
             showReadPosts: true,

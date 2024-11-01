@@ -7,6 +7,37 @@
 
 import Foundation
 
+struct CommunityFetchProvider: FetchProviding {
+    typealias Item = Community2
+    
+    let api: ApiClient
+    let query: String
+    let pageSize: Int
+    let listing: ApiListingType
+    let sort: ApiSortType
+    
+    func fetchPage(_ page: Int) async throws -> FetchResponse<Community2> {
+        let communities = try await api.searchCommunities(
+            query: query,
+            page: page,
+            limit: pageSize,
+            filter: listing,
+            sort: sort
+        )
+        
+        return FetchResponse<Community2>.init(
+            items: communities,
+            prevCursor: nil,
+            nextCursor: nil,
+            numFiltered: 0
+        )
+    }
+    
+    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Community2> {
+        fatalError("Unsupported loading operation")
+    }
+}
+
 @Observable
 public class CommunityFeedLoader: StandardFeedLoader<Community2> {
     public var api: ApiClient
@@ -28,13 +59,19 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         
         super.init(
             pageSize: pageSize,
-            filter: .init()
+            filter: .init(),
+            loadingActor: .init(
+                fetchProvider: CommunityFetchProvider(
+                api: api,
+                query: query,
+                pageSize: pageSize,
+                listing: listing,
+                sort: sort)
+            )
         )
     }
     
-    // MARK: StandardTracker Loading Methods
-    
-    override public func fetchPage(page: Int) async throws -> FetchResponse<Community2> {
+    public func fetchPage(_ page: Int) async throws -> FetchResponse<Community2> {
         let communities = try await api.searchCommunities(
             query: query,
             page: page,
@@ -43,7 +80,7 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
             sort: sort
         )
 
-        return .init(
+        return FetchResponse<Community2>.init(
             items: communities,
             prevCursor: nil,
             nextCursor: nil,
@@ -51,9 +88,9 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         )
     }
     
-    override public func refresh(clearBeforeRefresh: Bool) async throws {
-        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
-    }
+//    override public func refresh(clearBeforeRefresh: Bool) async throws {
+//        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
+//    }
     
     public func refresh(
         query: String? = nil,

@@ -21,6 +21,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     ) {
         self.community = community
         super.init(
+            api: community.api,
             pageSize: pageSize,
             sortType: sortType,
             showReadPosts: showReadPosts,

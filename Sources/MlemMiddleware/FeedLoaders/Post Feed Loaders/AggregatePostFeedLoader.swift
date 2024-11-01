@@ -7,6 +7,32 @@
 
 import Foundation
 
+class AggregatePostFetchProvider: PostFetchProvider {
+    let feedType: ApiListingType
+    let sortType: ApiSortType
+    let pageSize: Int
+    
+    init(api: ApiClient, filter: PostFilter, prefetchingConfiguration: PrefetchingConfiguration, feedType: ApiListingType, sortType: ApiSortType, pageSize: Int) {
+        self.feedType = feedType
+        self.sortType = sortType
+        self.pageSize = pageSize
+        
+        super.init(api: api, filter: filter, prefetchingConfiguration: prefetchingConfiguration)
+    }
+    
+    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
+        return try await api.getPosts(
+            feed: feedType,
+            sort: sortType,
+            page: page,
+            cursor: cursor,
+            limit: pageSize,
+            filter: nil, // TODO
+            showHidden: false // TODO
+        )
+    }
+}
+
 public class AggregatePostFeedLoader: CorePostFeedLoader {
     public var api: ApiClient
     private(set) var feedType: ApiListingType // ew raw API type but in this case defining a proxy enum seems silly
@@ -24,25 +50,34 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         self.api = api
         self.feedType = feedType
         super.init(
+            api: api,
             pageSize: pageSize,
             sortType: sortType,
             showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
-            prefetchingConfiguration: prefetchingConfiguration
+            prefetchingConfiguration: prefetchingConfiguration,
+            fetchProvider: AggregatePostFetchProvider(
+                api: api,
+                filter: PostFilter(showRead: showReadPosts),
+                prefetchingConfiguration: prefetchingConfiguration,
+                feedType: feedType,
+                sortType: sortType,
+                pageSize: pageSize
+            )
         )
     }
     
-    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
-        return try await api.getPosts(
-            feed: feedType,
-            sort: sortType,
-            page: page,
-            cursor: cursor,
-            limit: pageSize,
-            filter: nil, // TODO
-            showHidden: false // TODO
-        )
-    }
+//    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
+//        return try await api.getPosts(
+//            feed: feedType,
+//            sort: sortType,
+//            page: page,
+//            cursor: cursor,
+//            limit: pageSize,
+//            filter: nil, // TODO
+//            showHidden: false // TODO
+//        )
+//    }
     
     @MainActor
     public func changeFeedType(to newFeedType: ApiListingType) async throws {

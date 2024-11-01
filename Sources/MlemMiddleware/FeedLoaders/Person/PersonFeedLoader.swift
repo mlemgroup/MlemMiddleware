@@ -7,6 +7,37 @@
 
 import Foundation
 
+struct PersonFetchProvider: FetchProviding {
+    typealias item = Person2
+    
+    let api: ApiClient
+    let query: String
+    let pageSize: Int
+    let listing: ApiListingType
+    let sort: ApiSortType
+    
+    func fetchPage(_ page: Int) async throws -> FetchResponse<Person2> {
+        let communities = try await api.searchPeople(
+            query: query,
+            page: page,
+            limit: pageSize,
+            filter: listing,
+            sort: sort
+        )
+
+        return .init(
+            items: communities,
+            prevCursor: nil,
+            nextCursor: nil,
+            numFiltered: 0
+        )
+    }
+    
+    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Person2> {
+        fatalError("Unsupported loading operation")
+    }
+}
+
 @Observable
 public class PersonFeedLoader: StandardFeedLoader<Person2> {
     public var api: ApiClient
@@ -29,28 +60,29 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         
         super.init(
             pageSize: pageSize,
-            filter: .init()
+            filter: .init(),
+            loadingActor: .init(fetchProvider: PersonFetchProvider(api: api, query: query, pageSize: pageSize, listing: listing, sort: sort))
         )
     }
     
     // MARK: StandardTracker Loading Methods
-    
-    override public func fetchPage(page: Int) async throws -> FetchResponse<Person2> {
-        let communities = try await api.searchPeople(
-            query: query,
-            page: page,
-            limit: pageSize,
-            filter: listing,
-            sort: sort
-        )
-
-        return .init(
-            items: communities,
-            prevCursor: nil,
-            nextCursor: nil,
-            numFiltered: 0
-        )
-    }
+//    
+//    override public func fetchPage(page: Int) async throws -> FetchResponse<Person2> {
+//        let communities = try await api.searchPeople(
+//            query: query,
+//            page: page,
+//            limit: pageSize,
+//            filter: listing,
+//            sort: sort
+//        )
+//
+//        return .init(
+//            items: communities,
+//            prevCursor: nil,
+//            nextCursor: nil,
+//            numFiltered: 0
+//        )
+//    }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
         try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
