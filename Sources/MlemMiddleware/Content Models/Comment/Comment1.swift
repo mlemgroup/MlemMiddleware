@@ -26,6 +26,8 @@ public final class Comment1: Comment1Providing {
     public var distinguished: Bool
     public var languageId: Int
     
+    public var purged: Bool = false
+    
     internal var deletedManager: StateManager<Bool>
     public var deleted: Bool { deletedManager.wrappedValue }
     

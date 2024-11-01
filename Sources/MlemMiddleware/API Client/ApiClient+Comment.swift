@@ -136,6 +136,13 @@ public extension ApiClient {
         // TODO: return comment report
     }
     
+    func purgeComment(id: Int, reason: String?) async throws {
+        let request = PurgeCommentRequest(commentId: id, reason: reason)
+        let response = try await perform(request)
+        guard response.success else { throw ApiClientError.unsuccessful }
+        caches.comment1.retrieveModel(cacheId: id)?.purged = true
+    }
+    
     @discardableResult
     func removeComment(
         id: Int,
