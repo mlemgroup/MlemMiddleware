@@ -28,8 +28,7 @@ struct PersonFetchProvider: FetchProviding {
         return .init(
             items: communities,
             prevCursor: nil,
-            nextCursor: nil,
-            numFiltered: 0
+            nextCursor: nil
         )
     }
     

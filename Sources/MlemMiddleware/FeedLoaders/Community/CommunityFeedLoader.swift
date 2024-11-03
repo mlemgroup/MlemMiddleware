@@ -28,8 +28,7 @@ struct CommunityFetchProvider: FetchProviding {
         return FetchResponse<Community2>.init(
             items: communities,
             prevCursor: nil,
-            nextCursor: nil,
-            numFiltered: 0
+            nextCursor: nil
         )
     }
     
@@ -83,14 +82,9 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         return FetchResponse<Community2>.init(
             items: communities,
             prevCursor: nil,
-            nextCursor: nil,
-            numFiltered: 0
+            nextCursor: nil
         )
     }
-    
-//    override public func refresh(clearBeforeRefresh: Bool) async throws {
-//        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
-//    }
     
     public func refresh(
         query: String? = nil,

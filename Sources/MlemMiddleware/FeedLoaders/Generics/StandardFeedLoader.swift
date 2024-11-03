@@ -45,9 +45,36 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     // MARK: - External methods
     
     override public func loadMoreItems() async throws {
+        print("DEBUG called loadMoreItems")
         await setLoading(.loading)
-        let loadingResponse = await loadingActor.load()
-        await handleLoadingResponse(loadingResponse)
+        
+        // TODO: retry logic
+        // TODO: error handling
+        var newItems: [Item] = .init()
+        var abort: Bool = false // this is slightly awkward but lets us trigger a loop break from within the switch handlers below
+        repeat {
+            print("DEBUG repeating load")
+            let loadingResponse = await loadingActor.load()
+            
+            switch loadingResponse {
+            case let .success(items):
+                print("[\(Item.self) FeedLoader] received success (\(items.count))")
+                newItems.append(contentsOf: items)
+            case let .done(items):
+                print("[\(Item.self) FeedLoader] received finished (\(items.count))")
+                newItems.append(contentsOf: items)
+                await setLoading(.done)
+                abort = true
+            case let .failure(failureReason):
+                print("[\(Item.self) FeedLoader] load failed (\(failureReason.rawValue))")
+                abort = true
+            }
+        } while !abort && newItems.count < MiddlewareConstants.infiniteLoadThresholdOffset
+        
+        await addItems(newItems)
+        if loadingState != .done {
+            await setLoading(.idle)
+        }
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
@@ -56,9 +83,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         }
         
         filter.reset()
-        await setLoading(.loading)
-        let loadingResponse = try await loadingActor.refresh()
-        await handleLoadingResponse(loadingResponse)
+        await loadingActor.reset()
+        try await loadMoreItems()
     }
 
     public func clear() async {
@@ -70,20 +96,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
 
     // MARK: - Internal methods
     
-    private func handleLoadingResponse(_ loadingResponse: LoadingResponse<Item>) async {
-        switch loadingResponse {
-        case let .success(fetchResponse):
-            print("[\(Item.self) FeedLoader] received \(fetchResponse.items.count) new items")
-            
-            if fetchResponse.hasContent {
-                await addItems(fetchResponse.items)
-                await setLoading(.idle)
-            } else {
-                await setLoading(.done)
-            }
-        case let .failure(reason):
-            print("[\(Item.self) FeedLoader] load failed (\(reason.rawValue))")
-            await setLoading(.idle)
-        }
+    /// Helper function to perform filtering operations. By default, does nothing. If filtering is required, override this method and define the necessary filtering logic.
+    func filterItems(_ items: [Item]) -> [Item] {
+        return items
     }
 }

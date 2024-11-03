@@ -25,26 +25,24 @@ class PostFetchProvider: FetchProviding {
     func fetchPage(_ page: Int) async throws -> FetchResponse<Post2> {
         let result = try await getPosts(page: page, cursor: nil)
 
-        let filteredPosts = filter.filter(result.posts)
+        let filteredPosts = result.posts
         preloadImages(filteredPosts)
         return .init(
             items: filteredPosts,
             prevCursor: nil,
-            nextCursor: result.cursor,
-            numFiltered: result.posts.count - filteredPosts.count
+            nextCursor: result.cursor
         )
     }
     
     func fetchCursor(_ cursor: String) async throws -> FetchResponse<Post2> {
         let result = try await getPosts(page: 1, cursor: cursor)
 
-        let filteredPosts = filter.filter(result.posts)
+        let filteredPosts = result.posts
         preloadImages(filteredPosts)
         return .init(
             items: filteredPosts,
             prevCursor: cursor,
-            nextCursor: result.cursor,
-            numFiltered: result.posts.count - filteredPosts.count
+            nextCursor: result.cursor
         )
     }
     
