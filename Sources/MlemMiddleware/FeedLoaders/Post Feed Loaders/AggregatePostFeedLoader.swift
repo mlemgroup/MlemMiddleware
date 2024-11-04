@@ -31,7 +31,9 @@ class AggregatePostFetchProvider: PostFetchProvider {
 
 public class AggregatePostFeedLoader: CorePostFeedLoader {
     public var api: ApiClient
-    private(set) var feedType: ApiListingType // ew raw API type but in this case defining a proxy enum seems silly
+    
+    // force unwrap because this should ALWAYS be an AggregatePostFetchProvider
+    var aggregatePostFetchProvider: AggregatePostFetchProvider { fetchProvider as! AggregatePostFetchProvider }
     
     public init(
         pageSize: Int,
@@ -44,7 +46,6 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         feedType: ApiListingType
     ) {
         self.api = api
-        self.feedType = feedType
         super.init(
             api: api,
             pageSize: pageSize,
@@ -60,24 +61,12 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         )
     }
     
-//    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
-//        return try await api.getPosts(
-//            feed: feedType,
-//            sort: sortType,
-//            page: page,
-//            cursor: cursor,
-//            limit: pageSize,
-//            filter: nil, // TODO
-//            showHidden: false // TODO
-//        )
-//    }
-    
     @MainActor
     public func changeFeedType(to newFeedType: ApiListingType) async throws {
-        let shouldRefresh = items.isEmpty || feedType != newFeedType
+        let shouldRefresh = items.isEmpty || aggregatePostFetchProvider.feedType != newFeedType
         
         // always perform assignment--if account changed, feed type will look unchanged but API will be different
-        feedType = newFeedType
+        aggregatePostFetchProvider.feedType = newFeedType
         
         // only refresh if nominal feed type changed
         if shouldRefresh {
