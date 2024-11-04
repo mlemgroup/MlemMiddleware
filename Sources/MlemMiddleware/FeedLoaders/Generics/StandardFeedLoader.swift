@@ -12,13 +12,14 @@ import Observation
 @Observable
 public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     var filter: MultiFilter<Item>
-    let fetchProvider: FetchProviding<Item>
+    let fetchProvider: any FetchProviding<Item>
     var loadingActor: LoadingActor<Item>
 
-    init(pageSize: Int, filter: MultiFilter<Item>, loadingActor: LoadingActor<Item>) {
+    init(filter: MultiFilter<Item>, fetchProvider: any FetchProviding<Item>) {
         self.filter = filter
-        self.loadingActor = loadingActor
-        super.init(pageSize: pageSize)
+        self.fetchProvider = fetchProvider
+        self.loadingActor = .init(fetchProvider: fetchProvider)
+        super.init()
     }
 
     // MARK: - External methods
@@ -31,7 +32,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         var newItems: [Item] = .init()
         var abort: Bool = false // this is slightly awkward but lets us trigger a loop break from within the switch handlers below
         repeat {
-            print("DEBUG repeating load")
+            print("DEBUG repeating load (\(newItems.count))")
             let loadingResponse = await loadingActor.load()
             var fetchedItems: [Item] = .init()
             

@@ -58,30 +58,12 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         self.sort = sort
         
         super.init(
-            pageSize: pageSize,
             filter: .init(),
-            loadingActor: .init(fetchProvider: PersonFetchProvider(api: api, query: query, pageSize: pageSize, listing: listing, sort: sort))
+            fetchProvider: PersonFetchProvider(api: api, query: query, pageSize: pageSize, listing: listing, sort: sort)
         )
     }
     
     // MARK: StandardTracker Loading Methods
-//    
-//    override public func fetchPage(page: Int) async throws -> FetchResponse<Person2> {
-//        let communities = try await api.searchPeople(
-//            query: query,
-//            page: page,
-//            limit: pageSize,
-//            filter: listing,
-//            sort: sort
-//        )
-//
-//        return .init(
-//            items: communities,
-//            prevCursor: nil,
-//            nextCursor: nil,
-//            numFiltered: 0
-//        )
-//    }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
         try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)

@@ -7,12 +7,43 @@
 
 import Foundation
 
-public class SearchPostFeedLoader: CorePostFeedLoader {
-    public var api: ApiClient
+public class SearchPostFetchProvider: PostFetchProvider {
     public var query: String
-    public var listing: ApiListingType
-    public var creatorId: Int?
     public var communityId: Int?
+    public var creatorId: Int?
+    public var listing: ApiListingType
+    
+    // setters to allow manual overriding of these for search use cases
+    public func setApi(_ api: ApiClient) { self.api = api }
+    public func setSortType(_ sortType: ApiSortType) { self.sortType = sortType }
+    
+    init(api: ApiClient, sortType: ApiSortType, pageSize: Int, query: String, communityId: Int?, creatorId: Int?, listing: ApiListingType) {
+        self.query = query
+        self.communityId = communityId
+        self.creatorId = creatorId
+        self.listing = listing
+        
+        super.init(api: api, sortType: sortType, pageSize: pageSize)
+    }
+    
+    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
+        let response = try await api.searchPosts(
+            query: query,
+            page: page,
+            limit: pageSize,
+            communityId: communityId,
+            creatorId: creatorId,
+            filter: listing,
+            sort: sortType
+        )
+        return (posts: response, cursor: nil)
+    }
+}
+
+public class SearchPostFeedLoader: CorePostFeedLoader {
+    
+    // force unwrap because this should ALWAYS be a SearchPostFetchProvider
+    public var searchPostFetchProvider: SearchPostFetchProvider { fetchProvider as! SearchPostFetchProvider }
     
     public init(
         api: ApiClient,
@@ -26,31 +57,21 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
         urlCache: URLCache,
         listing: ApiListingType = .all
     ) {
-        self.api = api
-        self.query = query
-        self.listing = listing
-        self.creatorId = creatorId
-        self.communityId = communityId
         super.init(
             api: api,
             pageSize: pageSize,
-            sortType: sortType,
             showReadPosts: true,
             filteredKeywords: filteredKeywords,
-            prefetchingConfiguration: prefetchingConfiguration
+            prefetchingConfiguration: prefetchingConfiguration,
+            fetchProvider: SearchPostFetchProvider(
+                api: api,
+                sortType: sortType,
+                pageSize: pageSize,
+                query: query,
+                communityId: communityId,
+                creatorId: creatorId,
+                listing: listing
+            )
         )
     }
-    
-//    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
-//        let response = try await api.searchPosts(
-//            query: query,
-//            page: page,
-//            limit: pageSize,
-//            communityId: communityId,
-//            creatorId: creatorId,
-//            filter: listing,
-//            sort: sortType
-//        )
-//        return (posts: response, cursor: nil)
-//    }
 }

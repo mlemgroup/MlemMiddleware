@@ -9,13 +9,17 @@ import Foundation
 import Nuke
 import Observation
 
-class PostFetchProvider: FetchProviding {
+public class PostFetchProvider: FetchProviding {
     typealias Item = Post2
     
-    let api: ApiClient
+    var api: ApiClient
+    var sortType: ApiSortType
+    var pageSize: Int
     
-    init(api: ApiClient) {
+    init(api: ApiClient, sortType: ApiSortType, pageSize: Int) {
         self.api = api
+        self.sortType = sortType
+        self.pageSize = pageSize
     }
     
     func fetchPage(_ page: Int) async throws -> FetchResponse<Post2> {
@@ -46,49 +50,28 @@ class PostFetchProvider: FetchProviding {
 /// Post tracker for use with single feeds. Can easily be extended to load any pure post feed by creating an inheriting class that overrides getPosts().
 @Observable
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
-    public var sortType: ApiSortType
     public private(set) var prefetchingConfiguration: PrefetchingConfiguration
     
-//    public init(
-//        api: ApiClient,
-//        pageSize: Int,
-//        sortType: ApiSortType,
-//        showReadPosts: Bool,
-//        filteredKeywords: [String],
-//        prefetchingConfiguration: PrefetchingConfiguration
-//    ) {
-//        assertionFailure("This initializer should not be called")
-//        
-//        self.sortType = sortType
-//        self.prefetchingConfiguration = prefetchingConfiguration
-//        
-//        let filter = PostFilter(showRead: showReadPosts)
-//        
-//        super.init(
-//            pageSize: pageSize,
-//            filter: filter,
-//            loadingActor: .init(fetchProvider: PostFetchProvider(api: api, filter: filter, prefetchingConfiguration: prefetchingConfiguration))
-//        )
-//    }
+    // force unwrap because this should ALWAYS be a PostFetchProvider
+    private var postFetchProvider: PostFetchProvider { fetchProvider as! PostFetchProvider }
+    
+    public var sortType: ApiSortType { postFetchProvider.sortType }
     
     internal init(
         api: ApiClient,
         pageSize: Int,
-        sortType: ApiSortType,
         showReadPosts: Bool,
         filteredKeywords: [String],
         prefetchingConfiguration: PrefetchingConfiguration,
-        fetchProvider: (PostFilter, PrefetchingConfiguration, ApiListingType, ApiSortType, Int) -> PostFetchProvider
+        fetchProvider: PostFetchProvider
     ) {
-        self.sortType = sortType
         self.prefetchingConfiguration = prefetchingConfiguration
         
         let filter = PostFilter(showRead: showReadPosts)
         
         super.init(
-            pageSize: pageSize,
             filter: filter,
-            loadingActor: .init(fetchProvider: fetchProvider)
+            fetchProvider: fetchProvider
         )
     }
     
@@ -107,11 +90,11 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     /// Changes the post sort type to the specified value and reloads the feed
     public func changeSortType(to newSortType: ApiSortType, forceRefresh: Bool = false) async throws {
         // don't do anything if sort type not changed
-        guard sortType != newSortType || forceRefresh else {
+        guard postFetchProvider.sortType != newSortType || forceRefresh else {
             return
         }
         
-        sortType = newSortType
+        postFetchProvider.sortType = newSortType
         try await refresh(clearBeforeRefresh: true)
     }
     

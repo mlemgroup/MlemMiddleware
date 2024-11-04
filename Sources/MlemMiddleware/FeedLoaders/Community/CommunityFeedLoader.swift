@@ -7,14 +7,22 @@
 
 import Foundation
 
-struct CommunityFetchProvider: FetchProviding {
+class CommunityFetchProvider: FetchProviding {
     typealias Item = Community2
     
     let api: ApiClient
-    let query: String
-    let pageSize: Int
-    let listing: ApiListingType
-    let sort: ApiSortType
+    var query: String
+    var pageSize: Int
+    var listing: ApiListingType
+    var sort: ApiSortType
+    
+    init(api: ApiClient, query: String, pageSize: Int, listing: ApiListingType, sort: ApiSortType) {
+        self.api = api
+        self.query = query
+        self.pageSize = pageSize
+        self.listing = listing
+        self.sort = sort
+    }
     
     func fetchPage(_ page: Int) async throws -> FetchResponse<Community2> {
         let communities = try await api.searchCommunities(
@@ -40,9 +48,9 @@ struct CommunityFetchProvider: FetchProviding {
 @Observable
 public class CommunityFeedLoader: StandardFeedLoader<Community2> {
     public var api: ApiClient
-    public private(set) var query: String
-    public private(set) var listing: ApiListingType
-    public private(set) var sort: ApiSortType
+//    public private(set) var query: String
+//    public private(set) var listing: ApiListingType
+//    public private(set) var sort: ApiSortType
     
     public init(
         api: ApiClient,
@@ -52,37 +60,18 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         sort: ApiSortType = .topAll
     ) {
         self.api = api
-        self.query = query
-        self.listing = listing
-        self.sort = sort
+//        self.query = query
+//        self.listing = listing
+//        self.sort = sort
         
         super.init(
-            pageSize: pageSize,
             filter: .init(),
-            loadingActor: .init(
-                fetchProvider: CommunityFetchProvider(
+            fetchProvider: CommunityFetchProvider(
                 api: api,
                 query: query,
                 pageSize: pageSize,
                 listing: listing,
                 sort: sort)
-            )
-        )
-    }
-    
-    public func fetchPage(_ page: Int) async throws -> FetchResponse<Community2> {
-        let communities = try await api.searchCommunities(
-            query: query,
-            page: page,
-            limit: pageSize,
-            filter: listing,
-            sort: sort
-        )
-
-        return FetchResponse<Community2>.init(
-            items: communities,
-            prevCursor: nil,
-            nextCursor: nil
         )
     }
     
@@ -92,9 +81,14 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         sort: ApiSortType? = nil,
         clearBeforeRefresh: Bool = false
     ) async throws {
-        self.query = query ?? self.query
-        self.listing = listing ?? self.listing
-        self.sort = sort ?? self.sort
+        guard let communityFetchProvider = fetchProvider as? CommunityFetchProvider else {
+            assertionFailure("fetchProvider is not CommunityFetchProvider")
+            return
+        }
+        
+        communityFetchProvider.query = query ?? communityFetchProvider.query
+        communityFetchProvider.listing = listing ?? communityFetchProvider.listing
+        communityFetchProvider.sort = sort ?? communityFetchProvider.sort
         try await refresh(clearBeforeRefresh: clearBeforeRefresh)
     }
 }

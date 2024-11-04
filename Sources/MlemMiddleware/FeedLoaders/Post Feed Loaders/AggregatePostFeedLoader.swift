@@ -9,15 +9,11 @@ import Foundation
 
 class AggregatePostFetchProvider: PostFetchProvider {
     var feedType: ApiListingType
-    var sortType: ApiSortType
-    var pageSize: Int
     
     init(api: ApiClient, feedType: ApiListingType, sortType: ApiSortType, pageSize: Int) {
         self.feedType = feedType
-        self.sortType = sortType
-        self.pageSize = pageSize
         
-        super.init(api: api)
+        super.init(api: api, sortType: sortType, pageSize: pageSize)
     }
     
     override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
@@ -52,14 +48,11 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         super.init(
             api: api,
             pageSize: pageSize,
-            sortType: sortType,
             showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
             prefetchingConfiguration: prefetchingConfiguration,
             fetchProvider: AggregatePostFetchProvider(
                 api: api,
-                filter: PostFilter(showRead: showReadPosts),
-                prefetchingConfiguration: prefetchingConfiguration,
                 feedType: feedType,
                 sortType: sortType,
                 pageSize: pageSize
