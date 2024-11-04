@@ -9,31 +9,10 @@ import Foundation
 import Semaphore
 import Observation
 
-/// Enumeration of loading actions
-enum LoadAction {
-    /// Clears the tracker
-    case clear
-    
-    /// Refreshes the tracker, loading the first page of new items. If associated bool is true, clears the tracker before loading new items.
-    case refresh(Bool)
-    
-    /// Load the requested page
-    case loadPage(Int)
-    
-    /// Load the requested cursor
-    case loadCursor(String)
-}
-
 @Observable
 public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     var filter: MultiFilter<Item>
-    /// loading state
-    /// number of the most recently loaded page. 0 indicates no content.
-    // private(set) var page: Int = 0
-    /// cursor of the most recently loaded page. nil indicates no content.
-    // private(set) var loadingCursor: String?
-    // private let loadingSemaphore: AsyncSemaphore = .init(value: 1)
-    
+    let fetchProvider: FetchProviding<Item>
     var loadingActor: LoadingActor<Item>
 
     init(pageSize: Int, filter: MultiFilter<Item>, loadingActor: LoadingActor<Item>) {
@@ -45,7 +24,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     // MARK: - External methods
     
     override public func loadMoreItems() async throws {
-        print("DEBUG called loadMoreItems")
         await setLoading(.loading)
         
         // TODO: retry logic
@@ -55,20 +33,26 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         repeat {
             print("DEBUG repeating load")
             let loadingResponse = await loadingActor.load()
+            var fetchedItems: [Item] = .init()
             
             switch loadingResponse {
             case let .success(items):
                 print("[\(Item.self) FeedLoader] received success (\(items.count))")
-                newItems.append(contentsOf: items)
+                fetchedItems = items
             case let .done(items):
                 print("[\(Item.self) FeedLoader] received finished (\(items.count))")
-                newItems.append(contentsOf: items)
+                fetchedItems = items
                 await setLoading(.done)
                 abort = true
             case let .failure(failureReason):
                 print("[\(Item.self) FeedLoader] load failed (\(failureReason.rawValue))")
                 abort = true
             }
+            
+            let filteredItems = filter.filter(fetchedItems)
+            processFetchedItems(filteredItems)
+            newItems.append(contentsOf: filteredItems)
+            
         } while !abort && newItems.count < MiddlewareConstants.infiniteLoadThresholdOffset
         
         await addItems(newItems)
@@ -93,11 +77,9 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         await setLoading(.idle)
         await setItems(.init())
     }
-
-    // MARK: - Internal methods
     
-    /// Helper function to perform filtering operations. By default, does nothing. If filtering is required, override this method and define the necessary filtering logic.
-    func filterItems(_ items: [Item]) -> [Item] {
-        return items
+    /// Helper function to perform custom post-fetch processing (e.g., prefetching). Override to implement desired behavior.
+    func processFetchedItems(_ items: [Item]) {
+        return
     }
 }

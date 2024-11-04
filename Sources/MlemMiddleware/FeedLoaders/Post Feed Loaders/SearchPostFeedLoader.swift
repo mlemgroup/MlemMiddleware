@@ -41,16 +41,16 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
         )
     }
     
-    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
-        let response = try await api.searchPosts(
-            query: query,
-            page: page,
-            limit: pageSize,
-            communityId: communityId,
-            creatorId: creatorId,
-            filter: listing,
-            sort: sortType
-        )
-        return (posts: response, cursor: nil)
-    }
+//    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
+//        let response = try await api.searchPosts(
+//            query: query,
+//            page: page,
+//            limit: pageSize,
+//            communityId: communityId,
+//            creatorId: creatorId,
+//            filter: listing,
+//            sort: sortType
+//        )
+//        return (posts: response, cursor: nil)
+//    }
 }

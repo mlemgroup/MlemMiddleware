@@ -85,12 +85,6 @@ actor LoadingActor<Item: FeedLoadable> {
         cursor = nil
     }
     
-    /// Resets this LoadingActor, then loads the first page of items
-//    func refresh() async -> LoadingResponse<Item> {
-//        reset()
-//        return await load()
-//    }
-    
     /// Loads the next page of items.
     /// - Returns: on success, .success with FetchResponse containing loaded items; if another load is underway, .ignored; if the load is cancelled, .cancelled
     func load() async -> LoadingResponse<Item> {

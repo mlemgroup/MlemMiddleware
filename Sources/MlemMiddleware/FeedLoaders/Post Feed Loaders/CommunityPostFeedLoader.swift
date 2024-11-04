@@ -30,14 +30,14 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
         )
     }
     
-    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
-        return try await community.getPosts(
-            sort: sortType,
-            page: page,
-            cursor: cursor,
-            limit: pageSize,
-            filter: nil, // TODO
-            showHidden: false // TODO
-        )
-    }
+//    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
+//        return try await community.getPosts(
+//            sort: sortType,
+//            page: page,
+//            cursor: cursor,
+//            limit: pageSize,
+//            filter: nil, // TODO
+//            showHidden: false // TODO
+//        )
+//    }
 }

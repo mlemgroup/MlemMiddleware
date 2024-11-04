@@ -8,16 +8,16 @@
 import Foundation
 
 class AggregatePostFetchProvider: PostFetchProvider {
-    let feedType: ApiListingType
-    let sortType: ApiSortType
-    let pageSize: Int
+    var feedType: ApiListingType
+    var sortType: ApiSortType
+    var pageSize: Int
     
-    init(api: ApiClient, filter: PostFilter, prefetchingConfiguration: PrefetchingConfiguration, feedType: ApiListingType, sortType: ApiSortType, pageSize: Int) {
+    init(api: ApiClient, feedType: ApiListingType, sortType: ApiSortType, pageSize: Int) {
         self.feedType = feedType
         self.sortType = sortType
         self.pageSize = pageSize
         
-        super.init(api: api, filter: filter, prefetchingConfiguration: prefetchingConfiguration)
+        super.init(api: api)
     }
     
     override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
