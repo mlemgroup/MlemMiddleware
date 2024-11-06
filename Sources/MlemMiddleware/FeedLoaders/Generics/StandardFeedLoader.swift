@@ -26,13 +26,40 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     
     override public func loadMoreItems() async throws {
         await setLoading(.loading)
+  
+        let newItems: [Item] = try await fetchMoreItems()
+        await addItems(newItems)
         
+        if loadingState != .done {
+            await setLoading(.idle)
+        }
+    }
+    
+    override public func refresh(clearBeforeRefresh: Bool) async throws {
+        if clearBeforeRefresh {
+            await setItems(.init())
+        }
+        
+        filter.reset()
+        await loadingActor.reset()
+        
+        let newItems = try await fetchMoreItems()
+        await setItems(newItems)
+    }
+
+    public func clear() async {
+        filter.reset()
+        await loadingActor.reset()
+        await setLoading(.idle)
+        await setItems(.init())
+    }
+    
+    private func fetchMoreItems() async throws -> [Item] {
         // TODO: retry logic
         // TODO: error handling
         var newItems: [Item] = .init()
         var abort: Bool = false // this is slightly awkward but lets us trigger a loop break from within the switch handlers below
         repeat {
-            print("DEBUG repeating load (\(newItems.count))")
             let loadingResponse = await loadingActor.load()
             var fetchedItems: [Item] = .init()
             
@@ -56,27 +83,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             
         } while !abort && newItems.count < MiddlewareConstants.infiniteLoadThresholdOffset
         
-        await addItems(newItems)
-        if loadingState != .done {
-            await setLoading(.idle)
-        }
-    }
-    
-    override public func refresh(clearBeforeRefresh: Bool) async throws {
-        if clearBeforeRefresh {
-            await setItems(.init())
-        }
-        
-        filter.reset()
-        await loadingActor.reset()
-        try await loadMoreItems()
-    }
-
-    public func clear() async {
-        filter.reset()
-        await loadingActor.reset()
-        await setLoading(.idle)
-        await setItems(.init())
+        return newItems
     }
     
     /// Helper function to perform custom post-fetch processing (e.g., prefetching). Override to implement desired behavior.

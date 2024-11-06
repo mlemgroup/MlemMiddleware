@@ -48,9 +48,6 @@ class CommunityFetchProvider: FetchProviding {
 @Observable
 public class CommunityFeedLoader: StandardFeedLoader<Community2> {
     public var api: ApiClient
-//    public private(set) var query: String
-//    public private(set) var listing: ApiListingType
-//    public private(set) var sort: ApiSortType
     
     public init(
         api: ApiClient,
@@ -60,10 +57,7 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         sort: ApiSortType = .topAll
     ) {
         self.api = api
-//        self.query = query
-//        self.listing = listing
-//        self.sort = sort
-        
+
         super.init(
             filter: .init(),
             fetchProvider: CommunityFetchProvider(
