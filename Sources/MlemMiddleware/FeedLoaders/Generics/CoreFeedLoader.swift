@@ -16,6 +16,19 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     
     private(set) var thresholds: Thresholds<Item> = .init()
     
+    public init(preheat: Bool) {
+        loadingState = preheat ? .loading : .idle
+        if preheat {
+            Task {
+                do {
+                    try await loadMoreItems()
+                } catch {
+                    loadingState = .idle
+                }
+            }
+        }
+    }
+    
     /// If the given item is the loading threshold item, loads more content
     /// This should be called as an .onAppear of every item in a feed that should support infinite scrolling
     public func loadIfThreshold(_ item: Item) throws {

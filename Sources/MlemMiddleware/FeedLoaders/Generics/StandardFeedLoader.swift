@@ -15,11 +15,11 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     let fetchProvider: any FetchProviding<Item>
     var loadingActor: LoadingActor<Item>
 
-    init(filter: MultiFilter<Item>, fetchProvider: any FetchProviding<Item>) {
+    init(preheat: Bool, filter: MultiFilter<Item>, fetchProvider: any FetchProviding<Item>) {
         self.filter = filter
         self.fetchProvider = fetchProvider
         self.loadingActor = .init(fetchProvider: fetchProvider)
-        super.init()
+        super.init(preheat: preheat)
     }
 
     // MARK: - External methods
@@ -36,20 +36,22 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
+        await setLoading(.loading)
+        
         if clearBeforeRefresh {
             await setItems(.init())
         }
         
-        filter.reset()
         await loadingActor.reset()
+        filter.reset()
         
         let newItems = try await fetchMoreItems()
         await setItems(newItems)
     }
 
     public func clear() async {
-        filter.reset()
         await loadingActor.reset()
+        filter.reset()
         await setLoading(.idle)
         await setItems(.init())
     }

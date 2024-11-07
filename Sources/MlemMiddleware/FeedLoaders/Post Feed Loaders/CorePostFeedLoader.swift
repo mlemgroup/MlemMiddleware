@@ -58,6 +58,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public var sortType: ApiSortType { postFetchProvider.sortType }
     
     internal init(
+        preheat: Bool,
         api: ApiClient,
         pageSize: Int,
         showReadPosts: Bool,
@@ -70,6 +71,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         let filter = PostFilter(showRead: showReadPosts)
         
         super.init(
+            preheat: preheat,
             filter: filter,
             fetchProvider: fetchProvider
         )

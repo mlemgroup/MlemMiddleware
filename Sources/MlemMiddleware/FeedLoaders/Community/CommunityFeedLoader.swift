@@ -50,6 +50,7 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
     public var api: ApiClient
     
     public init(
+        preheat: Bool,
         api: ApiClient,
         query: String = "",
         pageSize: Int = 20,
@@ -59,6 +60,7 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         self.api = api
 
         super.init(
+            preheat: preheat,
             filter: .init(),
             fetchProvider: CommunityFetchProvider(
                 api: api,

@@ -46,6 +46,7 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
     public private(set) var sort: ApiSortType
     
     public init(
+        preheat: Bool,
         api: ApiClient,
         query: String = "",
         pageSize: Int = 20,
@@ -58,6 +59,7 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         self.sort = sort
         
         super.init(
+            preheat: preheat,
             filter: .init(),
             fetchProvider: PersonFetchProvider(api: api, query: query, pageSize: pageSize, listing: listing, sort: sort)
         )

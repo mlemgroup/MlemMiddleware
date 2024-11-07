@@ -32,6 +32,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     public var community: any Community
     
     public init(
+        preheat: Bool,
         pageSize: Int,
         sortType: ApiSortType,
         showReadPosts: Bool,
@@ -42,6 +43,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     ) {
         self.community = community
         super.init(
+            preheat: preheat,
             api: community.api,
             pageSize: pageSize,
             showReadPosts: showReadPosts,

@@ -46,6 +46,7 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
     public var searchPostFetchProvider: SearchPostFetchProvider { fetchProvider as! SearchPostFetchProvider }
     
     public init(
+        preheat: Bool,
         api: ApiClient,
         query: String = "",
         pageSize: Int = 20,
@@ -58,6 +59,7 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
         listing: ApiListingType = .all
     ) {
         super.init(
+            preheat: preheat,
             api: api,
             pageSize: pageSize,
             showReadPosts: true,

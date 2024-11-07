@@ -36,6 +36,7 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
     var aggregatePostFetchProvider: AggregatePostFetchProvider { fetchProvider as! AggregatePostFetchProvider }
     
     public init(
+        preheat: Bool,
         pageSize: Int,
         sortType: ApiSortType,
         showReadPosts: Bool,
@@ -47,6 +48,7 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
     ) {
         self.api = api
         super.init(
+            preheat: preheat,
             api: api,
             pageSize: pageSize,
             showReadPosts: showReadPosts,
