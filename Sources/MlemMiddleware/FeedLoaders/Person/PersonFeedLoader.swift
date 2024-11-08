@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PersonFetchProvider: FetchProviding {
+struct PersonFetcher: Fetcher {
     typealias item = Person2
     
     let api: ApiClient
@@ -59,7 +59,7 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         
         super.init(
             filter: .init(),
-            fetchProvider: PersonFetchProvider(api: api, query: query, pageSize: pageSize, listing: listing, sort: sort)
+            fetcher: PersonFetcher(api: api, query: query, pageSize: pageSize, listing: listing, sort: sort)
         )
     }
     

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CommunityFetchProvider: FetchProviding {
+class CommunityFetcher: Fetcher {
     typealias Item = Community2
     
     let api: ApiClient
@@ -60,7 +60,7 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
 
         super.init(
             filter: .init(),
-            fetchProvider: CommunityFetchProvider(
+            fetcher: CommunityFetcher(
                 api: api,
                 query: query,
                 pageSize: pageSize,
@@ -75,14 +75,14 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         sort: ApiSortType? = nil,
         clearBeforeRefresh: Bool = false
     ) async throws {
-        guard let communityFetchProvider = fetchProvider as? CommunityFetchProvider else {
-            assertionFailure("fetchProvider is not CommunityFetchProvider")
+        guard let communityFetcher = fetcher as? CommunityFetcher else {
+            assertionFailure("fetcher is not CommunityFetcher")
             return
         }
         
-        communityFetchProvider.query = query ?? communityFetchProvider.query
-        communityFetchProvider.listing = listing ?? communityFetchProvider.listing
-        communityFetchProvider.sort = sort ?? communityFetchProvider.sort
+        communityFetcher.query = query ?? communityFetcher.query
+        communityFetcher.listing = listing ?? communityFetcher.listing
+        communityFetcher.sort = sort ?? communityFetcher.sort
         try await refresh(clearBeforeRefresh: clearBeforeRefresh)
     }
 }

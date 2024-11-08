@@ -12,13 +12,13 @@ import Observation
 @Observable
 public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     var filter: MultiFilter<Item>
-    let fetchProvider: any FetchProviding<Item>
+    let fetcher: any Fetcher<Item>
     var loadingActor: LoadingActor<Item>
 
-    init(filter: MultiFilter<Item>, fetchProvider: any FetchProviding<Item>) {
+    init(filter: MultiFilter<Item>, fetcher: any Fetcher<Item>) {
         self.filter = filter
-        self.fetchProvider = fetchProvider
-        self.loadingActor = .init(fetchProvider: fetchProvider)
+        self.fetcher = fetcher
+        self.loadingActor = .init(fetcher: fetcher)
         super.init()
     }
 

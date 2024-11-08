@@ -9,7 +9,7 @@ import Foundation
 import Nuke
 import Observation
 
-public class PostFetchProvider: FetchProviding {
+public class PostFetcher: Fetcher {
     typealias Item = Post2
     
     var api: ApiClient
@@ -52,10 +52,10 @@ public class PostFetchProvider: FetchProviding {
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public private(set) var prefetchingConfiguration: PrefetchingConfiguration
     
-    // force unwrap because this should ALWAYS be a PostFetchProvider
-    private var postFetchProvider: PostFetchProvider { fetchProvider as! PostFetchProvider }
+    // force unwrap because this should ALWAYS be a PostFetcher
+    private var postFetcher: PostFetcher { fetcher as! PostFetcher }
     
-    public var sortType: ApiSortType { postFetchProvider.sortType }
+    public var sortType: ApiSortType { postFetcher.sortType }
     
     internal init(
         api: ApiClient,
@@ -63,7 +63,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         showReadPosts: Bool,
         filteredKeywords: [String],
         prefetchingConfiguration: PrefetchingConfiguration,
-        fetchProvider: PostFetchProvider
+        fetcher: PostFetcher
     ) {
         self.prefetchingConfiguration = prefetchingConfiguration
         
@@ -71,7 +71,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         
         super.init(
             filter: filter,
-            fetchProvider: fetchProvider
+            fetcher: fetcher
         )
     }
     
@@ -90,11 +90,11 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     /// Changes the post sort type to the specified value and reloads the feed
     public func changeSortType(to newSortType: ApiSortType, forceRefresh: Bool = false) async throws {
         // don't do anything if sort type not changed
-        guard postFetchProvider.sortType != newSortType || forceRefresh else {
+        guard postFetcher.sortType != newSortType || forceRefresh else {
             return
         }
         
-        postFetchProvider.sortType = newSortType
+        postFetcher.sortType = newSortType
         try await refresh(clearBeforeRefresh: true)
     }
     

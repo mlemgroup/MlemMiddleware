@@ -46,7 +46,7 @@ enum LoadingResponse<Item: FeedLoadable> {
     }
 }
 
-protocol FetchProviding<Item> {
+protocol Fetcher<Item> {
     associatedtype Item: FeedLoadable
     
     /// Fetches the given page of items. This method must be supplied by the parent FeedLoader because different items are loaded differently. The parent FeedLoader is responsible for handling fetch parameters (e.g., page size, unread only) and performing filtering
@@ -68,16 +68,16 @@ actor LoadingActor<Item: FeedLoadable> {
     private var loadingTask: Task<LoadingResponse<Item>, Error>?
     private var done: Bool = false
   
-    private var fetchProvider: any FetchProviding<Item>
+    private var fetcher: any Fetcher<Item>
     
-    public init(fetchProvider: any FetchProviding<Item>) {
-        self.fetchProvider = fetchProvider
+    public init(fetcher: any Fetcher<Item>) {
+        self.fetcher = fetcher
     }
     
     /// Resets the loading actor and updates the fetching behavior to use the provided callbacks
-    func updateFetching(fetchProvider: any FetchProviding<Item>) {
+    func updateFetching(fetcher: any Fetcher<Item>) {
         reset()
-        self.fetchProvider = fetchProvider
+        self.fetcher = fetcher
     }
     
     /// Cancels any ongoing loading and resets the page/cursor to 0
@@ -110,7 +110,7 @@ actor LoadingActor<Item: FeedLoadable> {
             do {
                 if let cursor, page > 0 {
                     print("[\(Item.self) LoadingActor] loading cursor \(cursor)")
-                    let response = try await fetchProvider.fetchCursor(cursor)
+                    let response = try await fetcher.fetchCursor(cursor)
                     
                     // if same cursor returned, loading is finished
                     if response.nextCursor == self.cursor {
@@ -123,7 +123,7 @@ actor LoadingActor<Item: FeedLoadable> {
                 } else {
                     page += 1
                     print("[\(Item.self) LoadingActor] loading page \(page)")
-                    let response = try await fetchProvider.fetchPage(page)
+                    let response = try await fetcher.fetchPage(page)
                     
                     // if nothing returned, loading is finished
                     if response.items.isEmpty {

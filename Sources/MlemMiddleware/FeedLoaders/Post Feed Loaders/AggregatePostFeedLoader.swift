@@ -7,7 +7,7 @@
 
 import Foundation
 
-class AggregatePostFetchProvider: PostFetchProvider {
+class AggregatePostFetcher: PostFetcher {
     var feedType: ApiListingType
     
     init(api: ApiClient, feedType: ApiListingType, sortType: ApiSortType, pageSize: Int) {
@@ -32,8 +32,8 @@ class AggregatePostFetchProvider: PostFetchProvider {
 public class AggregatePostFeedLoader: CorePostFeedLoader {
     public var api: ApiClient
     
-    // force unwrap because this should ALWAYS be an AggregatePostFetchProvider
-    var aggregatePostFetchProvider: AggregatePostFetchProvider { fetchProvider as! AggregatePostFetchProvider }
+    // force unwrap because this should ALWAYS be an AggregatePostFetcher
+    var aggregatePostFetcher: AggregatePostFetcher { fetcher as! AggregatePostFetcher }
     
     public init(
         pageSize: Int,
@@ -52,7 +52,7 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
             showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
             prefetchingConfiguration: prefetchingConfiguration,
-            fetchProvider: AggregatePostFetchProvider(
+            fetcher: AggregatePostFetcher(
                 api: api,
                 feedType: feedType,
                 sortType: sortType,
@@ -63,10 +63,10 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
     
     @MainActor
     public func changeFeedType(to newFeedType: ApiListingType) async throws {
-        let shouldRefresh = items.isEmpty || aggregatePostFetchProvider.feedType != newFeedType
+        let shouldRefresh = items.isEmpty || aggregatePostFetcher.feedType != newFeedType
         
         // always perform assignment--if account changed, feed type will look unchanged but API will be different
-        aggregatePostFetchProvider.feedType = newFeedType
+        aggregatePostFetcher.feedType = newFeedType
         
         // only refresh if nominal feed type changed
         if shouldRefresh {

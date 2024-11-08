@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CommunityPostFetchProvider: PostFetchProvider {
+class CommunityPostFetcher: PostFetcher {
     var community: any Community
     
     init(sortType: ApiSortType, pageSize: Int, community: any Community) {
@@ -47,7 +47,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
             showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
             prefetchingConfiguration: prefetchingConfiguration,
-            fetchProvider: CommunityPostFetchProvider(sortType: sortType, pageSize: pageSize, community: community)
+            fetcher: CommunityPostFetcher(sortType: sortType, pageSize: pageSize, community: community)
         )
     }
 }

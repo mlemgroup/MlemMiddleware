@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class SearchPostFetchProvider: PostFetchProvider {
+public class SearchPostFetcher: PostFetcher {
     public var query: String
     public var communityId: Int?
     public var creatorId: Int?
@@ -42,8 +42,8 @@ public class SearchPostFetchProvider: PostFetchProvider {
 
 public class SearchPostFeedLoader: CorePostFeedLoader {
     
-    // force unwrap because this should ALWAYS be a SearchPostFetchProvider
-    public var searchPostFetchProvider: SearchPostFetchProvider { fetchProvider as! SearchPostFetchProvider }
+    // force unwrap because this should ALWAYS be a SearchPostFetcher
+    public var searchPostFetcher: SearchPostFetcher { fetcher as! SearchPostFetcher }
     
     public init(
         api: ApiClient,
@@ -63,7 +63,7 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
             showReadPosts: true,
             filteredKeywords: filteredKeywords,
             prefetchingConfiguration: prefetchingConfiguration,
-            fetchProvider: SearchPostFetchProvider(
+            fetcher: SearchPostFetcher(
                 api: api,
                 sortType: sortType,
                 pageSize: pageSize,
