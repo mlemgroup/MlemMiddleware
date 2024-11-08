@@ -26,11 +26,11 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     
     override public func loadMoreItems() async throws {
         await setLoading(.loading)
-  
+        
         let newItems: [Item] = try await fetchMoreItems()
         await addItems(newItems)
         
-        if loadingState != .done {
+        if loadingState != .done && newItems.count > 0 {
             await setLoading(.idle)
         }
     }
@@ -43,15 +43,17 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         filter.reset()
         await loadingActor.reset()
         
+        await setLoading(.loading)
         let newItems = try await fetchMoreItems()
         await setItems(newItems)
+        await setLoading(.idle)
     }
 
     public func clear() async {
         filter.reset()
         await loadingActor.reset()
-        await setLoading(.idle)
         await setItems(.init())
+        await setLoading(.idle)
     }
     
     private func fetchMoreItems() async throws -> [Item] {
@@ -73,7 +75,14 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
                 await setLoading(.done)
                 abort = true
             case let .failure(failureReason):
-                print("[\(Item.self) FeedLoader] load failed (\(failureReason.rawValue))")
+                switch failureReason {
+                case let .error(error):
+                    throw error
+                case .cancelled:
+                    print("[\(Item.self) FeedLoader] load failed (cancelled)")
+                case .ignored:
+                    print("[\(Item.self) FeedLoader] load failed (ignored)")
+                }
                 abort = true
             }
             

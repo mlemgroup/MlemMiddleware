@@ -17,30 +17,27 @@ public struct FetchResponse<Item: FeedLoadable> {
     
     /// New cursor, if applicable
     public let nextCursor: String?
-    
-//    /// Number of items filtered out
-//    public let numFiltered: Int
-//    
-//    /// True if the response has content, false otherwise. It is possible for a filter to remove all fetched items; this avoids that triggering an erroneous end of feed.
-//    public var hasContent: Bool {
-//        (prevCursor == nil || nextCursor != prevCursor) && // if cursor used to fetch, ensure same cursor not returned
-//        items.count + numFiltered > 0 // total sum of fetched items non-zero
-//    }
+}
+
+enum LoadingError: Error {
+    case noTask
 }
 
 enum LoadingResponse<Item: FeedLoadable> {
-    enum FailureReason: String {
-        case error, cancelled, ignored
-    }
-    
     /// Indicates a successful load with more items available to fetch
     case success([Item])
     
     /// Indicates a successful load with no more items available to fetch
     case done([Item])
     
-    /// Indicates an unsuccessful load
-    case failure(FailureReason)
+    /// Indicates the load was ignored due to an existing ongoing load
+    case ignored
+    
+    /// Indicates the load was cancelled
+    case cancelled
+    
+    /// Indicates an error occurred during the load
+    case error(Error)
 }
 
 protocol FetchProviding<Item> {
@@ -80,6 +77,7 @@ actor LoadingActor<Item: FeedLoadable> {
     /// Cancels any ongoing loading and resets the page/cursor to 0
     func reset() {
         loadingTask?.cancel()
+        loadingTask = nil
         done = false
         page = 0
         cursor = nil
@@ -91,7 +89,7 @@ actor LoadingActor<Item: FeedLoadable> {
         // if already loading something, ignore the request
         guard loadingTask == nil else {
             print("[\(Item.self) LoadingActor] ignoring request, load underway")
-            return .failure(.ignored)
+            return .ignored
         }
         
         guard !done else {
@@ -137,12 +135,23 @@ actor LoadingActor<Item: FeedLoadable> {
         do {
             guard let loadingTask else {
                 assertionFailure("loadingTask is nil!")
-                return .failure(.error)
+                return .failure(.error(LoadingError.noTask))
             }
             return try await loadingTask.result.get()
+        } catch ApiClientError.cancelled {
+            print("DEBUG that's a cancellation!")
+            return .failure(.cancelled)
+//        } catch is ApiClientError {
+//            switch error {
+//            case .cancelled:
+//                print("DEBUG that's a cancellation!")
+//                return .failure(.cancelled)
+//            default:
+//                return .failure(.error(error))
+//            }
         } catch {
-            print(error)
-            return .failure(.error)
+            print("DEBUG error encountered: \(error)")
+            return .failure(.error(error))
         }
     }
 }

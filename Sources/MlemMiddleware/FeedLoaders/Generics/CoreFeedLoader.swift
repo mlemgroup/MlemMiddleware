@@ -12,7 +12,7 @@ import Observation
 @Observable
 public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     private(set) public var items: [Item] = .init()
-    private(set) public var loadingState: LoadingState = .idle
+    private(set) public var loadingState: LoadingState = .loading
     
     private(set) var thresholds: Thresholds<Item> = .init()
     
@@ -38,6 +38,7 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     /// Updates the loading state
     @MainActor
     func setLoading(_ newState: LoadingState) {
+        // print("DEBUG \(newState)")
         loadingState = newState
     }
     
