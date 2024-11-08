@@ -57,12 +57,10 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     }
     
     private func fetchMoreItems() async throws -> [Item] {
-        // TODO: retry logic
-        // TODO: error handling
         var newItems: [Item] = .init()
         var abort: Bool = false // this is slightly awkward but lets us trigger a loop break from within the switch handlers below
         repeat {
-            let loadingResponse = await loadingActor.load()
+            let loadingResponse = try await loadingActor.load()
             var fetchedItems: [Item] = .init()
             
             switch loadingResponse {
@@ -74,15 +72,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
                 fetchedItems = items
                 await setLoading(.done)
                 abort = true
-            case let .failure(failureReason):
-                switch failureReason {
-                case let .error(error):
-                    throw error
-                case .cancelled:
-                    print("[\(Item.self) FeedLoader] load failed (cancelled)")
-                case .ignored:
-                    print("[\(Item.self) FeedLoader] load failed (ignored)")
-                }
+            case .cancelled, .ignored:
+                print("[\(Item.self) FeedLoader] load did not complete (\(loadingResponse.description))")
                 abort = true
             }
             

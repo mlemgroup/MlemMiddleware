@@ -36,8 +36,14 @@ enum LoadingResponse<Item: FeedLoadable> {
     /// Indicates the load was cancelled
     case cancelled
     
-    /// Indicates an error occurred during the load
-    case error(Error)
+    var description: String {
+        switch self {
+        case let .success(items): "success (\(items.count))"
+        case let .done(items): "done (\(items.count))"
+        case .ignored: "ignored"
+        case .cancelled: "cancelled"
+        }
+    }
 }
 
 protocol FetchProviding<Item> {
@@ -85,7 +91,7 @@ actor LoadingActor<Item: FeedLoadable> {
     
     /// Loads the next page of items.
     /// - Returns: on success, .success with FetchResponse containing loaded items; if another load is underway, .ignored; if the load is cancelled, .cancelled
-    func load() async -> LoadingResponse<Item> {
+    func load() async throws -> LoadingResponse<Item> {
         // if already loading something, ignore the request
         guard loadingTask == nil else {
             print("[\(Item.self) LoadingActor] ignoring request, load underway")
@@ -128,30 +134,18 @@ actor LoadingActor<Item: FeedLoadable> {
                     return .success(response.items)
                 }
             } catch is CancellationError {
-                return .failure(.cancelled)
+                return .cancelled
             }
         }
         
         do {
             guard let loadingTask else {
                 assertionFailure("loadingTask is nil!")
-                return .failure(.error(LoadingError.noTask))
+                throw LoadingError.noTask
             }
             return try await loadingTask.result.get()
         } catch ApiClientError.cancelled {
-            print("DEBUG that's a cancellation!")
-            return .failure(.cancelled)
-//        } catch is ApiClientError {
-//            switch error {
-//            case .cancelled:
-//                print("DEBUG that's a cancellation!")
-//                return .failure(.cancelled)
-//            default:
-//                return .failure(.error(error))
-//            }
-        } catch {
-            print("DEBUG error encountered: \(error)")
-            return .failure(.error(error))
+            return .cancelled
         }
     }
 }
