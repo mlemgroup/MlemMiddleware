@@ -80,7 +80,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
             let filteredItems = filter.filter(fetchedItems)
             processFetchedItems(filteredItems)
             newItems.append(contentsOf: filteredItems)
-            
         } while !abort && newItems.count < MiddlewareConstants.infiniteLoadThresholdOffset
         
         return newItems

@@ -49,6 +49,9 @@ class CommunityFetcher: Fetcher {
 public class CommunityFeedLoader: StandardFeedLoader<Community2> {
     public var api: ApiClient
     
+    // force unwrap because this should ALWAYS be a CommunityFetcher
+    var communityFetcher: CommunityFetcher { fetcher as! CommunityFetcher }
+    
     public init(
         api: ApiClient,
         query: String = "",
@@ -75,11 +78,6 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         sort: ApiSortType? = nil,
         clearBeforeRefresh: Bool = false
     ) async throws {
-        guard let communityFetcher = fetcher as? CommunityFetcher else {
-            assertionFailure("fetcher is not CommunityFetcher")
-            return
-        }
-        
         communityFetcher.query = query ?? communityFetcher.query
         communityFetcher.listing = listing ?? communityFetcher.listing
         communityFetcher.sort = sort ?? communityFetcher.sort

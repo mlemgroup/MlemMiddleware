@@ -7,14 +7,23 @@
 
 import Foundation
 
-struct PersonFetcher: Fetcher {
+class PersonFetcher: Fetcher {
     typealias item = Person2
     
     let api: ApiClient
-    let query: String
     let pageSize: Int
-    let listing: ApiListingType
-    let sort: ApiSortType
+    var query: String
+    /// `listing` can be set to `.local` from 0.19.4 onwards.
+    var listing: ApiListingType
+    var sort: ApiSortType
+    
+    init(api: ApiClient, pageSize: Int, query: String, listing: ApiListingType, sort: ApiSortType) {
+        self.api = api
+        self.pageSize = pageSize
+        self.query = query
+        self.listing = listing
+        self.sort = sort
+    }
     
     func fetchPage(_ page: Int) async throws -> FetchResponse<Person2> {
         let communities = try await api.searchPeople(
@@ -40,10 +49,9 @@ struct PersonFetcher: Fetcher {
 @Observable
 public class PersonFeedLoader: StandardFeedLoader<Person2> {
     public var api: ApiClient
-    public private(set) var query: String
-    /// `listing` can be set to `.local` from 0.19.4 onwards.
-    public private(set) var listing: ApiListingType
-    public private(set) var sort: ApiSortType
+    
+    // force unwrap because this should ALWAYS be a PersonFetcher
+    var personFetcher: PersonFetcher { fetcher as! PersonFetcher }
     
     public init(
         api: ApiClient,
@@ -53,13 +61,10 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         sort: ApiSortType = .topAll
     ) {
         self.api = api
-        self.query = query
-        self.listing = listing
-        self.sort = sort
         
         super.init(
             filter: .init(),
-            fetcher: PersonFetcher(api: api, query: query, pageSize: pageSize, listing: listing, sort: sort)
+            fetcher: PersonFetcher(api: api, pageSize: pageSize, query: query, listing: listing, sort: sort)
         )
     }
     
@@ -75,9 +80,9 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         sort: ApiSortType? = nil,
         clearBeforeRefresh: Bool = false
     ) async throws {
-        self.query = query ?? self.query
-        self.listing = listing ?? self.listing
-        self.sort = sort ?? self.sort
+        personFetcher.query = query ?? personFetcher.query
+        personFetcher.listing = listing ?? personFetcher.listing
+        personFetcher.sort = sort ?? personFetcher.sort
         try await refresh(clearBeforeRefresh: clearBeforeRefresh)
     }
 }

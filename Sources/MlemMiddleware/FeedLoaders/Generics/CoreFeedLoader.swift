@@ -38,7 +38,6 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     /// Updates the loading state
     @MainActor
     func setLoading(_ newState: LoadingState) {
-        // print("DEBUG \(newState)")
         loadingState = newState
     }
     
