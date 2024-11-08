@@ -49,13 +49,13 @@ enum LoadingResponse<Item: FeedLoadable> {
 protocol Fetcher<Item> {
     associatedtype Item: FeedLoadable
     
-    /// Fetches the given page of items. This method must be supplied by the parent FeedLoader because different items are loaded differently. The parent FeedLoader is responsible for handling fetch parameters (e.g., page size, unread only) and performing filtering
+    /// Fetches the given page of items.
     /// - Parameters:
     ///   - page: page number to fetch
     /// - Returns: tuple of the requested page of items, the cursor returned by the API call (if present), and the number of items that were filtered out.
     func fetchPage(_ page: Int) async throws -> FetchResponse<Item>
     
-    /// Fetches items from the given cursor. This method must be supplied by the parent FeedLoader because different items are loaded differently. The parent FeedLoader is responsible for handling fetch parameters (e.g., page size, unread only) and performing filtering
+    /// Fetches items from the given cursor.
     /// - Parameters:
     ///   - cursor: cursor to fetch
     /// - Returns: tuple of the requested page of items, the cursor returned by the API call (if present), and the number of items that were filtered out.
