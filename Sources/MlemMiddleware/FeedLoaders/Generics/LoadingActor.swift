@@ -74,12 +74,6 @@ actor LoadingActor<Item: FeedLoadable> {
         self.fetcher = fetcher
     }
     
-    /// Resets the loading actor and updates the fetching behavior to use the provided callbacks
-    func updateFetching(fetcher: any Fetcher<Item>) {
-        reset()
-        self.fetcher = fetcher
-    }
-    
     /// Cancels any ongoing loading and resets the page/cursor to 0
     func reset() {
         loadingTask?.cancel()
@@ -127,7 +121,7 @@ actor LoadingActor<Item: FeedLoadable> {
                     
                     // if nothing returned, loading is finished
                     if response.items.isEmpty {
-                        done = true
+                        self.done = true
                         return .done(.init())
                     }
                     self.cursor = response.nextCursor
