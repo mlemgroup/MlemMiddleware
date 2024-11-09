@@ -18,29 +18,99 @@ import Nuke
 /// in the standard Parent/Child FeedLoader; if either stream reaches the end of its items, it triggers a new load, the response from
 /// which is then incorporated into both child streams.
 
+class PersonContentFetcher: Fetcher {
+    typealias Item = PersonContent
+    
+    var api: ApiClient
+    var pageSize: Int
+    var sortType: FeedLoaderSort.SortType
+    var userId: Int
+    var savedOnly: Bool
+    
+    var postStream: PersonContentStream<Post2>
+    var commentStream: PersonContentStream<Comment2>
+    
+    private var apiPage: Int
+    
+    init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType, userId: Int, savedOnly: Bool, withContent: (posts: [Post2], comments: [Comment2])?) {
+        self.api = api
+        self.pageSize = pageSize
+        self.sortType = sortType
+        self.userId = userId
+        self.savedOnly = savedOnly
+        self.postStream = .init(items: withContent?.posts)
+        self.commentStream = .init(items: withContent?.comments)
+        self.apiPage = withContent == nil ? 0 : 1
+    }
+    
+    // TODO: make this a Fetcher function
+    func reset() {
+        apiPage = 0
+        postStream = .init()
+        commentStream = .init()
+    }
+    
+    func fetchPage(_ page: Int) async throws -> FetchResponse<PersonContent> {
+        // TODO: remove page parameter, make Fetcher implement fetch() by default and track pages
+        var newItems: [PersonContent] = .init()
+        
+        repeat {
+            if let nextItem = try await computeNextItem() {
+                newItems.append(nextItem)
+            } else {
+                break
+            }
+        } while newItems.count < pageSize
+        
+        return .init(items: newItems, prevCursor: nil, nextCursor: nil)
+    }
+    
+    func fetchCursor(_ cursor: String) async throws -> FetchResponse<PersonContent> {
+        fatalError("Unsupported loading operation")
+    }
+    
+    /// Returns the next post or comment, depending on which is sorted first
+    private func computeNextItem() async throws -> PersonContent? {
+        // if either postStream or commentStream needs items, load the next page from the API
+        if postStream.needsMoreItems || commentStream.needsMoreItems {
+            apiPage += 1
+            let response = try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: savedOnly)
+            postStream.addItems(response.posts)
+            commentStream.addItems(response.comments)
+        }
+        
+        let nextPost = try await postStream.nextItemSortVal(sortType: sortType)
+        let nextComment = try await commentStream.nextItemSortVal(sortType: sortType)
+        
+        if let nextPost {
+            if let nextComment {
+                // if both next post and next comment, return higher sort
+                return nextPost > nextComment ? postStream.consumeNextItem() : commentStream.consumeNextItem()
+            } else {
+                // if next post but no next comment, return next post
+                return postStream.consumeNextItem()
+            }
+        }
+        
+        // if no next post, always return next comment (this returns nil if no next comment)
+        return commentStream.consumeNextItem()
+    }
+}
+
 @Observable
 public class PersonContentFeedLoader: FeedLoading {
-    public var api: ApiClient
+    // public var api: ApiClient
     public var items: [PersonContent]
     public var loadingState: LoadingState
     
-    // loading configuration
-    public private(set) var sortType: FeedLoaderSort.SortType
-    private var userId: Int
-    private var savedOnly: Bool
-    
     public var prefetchingConfiguration: PrefetchingConfiguration
     
-    /// Last page fetched from the API
-    internal var apiPage: Int
-    /// Last page of content loaded, used to avoid duplicate loads
-    internal var contentPage: Int
-    
-    private var contentLoadingSemaphore: AsyncSemaphore
+    let fetcher: PersonContentFetcher
+
     private var thresholds: Thresholds<PersonContent> = .init()
     
-    private var postStream: PersonContentStream<Post2>
-    private var commentStream: PersonContentStream<Comment2>
+    private var postStream: PersonContentStream<Post2> { fetcher.postStream }
+    private var commentStream: PersonContentStream<Comment2> { fetcher.commentStream }
     
     // these are used to allow refresh without clear
     private var tempPostStream: PersonContentStream<Post2>?
@@ -61,25 +131,19 @@ public class PersonContentFeedLoader: FeedLoading {
         prefetchingConfiguration: PrefetchingConfiguration,
         withContent: (posts: [Post2], comments: [Comment2])? = nil
     ) {
-        self.api = api
-        self.userId = userId
-        self.sortType = sortType
-        self.savedOnly = savedOnly
-        self.apiPage = withContent != nil ? 1 : 0
-        self.contentPage = 0
         self.items = .init()
-        self.contentLoadingSemaphore = .init(value: 1)
-        self.loadingState = .idle
-        self.postStream = .init(items: withContent?.posts)
-        self.commentStream = .init(items: withContent?.comments)
+        self.loadingState = .loading
+        self.fetcher = .init(api: api, sortType: sortType, userId: userId, savedOnly: savedOnly, withContent: withContent)
         self.prefetchingConfiguration = prefetchingConfiguration
     }
     
     // MARK: Public Methods
     
     public func switchUser(api: ApiClient, userId: Int) async {
-        self.api = api
-        self.userId = userId
+        // self.api = api
+        // self.userId = userId
+        fetcher.api = api
+        fetcher.userId = userId
         await setLoadingState(.done) // prevent loading more items until refresh
     }
     
@@ -112,15 +176,16 @@ public class PersonContentFeedLoader: FeedLoading {
     }
     
     public func loadMoreItems() async throws {
-        print("Loading more user content")
-        try await loadContentPage(contentPage + 1)
+        // TODO: implement with LoadingActor
+        // print("Loading more user content")
+        // try await loadContentPage(contentPage + 1)
     }
     
     public func changeSortType(to sortType: FeedLoaderSort.SortType) {
-        self.sortType = sortType
         items = .init()
-        postStream = .init()
-        commentStream = .init()
+        fetcher.sortType = sortType
+        fetcher.postStream = .init()
+        fetcher.commentStream = .init()
     }
     
     public func refresh(clearBeforeRefresh: Bool) async throws {
@@ -132,10 +197,7 @@ public class PersonContentFeedLoader: FeedLoading {
             tempPostStream = postStream
             tempCommentStream = commentStream
         }
-        postStream = .init()
-        commentStream = .init()
-        apiPage = 0
-        contentPage = 0
+        fetcher.reset()
         defer {
             tempPostStream = nil
             tempCommentStream = nil
@@ -145,72 +207,14 @@ public class PersonContentFeedLoader: FeedLoading {
     
     @MainActor
     public func clear() {
-        items = .init()
-        postStream = .init()
-        commentStream = .init()
-        apiPage = 0
-        contentPage = 0
+        items = .init()]
+        tempPostStream = nil
+        tempCommentStream = nil
+        fetcher.reset()
         loadingState = .idle
     }
     
     // MARK: Private Methods
-    
-    private func loadContentPage(_ pageToLoad: Int) async throws {
-        await contentLoadingSemaphore.wait()
-        defer { contentLoadingSemaphore.signal() }
-        
-        await setLoadingState(.loading)
-        
-        guard pageToLoad == contentPage + 1 else {
-            print("Unexpected content page \(pageToLoad) encountered (expected \(contentPage + 1), skipping load")
-            return
-        }
-        
-        contentPage += 1
-        var newItems: [PersonContent] = .init()
-        while newItems.count < 50, loadingState != .done {
-            if let nextItem = try await computeNextItem() {
-                newItems.append(nextItem)
-            } else {
-                await setLoadingState(.done)
-            }
-        }
-        
-        if pageToLoad == 1 {
-            await setItems(newItems)
-        } else {
-            await addItems(newItems)
-        }
-        
-        if loadingState != .done {
-            await setLoadingState(.idle)
-            thresholds.update(with: newItems)
-        }
-    }
-    
-    /// Returns the next post or comment, depending on which is sorted first
-    private func computeNextItem() async throws -> PersonContent? {
-        // if either postStream or commentStream needs items, load
-        if postStream.needsMoreItems || commentStream.needsMoreItems {
-            try await loadNextApiPage()
-        }
-        
-        let nextPost = try await postStream.nextItemSortVal(sortType: sortType)
-        let nextComment = try await commentStream.nextItemSortVal(sortType: sortType)
-        
-        if let nextPost {
-            if let nextComment {
-                // if both next post and next comment, return higher sort
-                return nextPost > nextComment ? postStream.consumeNextItem() : commentStream.consumeNextItem()
-            } else {
-                // if next post but no next comment, return next post
-                return postStream.consumeNextItem()
-            }
-        }
-        
-        // if no next post, always return next comment (this returns nil if no next comment)
-        return commentStream.consumeNextItem()
-    }
     
     // MARK: Helpers
     
@@ -228,22 +232,6 @@ public class PersonContentFeedLoader: FeedLoading {
     private func setItems(_ newItems: [PersonContent]) {
         items = newItems
     }
-    
-    private func fetchItems() async throws -> (posts: [Post2], comments: [Comment2]) {
-        let response = try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: savedOnly)
-        return (posts: response.posts, comments: response.comments)
-    }
-    
-    /// Loads the next page from the API
-    /// - Warning: This is NOT a thread-safe function! It should only be called from a concurrency-controlled environment
-    private func loadNextApiPage() async throws {
-        apiPage += 1
-        let response = try await fetchItems()
-        preloadImages(response.posts) // TODO: comment images?
-        postStream.addItems(response.posts)
-        commentStream.addItems(response.comments)
-    }
-    
     /// Preloads images for the given post
     private func preloadImages(_ posts: [Post2]) {
         prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {

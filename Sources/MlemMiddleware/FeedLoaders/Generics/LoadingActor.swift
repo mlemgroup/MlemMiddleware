@@ -63,15 +63,16 @@ protocol Fetcher<Item> {
 }
 
 actor LoadingActor<Item: FeedLoadable> {
-    private var page: Int = 0
+    private var page: Int
     private var cursor: String?
     private var loadingTask: Task<LoadingResponse<Item>, Error>?
     private var done: Bool = false
   
     private var fetcher: any Fetcher<Item>
     
-    public init(fetcher: any Fetcher<Item>) {
+    public init(fetcher: any Fetcher<Item>, page: Int = 0) {
         self.fetcher = fetcher
+        self.page = page
     }
     
     /// Cancels any ongoing loading and resets the page/cursor to 0
