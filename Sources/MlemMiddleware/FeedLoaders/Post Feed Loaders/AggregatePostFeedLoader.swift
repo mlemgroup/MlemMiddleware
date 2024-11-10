@@ -30,8 +30,6 @@ class AggregatePostFetcher: PostFetcher {
 }
 
 public class AggregatePostFeedLoader: CorePostFeedLoader {
-    public var api: ApiClient
-    
     // force unwrap because this should ALWAYS be an AggregatePostFetcher
     var aggregatePostFetcher: AggregatePostFetcher { fetcher as! AggregatePostFetcher }
     
@@ -45,7 +43,6 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         api: ApiClient,
         feedType: ApiListingType
     ) {
-        self.api = api
         super.init(
             api: api,
             pageSize: pageSize,
@@ -72,5 +69,9 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         if shouldRefresh {
             try await refresh(clearBeforeRefresh: true)
         }
+    }
+    
+    public func changeApi(to newApi: ApiClient) {
+        aggregatePostFetcher.api = newApi
     }
 }

@@ -74,7 +74,7 @@ class PersonContentFetcher: Fetcher {
         // if either postStream or commentStream needs items, load the next page from the API
         if postStream.needsMoreItems || commentStream.needsMoreItems {
             apiPage += 1
-            let response = try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: 50, savedOnly: savedOnly)
+            let response = try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: pageSize, savedOnly: savedOnly)
             postStream.addItems(response.posts)
             commentStream.addItems(response.comments)
         }
@@ -97,20 +97,19 @@ class PersonContentFetcher: Fetcher {
     }
 }
 
-@Observable
-public class PersonContentFeedLoader: FeedLoading {
-    // public var api: ApiClient
-    public var items: [PersonContent]
-    public var loadingState: LoadingState
+public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
+    public private(set) var prefetchingConfiguration: PrefetchingConfiguration
     
-    public var prefetchingConfiguration: PrefetchingConfiguration
+    // force unwrap because this should ALWAYS be an AggregatePostFetcher
+    var personContentFetcher: PersonContentFetcher { fetcher as! PersonContentFetcher }
     
-    let fetcher: PersonContentFetcher
-
-    private var thresholds: Thresholds<PersonContent> = .init()
+    public var api: ApiClient { personContentFetcher.api }
     
-    private var postStream: PersonContentStream<Post2> { fetcher.postStream }
-    private var commentStream: PersonContentStream<Comment2> { fetcher.commentStream }
+    // MARK: Custom Behavior
+    // This FeedLoader is slightly awkward because it functions like a multi-loader but draws its posts and comments from a single API call. The streams act essentially like child loaders, but are populated using custom behavior in the fetcher. This FeedLoader is best understood as a multi-loader with the streams as child loaders.
+    
+    private var postStream: PersonContentStream<Post2> { personContentFetcher.postStream }
+    private var commentStream: PersonContentStream<Comment2> { personContentFetcher.commentStream }
     
     // these are used to allow refresh without clear
     private var tempPostStream: PersonContentStream<Post2>?
@@ -125,117 +124,179 @@ public class PersonContentFeedLoader: FeedLoading {
     
     public init(
         api: ApiClient,
+        pageSize: Int,
         userId: Int,
         sortType: FeedLoaderSort.SortType,
         savedOnly: Bool,
         prefetchingConfiguration: PrefetchingConfiguration,
         withContent: (posts: [Post2], comments: [Comment2])? = nil
     ) {
-        self.items = .init()
-        self.loadingState = .loading
-        self.fetcher = .init(api: api, sortType: sortType, userId: userId, savedOnly: savedOnly, withContent: withContent)
         self.prefetchingConfiguration = prefetchingConfiguration
+        super.init(filter: MultiFilter(), fetcher: PersonContentFetcher(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            userId: userId,
+            savedOnly: savedOnly,
+            withContent: withContent)
+        )
     }
     
-    // MARK: Public Methods
+    // MARK: Custom Behavior
     
-    public func switchUser(api: ApiClient, userId: Int) async {
-        // self.api = api
-        // self.userId = userId
-        fetcher.api = api
-        fetcher.userId = userId
-        await setLoadingState(.done) // prevent loading more items until refresh
+    override public func refresh(clearBeforeRefresh: Bool) async throws {
+        personContentFetcher.reset()
+        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
     }
     
-    // protocol conformance
-    public func loadIfThreshold(_ item: PersonContent) throws {
-        try loadIfThreshold(item, asChild: false)
-    }
-    
-    /// Given a PersonContent, loads more items if that content is a threshold item
-    /// - Parameters:
-    ///   - item: PersonContent
-    ///   - loadChildOnly: if true, the item will be evaluated against the relevant stream threshold rather than the parent threshold
-    public func loadIfThreshold(_ item: PersonContent, asChild: Bool) throws {
-        let shouldLoad: Bool
-        if asChild {
-            shouldLoad = switch item.wrappedValue {
-            case .post: postStream.thresholds.isThreshold(item)
-            case .comment: commentStream.thresholds.isThreshold(item)
-            }
-        } else {
-            shouldLoad = thresholds.isThreshold(item)
-        }
-        
-        // regardless of which threshold triggers this, always call loadMoreItems() because there's no item-specific endpoint
-        if shouldLoad {
-            Task(priority: .userInitiated) {
-                try await loadMoreItems()
-            }
-        }
-    }
-    
-    public func loadMoreItems() async throws {
-        // TODO: implement with LoadingActor
-        // print("Loading more user content")
-        // try await loadContentPage(contentPage + 1)
-    }
-    
-    public func changeSortType(to sortType: FeedLoaderSort.SortType) {
-        items = .init()
-        fetcher.sortType = sortType
-        fetcher.postStream = .init()
-        fetcher.commentStream = .init()
-    }
-    
-    public func refresh(clearBeforeRefresh: Bool) async throws {
-        await setLoadingState(.loading)
-        
-        if clearBeforeRefresh {
-            items = .init()
-        } else {
-            tempPostStream = postStream
-            tempCommentStream = commentStream
-        }
-        fetcher.reset()
-        defer {
-            tempPostStream = nil
-            tempCommentStream = nil
-        }
-        try await loadMoreItems()
-    }
-    
-    @MainActor
-    public func clear() {
-        items = .init()]
-        tempPostStream = nil
-        tempCommentStream = nil
-        fetcher.reset()
-        loadingState = .idle
-    }
-    
-    // MARK: Private Methods
-    
-    // MARK: Helpers
-    
-    @MainActor
-    private func setLoadingState(_ newState: LoadingState) {
-        loadingState = newState
-    }
-    
-    @MainActor
-    private func addItems(_ newItems: [PersonContent]) {
-        items.append(contentsOf: newItems)
-    }
-    
-    @MainActor
-    private func setItems(_ newItems: [PersonContent]) {
-        items = newItems
-    }
-    /// Preloads images for the given post
-    private func preloadImages(_ posts: [Post2]) {
-        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
-            $0.imageRequests(configuration: prefetchingConfiguration)
-        })
+    public func changeUser(api: ApiClient, userId: Int) async {
+        personContentFetcher.api = api
+        personContentFetcher.userId = userId
+        personContentFetcher.reset()
+        await loadingActor.reset()
+        await setLoading(.done) // prevent loading more items until refreshed
     }
 }
+
+//@Observable
+//public class PersonContentFeedLoader: FeedLoading {
+//    // public var api: ApiClient
+//    public var items: [PersonContent]
+//    public var loadingState: LoadingState
+//    
+//    public var prefetchingConfiguration: PrefetchingConfiguration
+//    
+//    let fetcher: PersonContentFetcher
+//
+//    private var thresholds: Thresholds<PersonContent> = .init()
+//    
+//    private var postStream: PersonContentStream<Post2> { fetcher.postStream }
+//    private var commentStream: PersonContentStream<Comment2> { fetcher.commentStream }
+//    
+//    // these are used to allow refresh without clear
+//    private var tempPostStream: PersonContentStream<Post2>?
+//    private var tempCommentStream: PersonContentStream<Comment2>?
+//    
+//    // convenience accessors for child types
+//    public var posts: [PersonContent] { tempPostStream?.items ?? postStream.items }
+//    public var postLoadingState: LoadingState { postStream.doneLoading ? .done : loadingState }
+//    
+//    public var comments: [PersonContent] { tempCommentStream?.items ?? commentStream.items }
+//    public var commentLoadingState: LoadingState { commentStream.doneLoading ? .done : loadingState }
+//    
+//    public init(
+//        api: ApiClient,
+//        userId: Int,
+//        sortType: FeedLoaderSort.SortType,
+//        savedOnly: Bool,
+//        prefetchingConfiguration: PrefetchingConfiguration,
+//        withContent: (posts: [Post2], comments: [Comment2])? = nil
+//    ) {
+//        self.items = .init()
+//        self.loadingState = .loading
+//        self.fetcher = .init(api: api, sortType: sortType, userId: userId, savedOnly: savedOnly, withContent: withContent)
+//        self.prefetchingConfiguration = prefetchingConfiguration
+//    }
+//    
+//    // MARK: Public Methods
+//    
+//    public func switchUser(api: ApiClient, userId: Int) async {
+//        // self.api = api
+//        // self.userId = userId
+//        fetcher.api = api
+//        fetcher.userId = userId
+//        await setLoadingState(.done) // prevent loading more items until refresh
+//    }
+//    
+//    // protocol conformance
+//    public func loadIfThreshold(_ item: PersonContent) throws {
+//        try loadIfThreshold(item, asChild: false)
+//    }
+//    
+//    /// Given a PersonContent, loads more items if that content is a threshold item
+//    /// - Parameters:
+//    ///   - item: PersonContent
+//    ///   - loadChildOnly: if true, the item will be evaluated against the relevant stream threshold rather than the parent threshold
+//    public func loadIfThreshold(_ item: PersonContent, asChild: Bool) throws {
+//        let shouldLoad: Bool
+//        if asChild {
+//            shouldLoad = switch item.wrappedValue {
+//            case .post: postStream.thresholds.isThreshold(item)
+//            case .comment: commentStream.thresholds.isThreshold(item)
+//            }
+//        } else {
+//            shouldLoad = thresholds.isThreshold(item)
+//        }
+//        
+//        // regardless of which threshold triggers this, always call loadMoreItems() because there's no item-specific endpoint
+//        if shouldLoad {
+//            Task(priority: .userInitiated) {
+//                try await loadMoreItems()
+//            }
+//        }
+//    }
+//    
+//    public func loadMoreItems() async throws {
+//        // TODO: implement with LoadingActor
+//        // print("Loading more user content")
+//        // try await loadContentPage(contentPage + 1)
+//    }
+//    
+//    public func changeSortType(to sortType: FeedLoaderSort.SortType) {
+//        items = .init()
+//        fetcher.sortType = sortType
+//        fetcher.postStream = .init()
+//        fetcher.commentStream = .init()
+//    }
+//    
+//    public func refresh(clearBeforeRefresh: Bool) async throws {
+//        await setLoadingState(.loading)
+//        
+//        if clearBeforeRefresh {
+//            items = .init()
+//        } else {
+//            tempPostStream = postStream
+//            tempCommentStream = commentStream
+//        }
+//        fetcher.reset()
+//        defer {
+//            tempPostStream = nil
+//            tempCommentStream = nil
+//        }
+//        try await loadMoreItems()
+//    }
+//    
+//    @MainActor
+//    public func clear() {
+//        items = .init()]
+//        tempPostStream = nil
+//        tempCommentStream = nil
+//        fetcher.reset()
+//        loadingState = .idle
+//    }
+//    
+//    // MARK: Private Methods
+//    
+//    // MARK: Helpers
+//    
+//    @MainActor
+//    private func setLoadingState(_ newState: LoadingState) {
+//        loadingState = newState
+//    }
+//    
+//    @MainActor
+//    private func addItems(_ newItems: [PersonContent]) {
+//        items.append(contentsOf: newItems)
+//    }
+//    
+//    @MainActor
+//    private func setItems(_ newItems: [PersonContent]) {
+//        items = newItems
+//    }
+//    /// Preloads images for the given post
+//    private func preloadImages(_ posts: [Post2]) {
+//        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
+//            $0.imageRequests(configuration: prefetchingConfiguration)
+//        })
+//    }
+//}
