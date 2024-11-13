@@ -9,9 +9,7 @@ import Foundation
 import Nuke
 import Observation
 
-public class PostFetcher: Fetcher {
-    typealias Item = Post2
-    
+public class PostFetcher: Fetcher<Post2> {
     var api: ApiClient
     var sortType: ApiSortType
     var pageSize: Int
@@ -22,7 +20,7 @@ public class PostFetcher: Fetcher {
         self.pageSize = pageSize
     }
     
-    func fetchPage(_ page: Int) async throws -> FetchResponse<Post2> {
+    override func fetchPage(_ page: Int) async throws -> FetchResponse<Post2> {
         let result = try await getPosts(page: page, cursor: nil)
 
         return .init(
@@ -32,7 +30,7 @@ public class PostFetcher: Fetcher {
         )
     }
     
-    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Post2> {
+    override func fetchCursor(_ cursor: String) async throws -> FetchResponse<Post2> {
         let result = try await getPosts(page: 1, cursor: cursor)
         
         return .init(

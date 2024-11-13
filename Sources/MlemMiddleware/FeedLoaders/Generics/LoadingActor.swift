@@ -7,18 +7,6 @@
 
 import Foundation
 
-/// Helper struct bundling the response from a fetchPage or fetchCursor call
-public struct FetchResponse<Item: FeedLoadable> {
-    /// Items returned
-    public let items: [Item]
-    
-    /// Cursor used to fetch this response, if applicable
-    public let prevCursor: String?
-    
-    /// New cursor, if applicable
-    public let nextCursor: String?
-}
-
 enum LoadingError: Error {
     case noTask
 }
@@ -46,42 +34,96 @@ enum LoadingResponse<Item: FeedLoadable> {
     }
 }
 
-protocol Fetcher<Item> {
-    associatedtype Item: FeedLoadable
+public class Fetcher<Item: FeedLoadable> {
+    var page: Int
+    private var cursor: String?
+    
+    init (page: Int = 0) {
+        self.page = page
+    }
+    
+    /// Helper struct bundling the response from a fetchPage or fetchCursor call
+    struct FetchResponse<Item: FeedLoadable> {
+        /// Items returned
+        public let items: [Item]
+        
+        /// Cursor used to fetch this response, if applicable
+        public let prevCursor: String?
+        
+        /// New cursor, if applicable
+        public let nextCursor: String?
+    }
+    
+    /// Fetches the next page of items
+    func fetch() async throws -> LoadingResponse<Item> {
+        do {
+            if let cursor, page > 0 {
+                print("[\(Item.self) Fetcher] loading cursor \(cursor)")
+                let response = try await fetchCursor(cursor)
+                
+                // if same cursor returned, loading is finished
+                if response.nextCursor == self.cursor {
+                    return .done(response.items)
+                }
+                
+                self.cursor = response.nextCursor
+                return .success(response.items)
+            } else {
+                page += 1
+                print("[\(Item.self) Fetcher] loading page \(page)")
+                let response = try await fetchPage(page)
+                
+                // if nothing returned, loading is finished
+                if response.items.isEmpty {
+                    return .done(.init())
+                }
+                self.cursor = response.nextCursor
+                return .success(response.items)
+            }
+        } catch is CancellationError {
+            return .cancelled
+        }
+    }
     
     /// Fetches the given page of items.
     /// - Parameters:
     ///   - page: page number to fetch
     /// - Returns: tuple of the requested page of items, the cursor returned by the API call (if present), and the number of items that were filtered out.
-    func fetchPage(_ page: Int) async throws -> FetchResponse<Item>
+    func fetchPage(_ page: Int) async throws -> FetchResponse<Item> {
+        preconditionFailure("This method must be implemented by the inheriting class")
+    }
     
     /// Fetches items from the given cursor.
     /// - Parameters:
     ///   - cursor: cursor to fetch
     /// - Returns: tuple of the requested page of items, the cursor returned by the API call (if present), and the number of items that were filtered out.
-    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Item>
+    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Item> {
+        preconditionFailure("This method must be implemented by the inheriting class")
+    }
+    
+    /// Resets the fetcher
+    func reset() {
+        page = 0
+        cursor = nil
+    }
 }
 
 actor LoadingActor<Item: FeedLoadable> {
-    private var page: Int
-    private var cursor: String?
-    private var loadingTask: Task<LoadingResponse<Item>, Error>?
     private var done: Bool = false
+    private var loadingTask: Task<LoadingResponse<Item>, Error>?
   
-    private var fetcher: any Fetcher<Item>
+    private var fetcher: Fetcher<Item>
     
-    public init(fetcher: any Fetcher<Item>, page: Int = 0) {
+    public init(fetcher: Fetcher<Item>) {
         self.fetcher = fetcher
-        self.page = page
     }
     
     /// Cancels any ongoing loading and resets the page/cursor to 0
     func reset() {
         loadingTask?.cancel()
         loadingTask = nil
+        fetcher.reset()
         done = false
-        page = 0
-        cursor = nil
     }
     
     /// Loads the next page of items.
@@ -102,35 +144,7 @@ actor LoadingActor<Item: FeedLoadable> {
         defer { loadingTask = nil }
         
         loadingTask = Task<LoadingResponse<Item>, Error> {
-            do {
-                if let cursor, page > 0 {
-                    print("[\(Item.self) LoadingActor] loading cursor \(cursor)")
-                    let response = try await fetcher.fetchCursor(cursor)
-                    
-                    // if same cursor returned, loading is finished
-                    if response.nextCursor == self.cursor {
-                        self.done = true
-                        return .done(response.items)
-                    }
-                    
-                    self.cursor = response.nextCursor
-                    return .success(response.items)
-                } else {
-                    page += 1
-                    print("[\(Item.self) LoadingActor] loading page \(page)")
-                    let response = try await fetcher.fetchPage(page)
-                    
-                    // if nothing returned, loading is finished
-                    if response.items.isEmpty {
-                        self.done = true
-                        return .done(.init())
-                    }
-                    self.cursor = response.nextCursor
-                    return .success(response.items)
-                }
-            } catch is CancellationError {
-                return .cancelled
-            }
+            return try await fetcher.fetch()
         }
         
         do {
@@ -138,7 +152,13 @@ actor LoadingActor<Item: FeedLoadable> {
                 assertionFailure("loadingTask is nil!")
                 throw LoadingError.noTask
             }
-            return try await loadingTask.result.get()
+            let result = try await loadingTask.result.get()
+            
+            if case let .done = result {
+                self.done = true
+            }
+            
+            return result
         } catch ApiClientError.cancelled {
             return .cancelled
         }

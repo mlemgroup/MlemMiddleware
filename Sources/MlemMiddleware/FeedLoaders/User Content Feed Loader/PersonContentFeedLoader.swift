@@ -18,9 +18,7 @@ import Nuke
 /// in the standard Parent/Child FeedLoader; if either stream reaches the end of its items, it triggers a new load, the response from
 /// which is then incorporated into both child streams.
 
-class PersonContentFetcher: Fetcher {
-    typealias Item = PersonContent
-    
+class PersonContentFetcher: Fetcher<PersonContent> {
     var api: ApiClient
     var pageSize: Int
     var sortType: FeedLoaderSort.SortType
@@ -30,8 +28,6 @@ class PersonContentFetcher: Fetcher {
     var postStream: PersonContentStream<Post2>
     var commentStream: PersonContentStream<Comment2>
     
-    private var apiPage: Int
-    
     init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType, userId: Int, savedOnly: Bool, withContent: (posts: [Post2], comments: [Comment2])?) {
         self.api = api
         self.pageSize = pageSize
@@ -40,18 +36,18 @@ class PersonContentFetcher: Fetcher {
         self.savedOnly = savedOnly
         self.postStream = .init(items: withContent?.posts)
         self.commentStream = .init(items: withContent?.comments)
-        self.apiPage = withContent == nil ? 0 : 1
+        
+        super.init(page: withContent == nil ? 0 : 1)
     }
     
-    // TODO: make this a Fetcher function
-    func reset() {
-        apiPage = 0
+    override func reset() {
         postStream = .init()
         commentStream = .init()
+        
+        super.reset()
     }
     
-    func fetchPage(_ page: Int) async throws -> FetchResponse<PersonContent> {
-        // TODO: remove page parameter, make Fetcher implement fetch() by default and track pages
+    override func fetch() async throws -> LoadingResponse<PersonContent> {
         var newItems: [PersonContent] = .init()
         
         repeat {
@@ -62,10 +58,17 @@ class PersonContentFetcher: Fetcher {
             }
         } while newItems.count < pageSize
         
-        return .init(items: newItems, prevCursor: nil, nextCursor: nil)
+        if newItems.count < pageSize {
+            return .done(newItems)
+        }
+        return .success(newItems)
     }
     
-    func fetchCursor(_ cursor: String) async throws -> FetchResponse<PersonContent> {
+    override func fetchPage(_ page: Int) async throws -> FetchResponse<PersonContent> {
+        fatalError("Unsupported loading operation")
+    }
+    
+    override func fetchCursor(_ cursor: String) async throws -> FetchResponse<PersonContent> {
         fatalError("Unsupported loading operation")
     }
     
@@ -73,8 +76,8 @@ class PersonContentFetcher: Fetcher {
     private func computeNextItem() async throws -> PersonContent? {
         // if either postStream or commentStream needs items, load the next page from the API
         if postStream.needsMoreItems || commentStream.needsMoreItems {
-            apiPage += 1
-            let response = try await api.getContent(authorId: userId, sort: .new, page: apiPage, limit: pageSize, savedOnly: savedOnly)
+            page += 1
+            let response = try await api.getContent(authorId: userId, sort: .new, page: page, limit: pageSize, savedOnly: savedOnly)
             postStream.addItems(response.posts)
             commentStream.addItems(response.comments)
         }

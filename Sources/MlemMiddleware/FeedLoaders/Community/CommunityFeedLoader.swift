@@ -7,9 +7,7 @@
 
 import Foundation
 
-class CommunityFetcher: Fetcher {
-    typealias Item = Community2
-    
+class CommunityFetcher: Fetcher<Community2> {
     let api: ApiClient
     var query: String
     var pageSize: Int
@@ -24,7 +22,7 @@ class CommunityFetcher: Fetcher {
         self.sort = sort
     }
     
-    func fetchPage(_ page: Int) async throws -> FetchResponse<Community2> {
+    override func fetchPage(_ page: Int) async throws -> FetchResponse<Community2> {
         let communities = try await api.searchCommunities(
             query: query,
             page: page,
@@ -40,9 +38,9 @@ class CommunityFetcher: Fetcher {
         )
     }
     
-    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Community2> {
-        fatalError("Unsupported loading operation")
-    }
+//    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Community2> {
+//        fatalError("Unsupported loading operation")
+//    }
 }
 
 @Observable
