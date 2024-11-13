@@ -36,6 +36,14 @@ public final class Person1: Person1Providing {
     internal var blockedManager: StateManager<Bool>
     public var blocked: Bool { blockedManager.wrappedValue }
     
+    // Communities from which this person is *known* to be banned.
+    // If an ID is not in this set, its status is unknown.
+    //
+    // Don't make this public. Instead, use the `bannedFromCommunity` property of
+    // Post2/Comment2/Reply2. Accessing it from there guarantees that the ban
+    // status is known. Those properties access this set as a shared source-of-truth.
+    internal var communityBanIds: Set<Int> = .init()
+    
     internal init(
         api: ApiClient,
         actorId: URL,
@@ -75,6 +83,19 @@ public final class Person1: Person1Providing {
                 } else {
                     api.blocks?.people.removeValue(forKey: actorId)
                 }
+            }
+        }
+    }
+    
+    internal func updateKnownCommunityBanState(id: Int, banned: Bool) {
+        if banned {
+            // This `if` statement avoids unneccessary state update
+            if !communityBanIds.contains(id) {
+                self.communityBanIds.insert(id)
+            }
+        } else {
+            if communityBanIds.contains(id) {
+                self.communityBanIds.remove(id)
             }
         }
     }

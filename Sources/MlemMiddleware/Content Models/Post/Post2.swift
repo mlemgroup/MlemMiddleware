@@ -20,7 +20,7 @@ public final class Post2: Post2Providing {
     
     public var creatorIsModerator: Bool?
     public var creatorIsAdmin: Bool?
-    public var bannedFromCommunity: Bool?
+    public var bannedFromCommunity: Bool { creator.communityBanIds.contains(community.id) }
     public var commentCount: Int
     public var unreadCommentCount: Int
     
@@ -45,12 +45,12 @@ public final class Post2: Post2Providing {
         votes: VotesModel,
         creatorIsModerator: Bool?,
         creatorIsAdmin: Bool?,
-        bannedFromCommunity: Bool?,
-        commentCount: Int = 0,
-        unreadCommentCount: Int = 0,
-        saved: Bool = false,
-        read: Bool = false,
-        hidden: Bool = false
+        bannedFromCommunity: Bool,
+        commentCount: Int,
+        unreadCommentCount: Int,
+        saved: Bool,
+        read: Bool,
+        hidden: Bool
     ) {
         self.api = api
         self.post1 = post1
@@ -59,11 +59,11 @@ public final class Post2: Post2Providing {
         self.votesManager = .init(wrappedValue: votes)
         self.creatorIsModerator = creatorIsModerator
         self.creatorIsAdmin = creatorIsAdmin
-        self.bannedFromCommunity = bannedFromCommunity
         self.commentCount = commentCount
         self.unreadCommentCount = unreadCommentCount
         self.savedManager = .init(wrappedValue: saved)
         self.readManager = .init(wrappedValue: read)
         self.hiddenManager = .init(wrappedValue: hidden)
+        creator.updateKnownCommunityBanState(id: community.id, banned: bannedFromCommunity)
     }
 }

@@ -23,7 +23,7 @@ extension Reply2: CacheIdentifiable {
         setIfChanged(\.self.commentCount, reply.counts.childCount)
         setIfChanged(\.self.creatorIsModerator, reply.creatorIsModerator)
         setIfChanged(\.self.creatorIsAdmin, reply.creatorIsAdmin)
-        setIfChanged(\.self.bannedFromCommunity, reply.bannedFromCommunity)
+        creator.updateKnownCommunityBanState(id: community.id, banned: reply.bannedFromCommunity ?? reply.creatorBannedFromCommunity)
         
         self.votesManager.updateWithReceivedValue(votes, semaphore: semaphore)
         self.savedManager.updateWithReceivedValue(saved, semaphore: semaphore)

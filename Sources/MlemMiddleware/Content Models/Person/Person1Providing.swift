@@ -110,4 +110,25 @@ public extension Person1Providing {
     func toggleBlocked() -> Task<StateUpdateResult, Never> {
         updateBlocked(!blocked)
     }
+    
+    func ban(from community: any Community, removeContent: Bool, reason: String?, numberOfDays: Int?) async throws {
+        try await api.banPersonFromCommunity(
+            personId: self.id,
+            communityId: community.id,
+            ban: true,
+            removeContent: removeContent,
+            reason: reason,
+            numberOfDays: numberOfDays
+        )
+    }
+    
+    func unban(from community: any Community, reason: String?) async throws {
+        try await api.banPersonFromCommunity(
+            personId: self.id,
+            communityId: community.id,
+            ban: false,
+            removeContent: false,
+            reason: reason
+        )
+    }
 }
