@@ -38,10 +38,6 @@ class PersonFetcher: Fetcher<Person2> {
             nextCursor: nil
         )
     }
-    
-//    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Person2> {
-//        fatalError("Unsupported loading operation")
-//    }
 }
 
 @Observable
@@ -66,12 +62,6 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         )
     }
     
-    // MARK: StandardTracker Loading Methods
-    
-    override public func refresh(clearBeforeRefresh: Bool) async throws {
-        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
-    }
-    
     public func refresh(
         query: String? = nil,
         listing: ApiListingType? = nil,
@@ -81,6 +71,6 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         personFetcher.query = query ?? personFetcher.query
         personFetcher.listing = listing ?? personFetcher.listing
         personFetcher.sort = sort ?? personFetcher.sort
-        try await refresh(clearBeforeRefresh: clearBeforeRefresh)
+        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
     }
 }

@@ -100,7 +100,6 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
     /// - Parameter newFilter: NewPostFilterReason describing the filter to apply
     public func addFilter(_ newFilter: PostFilterType) async throws {
-        print("DEBUG \(loadingState)")
         if filter.activate(newFilter) {
             await setItems(filter.reset(with: items))
             
