@@ -12,13 +12,6 @@ public enum FeedLoaderSort: Comparable {
     public enum SortType {
         case new
     }
-    
-    var description: String {
-        switch self {
-        case let .new(date):
-            "NEW (\(date))"
-        }
-    }
 }
 
 public extension FeedLoaderSort {
