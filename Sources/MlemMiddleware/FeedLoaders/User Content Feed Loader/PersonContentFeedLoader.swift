@@ -109,8 +109,6 @@ class PersonContentFetcher: Fetcher<PersonContent> {
 }
 
 public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
-    // public private(set) var prefetchingConfiguration: PrefetchingConfiguration
-    
     // force unwrap because this should ALWAYS be an AggregatePostFetcher
     var personContentFetcher: PersonContentFetcher { fetcher as! PersonContentFetcher }
     
@@ -184,10 +182,10 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
     
     public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {
         postStream.prefetchingConfiguration = config
-        postStream.preloadImages(items)
-        
-        // note that this currently doesn't do anything because comments don't support prefetching yet [Eric 2024.11.13]
         commentStream.prefetchingConfiguration = config
+        
+        postStream.preloadImages(items)
+        // note that this currently doesn't do anything because comments don't support prefetching yet [Eric 2024.11.13]
         commentStream.preloadImages(items)
     }
 }

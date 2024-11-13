@@ -84,8 +84,6 @@ public class PersonContentStream<Item: PersonContentProviding> {
             }
         }
         
-        print("DEBUG prefetching \(imageRequests.count) images for \(numPosts) posts")
-        
         prefetchingConfiguration.prefetcher.startPrefetching(with: imageRequests)
     }
 }
