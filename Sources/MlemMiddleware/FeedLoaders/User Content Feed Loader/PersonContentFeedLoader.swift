@@ -28,21 +28,29 @@ class PersonContentFetcher: Fetcher<PersonContent> {
     var postStream: PersonContentStream<Post2>
     var commentStream: PersonContentStream<Comment2>
     
-    init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType, userId: Int, savedOnly: Bool, withContent: (posts: [Post2], comments: [Comment2])?) {
+    init(
+        api: ApiClient,
+        pageSize: Int,
+        sortType: FeedLoaderSort.SortType,
+        userId: Int,
+        savedOnly: Bool,
+        withContent: (posts: [Post2], comments: [Comment2])?,
+        prefetchingConfiguration: PrefetchingConfiguration
+    ) {
         self.api = api
         self.pageSize = pageSize
         self.sortType = sortType
         self.userId = userId
         self.savedOnly = savedOnly
-        self.postStream = .init(items: withContent?.posts)
-        self.commentStream = .init(items: withContent?.comments)
+        self.postStream = .init(items: withContent?.posts, prefetchingConfiguration: prefetchingConfiguration)
+        self.commentStream = .init(items: withContent?.comments, prefetchingConfiguration: prefetchingConfiguration)
         
         super.init(page: withContent == nil ? 0 : 1)
     }
     
     override func reset() {
-        postStream = .init()
-        commentStream = .init()
+        postStream.reset()
+        commentStream.reset()
         
         super.reset()
     }
@@ -101,7 +109,7 @@ class PersonContentFetcher: Fetcher<PersonContent> {
 }
 
 public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
-    public private(set) var prefetchingConfiguration: PrefetchingConfiguration
+    // public private(set) var prefetchingConfiguration: PrefetchingConfiguration
     
     // force unwrap because this should ALWAYS be an AggregatePostFetcher
     var personContentFetcher: PersonContentFetcher { fetcher as! PersonContentFetcher }
@@ -134,15 +142,15 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
         prefetchingConfiguration: PrefetchingConfiguration,
         withContent: (posts: [Post2], comments: [Comment2])? = nil
     ) {
-        self.prefetchingConfiguration = prefetchingConfiguration
         super.init(filter: MultiFilter(), fetcher: PersonContentFetcher(
             api: api,
             pageSize: pageSize,
             sortType: sortType,
             userId: userId,
             savedOnly: savedOnly,
-            withContent: withContent)
-        )
+            withContent: withContent,
+            prefetchingConfiguration: prefetchingConfiguration
+        ))
     }
     
     public func changeUser(api: ApiClient, userId: Int) async {
@@ -152,13 +160,7 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
         await loadingActor.reset()
         await setLoading(.done) // prevent loading more items until refreshed
     }
-    
-    // MARK: StandardFeedLoader Loading Methods
-  
-    override func processFetchedItems(_ items: [PersonContent]) {
-        preloadImages(items)
-    }
-    
+
     // MARK: Custom Behavior
     
     public func loadIfThreshold(_ item: PersonContent, asChild: Bool) throws {
@@ -181,25 +183,11 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
     }
     
     public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {
-        prefetchingConfiguration = config
-        preloadImages(items)
-    }
-
-    /// Preloads images for the given PersonContent
-    private func preloadImages(_ items: [PersonContent]) {
-        // TODO: prefetch comment images
-        var numPosts: Int = 0
-        var imageRequests = items.flatMap { item in
-            switch item.wrappedValue {
-            case let .post(post):
-                numPosts += 1
-                return post.imageRequests(configuration: prefetchingConfiguration)
-            default: return []
-            }
-        }
+        postStream.prefetchingConfiguration = config
+        postStream.preloadImages(items)
         
-        print("DEBUG prefetching \(imageRequests.count) images for \(numPosts) posts")
-        
-        prefetchingConfiguration.prefetcher.startPrefetching(with: imageRequests)
+        // note that this currently doesn't do anything because comments don't support prefetching yet [Eric 2024.11.13]
+        commentStream.prefetchingConfiguration = config
+        commentStream.preloadImages(items)
     }
 }
