@@ -111,14 +111,14 @@ public extension Person1Providing {
         updateBlocked(!blocked)
     }
     
-    func ban(from community: any Community, removeContent: Bool, reason: String?, numberOfDays: Int?) async throws {
+    func ban(from community: any Community, removeContent: Bool, reason: String?, expires: Date?) async throws {
         try await api.banPersonFromCommunity(
             personId: self.id,
             communityId: community.id,
             ban: true,
             removeContent: removeContent,
             reason: reason,
-            numberOfDays: numberOfDays
+            expires: expires
         )
     }
     
@@ -129,6 +129,26 @@ public extension Person1Providing {
             ban: false,
             removeContent: false,
             reason: reason
+        )
+    }
+    
+    func banFromInstance(removeContent: Bool, reason: String?, expires: Date?) async throws {
+        try await api.banPersonFromInstance(
+            personId: self.id,
+            ban: true,
+            removeContent: removeContent,
+            reason: reason,
+            expires: expires
+        )
+    }
+    
+    func unbanFromInstance(reason: String?) async throws {
+        try await api.banPersonFromInstance(
+            personId: self.id,
+            ban: false,
+            removeContent: false,
+            reason: reason,
+            expires: nil
         )
     }
 }

@@ -96,20 +96,53 @@ public extension ApiClient {
         ban: Bool,
         removeContent: Bool,
         reason: String?,
-        numberOfDays: Int? = nil
+        expires: Date? = nil
     ) async throws -> Person2 {
+        let expiryTimestamp: Int?
+        if let expires {
+            expiryTimestamp = Int(expires.timeIntervalSince1970)
+        } else {
+            expiryTimestamp = nil
+        }
         let request = BanFromCommunityRequest(
             communityId: communityId,
             personId: personId,
             ban: ban,
             removeData: removeContent,
             reason: reason,
-            expires: numberOfDays
+            expires: expiryTimestamp
         )
         let response = try await perform(request)
         guard response.banned == ban else { throw ApiClientError.unsuccessful }
         let person = caches.person2.getModel(api: self, from: response.personView)
         person.person1.updateKnownCommunityBanState(id: communityId, banned: response.banned)
+        return person
+    }
+    
+    @discardableResult
+    func banPersonFromInstance(
+        personId: Int,
+        ban: Bool,
+        removeContent: Bool,
+        reason: String?,
+        expires: Date? = nil
+    ) async throws -> Person2 {
+        let expiryTimestamp: Int?
+        if let expires {
+            expiryTimestamp = Int(expires.timeIntervalSince1970)
+        } else {
+            expiryTimestamp = nil
+        }
+        let request = BanPersonRequest(
+            personId: personId,
+            ban: ban,
+            removeData: removeContent,
+            reason: reason,
+            expires: expiryTimestamp
+        )
+        let response = try await perform(request)
+        guard response.banned == ban else { throw ApiClientError.unsuccessful }
+        let person = caches.person2.getModel(api: self, from: response.personView)
         return person
     }
     
