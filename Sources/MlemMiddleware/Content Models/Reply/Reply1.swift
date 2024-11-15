@@ -20,6 +20,8 @@ public final class Reply1: Reply1Providing {
     public let created: Date
     public let isMention: Bool
     
+    public var purged: Bool = false
+    
     internal let readManager: StateManager<Bool>
     public var read: Bool { readManager.wrappedValue }
     

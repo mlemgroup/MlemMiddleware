@@ -13,6 +13,7 @@ public protocol Post1Providing:
         Interactable1Providing,
         SelectableContentProviding,
         DeletableProviding,
+        PurgableProviding,
         FeedLoadable where FilterType == PostFilterType {
     var post1: Post1 { get }
     
@@ -69,6 +70,7 @@ public extension Post1Providing {
     var updated: Date? { post1.updated }
     var languageId: Int { post1.languageId }
     var altText: String? { post1.altText }
+    var purged: Bool { post1.purged }
     
     var id_: Int? { post1.id }
     var creatorId_: Int? { post1.creatorId }
@@ -169,6 +171,10 @@ public extension Post1Providing {
     
     func report(reason: String) async throws {
         try await api.reportPost(id: id, reason: reason)
+    }
+    
+    func purge(reason: String?) async throws {
+        try await api.purgePost(id: id, reason: reason)
     }
     
     @discardableResult

@@ -35,7 +35,7 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
             deleted: apiType.deleted,
             isBot: apiType.botAccount,
             instanceBan: instanceBan,
-            blocked: false // TODO: can we know this?
+            blocked: nil
         )
     }
     

@@ -320,6 +320,13 @@ public extension ApiClient {
         // TODO: return post report
     }
     
+    func purgePost(id: Int, reason: String?) async throws {
+        let request = PurgePostRequest(postId: id, reason: reason)
+        let response = try await perform(request)
+        guard response.success else { throw ApiClientError.unsuccessful }
+        caches.post1.retrieveModel(cacheId: id)?.purged = true
+    }
+    
     @discardableResult
     func removePost(
         id: Int,

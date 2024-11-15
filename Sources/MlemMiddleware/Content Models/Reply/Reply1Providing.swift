@@ -11,7 +11,8 @@ public protocol Reply1Providing:
         ContentModel,
         ContentIdentifiable,
         Interactable1Providing,
-        InboxItemProviding
+        InboxItemProviding,
+        PurgableProviding
     {
     
     var reply1: Reply1 { get }
@@ -64,6 +65,8 @@ public extension Reply1Providing {
     var created: Date { reply1.created }
     var isMention: Bool { reply1.isMention }
     
+    var purged: Bool { reply1.purged }
+    
     var id_: Int? { id }
     var recipientId_: Int? { recipientId }
     var commentId_: Int? { commentId }
@@ -105,6 +108,10 @@ public extension Reply1Providing {
     
     func report(reason: String) async throws {
         try await api.reportComment(id: commentId, reason: reason)
+    }
+    
+    func purge(reason: String?) async throws {
+        try await api.purgeComment(id: commentId, reason: reason)
     }
     
     internal func setKnownReadState(newValue: Bool) {
