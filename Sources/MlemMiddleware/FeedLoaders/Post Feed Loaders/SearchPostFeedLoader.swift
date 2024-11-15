@@ -73,5 +73,6 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
                 listing: listing
             )
         )
+        loadingState = .idle
     }
 }
