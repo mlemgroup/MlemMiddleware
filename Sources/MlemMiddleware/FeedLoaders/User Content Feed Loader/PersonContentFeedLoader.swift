@@ -149,15 +149,29 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
         ))
     }
     
+    // MARK: Custom Behavior
+    
+    override public func refresh(clearBeforeRefresh: Bool) async throws {
+        if !clearBeforeRefresh {
+            tempPostStream = postStream
+            tempCommentStream = commentStream
+        }
+        
+        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
+        
+        tempPostStream = nil
+        tempCommentStream = nil
+    }
+    
     public func changeUser(api: ApiClient, userId: Int) async {
+        tempPostStream = postStream
+        tempCommentStream = commentStream
+        
         personContentFetcher.api = api
         personContentFetcher.userId = userId
-        personContentFetcher.reset()
         await loadingActor.reset()
         await setLoading(.done) // prevent loading more items until refreshed
     }
-
-    // MARK: Custom Behavior
     
     public func loadIfThreshold(_ item: PersonContent, asChild: Bool) throws {
         let shouldLoad: Bool

@@ -33,6 +33,7 @@ public class PersonContentStream<Item: PersonContentProviding> {
     var needsMoreItems: Bool { !doneLoading && cursor >= items.count }
     
     func reset() {
+        items = .init()
         cursor = 0
         doneLoading = false
         thresholds = .init()
