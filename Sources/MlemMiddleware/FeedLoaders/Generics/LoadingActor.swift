@@ -76,7 +76,8 @@ public class Fetcher<Item: FeedLoadable> {
                 let response = try await fetchPage(page)
                 
                 // if nothing returned, loading is finished
-                if response.items.isEmpty {
+                if response.items.count < pageSize {
+                    print("[\(Item.self) Fetcher] received undersized page (\(response.items.count)/\(pageSize))")
                     return .done(.init())
                 }
                 self.cursor = response.nextCursor
