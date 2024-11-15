@@ -58,30 +58,25 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     
     private func fetchMoreItems() async throws -> [Item] {
         var newItems: [Item] = .init()
-        var abort: Bool = false // this is slightly awkward but lets us trigger a loop break from within the switch handlers below
-        repeat {
-            let loadingResponse = try await loadingActor.load()
-            var fetchedItems: [Item] = .init()
+        fetchLoop: repeat {
+            let response = try await loadingActor.load()
             
-            switch loadingResponse {
+            switch response {
             case let .success(items):
                 print("[\(Item.self) FeedLoader] received success (\(items.count))")
-                fetchedItems = items
+                newItems.append(contentsOf: filter.filter(items))
             case let .done(items):
                 print("[\(Item.self) FeedLoader] received finished (\(items.count))")
-                fetchedItems = items
+                newItems.append(contentsOf: filter.filter(items))
                 await setLoading(.done)
-                abort = true
+                break fetchLoop
             case .cancelled, .ignored:
-                print("[\(Item.self) FeedLoader] load did not complete (\(loadingResponse.description))")
-                abort = true
+                print("[\(Item.self) FeedLoader] load did not complete (\(response.description))")
+                break fetchLoop
             }
-            
-            let filteredItems = filter.filter(fetchedItems)
-            processFetchedItems(filteredItems)
-            newItems.append(contentsOf: filteredItems)
-        } while !abort && newItems.count < MiddlewareConstants.infiniteLoadThresholdOffset
+        } while newItems.count < MiddlewareConstants.infiniteLoadThresholdOffset
         
+        processFetchedItems(newItems)
         return newItems
     }
     
