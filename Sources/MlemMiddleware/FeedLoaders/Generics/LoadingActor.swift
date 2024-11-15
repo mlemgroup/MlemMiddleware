@@ -154,7 +154,7 @@ actor LoadingActor<Item: FeedLoadable> {
             }
             let result = try await loadingTask.result.get()
             
-            if case let .done = result {
+            if case .done = result {
                 self.done = true
             }
             
