@@ -35,15 +35,17 @@ enum LoadingResponse<Item: FeedLoadable> {
 }
 
 public class Fetcher<Item: FeedLoadable> {
+    var pageSize: Int
     var page: Int
     private var cursor: String?
     
-    init (page: Int = 0) {
+    init (pageSize: Int, page: Int = 0) {
+        self.pageSize = pageSize
         self.page = page
     }
     
     /// Helper struct bundling the response from a fetchPage or fetchCursor call
-    struct FetchResponse<Item: FeedLoadable> {
+    struct FetchResponse {
         /// Items returned
         public let items: [Item]
         
@@ -89,7 +91,7 @@ public class Fetcher<Item: FeedLoadable> {
     /// - Parameters:
     ///   - page: page number to fetch
     /// - Returns: tuple of the requested page of items, the cursor returned by the API call (if present), and the number of items that were filtered out.
-    func fetchPage(_ page: Int) async throws -> FetchResponse<Item> {
+    func fetchPage(_ page: Int) async throws -> FetchResponse {
         preconditionFailure("This method must be implemented by the inheriting class")
     }
     
@@ -97,7 +99,7 @@ public class Fetcher<Item: FeedLoadable> {
     /// - Parameters:
     ///   - cursor: cursor to fetch
     /// - Returns: tuple of the requested page of items, the cursor returned by the API call (if present), and the number of items that were filtered out.
-    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Item> {
+    func fetchCursor(_ cursor: String) async throws -> FetchResponse {
         preconditionFailure("This method must be implemented by the inheriting class")
     }
     

@@ -12,15 +12,15 @@ import Observation
 public class PostFetcher: Fetcher<Post2> {
     var api: ApiClient
     var sortType: ApiSortType
-    var pageSize: Int
     
     init(api: ApiClient, sortType: ApiSortType, pageSize: Int) {
         self.api = api
         self.sortType = sortType
-        self.pageSize = pageSize
+        
+        super.init(pageSize: pageSize)
     }
     
-    override func fetchPage(_ page: Int) async throws -> FetchResponse<Post2> {
+    override func fetchPage(_ page: Int) async throws -> FetchResponse {
         let result = try await getPosts(page: page, cursor: nil)
 
         return .init(
@@ -30,7 +30,7 @@ public class PostFetcher: Fetcher<Post2> {
         )
     }
     
-    override func fetchCursor(_ cursor: String) async throws -> FetchResponse<Post2> {
+    override func fetchCursor(_ cursor: String) async throws -> FetchResponse {
         let result = try await getPosts(page: 1, cursor: cursor)
         
         return .init(

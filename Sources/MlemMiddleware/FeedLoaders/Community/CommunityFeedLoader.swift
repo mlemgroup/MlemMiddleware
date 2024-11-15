@@ -10,19 +10,19 @@ import Foundation
 class CommunityFetcher: Fetcher<Community2> {
     let api: ApiClient
     var query: String
-    var pageSize: Int
     var listing: ApiListingType
     var sort: ApiSortType
     
     init(api: ApiClient, query: String, pageSize: Int, listing: ApiListingType, sort: ApiSortType) {
         self.api = api
         self.query = query
-        self.pageSize = pageSize
         self.listing = listing
         self.sort = sort
+        
+        super.init(pageSize: pageSize)
     }
     
-    override func fetchPage(_ page: Int) async throws -> FetchResponse<Community2> {
+    override func fetchPage(_ page: Int) async throws -> FetchResponse {
         let communities = try await api.searchCommunities(
             query: query,
             page: page,
@@ -31,16 +31,12 @@ class CommunityFetcher: Fetcher<Community2> {
             sort: sort
         )
         
-        return FetchResponse<Community2>.init(
+        return .init(
             items: communities,
             prevCursor: nil,
             nextCursor: nil
         )
     }
-    
-//    func fetchCursor(_ cursor: String) async throws -> FetchResponse<Community2> {
-//        fatalError("Unsupported loading operation")
-//    }
 }
 
 @Observable

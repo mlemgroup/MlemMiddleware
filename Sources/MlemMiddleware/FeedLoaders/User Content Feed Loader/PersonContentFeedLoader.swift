@@ -20,7 +20,6 @@ import Nuke
 
 class PersonContentFetcher: Fetcher<PersonContent> {
     var api: ApiClient
-    var pageSize: Int
     var sortType: FeedLoaderSort.SortType
     var userId: Int
     var savedOnly: Bool
@@ -38,14 +37,13 @@ class PersonContentFetcher: Fetcher<PersonContent> {
         prefetchingConfiguration: PrefetchingConfiguration
     ) {
         self.api = api
-        self.pageSize = pageSize
         self.sortType = sortType
         self.userId = userId
         self.savedOnly = savedOnly
         self.postStream = .init(items: withContent?.posts, prefetchingConfiguration: prefetchingConfiguration)
         self.commentStream = .init(items: withContent?.comments, prefetchingConfiguration: prefetchingConfiguration)
         
-        super.init(page: withContent == nil ? 0 : 1)
+        super.init(pageSize: pageSize, page: withContent == nil ? 0 : 1)
     }
     
     override func reset() {
@@ -72,11 +70,11 @@ class PersonContentFetcher: Fetcher<PersonContent> {
         return .success(newItems)
     }
     
-    override func fetchPage(_ page: Int) async throws -> FetchResponse<PersonContent> {
+    override func fetchPage(_ page: Int) async throws -> FetchResponse {
         fatalError("Unsupported loading operation")
     }
     
-    override func fetchCursor(_ cursor: String) async throws -> FetchResponse<PersonContent> {
+    override func fetchCursor(_ cursor: String) async throws -> FetchResponse {
         fatalError("Unsupported loading operation")
     }
     

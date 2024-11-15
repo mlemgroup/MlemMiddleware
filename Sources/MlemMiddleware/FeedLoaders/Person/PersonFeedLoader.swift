@@ -9,7 +9,6 @@ import Foundation
 
 class PersonFetcher: Fetcher<Person2> {
     let api: ApiClient
-    let pageSize: Int
     var query: String
     /// `listing` can be set to `.local` from 0.19.4 onwards.
     var listing: ApiListingType
@@ -17,13 +16,14 @@ class PersonFetcher: Fetcher<Person2> {
     
     init(api: ApiClient, pageSize: Int, query: String, listing: ApiListingType, sort: ApiSortType) {
         self.api = api
-        self.pageSize = pageSize
         self.query = query
         self.listing = listing
         self.sort = sort
+        
+        super.init(pageSize: pageSize)
     }
     
-    override func fetchPage(_ page: Int) async throws -> FetchResponse<Person2> {
+    override func fetchPage(_ page: Int) async throws -> FetchResponse {
         let communities = try await api.searchPeople(
             query: query,
             page: page,
