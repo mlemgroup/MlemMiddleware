@@ -73,10 +73,6 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         )
     }
     
-    override public func refresh(clearBeforeRefresh: Bool) async throws {
-        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
-    }
-    
     // MARK: StandardFeedLoader Loading Methods
   
     override func processFetchedItems(_ items: [Post2]) {
