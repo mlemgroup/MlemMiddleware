@@ -12,15 +12,9 @@ import Observation
 @Observable
 public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     private(set) public var items: [Item] = .init()
-    private(set) public var loadingState: LoadingState = .idle
+    internal(set) public var loadingState: LoadingState = .loading
     
     private(set) var thresholds: Thresholds<Item> = .init()
-    
-    private(set) var pageSize: Int
-
-    init(pageSize: Int) {
-        self.pageSize = pageSize
-    }
     
     /// If the given item is the loading threshold item, loads more content
     /// This should be called as an .onAppear of every item in a feed that should support infinite scrolling

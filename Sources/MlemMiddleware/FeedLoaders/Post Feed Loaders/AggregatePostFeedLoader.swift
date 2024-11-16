@@ -7,29 +7,13 @@
 
 import Foundation
 
-public class AggregatePostFeedLoader: CorePostFeedLoader {
-    public var api: ApiClient
-    private(set) var feedType: ApiListingType // ew raw API type but in this case defining a proxy enum seems silly
+class AggregatePostFetcher: PostFetcher {
+    var feedType: ApiListingType
     
-    public init(
-        pageSize: Int,
-        sortType: ApiSortType,
-        showReadPosts: Bool,
-        filteredKeywords: [String],
-        prefetchingConfiguration: PrefetchingConfiguration,
-        urlCache: URLCache,
-        api: ApiClient,
-        feedType: ApiListingType
-    ) {
-        self.api = api
+    init(api: ApiClient, feedType: ApiListingType, sortType: ApiSortType, pageSize: Int) {
         self.feedType = feedType
-        super.init(
-            pageSize: pageSize,
-            sortType: sortType,
-            showReadPosts: showReadPosts,
-            filteredKeywords: filteredKeywords,
-            prefetchingConfiguration: prefetchingConfiguration
-        )
+        
+        super.init(api: api, sortType: sortType, pageSize: pageSize)
     }
     
     override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
@@ -43,17 +27,51 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
             showHidden: false // TODO
         )
     }
+}
+
+public class AggregatePostFeedLoader: CorePostFeedLoader {
+    // force unwrap because this should ALWAYS be an AggregatePostFetcher
+    var aggregatePostFetcher: AggregatePostFetcher { fetcher as! AggregatePostFetcher }
+    
+    public init(
+        pageSize: Int,
+        sortType: ApiSortType,
+        showReadPosts: Bool,
+        filteredKeywords: [String],
+        prefetchingConfiguration: PrefetchingConfiguration,
+        urlCache: URLCache,
+        api: ApiClient,
+        feedType: ApiListingType
+    ) {
+        super.init(
+            api: api,
+            pageSize: pageSize,
+            showReadPosts: showReadPosts,
+            filteredKeywords: filteredKeywords,
+            prefetchingConfiguration: prefetchingConfiguration,
+            fetcher: AggregatePostFetcher(
+                api: api,
+                feedType: feedType,
+                sortType: sortType,
+                pageSize: pageSize
+            )
+        )
+    }
     
     @MainActor
     public func changeFeedType(to newFeedType: ApiListingType) async throws {
-        let shouldRefresh = items.isEmpty || feedType != newFeedType
+        let shouldRefresh = items.isEmpty || aggregatePostFetcher.feedType != newFeedType
         
         // always perform assignment--if account changed, feed type will look unchanged but API will be different
-        feedType = newFeedType
+        aggregatePostFetcher.feedType = newFeedType
         
         // only refresh if nominal feed type changed
         if shouldRefresh {
             try await refresh(clearBeforeRefresh: true)
         }
+    }
+    
+    public func changeApi(to newApi: ApiClient) {
+        aggregatePostFetcher.api = newApi
     }
 }

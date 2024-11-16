@@ -9,15 +9,17 @@ import Foundation
 
 // This struct is just a convenience wrapper to handle stream state--all loading operations happen at the FeedLoader level to 
 // avoid parent/child concurrency control hell
-public struct PersonContentStream<Item: PersonContentProviding> {
+public class PersonContentStream<Item: PersonContentProviding> {
     // From the frontend it is more ergonomic to have these be PersonContent. These are guaranteed to all be of type Item by
     // guarding assignment behind `init` and `addItems`, which can only take Item.
     private(set) var items: [PersonContent]
     var cursor: Int = 0
     var doneLoading: Bool = false
     var thresholds: Thresholds<PersonContent>
+    var prefetchingConfiguration: PrefetchingConfiguration
     
-    init(items: [Item]? = nil) {
+    init(items: [Item]? = nil, prefetchingConfiguration: PrefetchingConfiguration) {
+        self.prefetchingConfiguration = prefetchingConfiguration
         self.thresholds = .init()
         if let items {
             let personContentItems: [PersonContent] = items.map { $0.userContent }
@@ -30,8 +32,16 @@ public struct PersonContentStream<Item: PersonContentProviding> {
     
     var needsMoreItems: Bool { !doneLoading && cursor >= items.count }
     
-    mutating func addItems(_ newItems: [Item]) {
+    func reset() {
+        items = .init()
+        cursor = 0
+        doneLoading = false
+        thresholds = .init()
+    }
+    
+    func addItems(_ newItems: [Item]) {
         let personContentItems: [PersonContent] = newItems.map { $0.userContent }
+        preloadImages(personContentItems)
         items.append(contentsOf: personContentItems)
         thresholds.update(with: personContentItems)
         if newItems.isEmpty {
@@ -53,12 +63,28 @@ public struct PersonContentStream<Item: PersonContentProviding> {
     /// Gets the next item in the stream and increments the cursor
     /// - Returns: next item in the feed stream
     /// - Warning: This is NOT a thread-safe function! Only one thread at a time per stream may call this function!
-    mutating func consumeNextItem() -> PersonContent? {
+    func consumeNextItem() -> PersonContent? {
         guard cursor < items.count else {
             return nil
         }
         
         cursor += 1
         return items[cursor - 1]
+    }
+    
+    /// Preloads images for the given PersonContent items
+    func preloadImages(_ items: [PersonContent]) {
+        // TODO: prefetch comment images
+        var numPosts: Int = 0
+        var imageRequests = items.flatMap { item in
+            switch item.wrappedValue {
+            case let .post(post):
+                numPosts += 1
+                return post.imageRequests(configuration: prefetchingConfiguration)
+            default: return []
+            }
+        }
+        
+        prefetchingConfiguration.prefetcher.startPrefetching(with: imageRequests)
     }
 }

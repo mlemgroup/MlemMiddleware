@@ -7,6 +7,27 @@
 
 import Foundation
 
+class CommunityPostFetcher: PostFetcher {
+    var community: any Community
+    
+    init(sortType: ApiSortType, pageSize: Int, community: any Community) {
+        self.community = community
+        
+        super.init(api: community.api, sortType: sortType, pageSize: pageSize)
+    }
+    
+    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
+        return try await community.getPosts(
+            sort: sortType,
+            page: page,
+            cursor: cursor,
+            limit: pageSize,
+            filter: nil, // TODO
+            showHidden: false // TODO
+        )
+    }
+}
+
 public class CommunityPostFeedLoader: CorePostFeedLoader {
     public var community: any Community
     
@@ -21,22 +42,12 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     ) {
         self.community = community
         super.init(
+            api: community.api,
             pageSize: pageSize,
-            sortType: sortType,
             showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
-            prefetchingConfiguration: prefetchingConfiguration
-        )
-    }
-    
-    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
-        return try await community.getPosts(
-            sort: sortType,
-            page: page,
-            cursor: cursor,
-            limit: pageSize,
-            filter: nil, // TODO
-            showHidden: false // TODO
+            prefetchingConfiguration: prefetchingConfiguration,
+            fetcher: CommunityPostFetcher(sortType: sortType, pageSize: pageSize, community: community)
         )
     }
 }

@@ -7,35 +7,23 @@
 
 import Foundation
 
-@Observable
-public class PersonFeedLoader: StandardFeedLoader<Person2> {
-    public var api: ApiClient
-    public private(set) var query: String
+class PersonFetcher: Fetcher<Person2> {
+    let api: ApiClient
+    var query: String
     /// `listing` can be set to `.local` from 0.19.4 onwards.
-    public private(set) var listing: ApiListingType
-    public private(set) var sort: ApiSortType
+    var listing: ApiListingType
+    var sort: ApiSortType
     
-    public init(
-        api: ApiClient,
-        query: String = "",
-        pageSize: Int = 20,
-        listing: ApiListingType = .all,
-        sort: ApiSortType = .topAll
-    ) {
+    init(api: ApiClient, pageSize: Int, query: String, listing: ApiListingType, sort: ApiSortType) {
         self.api = api
         self.query = query
         self.listing = listing
         self.sort = sort
         
-        super.init(
-            pageSize: pageSize,
-            filter: .init()
-        )
+        super.init(pageSize: pageSize)
     }
     
-    // MARK: StandardTracker Loading Methods
-    
-    override public func fetchPage(page: Int) async throws -> FetchResponse<Person2> {
+    override func fetchPage(_ page: Int) async throws -> FetchResponse {
         let communities = try await api.searchPeople(
             query: query,
             page: page,
@@ -47,13 +35,31 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         return .init(
             items: communities,
             prevCursor: nil,
-            nextCursor: nil,
-            numFiltered: 0
+            nextCursor: nil
         )
     }
+}
+
+@Observable
+public class PersonFeedLoader: StandardFeedLoader<Person2> {
+    public var api: ApiClient
     
-    override public func refresh(clearBeforeRefresh: Bool) async throws {
-        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
+    // force unwrap because this should ALWAYS be a PersonFetcher
+    var personFetcher: PersonFetcher { fetcher as! PersonFetcher }
+    
+    public init(
+        api: ApiClient,
+        query: String = "",
+        pageSize: Int = 20,
+        listing: ApiListingType = .all,
+        sort: ApiSortType = .topAll
+    ) {
+        self.api = api
+        
+        super.init(
+            filter: .init(),
+            fetcher: PersonFetcher(api: api, pageSize: pageSize, query: query, listing: listing, sort: sort)
+        )
     }
     
     public func refresh(
@@ -62,9 +68,9 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         sort: ApiSortType? = nil,
         clearBeforeRefresh: Bool = false
     ) async throws {
-        self.query = query ?? self.query
-        self.listing = listing ?? self.listing
-        self.sort = sort ?? self.sort
-        try await refresh(clearBeforeRefresh: clearBeforeRefresh)
+        personFetcher.query = query ?? personFetcher.query
+        personFetcher.listing = listing ?? personFetcher.listing
+        personFetcher.sort = sort ?? personFetcher.sort
+        try await super.refresh(clearBeforeRefresh: clearBeforeRefresh)
     }
 }
