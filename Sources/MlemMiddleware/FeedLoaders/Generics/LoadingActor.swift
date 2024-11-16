@@ -78,7 +78,7 @@ public class Fetcher<Item: FeedLoadable> {
                 // if nothing returned, loading is finished
                 if response.items.count < pageSize {
                     print("[\(Item.self) Fetcher] received undersized page (\(response.items.count)/\(pageSize))")
-                    return .done(.init())
+                    return .done(response.items)
                 }
                 self.cursor = response.nextCursor
                 return .success(response.items)
