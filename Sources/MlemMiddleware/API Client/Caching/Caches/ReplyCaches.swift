@@ -64,7 +64,7 @@ class Reply2Cache: CoreCache<Reply2> {
             commentCount: apiType.counts.childCount,
             creatorIsModerator: apiType.creatorIsModerator,
             creatorIsAdmin: apiType.creatorIsAdmin,
-            bannedFromCommunity: apiType.bannedFromCommunity,
+            bannedFromCommunity: apiType.creatorBannedFromCommunity,
             votesManager: votesManager,
             savedManager: savedManager
         )

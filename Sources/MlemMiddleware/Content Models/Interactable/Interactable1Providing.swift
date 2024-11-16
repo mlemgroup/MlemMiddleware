@@ -13,6 +13,7 @@ public protocol Interactable1Providing: AnyObject, ContentModel, ReportableProvi
     var updated: Date? { get }
     
     var creator_: (any Person)? { get }
+    var community_: (any Community)? { get }
     var creatorIsModerator_: Bool? { get }
     var creatorIsAdmin_: Bool? { get }
     var bannedFromCommunity_: Bool? { get }
