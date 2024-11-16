@@ -78,7 +78,9 @@ public extension Person1Providing {
 
 public extension Person1Providing {
     private var blockedManager: StateManager<Bool> { person1.blockedManager }
-    
+
+    var bannedFromInstance: Bool { instanceBan != .notBanned }
+
     func upgrade() async throws -> any Person {
         try await api.getPerson(id: id)
     }
