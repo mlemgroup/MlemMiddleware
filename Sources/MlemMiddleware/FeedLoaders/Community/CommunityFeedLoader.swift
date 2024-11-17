@@ -8,18 +8,16 @@
 import Foundation
 
 class CommunityFetcher: Fetcher<Community2> {
-    let api: ApiClient
     var query: String
     var listing: ApiListingType
     var sort: ApiSortType
     
     init(api: ApiClient, query: String, pageSize: Int, listing: ApiListingType, sort: ApiSortType) {
-        self.api = api
         self.query = query
         self.listing = listing
         self.sort = sort
         
-        super.init(pageSize: pageSize)
+        super.init(api: api, pageSize: pageSize)
     }
     
     override func fetchPage(_ page: Int) async throws -> FetchResponse {

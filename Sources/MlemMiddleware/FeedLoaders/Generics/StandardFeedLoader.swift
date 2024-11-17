@@ -84,4 +84,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     func processFetchedItems(_ items: [Item]) {
         return
     }
+    
+    public func changeApi(to newApi: ApiClient) {
+        fetcher.api = newApi
+    }
 }

@@ -19,7 +19,6 @@ import Nuke
 /// which is then incorporated into both child streams.
 
 class PersonContentFetcher: Fetcher<PersonContent> {
-    var api: ApiClient
     var sortType: FeedLoaderSort.SortType
     var userId: Int
     var savedOnly: Bool
@@ -36,14 +35,13 @@ class PersonContentFetcher: Fetcher<PersonContent> {
         withContent: (posts: [Post2], comments: [Comment2])?,
         prefetchingConfiguration: PrefetchingConfiguration
     ) {
-        self.api = api
         self.sortType = sortType
         self.userId = userId
         self.savedOnly = savedOnly
         self.postStream = .init(items: withContent?.posts, prefetchingConfiguration: prefetchingConfiguration)
         self.commentStream = .init(items: withContent?.comments, prefetchingConfiguration: prefetchingConfiguration)
         
-        super.init(pageSize: pageSize, page: withContent == nil ? 0 : 1)
+        super.init(api: api, pageSize: pageSize, page: withContent == nil ? 0 : 1)
     }
     
     override func reset() {

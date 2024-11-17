@@ -10,14 +10,12 @@ import Nuke
 import Observation
 
 public class PostFetcher: Fetcher<Post2> {
-    var api: ApiClient
     var sortType: ApiSortType
     
     init(api: ApiClient, sortType: ApiSortType, pageSize: Int) {
-        self.api = api
         self.sortType = sortType
         
-        super.init(pageSize: pageSize)
+        super.init(api: api, pageSize: pageSize)
     }
     
     override func fetchPage(_ page: Int) async throws -> FetchResponse {

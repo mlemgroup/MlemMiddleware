@@ -70,8 +70,4 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
             try await refresh(clearBeforeRefresh: true)
         }
     }
-    
-    public func changeApi(to newApi: ApiClient) {
-        aggregatePostFetcher.api = newApi
-    }
 }
