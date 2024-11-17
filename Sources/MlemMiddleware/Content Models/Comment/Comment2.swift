@@ -22,7 +22,7 @@ public final class Comment2: Comment2Providing {
     
     public var creatorIsModerator: Bool?
     public var creatorIsAdmin: Bool?
-    public var bannedFromCommunity: Bool?
+    public var bannedFromCommunity: Bool { creator.communityBanIds.contains(community.id) }
     public var commentCount: Int
     
     internal var votesManager: StateManager<VotesModel>
@@ -41,7 +41,7 @@ public final class Comment2: Comment2Providing {
         savedManager: StateManager<Bool>,
         creatorIsModerator: Bool?,
         creatorIsAdmin: Bool?,
-        bannedFromCommunity: Bool?, 
+        bannedFromCommunity: Bool,
         commentCount: Int
     ) {
         self.api = api
@@ -53,7 +53,7 @@ public final class Comment2: Comment2Providing {
         self.savedManager = savedManager
         self.creatorIsModerator = creatorIsModerator
         self.creatorIsAdmin = creatorIsAdmin
-        self.bannedFromCommunity = bannedFromCommunity
         self.commentCount = commentCount
+        creator.updateKnownCommunityBanState(id: community.id, banned: bannedFromCommunity)
     }
 }

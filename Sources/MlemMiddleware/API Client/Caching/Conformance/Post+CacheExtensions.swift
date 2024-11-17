@@ -35,7 +35,7 @@ extension Post2: CacheIdentifiable {
     func update(with post: ApiPostView, semaphore: UInt? = nil) {
         setIfChanged(\.creatorIsModerator, post.creatorIsModerator)
         setIfChanged(\.creatorIsAdmin, post.creatorIsAdmin)
-        setIfChanged(\.bannedFromCommunity, post.bannedFromCommunity ?? post.creatorBannedFromCommunity)
+        creator.updateKnownCommunityBanState(id: community.id, banned: post.creatorBannedFromCommunity)
         setIfChanged(\.commentCount, post.counts.comments)
         setIfChanged(\.unreadCommentCount, post.unreadComments)
         

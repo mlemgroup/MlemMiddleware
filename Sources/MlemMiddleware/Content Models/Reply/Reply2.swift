@@ -24,7 +24,7 @@ public final class Reply2: Reply2Providing {
     public var commentCount: Int
     public var creatorIsModerator: Bool?
     public var creatorIsAdmin: Bool?
-    public var bannedFromCommunity: Bool?
+    public var bannedFromCommunity: Bool { creator.communityBanIds.contains(community.id) }
     
     internal var votesManager: StateManager<VotesModel>
     public var votes: VotesModel { votesManager.wrappedValue }
@@ -44,7 +44,7 @@ public final class Reply2: Reply2Providing {
         commentCount: Int,
         creatorIsModerator: Bool?,
         creatorIsAdmin: Bool?,
-        bannedFromCommunity: Bool?,
+        bannedFromCommunity: Bool,
         votesManager: StateManager<VotesModel>,
         savedManager: StateManager<Bool>
     ) {
@@ -59,8 +59,8 @@ public final class Reply2: Reply2Providing {
         self.commentCount = commentCount
         self.creatorIsModerator = creatorIsModerator
         self.creatorIsAdmin = creatorIsAdmin
-        self.bannedFromCommunity = bannedFromCommunity
         self.votesManager = votesManager
         self.savedManager = savedManager
+        creator.updateKnownCommunityBanState(id: community.id, banned: bannedFromCommunity)
     }
 }

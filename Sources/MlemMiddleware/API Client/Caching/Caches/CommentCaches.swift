@@ -57,7 +57,7 @@ class Comment2Cache: ApiTypeBackedCache<Comment2, ApiCommentView> {
             savedManager: savedManager,
             creatorIsModerator: apiType.creatorIsModerator,
             creatorIsAdmin: apiType.creatorIsAdmin,
-            bannedFromCommunity: apiType.bannedFromCommunity ?? apiType.creatorBannedFromCommunity,
+            bannedFromCommunity: apiType.creatorBannedFromCommunity,
             commentCount: apiType.counts.childCount
         )
     }

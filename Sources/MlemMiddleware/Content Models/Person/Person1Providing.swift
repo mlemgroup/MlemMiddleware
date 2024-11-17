@@ -78,7 +78,9 @@ public extension Person1Providing {
 
 public extension Person1Providing {
     private var blockedManager: StateManager<Bool> { person1.blockedManager }
-    
+
+    var bannedFromInstance: Bool { instanceBan != .notBanned }
+
     func upgrade() async throws -> any Person {
         try await api.getPerson(id: id)
     }
@@ -109,5 +111,46 @@ public extension Person1Providing {
     @discardableResult
     func toggleBlocked() -> Task<StateUpdateResult, Never> {
         updateBlocked(!blocked)
+    }
+    
+    func ban(from community: any Community, removeContent: Bool, reason: String?, expires: Date?) async throws {
+        try await api.banPersonFromCommunity(
+            personId: self.id,
+            communityId: community.id,
+            ban: true,
+            removeContent: removeContent,
+            reason: reason,
+            expires: expires
+        )
+    }
+    
+    func unban(from community: any Community, reason: String?) async throws {
+        try await api.banPersonFromCommunity(
+            personId: self.id,
+            communityId: community.id,
+            ban: false,
+            removeContent: false,
+            reason: reason
+        )
+    }
+    
+    func banFromInstance(removeContent: Bool, reason: String?, expires: Date?) async throws {
+        try await api.banPersonFromInstance(
+            personId: self.id,
+            ban: true,
+            removeContent: removeContent,
+            reason: reason,
+            expires: expires
+        )
+    }
+    
+    func unbanFromInstance(reason: String?) async throws {
+        try await api.banPersonFromInstance(
+            personId: self.id,
+            ban: false,
+            removeContent: false,
+            reason: reason,
+            expires: nil
+        )
     }
 }
