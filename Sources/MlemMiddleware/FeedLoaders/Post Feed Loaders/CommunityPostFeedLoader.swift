@@ -63,20 +63,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
             }
             communityPostFetcher.community = newCommunity
         } catch {
-            print("DEBUG couldn't change API")
+            assertionFailure("Couldn't change API")
         }
-//        } catch ApiClientError.noEntityFound {
-//            do {
-//                // set to guest
-//                print("DEBUG setting to guest")
-//                let guestApi: ApiClient = .getApiClient(for: community.api.actorId, with: nil)
-//                let guestCommunity: Community3 = try await guestApi.getCommunity(actorId: community.actorId)
-//                communityPostFetcher.community = guestCommunity
-//            } catch {
-//                assertionFailure("Could not change community")
-//            }
-//        } catch {
-//            assertionFailure("Could not change community")
-//        }
     }
 }
