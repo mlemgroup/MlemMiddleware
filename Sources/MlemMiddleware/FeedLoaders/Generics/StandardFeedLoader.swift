@@ -85,7 +85,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         return
     }
     
-    override public func changeApi(to newApi: ApiClient) {
+    override public func changeApi(to newApi: ApiClient) async throws {
         fetcher.api = newApi
     }
 }

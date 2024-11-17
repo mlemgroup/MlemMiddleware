@@ -62,7 +62,7 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     }
     
     // TODO: collapse CoreFeedLoader and StandardFeedLoader
-    public func changeApi(to newApi: ApiClient) {
+    public func changeApi(to newApi: ApiClient) async throws {
         assertionFailure("Not implemented")
     }
 }
