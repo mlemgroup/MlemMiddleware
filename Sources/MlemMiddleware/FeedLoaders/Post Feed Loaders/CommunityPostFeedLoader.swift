@@ -53,11 +53,30 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
         )
     }
     
-    override public func changeApi(to newApi: ApiClient) async throws {
-        if let newCommunity = try await newApi.resolve(actorId: community.actorId) as? any Community {
+    override public func changeApi(to newApi: ApiClient) async {
+        do {
+            let resolvedCommunity = try await newApi.resolve(actorId: community.actorId)
+            
+            guard let newCommunity = resolvedCommunity as? any Community else {
+                assertionFailure("Did not get community back")
+                return
+            }
             communityPostFetcher.community = newCommunity
-        } else {
-            throw ApiClientError.noEntityFound
+        } catch {
+            print("DEBUG couldn't change API")
         }
+//        } catch ApiClientError.noEntityFound {
+//            do {
+//                // set to guest
+//                print("DEBUG setting to guest")
+//                let guestApi: ApiClient = .getApiClient(for: community.api.actorId, with: nil)
+//                let guestCommunity: Community3 = try await guestApi.getCommunity(actorId: community.actorId)
+//                communityPostFetcher.community = guestCommunity
+//            } catch {
+//                assertionFailure("Could not change community")
+//            }
+//        } catch {
+//            assertionFailure("Could not change community")
+//        }
     }
 }
