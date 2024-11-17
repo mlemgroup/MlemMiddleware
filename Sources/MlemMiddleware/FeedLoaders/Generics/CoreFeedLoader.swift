@@ -60,4 +60,9 @@ public class CoreFeedLoader<Item: FeedLoadable>: FeedLoading {
     func prependItem(_ newItem: Item) async {
         items.prepend(newItem)
     }
+    
+    // TODO: collapse CoreFeedLoader and StandardFeedLoader
+    public func changeApi(to newApi: ApiClient) {
+        assertionFailure("Not implemented")
+    }
 }

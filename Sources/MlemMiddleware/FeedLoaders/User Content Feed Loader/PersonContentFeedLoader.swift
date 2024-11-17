@@ -105,7 +105,7 @@ class PersonContentFetcher: Fetcher<PersonContent> {
 }
 
 public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
-    // force unwrap because this should ALWAYS be an AggregatePostFetcher
+    // force unwrap because this should ALWAYS be a PersonContentFetcher
     var personContentFetcher: PersonContentFetcher { fetcher as! PersonContentFetcher }
     
     public var api: ApiClient { personContentFetcher.api }
