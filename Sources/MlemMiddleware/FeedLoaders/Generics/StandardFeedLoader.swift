@@ -36,14 +36,15 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     }
     
     override public func refresh(clearBeforeRefresh: Bool) async throws {
+        await setLoading(.loading)
+        
         if clearBeforeRefresh {
             await setItems(.init())
         }
         
         filter.reset()
         await loadingActor.reset()
-        
-        await setLoading(.loading)
+    
         let newItems = try await fetchMoreItems()
         await setItems(newItems)
         await setLoading(.idle)
@@ -83,5 +84,9 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
     /// Helper function to perform custom post-fetch processing (e.g., prefetching). Override to implement desired behavior.
     func processFetchedItems(_ items: [Item]) {
         return
+    }
+    
+    override public func changeApi(to newApi: ApiClient) async {
+        fetcher.api = newApi
     }
 }

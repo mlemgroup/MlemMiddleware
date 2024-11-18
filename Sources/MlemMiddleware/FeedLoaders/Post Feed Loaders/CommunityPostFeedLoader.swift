@@ -31,6 +31,8 @@ class CommunityPostFetcher: PostFetcher {
 public class CommunityPostFeedLoader: CorePostFeedLoader {
     public var community: any Community
     
+    var communityPostFetcher: CommunityPostFetcher { fetcher as! CommunityPostFetcher }
+    
     public init(
         pageSize: Int,
         sortType: ApiSortType,
@@ -49,5 +51,19 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
             prefetchingConfiguration: prefetchingConfiguration,
             fetcher: CommunityPostFetcher(sortType: sortType, pageSize: pageSize, community: community)
         )
+    }
+    
+    override public func changeApi(to newApi: ApiClient) async {
+        do {
+            let resolvedCommunity = try await newApi.resolve(actorId: community.actorId)
+            
+            guard let newCommunity = resolvedCommunity as? any Community else {
+                assertionFailure("Did not get community back")
+                return
+            }
+            communityPostFetcher.community = newCommunity
+        } catch {
+            assertionFailure("Couldn't change API")
+        }
     }
 }

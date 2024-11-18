@@ -59,7 +59,7 @@ public extension ApiClient {
         return .init(id: uuid, imageData: data)
     }
     
-    func resolve(actorId: URL) async throws -> (any ActorIdentifiable)? {
+    func resolve(actorId: URL) async throws -> (any ActorIdentifiable) {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
         let response = try await perform(request)
         if let post = response.post {
