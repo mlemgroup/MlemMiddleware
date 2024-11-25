@@ -8,6 +8,8 @@
 protocol ChildFeedLoading: FeedLoading {
     associatedtype ParentItem: FeedLoadable
     
+    func addParent(parent: any ParentFeedLoading)
+    
     func nextItemSortVal(streamId: UUID, sortType: FeedLoaderSort.SortType) async throws -> FeedLoaderSort?
     
     func consumeNextItem(streamId: UUID) -> ParentItem
