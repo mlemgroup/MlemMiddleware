@@ -10,7 +10,11 @@ import Semaphore
 import Observation
 
 @Observable
-public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
+public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
+    private(set) public var items: [Item] = .init()
+    internal(set) public var loadingState: LoadingState = .loading
+    private(set) var thresholds: Thresholds<Item> = .init()
+    
     var filter: MultiFilter<Item>
     let fetcher: Fetcher<Item>
     var loadingActor: LoadingActor<Item>
@@ -19,12 +23,50 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         self.filter = filter
         self.fetcher = fetcher
         self.loadingActor = .init(fetcher: fetcher)
-        super.init()
     }
 
-    // MARK: - External methods
+    // MARK: - State Modification Methods
     
-    override public func loadMoreItems() async throws {
+    /// Updates the loading state
+    @MainActor
+    func setLoading(_ newState: LoadingState) {
+        loadingState = newState
+    }
+    
+    /// Sets the items to a new array
+    @MainActor
+    func setItems(_ newItems: [Item]) {
+        items = newItems
+        thresholds.update(with: newItems)
+    }
+    
+    /// Adds the given items to the items array
+    /// - Parameter toAdd: items to add
+    @MainActor
+    func addItems(_ newItems: [Item]) async {
+        items.append(contentsOf: newItems)
+        thresholds.update(with: newItems)
+    }
+    
+    @MainActor
+    func prependItem(_ newItem: Item) async {
+        items.prepend(newItem)
+    }
+    
+    // MARK: - External methods
+
+    /// If the given item is the loading threshold item, loads more content
+    /// This should be called as an .onAppear of every item in a feed that should support infinite scrolling
+    public func loadIfThreshold(_ item: Item) throws {
+        if loadingState == .idle, thresholds.isThreshold(item) {
+            // this is a synchronous function that wraps the loading as a task so that the task is attached to the loader itself, not the view that calls it, and is therefore safe from being cancelled by view redraws
+            Task(priority: .userInitiated) {
+                try await loadMoreItems()
+            }
+        }
+    }
+    
+    public func loadMoreItems() async throws {
         await setLoading(.loading)
         
         let newItems: [Item] = try await fetchMoreItems()
@@ -35,7 +77,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         }
     }
     
-    override public func refresh(clearBeforeRefresh: Bool) async throws {
+    public func refresh(clearBeforeRefresh: Bool) async throws {
         await setLoading(.loading)
         
         if clearBeforeRefresh {
@@ -86,7 +128,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: CoreFeedLoader<Item> {
         return
     }
     
-    override public func changeApi(to newApi: ApiClient) async {
+    public func changeApi(to newApi: ApiClient) async {
         fetcher.api = newApi
     }
 }

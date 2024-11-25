@@ -54,17 +54,14 @@ class PersonContentFetcher: Fetcher<PersonContent> {
     override func fetch() async throws -> LoadingResponse<PersonContent> {
         var newItems: [PersonContent] = .init()
         
-        repeat {
+        while newItems.count < pageSize {
             if let nextItem = try await computeNextItem() {
                 newItems.append(nextItem)
             } else {
-                break
+                return .done(newItems)
             }
-        } while newItems.count < pageSize
-        
-        if newItems.count < pageSize {
-            return .done(newItems)
         }
+        
         return .success(newItems)
     }
     
