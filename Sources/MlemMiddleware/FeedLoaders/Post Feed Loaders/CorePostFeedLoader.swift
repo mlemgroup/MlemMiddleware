@@ -73,7 +73,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     
     // MARK: StandardFeedLoader Loading Methods
   
-    override func processFetchedItems(_ items: [Post2]) {
+    override func processNewItems(_ items: [Post2]) {
         preloadImages(items)
     }
     
@@ -94,8 +94,8 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
     /// - Parameter newFilter: NewPostFilterReason describing the filter to apply
     public func addFilter(_ newFilter: PostFilterType) async throws {
-        if filter.activate(newFilter) {
-            await setItems(filter.reset(with: items))
+        if await loadingActor.filter.activate(newFilter) {
+            await setItems(loadingActor.filter.reset(with: items))
             
             if items.isEmpty {
                 try await refresh(clearBeforeRefresh: false)
@@ -104,13 +104,13 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     }
     
     public func removeFilter(_ filterToRemove: PostFilterType) async throws {
-        if filter.deactivate(filterToRemove) {
+        if await loadingActor.filter.deactivate(filterToRemove) {
             try await refresh(clearBeforeRefresh: true)
         }
     }
     
-    public func getFilteredCount(for toCount: PostFilterType) -> Int {
-        return filter.numFiltered(for: toCount)
+    public func getFilteredCount(for toCount: PostFilterType) async -> Int {
+        return await loadingActor.filter.numFiltered(for: toCount)
     }
     
     /// Preloads images for the given post

@@ -15,14 +15,12 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     internal(set) public var loadingState: LoadingState = .loading
     private(set) var thresholds: Thresholds<Item> = .init()
     
-    var filter: MultiFilter<Item>
     let fetcher: Fetcher<Item>
     var loadingActor: LoadingActor<Item>
 
     init(filter: MultiFilter<Item>, fetcher: Fetcher<Item>) {
-        self.filter = filter
         self.fetcher = fetcher
-        self.loadingActor = .init(fetcher: fetcher)
+        self.loadingActor = .init(fetcher: fetcher, filter: filter)
     }
 
     // MARK: - State Modification Methods
@@ -36,6 +34,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     /// Sets the items to a new array
     @MainActor
     func setItems(_ newItems: [Item]) {
+        processNewItems(newItems)
         items = newItems
         thresholds.update(with: newItems)
     }
@@ -44,6 +43,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     /// - Parameter toAdd: items to add
     @MainActor
     func addItems(_ newItems: [Item]) async {
+        processNewItems(newItems)
         items.append(contentsOf: newItems)
         thresholds.update(with: newItems)
     }
@@ -66,14 +66,40 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
         }
     }
     
+    /// Loads the next page of items. Returns when more items have been added to the items array or loading is complete, even
+    /// if called while another load is underway
     public func loadMoreItems() async throws {
+        try await loadMoreItems(overwriteExistingItems: false)
+    }
+    
+    /// Internal loadMoreItems() that allows overwriting existing items, used to back refresh
+    internal func loadMoreItems(overwriteExistingItems: Bool) async throws {
         await setLoading(.loading)
-        
-        let newItems: [Item] = try await fetchMoreItems()
-        await addItems(newItems)
-        
-        if loadingState != .done && newItems.count > 0 {
-            await setLoading(.idle)
+  
+        try await loadingActor.load { response in
+            var newItems: [Item]?
+            
+            switch response {
+            case let .success(items):
+                newItems = items
+            case let .done(items):
+                newItems = items
+                await self.setLoading(.done)
+            case .ignored, .cancelled:
+                print("[\(Item.self) FeedLoader] load did not complete (\(response.description))")
+            }
+            
+            if let newItems {
+                if overwriteExistingItems {
+                    await self.setItems(newItems)
+                } else {
+                    await self.addItems(newItems)
+                }
+            }
+            
+            if self.loadingState != .done && newItems?.count ?? 0 > 0 {
+                await self.setLoading(.idle)
+            }
         }
     }
     
@@ -84,47 +110,19 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
             await setItems(.init())
         }
         
-        filter.reset()
         await loadingActor.reset()
     
-        let newItems = try await fetchMoreItems()
-        await setItems(newItems)
-        await setLoading(.idle)
+        try await loadMoreItems(overwriteExistingItems: true)
     }
 
     public func clear() async {
-        filter.reset()
         await loadingActor.reset()
         await setItems(.init())
         await setLoading(.idle)
     }
     
-    private func fetchMoreItems() async throws -> [Item] {
-        var newItems: [Item] = .init()
-        fetchLoop: repeat {
-            let response = try await loadingActor.load()
-            
-            switch response {
-            case let .success(items):
-                print("[\(Item.self) FeedLoader] received success (\(items.count))")
-                newItems.append(contentsOf: filter.filter(items))
-            case let .done(items):
-                print("[\(Item.self) FeedLoader] received finished (\(items.count))")
-                newItems.append(contentsOf: filter.filter(items))
-                await setLoading(.done)
-                break fetchLoop
-            case .cancelled, .ignored:
-                print("[\(Item.self) FeedLoader] load did not complete (\(response.description))")
-                break fetchLoop
-            }
-        } while newItems.count < MiddlewareConstants.infiniteLoadThresholdOffset
-        
-        processFetchedItems(newItems)
-        return newItems
-    }
-    
     /// Helper function to perform custom post-fetch processing (e.g., prefetching). Override to implement desired behavior.
-    func processFetchedItems(_ items: [Item]) {
+    func processNewItems(_ items: [Item]) {
         return
     }
     
