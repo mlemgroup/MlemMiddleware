@@ -24,11 +24,11 @@ actor LoadingActor<Item: FeedLoadable> {
     }
     
     /// Cancels any ongoing loading and resets the page/cursor to 0
-    func reset() {
+    func reset() async {
         loadingTask?.cancel()
         loadingTask = nil
         filter.reset()
-        fetcher.reset()
+        await fetcher.reset()
         done = false
     }
     

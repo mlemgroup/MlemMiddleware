@@ -18,3 +18,7 @@ public enum CommunityFilterType {
 public enum PersonFilterType {
     case todo
 }
+
+public enum MessageFilterType {
+    case todo
+}

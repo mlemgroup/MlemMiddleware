@@ -44,11 +44,11 @@ class PersonContentFetcher: Fetcher<PersonContent> {
         super.init(api: api, pageSize: pageSize, page: withContent == nil ? 0 : 1)
     }
     
-    override func reset() {
+    override func reset() async {
         postStream.reset()
         commentStream.reset()
         
-        super.reset()
+        await super.reset()
     }
     
     override func fetch() async throws -> LoadingResponse<PersonContent> {

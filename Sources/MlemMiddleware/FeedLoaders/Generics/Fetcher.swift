@@ -101,7 +101,7 @@ public class Fetcher<Item: FeedLoadable> {
     }
     
     /// Resets the fetcher's page and cursor tracking. This method should only be overridden to handle abnormal pagination behavior (e.g., PersonContentFetcher); it should NOT change loading parameters such as query or sort.
-    func reset() {
+    func reset() async {
         page = 0
         cursor = nil
     }
