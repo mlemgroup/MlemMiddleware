@@ -9,7 +9,6 @@ import Foundation
 
 public protocol Reply1Providing:
         ContentModel,
-        ActorIdentifiable,
         ContentIdentifiable,
         Interactable1Providing,
         InboxItemProviding,
@@ -60,7 +59,6 @@ public extension Reply1Providing {
     static var modelTypeId: ContentType { .reply }
     
     var id: Int { reply1.id }
-    var actorId: URL { reply1.actorId }
     var recipientId: Int { reply1.recipientId }
     var commentId: Int { reply1.commentId }
     var read: Bool { reply1.read }

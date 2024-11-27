@@ -5,7 +5,7 @@
 //  Created by Eric Andrews on 2024-11-24.
 //
 
-protocol ChildFeedLoading: FeedLoading {
+public protocol ChildFeedLoading: FeedLoading {
     associatedtype ParentItem: FeedLoadable
     
     /// Converts the given item to the parent type

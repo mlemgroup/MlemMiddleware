@@ -16,7 +16,7 @@ class FeedLoaderStream {
     }
 }
 
-class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: StandardFeedLoader<Item>, ChildFeedLoading {
+public class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: StandardFeedLoader<Item>, ChildFeedLoading {
     var stream: FeedLoaderStream?
     var sortType: FeedLoaderSort.SortType
     
@@ -26,15 +26,15 @@ class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: StandardFee
         super.init(filter: filter, fetcher: fetcher)
     }
     
-    func toParent(_ item: Item) -> ParentItem {
+    public func toParent(_ item: Item) -> ParentItem {
         preconditionFailure("This method must be implemented by the inheriting class")
     }
     
-    func setParent(parent: any FeedLoading) {
+    public func setParent(parent: any FeedLoading) {
         stream = .init(parent: parent)
     }
     
-    func nextItemSortVal(sortType: FeedLoaderSort.SortType) async throws -> FeedLoaderSort? {
+    public func nextItemSortVal(sortType: FeedLoaderSort.SortType) async throws -> FeedLoaderSort? {
         assert(sortType == self.sortType, "Conflicting types for sortType! This will lead to unexpected sorting behavior.")
         
         guard let stream, stream.parent != nil else {
@@ -53,9 +53,8 @@ class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: StandardFee
             print("[\(Item.self) ChildFeedLoader] out of items (\(items.count)), loading more")
             try await loadMoreItems()
             
-            if stream.cursor < items.count {
-                assert(loadingState == .done, "Invalid loading state")
-                print("[\(Item.self) ChildFeedLoader] fetch returned no items")
+            if stream.cursor >= items.count {
+                assert(loadingState == .done, "[\(Item.self) ChildFeedLoader] Invalid loading state \(loadingState)")
                 return nil
             }
             
@@ -64,7 +63,7 @@ class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: StandardFee
         }
     }
     
-    func consumeNextItem() -> ParentItem {
+    public func consumeNextItem() -> ParentItem {
         guard let stream, stream.parent != nil else {
             assertionFailure("[\(Item.self) ChildFeedLoader] could not find stream or parent")
             return toParent(items.last!)
@@ -74,7 +73,7 @@ class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: StandardFee
         return toParent(items[stream.cursor - 1])
     }
     
-    func clear(clearParent: Bool) async {
+    public func clear(clearParent: Bool) async {
         if clearParent {
             await stream?.parent?.clear()
         }

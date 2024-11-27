@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Message2Providing: Message1Providing {
+public protocol Message2Providing: Message1Providing, ActorIdentifiable {
     var message2: Message2 { get }
     
     var creator: Person1 { get }

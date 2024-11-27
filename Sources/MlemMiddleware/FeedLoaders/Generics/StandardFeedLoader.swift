@@ -29,6 +29,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     @MainActor
     func setLoading(_ newState: LoadingState) {
         loadingState = newState
+        print("[\(Item.self) FeedLoader] set loading state to \(newState)")
     }
     
     /// Sets the items to a new array
@@ -98,6 +99,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
                     await self.addItems(newItems)
                 }
             }
+            
+            print("[\(Item.self) FeedLoader] loadMoreItems complete")
         }
     }
     

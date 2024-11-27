@@ -12,8 +12,12 @@ class ReplyFetcher: Fetcher<Reply2> {
     }
 }
 
-public class ReplyFeedLoader: StandardFeedLoader<Reply2> {
-    public init(api: ApiClient, pageSize: Int) {
-        super.init(filter: .init(), fetcher: ReplyFetcher(api: api, pageSize: pageSize))
+public class ReplyFeedLoader: ChildFeedLoader<Reply2, InboxItem> {
+    override public func toParent(_ item: Reply2) -> InboxItem {
+        return .reply(item)
+    }
+    
+    public init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType) {
+        super.init(filter: .init(), fetcher: ReplyFetcher(api: api, pageSize: pageSize), sortType: sortType)
     }
 }

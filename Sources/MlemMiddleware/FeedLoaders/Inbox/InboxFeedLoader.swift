@@ -2,13 +2,13 @@
 //  InboxFeedLoader.swift
 //  MlemMiddleware
 //
-//  Created by Eric Andrews on 2024-11-26.
+//  Created by Eric Andrews on 2024-11-27.
 //
 
 import Foundation
 
-enum InboxItem: FeedLoadable {
-    typealias FilterType = InboxItemFilterType
+public enum InboxItem: FeedLoadable {
+    public typealias FilterType = InboxItemFilterType
     
     case message(Message2)
     case reply(Reply2)
@@ -20,27 +20,23 @@ enum InboxItem: FeedLoadable {
         }
     }
     
-    var api: ApiClient { baseValue.api }
+    public var api: ApiClient { baseValue.api }
     
-    func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
+    public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
         baseValue.sortVal(sortType: sortType)
     }
     
-    var actorId: URL {
+    public var actorId: URL {
         baseValue.actorId
     }
 }
 
-//class AnyInboxItem: FeedLoadable {
-//    
-//}
-
-class InboxFetcher: MultiFetcher<InboxItem> {
-    
-}
-
-class InboxFeedLoader: StandardFeedLoader<InboxItem> {
-    init(api: ApiClient, pageSize: Int, sources: [any ChildFeedLoading], sortType: FeedLoaderSort.SortType) {
+public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
+    public init(api: ApiClient, pageSize: Int, sources: [any ChildFeedLoading], sortType: FeedLoaderSort.SortType) {
         super.init(filter: .init(), fetcher: MultiFetcher(api: api, pageSize: pageSize, sources: sources, sortType: sortType))
+        
+        sources.forEach { source in
+            source.setParent(parent: self)
+        }
     }
 }
