@@ -14,6 +14,6 @@ class MessageFetcher: Fetcher<Message2> {
 
 public class MessageFeedLoader: StandardFeedLoader<Message2> {
     public init(api: ApiClient, pageSize: Int) {
-        super.init(filter: .init(), fetcher: .init(api: api, pageSize: pageSize))
+        super.init(filter: .init(), fetcher: MessageFetcher(api: api, pageSize: pageSize))
     }
 }

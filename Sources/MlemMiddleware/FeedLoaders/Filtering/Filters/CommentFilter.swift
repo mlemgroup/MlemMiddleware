@@ -22,3 +22,15 @@ public enum PersonFilterType {
 public enum MessageFilterType {
     case todo
 }
+
+public enum ReplyFilterType {
+    case todo
+}
+
+public enum MentionFilterType {
+    case todo
+}
+
+public enum InboxItemFilterType {
+    case todo
+}
