@@ -44,7 +44,3 @@ class InboxFeedLoader: StandardFeedLoader<InboxItem> {
         super.init(filter: .init(), fetcher: MultiFetcher(api: api, pageSize: pageSize, sources: sources, sortType: sortType))
     }
 }
-
-class MyStupidClass {
-    var hi: Int
-}
