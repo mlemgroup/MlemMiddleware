@@ -29,7 +29,7 @@ enum LoadingResponse<Item: FeedLoadable> {
 }
 
 public class Fetcher<Item: FeedLoadable> {
-    var api: ApiClient
+    private(set) var api: ApiClient
     var pageSize: Int
     var page: Int
     private var cursor: String?
@@ -104,5 +104,9 @@ public class Fetcher<Item: FeedLoadable> {
     func reset() async {
         page = 0
         cursor = nil
+    }
+    
+    func changeApi(to newApi: ApiClient) async {
+        api = newApi
     }
 }

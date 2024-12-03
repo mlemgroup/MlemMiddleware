@@ -162,7 +162,7 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
         tempPostStream = postStream
         tempCommentStream = commentStream
         
-        personContentFetcher.api = api
+        await personContentFetcher.changeApi(to: api)
         personContentFetcher.userId = userId
         await loadingActor.reset()
         await setLoading(.done) // prevent loading more items until refreshed

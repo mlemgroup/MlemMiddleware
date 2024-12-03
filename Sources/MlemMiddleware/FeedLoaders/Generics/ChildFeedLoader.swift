@@ -78,6 +78,7 @@ public class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: Stan
             await stream?.parent?.clear()
         }
         
+        stream?.cursor = 0
         await super.clear()
     }
 }

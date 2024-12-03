@@ -34,6 +34,7 @@ class MultiFetcher<Item: FeedLoadable>: Fetcher<Item> {
     override func reset() async {
         for source in sources {
             await source.clear(clearParent: false)
+            print("[\(Item.self) MultiFetcher] source cleared (\(source.loadingState))")
         }
         
         await super.reset()
@@ -78,5 +79,13 @@ class MultiFetcher<Item: FeedLoadable>: Fetcher<Item> {
         }
         
         return lhsVal > rhsVal ? (lhsVal, lhsSource) : (rhsVal, rhsSource)
+    }
+    
+    override func changeApi(to newApi: ApiClient) async {
+        for source in sources {
+            await source.changeApi(to: newApi)
+        }
+        
+        await super.changeApi(to: newApi)
     }
 }

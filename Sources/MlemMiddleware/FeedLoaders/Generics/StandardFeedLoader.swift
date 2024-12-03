@@ -128,6 +128,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     }
     
     public func changeApi(to newApi: ApiClient) async {
-        fetcher.api = newApi
+        await fetcher.changeApi(to: newApi)
     }
 }
