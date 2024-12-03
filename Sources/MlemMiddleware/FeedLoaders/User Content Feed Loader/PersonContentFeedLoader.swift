@@ -29,6 +29,7 @@ class PersonContentFetcher: Fetcher<PersonContent> {
     init(
         api: ApiClient,
         pageSize: Int,
+        filter: MultiFilter<PersonContent>,
         sortType: FeedLoaderSort.SortType,
         userId: Int,
         savedOnly: Bool,
@@ -41,7 +42,7 @@ class PersonContentFetcher: Fetcher<PersonContent> {
         self.postStream = .init(items: withContent?.posts, prefetchingConfiguration: prefetchingConfiguration)
         self.commentStream = .init(items: withContent?.comments, prefetchingConfiguration: prefetchingConfiguration)
         
-        super.init(api: api, pageSize: pageSize, page: withContent == nil ? 0 : 1)
+        super.init(api: api, pageSize: pageSize, page: withContent == nil ? 0 : 1, filter: filter)
     }
     
     override func reset() async {
@@ -133,9 +134,10 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
         prefetchingConfiguration: PrefetchingConfiguration,
         withContent: (posts: [Post2], comments: [Comment2])? = nil
     ) {
-        super.init(filter: MultiFilter(), fetcher: PersonContentFetcher(
+        super.init(fetcher: PersonContentFetcher(
             api: api,
             pageSize: pageSize,
+            filter: .init(),
             sortType: sortType,
             userId: userId,
             savedOnly: savedOnly,

@@ -19,13 +19,13 @@ public class SearchPostFetcher: PostFetcher {
     }
     public func setSortType(_ sortType: ApiSortType) { self.sortType = sortType }
     
-    init(api: ApiClient, sortType: ApiSortType, pageSize: Int, query: String, communityId: Int?, creatorId: Int?, listing: ApiListingType) {
+    init(api: ApiClient, sortType: ApiSortType, filter: MultiFilter<Post2>, pageSize: Int, query: String, communityId: Int?, creatorId: Int?, listing: ApiListingType) {
         self.query = query
         self.communityId = communityId
         self.creatorId = creatorId
         self.listing = listing
         
-        super.init(api: api, sortType: sortType, pageSize: pageSize)
+        super.init(api: api, pageSize: pageSize, filter: filter, sortType: sortType)
     }
     
     override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
@@ -62,12 +62,12 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
         super.init(
             api: api,
             pageSize: pageSize,
-            showReadPosts: true,
             filteredKeywords: filteredKeywords,
             prefetchingConfiguration: prefetchingConfiguration,
             fetcher: SearchPostFetcher(
                 api: api,
                 sortType: sortType,
+                filter: PostFilter(showRead: true),
                 pageSize: pageSize,
                 query: query,
                 communityId: communityId,

@@ -13,11 +13,11 @@ class MessageFetcher: Fetcher<Message2> {
 }
 
 public class MessageFeedLoader: ChildFeedLoader<Message2, InboxItem> {
-    override public static func toParent(_ item: Message2) -> InboxItem {
+    override public func toParent(_ item: Message2) -> InboxItem {
         return .message(item)
     }
     
     public init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType) {
-        super.init(filter: .init(), fetcher: MessageFetcher(api: api, pageSize: pageSize), sortType: sortType)
+        super.init(fetcher: MessageFetcher(api: api, pageSize: pageSize, filter: .init()), sortType: sortType)
     }
 }

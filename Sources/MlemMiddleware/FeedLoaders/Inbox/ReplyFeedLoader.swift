@@ -18,6 +18,6 @@ public class ReplyFeedLoader: ChildFeedLoader<Reply2, InboxItem> {
     }
     
     public init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType) {
-        super.init(filter: .init(), fetcher: ReplyFetcher(api: api, pageSize: pageSize), sortType: sortType)
+        super.init(fetcher: ReplyFetcher(api: api, pageSize: pageSize, filter: .init()), sortType: sortType)
     }
 }

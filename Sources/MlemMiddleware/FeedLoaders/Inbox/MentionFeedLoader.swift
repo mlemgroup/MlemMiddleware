@@ -13,11 +13,11 @@ class MentionFetcher: Fetcher<Reply2> {
 }
 
 public class MentionFeedLoader: ChildFeedLoader<Reply2, InboxItem> {
-    override public static func toParent(_ item: Reply2) -> InboxItem {
+    override public func toParent(_ item: Reply2) -> InboxItem {
         return .reply(item)
     }
     
     public init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType) {
-        super.init(filter: .init(), fetcher: MentionFetcher(api: api, pageSize: pageSize), sortType: sortType)
+        super.init(fetcher: MentionFetcher(api: api, pageSize: pageSize, filter: .init()), sortType: sortType)
     }
 }

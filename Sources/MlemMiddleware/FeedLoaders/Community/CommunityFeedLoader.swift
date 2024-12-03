@@ -12,12 +12,12 @@ class CommunityFetcher: Fetcher<Community2> {
     var listing: ApiListingType
     var sort: ApiSortType
     
-    init(api: ApiClient, query: String, pageSize: Int, listing: ApiListingType, sort: ApiSortType) {
+    init(api: ApiClient, pageSize: Int, filter: MultiFilter<Community2>, query: String, listing: ApiListingType, sort: ApiSortType) {
         self.query = query
         self.listing = listing
         self.sort = sort
         
-        super.init(api: api, pageSize: pageSize)
+        super.init(api: api, pageSize: pageSize, filter: filter)
     }
     
     override func fetchPage(_ page: Int) async throws -> FetchResponse {
@@ -54,11 +54,11 @@ public class CommunityFeedLoader: StandardFeedLoader<Community2> {
         self.api = api
 
         super.init(
-            filter: .init(),
             fetcher: CommunityFetcher(
                 api: api,
-                query: query,
                 pageSize: pageSize,
+                filter: .init(),
+                query: query,
                 listing: listing,
                 sort: sort)
         )

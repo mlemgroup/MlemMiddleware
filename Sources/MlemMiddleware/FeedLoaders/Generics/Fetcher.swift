@@ -33,11 +33,13 @@ public class Fetcher<Item: FeedLoadable> {
     var pageSize: Int
     var page: Int
     private var cursor: String?
+    var filter: MultiFilter<Item>
     
-    init (api: ApiClient, pageSize: Int, page: Int = 0) {
+    init (api: ApiClient, pageSize: Int, page: Int = 0, filter: MultiFilter<Item>) {
         self.api = api
         self.pageSize = pageSize
         self.page = page
+        self.filter = filter
     }
     
     /// Helper struct bundling the response from a fetchPage or fetchCursor call
@@ -61,11 +63,11 @@ public class Fetcher<Item: FeedLoadable> {
                 
                 // if same cursor returned, loading is finished
                 if response.nextCursor == self.cursor {
-                    return .done(response.items)
+                    return .done(filter.filter(response.items))
                 }
                 
                 self.cursor = response.nextCursor
-                return .success(response.items)
+                return .success(filter.filter(response.items))
             } else {
                 page += 1
                 print("[\(Item.self) Fetcher] loading page \(page)")
@@ -74,10 +76,10 @@ public class Fetcher<Item: FeedLoadable> {
                 // if nothing returned, loading is finished
                 if response.items.count < pageSize {
                     print("[\(Item.self) Fetcher] received undersized page (\(response.items.count)/\(pageSize))")
-                    return .done(response.items)
+                    return .done(filter.filter(response.items))
                 }
                 self.cursor = response.nextCursor
-                return .success(response.items)
+                return .success(filter.filter(response.items))
             }
         } catch is CancellationError {
             return .cancelled
@@ -104,6 +106,7 @@ public class Fetcher<Item: FeedLoadable> {
     func reset() async {
         page = 0
         cursor = nil
+        filter.reset()
     }
     
     func changeApi(to newApi: ApiClient) async {

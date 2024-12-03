@@ -20,10 +20,10 @@ public class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: Stan
     var stream: FeedLoaderStream?
     var sortType: FeedLoaderSort.SortType
     
-    init(filter: MultiFilter<Item>, fetcher: Fetcher<Item>, sortType: FeedLoaderSort.SortType) {
+    init(fetcher: Fetcher<Item>, sortType: FeedLoaderSort.SortType) {
         self.sortType = sortType
         
-        super.init(filter: filter, fetcher: fetcher)
+        super.init(fetcher: fetcher)
     }
     
     public func toParent(_ item: Item) -> ParentItem {

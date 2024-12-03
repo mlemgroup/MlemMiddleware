@@ -14,20 +14,17 @@ enum LoadingError: Error {
 actor LoadingActor<Item: FeedLoadable> {
     private var done: Bool = false
     private var loadingTask: Task<Void, Error>?
-    var filter: MultiFilter<Item>
   
     private var fetcher: Fetcher<Item>
     
-    public init(fetcher: Fetcher<Item>, filter: MultiFilter<Item>) {
+    public init(fetcher: Fetcher<Item>) {
         self.fetcher = fetcher
-        self.filter = filter
     }
     
     /// Cancels any ongoing loading and resets the page/cursor to 0
     func reset() async {
         loadingTask?.cancel()
         loadingTask = nil
-        filter.reset()
         await fetcher.reset()
         done = false
     }
@@ -75,10 +72,10 @@ actor LoadingActor<Item: FeedLoadable> {
             switch response {
             case let .success(items):
                 print("[\(Item.self) LoadingActor] received success (\(items.count))")
-                newItems.append(contentsOf: filter.filter(items))
+                newItems.append(contentsOf: items)
             case let .done(items):
                 print("[\(Item.self) LoadingActor] received finished (\(items.count))")
-                newItems.append(contentsOf: filter.filter(items))
+                newItems.append(contentsOf: items)
                 return .done(newItems)
             case .cancelled, .ignored:
                 print("[\(Item.self) LoadingActor] load did not complete (\(response.description))")

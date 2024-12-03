@@ -18,9 +18,9 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     let fetcher: Fetcher<Item>
     var loadingActor: LoadingActor<Item>
 
-    init(filter: MultiFilter<Item>, fetcher: Fetcher<Item>) {
+    init(fetcher: Fetcher<Item>) {
         self.fetcher = fetcher
-        self.loadingActor = .init(fetcher: fetcher, filter: filter)
+        self.loadingActor = .init(fetcher: fetcher)
     }
 
     // MARK: - State Modification Methods
@@ -131,23 +131,27 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
     /// - Parameter newFilter: Item.FilterType describing the filter to apply
     public func addFilter(_ newFilter: Item.FilterType) async throws {
-        if await loadingActor.filter.activate(newFilter) {
-            await setItems(loadingActor.filter.reset(with: items))
-            
-            if items.isEmpty {
-                try await refresh(clearBeforeRefresh: false)
-            }
-        }
+        // TODO
+//        if await loadingActor.filter.activate(newFilter) {
+//            await setItems(loadingActor.filter.reset(with: items))
+//            
+//            if items.isEmpty {
+//                try await refresh(clearBeforeRefresh: false)
+//            }
+//        }
     }
     
     public func removeFilter(_ filterToRemove: Item.FilterType) async throws {
-        if await loadingActor.filter.deactivate(filterToRemove) {
-            try await refresh(clearBeforeRefresh: true)
-        }
+        // TODO
+//        if await loadingActor.filter.deactivate(filterToRemove) {
+//            try await refresh(clearBeforeRefresh: true)
+//        }
     }
     
     public func getFilteredCount(for toCount: Item.FilterType) async -> Int {
-        return await loadingActor.filter.numFiltered(for: toCount)
+        // TODO
+        return 0
+        // return await loadingActor.filter.numFiltered(for: toCount)
     }
     
     public func changeApi(to newApi: ApiClient) async {

@@ -12,10 +12,10 @@ import Observation
 public class PostFetcher: Fetcher<Post2> {
     var sortType: ApiSortType
     
-    init(api: ApiClient, sortType: ApiSortType, pageSize: Int) {
+    init(api: ApiClient, pageSize: Int, filter: MultiFilter<Post2>, sortType: ApiSortType) {
         self.sortType = sortType
         
-        super.init(api: api, pageSize: pageSize)
+        super.init(api: api, pageSize: pageSize, filter: filter)
     }
     
     override func fetchPage(_ page: Int) async throws -> FetchResponse {
@@ -56,7 +56,6 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     internal init(
         api: ApiClient,
         pageSize: Int,
-        showReadPosts: Bool,
         filteredKeywords: [String],
         prefetchingConfiguration: PrefetchingConfiguration,
         fetcher: PostFetcher
@@ -64,7 +63,6 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         self.prefetchingConfiguration = prefetchingConfiguration
         
         super.init(
-            filter: PostFilter(showRead: showReadPosts),
             fetcher: fetcher
         )
     }

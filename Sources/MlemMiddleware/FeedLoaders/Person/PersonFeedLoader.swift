@@ -13,12 +13,12 @@ class PersonFetcher: Fetcher<Person2> {
     var listing: ApiListingType
     var sort: ApiSortType
     
-    init(api: ApiClient, pageSize: Int, query: String, listing: ApiListingType, sort: ApiSortType) {
+    init(api: ApiClient, pageSize: Int, filter: MultiFilter<Person2>, query: String, listing: ApiListingType, sort: ApiSortType) {
         self.query = query
         self.listing = listing
         self.sort = sort
         
-        super.init(api: api, pageSize: pageSize)
+        super.init(api: api, pageSize: pageSize, filter: .init())
     }
     
     override func fetchPage(_ page: Int) async throws -> FetchResponse {
@@ -55,8 +55,7 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         self.api = api
         
         super.init(
-            filter: .init(),
-            fetcher: PersonFetcher(api: api, pageSize: pageSize, query: query, listing: listing, sort: sort)
+            fetcher: PersonFetcher(api: api, pageSize: pageSize, filter: .init(), query: query, listing: listing, sort: sort)
         )
     }
     

@@ -9,11 +9,11 @@ class MultiFetcher<Item: FeedLoadable>: Fetcher<Item> {
     var sources: [any ChildFeedLoading]
     var sortType: FeedLoaderSort.SortType
     
-    init(api: ApiClient, pageSize: Int, sources: [any ChildFeedLoading], sortType: FeedLoaderSort.SortType) {
+    init(api: ApiClient, pageSize: Int, filter: MultiFilter<Item>, sources: [any ChildFeedLoading], sortType: FeedLoaderSort.SortType) {
         self.sources = sources
         self.sortType = sortType
         
-        super.init(api: api, pageSize: pageSize)
+        super.init(api: api, pageSize: pageSize, filter: filter)
     }
     
     override func fetch() async throws -> LoadingResponse<Item> {

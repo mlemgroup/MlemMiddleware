@@ -10,10 +10,10 @@ import Foundation
 class CommunityPostFetcher: PostFetcher {
     var community: any Community
     
-    init(sortType: ApiSortType, pageSize: Int, community: any Community) {
+    init(sortType: ApiSortType, pageSize: Int, filter: MultiFilter<Post2>, community: any Community) {
         self.community = community
         
-        super.init(api: community.api, sortType: sortType, pageSize: pageSize)
+        super.init(api: community.api, pageSize: pageSize, filter: filter, sortType: sortType)
     }
     
     override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
@@ -46,10 +46,9 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
         super.init(
             api: community.api,
             pageSize: pageSize,
-            showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
             prefetchingConfiguration: prefetchingConfiguration,
-            fetcher: CommunityPostFetcher(sortType: sortType, pageSize: pageSize, community: community)
+            fetcher: CommunityPostFetcher(sortType: sortType, pageSize: pageSize, filter: .init(), community: community)
         )
     }
     
