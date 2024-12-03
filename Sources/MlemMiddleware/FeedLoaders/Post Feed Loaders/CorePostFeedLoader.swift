@@ -63,10 +63,8 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     ) {
         self.prefetchingConfiguration = prefetchingConfiguration
         
-        let filter = PostFilter(showRead: showReadPosts)
-        
         super.init(
-            filter: filter,
+            filter: PostFilter(showRead: showReadPosts),
             fetcher: fetcher
         )
     }
@@ -88,29 +86,6 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         
         postFetcher.sortType = newSortType
         try await refresh(clearBeforeRefresh: true)
-    }
-    
-    /// Adds a filter to the tracker, removing all current posts that do not pass the filter and filtering out all future posts that do not pass the filter.
-    /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
-    /// - Parameter newFilter: NewPostFilterReason describing the filter to apply
-    public func addFilter(_ newFilter: PostFilterType) async throws {
-        if await loadingActor.filter.activate(newFilter) {
-            await setItems(loadingActor.filter.reset(with: items))
-            
-            if items.isEmpty {
-                try await refresh(clearBeforeRefresh: false)
-            }
-        }
-    }
-    
-    public func removeFilter(_ filterToRemove: PostFilterType) async throws {
-        if await loadingActor.filter.deactivate(filterToRemove) {
-            try await refresh(clearBeforeRefresh: true)
-        }
-    }
-    
-    public func getFilteredCount(for toCount: PostFilterType) async -> Int {
-        return await loadingActor.filter.numFiltered(for: toCount)
     }
     
     /// Preloads images for the given post

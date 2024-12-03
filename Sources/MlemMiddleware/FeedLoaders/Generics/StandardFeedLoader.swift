@@ -127,6 +127,29 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
         return
     }
     
+    /// Adds a filter to the tracker, removing all current items that do not pass the filter and filtering out all future items that do not pass the filter.
+    /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
+    /// - Parameter newFilter: Item.FilterType describing the filter to apply
+    public func addFilter(_ newFilter: Item.FilterType) async throws {
+        if await loadingActor.filter.activate(newFilter) {
+            await setItems(loadingActor.filter.reset(with: items))
+            
+            if items.isEmpty {
+                try await refresh(clearBeforeRefresh: false)
+            }
+        }
+    }
+    
+    public func removeFilter(_ filterToRemove: Item.FilterType) async throws {
+        if await loadingActor.filter.deactivate(filterToRemove) {
+            try await refresh(clearBeforeRefresh: true)
+        }
+    }
+    
+    public func getFilteredCount(for toCount: Item.FilterType) async -> Int {
+        return await loadingActor.filter.numFiltered(for: toCount)
+    }
+    
     public func changeApi(to newApi: ApiClient) async {
         await fetcher.changeApi(to: newApi)
     }

@@ -13,7 +13,7 @@ class MentionFetcher: Fetcher<Reply2> {
 }
 
 public class MentionFeedLoader: ChildFeedLoader<Reply2, InboxItem> {
-    override public func toParent(_ item: Reply2) -> InboxItem {
+    override public static func toParent(_ item: Reply2) -> InboxItem {
         return .reply(item)
     }
     
