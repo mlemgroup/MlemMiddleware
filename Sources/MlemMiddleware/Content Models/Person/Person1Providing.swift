@@ -12,6 +12,7 @@ public protocol Person1Providing:
         Profile2Providing,
         ContentIdentifiable,
         SelectableContentProviding,
+        PurgableProviding,
         FeedLoadable where FilterType == PersonFilterType
 {
     var api: ApiClient { get }
@@ -46,6 +47,7 @@ public extension Person1Providing {
     var isBot: Bool { person1.isBot }
     var instanceBan: InstanceBanType { person1.instanceBan }
     var blocked: Bool { person1.blocked }
+    var purged: Bool { person1.purged }
     
     var id_: Int? { person1.id }
     var created_: Date? { person1.created }
@@ -132,6 +134,10 @@ public extension Person1Providing {
             removeContent: false,
             reason: reason
         )
+    }
+    
+    func purge(reason: String?) async throws {
+        try await api.purgePerson(id: id, reason: reason)
     }
     
     func banFromInstance(removeContent: Bool, reason: String?, expires: Date?) async throws {

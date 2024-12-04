@@ -30,6 +30,8 @@ public final class Person1: Person1Providing {
     public var deleted: Bool = false
     public var isBot: Bool = false
     
+    public var purged: Bool = false
+    
     public var instanceBan: InstanceBanType = .notBanned
     
     // This isn't included in the ApiPerson, and so is set externally by Post2 instead

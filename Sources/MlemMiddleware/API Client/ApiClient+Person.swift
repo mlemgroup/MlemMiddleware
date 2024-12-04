@@ -146,6 +146,13 @@ public extension ApiClient {
         return person
     }
     
+    func purgePerson(id: Int, reason: String?) async throws {
+        let request = PurgePersonRequest(personId: id, reason: reason)
+        let response = try await perform(request)
+        guard response.success else { throw ApiClientError.unsuccessful }
+        caches.person1.retrieveModel(cacheId: id)?.purged = true
+    }
+    
     func getContent(
         authorId id: Int,
         sort: ApiSortType,
