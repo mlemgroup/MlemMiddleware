@@ -5,7 +5,7 @@
 //  Created by Eric Andrews on 2024-11-27.
 //
 
-class ReplyFetcher: Fetcher<InboxItem> {
+class ReplyFetcher: InboxFetcher {
     override func fetchPage(_ page: Int) async throws -> FetchResponse {
         let response = try await api.getReplies(page: page, limit: pageSize)
         return .init(

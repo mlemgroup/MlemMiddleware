@@ -5,7 +5,7 @@
 //  Created by Eric Andrews on 2024-11-26.
 //
 
-class MessageFetcher: Fetcher<InboxItem> {
+class MessageFetcher: InboxFetcher {
     override func fetchPage(_ page: Int) async throws -> FetchResponse {
         let response = try await api.getMessages(page: page, limit: pageSize)
         return .init(
@@ -13,20 +13,6 @@ class MessageFetcher: Fetcher<InboxItem> {
             prevCursor: nil,
             nextCursor: nil
         )
-    }
-    
-    /// Updates fetching behavior to hide read posts.
-    /// - Parameter unreadCount: number of unread items still present after client-side filtering
-    func hideRead(unreadCount: Int) {
-        // TODO:
-        // - update unreadOnly
-        // - compute new page using unreadCount
-        // - add deduper to StandardFeedLoader
-    }
-    
-    /// Updates fetching behavior to show read posts. Resets the fetcher.
-    func showRead() {
-        // TODO: implement
     }
 }
 
