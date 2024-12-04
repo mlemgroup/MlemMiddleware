@@ -16,7 +16,7 @@ class FeedLoaderStream {
     }
 }
 
-public class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: StandardFeedLoader<Item>, ChildFeedLoading {
+public class ChildFeedLoader<Item: FeedLoadable>: StandardFeedLoader<Item> {
     var stream: FeedLoaderStream?
     var sortType: FeedLoaderSort.SortType
     
@@ -26,11 +26,7 @@ public class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: Stan
         super.init(filter: filter, fetcher: fetcher)
     }
     
-    public func toParent(_ item: Item) -> ParentItem {
-        preconditionFailure("This method must be implemented by the inheriting class")
-    }
-    
-    public func setParent(parent: any FeedLoading) {
+    public func setParent(parent: any FeedLoading<Item>) {
         stream = .init(parent: parent)
     }
     
@@ -63,14 +59,16 @@ public class ChildFeedLoader<Item: FeedLoadable, ParentItem: FeedLoadable>: Stan
         }
     }
     
-    public func consumeNextItem() -> ParentItem {
+    public func consumeNextItem() -> Item {
         guard let stream, stream.parent != nil else {
             assertionFailure("[\(Item.self) ChildFeedLoader] could not find stream or parent")
-            return toParent(items.last!)
+            return items.last!
+            // return toParent(items.last!)
         }
         
         stream.cursor += 1
-        return toParent(items[stream.cursor - 1])
+        return items[stream.cursor - 1]
+        // return toParent(items[stream.cursor - 1])
     }
     
     public func clear(clearParent: Bool) async {

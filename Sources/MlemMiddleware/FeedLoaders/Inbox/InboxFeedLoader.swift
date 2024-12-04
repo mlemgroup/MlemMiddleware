@@ -32,7 +32,7 @@ public enum InboxItem: FeedLoadable {
 }
 
 public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
-    public init(api: ApiClient, pageSize: Int, sources: [any ChildFeedLoading], sortType: FeedLoaderSort.SortType) {
+    public init(api: ApiClient, pageSize: Int, sources: [ChildFeedLoader<InboxItem>], sortType: FeedLoaderSort.SortType) {
         super.init(filter: .init(), fetcher: MultiFetcher(api: api, pageSize: pageSize, sources: sources, sortType: sortType))
         
         sources.forEach { source in

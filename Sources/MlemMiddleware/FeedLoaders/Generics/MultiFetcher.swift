@@ -6,10 +6,10 @@
 //
 
 class MultiFetcher<Item: FeedLoadable>: Fetcher<Item> {
-    var sources: [any ChildFeedLoading]
+    var sources: [ChildFeedLoader<Item>]
     var sortType: FeedLoaderSort.SortType
     
-    init(api: ApiClient, pageSize: Int, sources: [any ChildFeedLoading], sortType: FeedLoaderSort.SortType) {
+    init(api: ApiClient, pageSize: Int, sources: [ChildFeedLoader<Item>], sortType: FeedLoaderSort.SortType) {
         self.sources = sources
         self.sortType = sortType
         
@@ -43,7 +43,7 @@ class MultiFetcher<Item: FeedLoadable>: Fetcher<Item> {
     /// Computes and returns the highest sorted item from the tops of all sources
     private func computeNextItem() async throws -> Item? {
         var sortVal: FeedLoaderSort?
-        var sourceToConsume: (any ChildFeedLoading)?
+        var sourceToConsume: ChildFeedLoader<Item>?
         
         // find the highest-sorted item from the tops of all sources
         for source in sources {
@@ -65,9 +65,9 @@ class MultiFetcher<Item: FeedLoadable>: Fetcher<Item> {
     
     private func compareNextItem(
         lhsVal: FeedLoaderSort?,
-        lhsSource: (any ChildFeedLoading)?,
-        rhsSource: any ChildFeedLoading
-    ) async throws -> (FeedLoaderSort?, (any ChildFeedLoading)?) {
+        lhsSource: ChildFeedLoader<Item>?,
+        rhsSource: ChildFeedLoader<Item>
+    ) async throws -> (FeedLoaderSort?, ChildFeedLoader<Item>?) {
         // if no next item on rhs, return lhs (even if null)
         guard let rhsVal = try await rhsSource.nextItemSortVal(sortType: sortType) else {
             return (lhsVal, lhsSource)
