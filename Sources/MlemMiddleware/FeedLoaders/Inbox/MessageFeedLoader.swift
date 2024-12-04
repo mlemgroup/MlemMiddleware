@@ -13,7 +13,7 @@ class MessageFetcher: Fetcher<Message2> {
 }
 
 public class MessageFeedLoader: ChildFeedLoader<Message2, InboxItem> {
-    override public static func toParent(_ item: Message2) -> InboxItem {
+    override public func toParent(_ item: Message2) -> InboxItem {
         return .message(item)
     }
     
