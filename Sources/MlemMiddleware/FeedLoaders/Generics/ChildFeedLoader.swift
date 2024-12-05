@@ -50,7 +50,7 @@ public class ChildFeedLoader<Item: FeedLoadable>: StandardFeedLoader<Item> {
             try await loadMoreItems()
             
             if stream.cursor >= items.count {
-                assert(loadingState == .done, "[\(Item.self) ChildFeedLoader] Invalid loading state \(loadingState)")
+                // assert(loadingState == .done, "[\(Item.self) ChildFeedLoader] Invalid loading state \(loadingState)")
                 return nil
             }
             
@@ -59,16 +59,14 @@ public class ChildFeedLoader<Item: FeedLoadable>: StandardFeedLoader<Item> {
         }
     }
     
-    public func consumeNextItem() -> Item {
+    public func consumeNextItem() -> Item? {
         guard let stream, stream.parent != nil else {
             assertionFailure("[\(Item.self) ChildFeedLoader] could not find stream or parent")
-            return items.last!
-            // return toParent(items.last!)
+            return nil
         }
         
         stream.cursor += 1
-        return items[stream.cursor - 1]
-        // return toParent(items[stream.cursor - 1])
+        return items[safeIndex: stream.cursor - 1]
     }
     
     public func clear(clearParent: Bool) async {

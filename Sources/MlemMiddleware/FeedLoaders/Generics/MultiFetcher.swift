@@ -50,16 +50,13 @@ class MultiFetcher<Item: FeedLoadable>: Fetcher<Item> {
             (sortVal, sourceToConsume) = try await compareNextItem(lhsVal: sortVal, lhsSource: sourceToConsume, rhsSource: source)
         }
         
-        // ensure the item is of the correct type
-        if let sourceToConsume {
-            guard let nextItem = sourceToConsume.consumeNextItem() as? Item else {
-                assertionFailure("Could not convert item to [\(Item.self)]")
-                return nil
-            }
-            return nextItem
+        if let nextItem = sourceToConsume?.consumeNextItem() {
+            // ensure the item is of the correct type
+            assert(nextItem is Item, "Could not convert item to [\(Item.self)]")
+            return nextItem as! Item // this only fails if there's a serious type issue, which should be caught by the assertion above
         }
         
-        // if no sourceToConsume, loading is finished
+        // if no sourceToConsume or no item in that source, loading is finished
         return nil
     }
     
