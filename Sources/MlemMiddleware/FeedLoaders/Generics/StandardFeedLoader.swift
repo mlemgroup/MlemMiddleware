@@ -131,7 +131,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     /// Use in situations where filtering is handled client-side (e.g., keywords)
     /// - Parameter newFilter: Item.FilterType describing the filter to apply
     public func addFilter(_ newFilter: Item.FilterType) async throws {
-        if await loadingActor.filter.activate(newFilter) {
+        // if await loadingActor.filter.activate(newFilter) {
+        try await loadingActor.activateFilter(newFilter) {
             await setItems(loadingActor.filter.reset(with: items))
             
             if items.isEmpty {
@@ -141,7 +142,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     }
     
     public func removeFilter(_ filterToRemove: Item.FilterType) async throws {
-        if await loadingActor.filter.deactivate(filterToRemove) {
+        try await loadingActor.removeFilter(filterToRemove) {
             try await refresh(clearBeforeRefresh: true)
         }
     }

@@ -67,6 +67,24 @@ actor LoadingActor<Item: FeedLoadable> {
         print("[\(Item.self) LoadingActor] finished loading")
     }
     
+    func activateFilter(_ newFilter: Item.FilterType, callback: () async throws -> Void) async throws {
+        loadingTask?.cancel()
+        loadingTask = nil
+        if filter.activate(newFilter) {
+            try await callback()
+        }
+    }
+    
+    func removeFilter(_ filterToRemove: Item.FilterType, callback: () async throws -> Void) async throws {
+        loadingTask?.cancel()
+        loadingTask = nil
+        if filter.deactivate(filterToRemove) {
+            try await callback()
+        }
+    }
+    
+    // MARK: Helpers
+    
     private func fetchMoreItems() async throws -> LoadingResponse<Item> {
         var newItems: [Item] = .init()
         fetchLoop: repeat {

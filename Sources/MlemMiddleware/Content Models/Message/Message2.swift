@@ -9,7 +9,7 @@ import Foundation
 
 @Observable
 public final class Message2: Message2Providing, FeedLoadable {
-    public typealias FilterType = MessageFilterType
+    public typealias FilterType = InboxItemFilterType
     
     public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
         switch sortType {

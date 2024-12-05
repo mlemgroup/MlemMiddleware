@@ -16,8 +16,8 @@ class MentionFetcher: InboxFetcher {
     }
 }
 
-public class MentionFeedLoader: ChildFeedLoader<InboxItem> {
-    public init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType) {
-        super.init(filter: .init(), fetcher: MentionFetcher(api: api, pageSize: pageSize), sortType: sortType)
+public class MentionFeedLoader: InboxChildFeedLoader {
+    public init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType, showRead: Bool) {
+        super.init(api: api, sortType: sortType, fetcher: MentionFetcher(api: api, pageSize: pageSize, unreadOnly: !showRead), showRead: showRead)
     }
 }

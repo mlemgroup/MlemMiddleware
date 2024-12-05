@@ -10,7 +10,7 @@ import Observation
 
 @Observable
 public final class Reply2: Reply2Providing, FeedLoadable {
-    public typealias FilterType = ReplyFilterType
+    public typealias FilterType = InboxItemFilterType 
     
     public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
         switch sortType {

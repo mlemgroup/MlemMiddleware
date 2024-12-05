@@ -18,19 +18,3 @@ public enum CommunityFilterType {
 public enum PersonFilterType {
     case todo
 }
-
-public enum MessageFilterType {
-    case todo
-}
-
-public enum ReplyFilterType {
-    case todo
-}
-
-public enum MentionFilterType {
-    case todo
-}
-
-public enum InboxItemFilterType {
-    case todo
-}

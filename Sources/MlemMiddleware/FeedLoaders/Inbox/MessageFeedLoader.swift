@@ -16,12 +16,8 @@ class MessageFetcher: InboxFetcher {
     }
 }
 
-public class MessageFeedLoader: ChildFeedLoader<InboxItem> {
-//    override public func toParent(_ item: Message2) -> InboxItem {
-//        return .message(item)
-//    }
-    
-    public init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType) {
-        super.init(filter: .init(), fetcher: MessageFetcher(api: api, pageSize: pageSize), sortType: sortType)
+public class MessageFeedLoader: InboxChildFeedLoader {
+    public init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType, showRead: Bool) {
+        super.init(api: api, sortType: sortType, fetcher: MessageFetcher(api: api, pageSize: pageSize, unreadOnly: !showRead), showRead: showRead)
     }
 }

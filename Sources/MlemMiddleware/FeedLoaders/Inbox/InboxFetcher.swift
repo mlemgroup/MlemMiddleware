@@ -7,8 +7,13 @@
 
 import Foundation
 
-class InboxFetcher: Fetcher<InboxItem> {
-    var unreadOnly: Bool = false
+public class InboxFetcher: Fetcher<InboxItem> {
+    var unreadOnly: Bool
+    
+    init(api: ApiClient, pageSize: Int, unreadOnly: Bool) {
+        self.unreadOnly = unreadOnly
+        super.init(api: api, pageSize: pageSize)
+    }
     
     /// Updates fetching behavior to hide read items. Assumes items will NOT be cleared from the associated FeedLoader and that deduping will be handled by that FeedLoader.
     /// - Parameter unreadCount: number of unread items still present after client-side filtering
