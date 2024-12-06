@@ -8,7 +8,7 @@
 import Foundation
 import Nuke
 
-public protocol Post2Providing: Post1Providing, Interactable2Providing, PersonContentProviding {
+public protocol Post2Providing: Post1Providing, Interactable2Providing, PersonContentProviding, ReadableProviding {
     var post2: Post2 { get }
     
     var creator: any Person { get }
