@@ -42,7 +42,6 @@ public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
     
     var inboxFetcher: MultiFetcher<InboxItem> { fetcher as! MultiFetcher }
     
-    // TODO: show read
     public init(api: ApiClient, pageSize: Int, sources: [ChildFeedLoader<InboxItem>], sortType: FeedLoaderSort.SortType, showRead: Bool) {
         super.init(filter: InboxItemFilter(showRead: showRead), fetcher: MultiFetcher(api: api, pageSize: pageSize, sources: sources, sortType: sortType))
         
@@ -52,16 +51,6 @@ public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
     }
     
     public func hideRead() async throws {
-//        inboxFetcher.sources.forEach { source in
-//            Task {
-//                guard let childSource = source as? InboxChildFeedLoader else {
-//                    assertionFailure("Child is not InboxChildFeedLoader")
-//                    return
-//                }
-//                try await childSource.hideRead()
-//            }
-//        }
-        
         await withThrowingTaskGroup(of: Void.self) { group in
             inboxFetcher.sources.forEach { source in
                 group.addTask {
@@ -89,16 +78,7 @@ public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
                 }
             }
         }
-        
-//        inboxFetcher.sources.forEach { source in
-//            Task {
-//                guard let childSource = source as? InboxChildFeedLoader else {
-//                    assertionFailure("Child is not InboxChildFeedLoader")
-//                    return
-//                }
-//                try await childSource.showRead()
-//            }
-//        }
+
         try await deactivateFilter(.read)
     }
 }

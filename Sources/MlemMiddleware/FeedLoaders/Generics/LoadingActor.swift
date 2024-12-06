@@ -53,7 +53,6 @@ actor LoadingActor<Item: FeedLoadable> {
         defer { loadingTask = nil }
         
         loadingTask = Task<Void, Error> {
-            // return try await fetchMoreItems() // fetcher.fetch()
             let response = try await fetchMoreItems()
             await callback(response)
         }

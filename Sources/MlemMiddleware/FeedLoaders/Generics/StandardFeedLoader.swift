@@ -131,7 +131,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     /// Use in situations where filtering is handled client-side (e.g., keywords)
     /// - Parameter newFilter: Item.FilterType describing the filter to apply
     public func activateFilter(_ target: Item.FilterType) async throws {
-        // if await loadingActor.filter.activate(newFilter) {
         try await loadingActor.activateFilter(target) {
             await setItems(loadingActor.filter.reset(with: items))
             
