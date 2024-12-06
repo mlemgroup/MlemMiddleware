@@ -130,9 +130,9 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     /// Adds a filter to the tracker, removing all current items that do not pass the filter and filtering out all future items that do not pass the filter.
     /// Use in situations where filtering is handled client-side (e.g., keywords)
     /// - Parameter newFilter: Item.FilterType describing the filter to apply
-    public func addFilter(_ newFilter: Item.FilterType) async throws {
+    public func activateFilter(_ target: Item.FilterType) async throws {
         // if await loadingActor.filter.activate(newFilter) {
-        try await loadingActor.activateFilter(newFilter) {
+        try await loadingActor.activateFilter(target) {
             await setItems(loadingActor.filter.reset(with: items))
             
             if items.isEmpty {
@@ -141,8 +141,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
         }
     }
     
-    public func removeFilter(_ filterToRemove: Item.FilterType) async throws {
-        try await loadingActor.removeFilter(filterToRemove) {
+    public func deactivateFilter(_ target: Item.FilterType) async throws {
+        try await loadingActor.deactivateFilter(target) {
             try await refresh(clearBeforeRefresh: true)
         }
     }

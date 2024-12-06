@@ -67,18 +67,18 @@ actor LoadingActor<Item: FeedLoadable> {
         print("[\(Item.self) LoadingActor] finished loading")
     }
     
-    func activateFilter(_ newFilter: Item.FilterType, callback: () async throws -> Void) async throws {
+    func activateFilter(_ target: Item.FilterType, callback: () async throws -> Void) async throws {
         loadingTask?.cancel()
         loadingTask = nil
-        if filter.activate(newFilter) {
+        if filter.activate(target) {
             try await callback()
         }
     }
     
-    func removeFilter(_ filterToRemove: Item.FilterType, callback: () async throws -> Void) async throws {
+    func deactivateFilter(_ target: Item.FilterType, callback: () async throws -> Void) async throws {
         loadingTask?.cancel()
         loadingTask = nil
-        if filter.deactivate(filterToRemove) {
+        if filter.deactivate(target) {
             try await callback()
         }
     }

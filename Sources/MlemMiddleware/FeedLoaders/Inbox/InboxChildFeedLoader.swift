@@ -25,7 +25,7 @@ public class InboxChildFeedLoader: ChildFeedLoader<InboxItem> {
     }
     
     func showRead() async throws {
-        try await loadingActor.removeFilter(.read) {
+        try await loadingActor.deactivateFilter(.read) {
             inboxFetcher.showRead()
             try await refresh(clearBeforeRefresh: true)
         }

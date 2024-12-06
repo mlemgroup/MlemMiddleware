@@ -39,7 +39,7 @@ public class ChildFeedLoader<Item: FeedLoadable>: StandardFeedLoader<Item> {
         }
         
         if stream.cursor < items.count {
-            return items[stream.cursor].sortVal(sortType: sortType)
+            return items[safeIndex: stream.cursor]?.sortVal(sortType: sortType)
         } else {
             if loadingState == .done {
                 print("[\(Item.self) ChildFeedLoader] done loading")

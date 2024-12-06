@@ -74,7 +74,7 @@ public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
             }
         }
         
-        try await addFilter(.read)
+        try await activateFilter(.read)
     }
     
     public func showRead() async throws {
@@ -99,6 +99,6 @@ public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
 //                try await childSource.showRead()
 //            }
 //        }
-        try await removeFilter(.read)
+        try await deactivateFilter(.read)
     }
 }
