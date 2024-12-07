@@ -14,9 +14,9 @@ public class SearchPostFetcher: PostFetcher {
     public var listing: ApiListingType
     
     // setters to allow manual overriding of these for search use cases
-    public override func changeApi(to newApi: ApiClient) async {
-        await super.changeApi(to: newApi)
-    }
+//    public override func changeApi(to newApi: ApiClient) async {
+//        await super.changeApi(to: newApi)
+//    }
     public func setSortType(_ sortType: ApiSortType) { self.sortType = sortType }
     
     init(api: ApiClient, sortType: ApiSortType, pageSize: Int, query: String, communityId: Int?, creatorId: Int?, listing: ApiListingType) {
