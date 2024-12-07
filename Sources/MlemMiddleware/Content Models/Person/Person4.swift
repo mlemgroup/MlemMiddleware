@@ -104,9 +104,6 @@ public final class Person4: Person4Providing {
     
     public func updateSettings(
         email: String? = nil,
-        displayName: String? = nil,
-        avatar: URL? = nil,
-        banner: URL? = nil,
         matrixId: String? = nil,
         showNsfw: Bool? = nil,
         blurNsfw: Bool? = nil,
@@ -124,11 +121,11 @@ public final class Person4: Person4Providing {
             defaultSortType: self.defaultSortType,
             defaultListingType: self.defaultListingType,
             interfaceLanguage: self.interfaceLanguage,
-            avatar: avatar ?? self.avatar,
-            banner: banner ?? self.banner,
-            displayName: displayName ?? self.displayName,
+            avatar: self.avatar?.absoluteString ?? "",
+            banner: self.banner?.absoluteString ?? "",
+            displayName: self.displayName,
             email: email ?? self.email,
-            bio: description ?? self.description,
+            bio: self.description,
             matrixUserId: matrixId ?? self.matrixId,
             showAvatars: self.showAvatars,
             sendNotificationsToEmail: sendNotificationsToEmail ?? self.sendNotificationsToEmail,
@@ -149,14 +146,54 @@ public final class Person4: Person4Providing {
             showUpvotePercentage: self.voteDisplayMode?.upvotePercentage
         )
         self.email = email ?? self.email
-        self.person1.displayName = displayName ?? self.displayName
-        self.person1.avatar = avatar ?? self.avatar
-        self.person1.banner = banner ?? self.banner
         self.person1.matrixId = matrixId ?? self.matrixId
         self.showNsfw = showNsfw ?? self.showNsfw
         self.blurNsfw = blurNsfw ?? self.blurNsfw
         self.showBotAccounts = showBotAccounts ?? self.showBotAccounts
         self.sendNotificationsToEmail = sendNotificationsToEmail ?? self.sendNotificationsToEmail
         self.person1.isBot = isBot ?? self.isBot
+    }
+    
+    public func updateProfile(
+        displayName: String?,
+        description: String?,
+        avatar: URL?,
+        banner: URL?
+    ) async throws {
+        try await api.editAccountSettings(
+            showNsfw: self.showNsfw,
+            showScores: self.showScores,
+            theme: self.theme,
+            defaultSortType: self.defaultSortType,
+            defaultListingType: self.defaultListingType,
+            interfaceLanguage: self.interfaceLanguage,
+            avatar: avatar?.absoluteString ?? "",
+            banner: banner?.absoluteString ?? "",
+            displayName: displayName ?? "",
+            email: self.email,
+            bio: description ?? "",
+            matrixUserId: self.matrixId,
+            showAvatars: self.showAvatars,
+            sendNotificationsToEmail: self.sendNotificationsToEmail,
+            botAccount: self.isBot,
+            showBotAccounts: self.showBotAccounts,
+            showReadPosts: self.showReadPosts,
+            discussionLanguages: nil,
+            openLinksInNewTab: self.openLinksInNewTab,
+            blurNsfw: self.blurNsfw,
+            autoExpand: self.autoExpandImages,
+            infiniteScrollEnabled: self.infiniteScrollEnabled,
+            postListingMode: self.postListingMode,
+            enableKeyboardNavigation: self.enableKeyboardNavigation,
+            enableAnimatedImages: self.enableAnimatedImages,
+            collapseBotComments: self.collapseBotComments,
+            showUpvotes: self.voteDisplayMode?.upvotes,
+            showDownvotes: self.voteDisplayMode?.downvotes,
+            showUpvotePercentage: self.voteDisplayMode?.upvotePercentage
+        )
+        self.person1.displayName = displayName ?? self.name
+        self.person1.description = description
+        self.person1.avatar = avatar
+        self.person1.banner = banner
     }
 }
