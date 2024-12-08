@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol FeedLoading<Item> {
+public protocol FeedLoading<Item>: AnyObject {
     associatedtype Item: FeedLoadable
     
     var items: [Item] { get }
@@ -16,5 +16,6 @@ public protocol FeedLoading<Item> {
     func loadMoreItems() async throws
     func loadIfThreshold(_ item: Item) throws
     func refresh(clearBeforeRefresh: Bool) async throws
+    func clear() async
     func changeApi(to newApi: ApiClient) async
 }

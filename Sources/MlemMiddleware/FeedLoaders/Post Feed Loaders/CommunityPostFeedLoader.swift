@@ -7,6 +7,7 @@
 
 import Foundation
 
+@Observable
 class CommunityPostFetcher: PostFetcher {
     var community: any Community
     

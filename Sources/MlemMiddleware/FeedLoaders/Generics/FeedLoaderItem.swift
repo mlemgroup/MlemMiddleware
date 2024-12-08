@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol FeedLoadable: ActorIdentifiable, AnyObject, Filterable, Equatable {
+public protocol FeedLoadable: ActorIdentifiable, Filterable, Equatable {
     associatedtype FilterType
     var api: ApiClient { get }
     

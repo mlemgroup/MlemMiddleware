@@ -9,6 +9,7 @@ import Foundation
 import Nuke
 import Observation
 
+@Observable
 public class PostFetcher: Fetcher<Post2> {
     var sortType: ApiSortType
     
@@ -63,17 +64,15 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     ) {
         self.prefetchingConfiguration = prefetchingConfiguration
         
-        let filter = PostFilter(showRead: showReadPosts)
-        
         super.init(
-            filter: filter,
+            filter: PostFilter(showRead: showReadPosts),
             fetcher: fetcher
         )
     }
     
     // MARK: StandardFeedLoader Loading Methods
   
-    override func processFetchedItems(_ items: [Post2]) {
+    override func processNewItems(_ items: [Post2]) {
         preloadImages(items)
     }
     
@@ -88,29 +87,6 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         
         postFetcher.sortType = newSortType
         try await refresh(clearBeforeRefresh: true)
-    }
-    
-    /// Adds a filter to the tracker, removing all current posts that do not pass the filter and filtering out all future posts that do not pass the filter.
-    /// Use in situations where filtering is handled client-side (e.g., filtering read posts or keywords)
-    /// - Parameter newFilter: NewPostFilterReason describing the filter to apply
-    public func addFilter(_ newFilter: PostFilterType) async throws {
-        if filter.activate(newFilter) {
-            await setItems(filter.reset(with: items))
-            
-            if items.isEmpty {
-                try await refresh(clearBeforeRefresh: false)
-            }
-        }
-    }
-    
-    public func removeFilter(_ filterToRemove: PostFilterType) async throws {
-        if filter.deactivate(filterToRemove) {
-            try await refresh(clearBeforeRefresh: true)
-        }
-    }
-    
-    public func getFilteredCount(for toCount: PostFilterType) -> Int {
-        return filter.numFiltered(for: toCount)
     }
     
     /// Preloads images for the given post

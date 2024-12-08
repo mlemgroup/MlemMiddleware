@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol InboxItemProviding: ContentIdentifiable, ContentModel {
+public protocol InboxItemProviding: ContentIdentifiable, ContentModel, ReadableProviding {
     var created: Date { get }
     var read: Bool { get }
     

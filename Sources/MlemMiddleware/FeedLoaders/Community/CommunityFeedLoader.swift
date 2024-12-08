@@ -7,6 +7,7 @@
 
 import Foundation
 
+@Observable
 class CommunityFetcher: Fetcher<Community2> {
     var query: String
     var listing: ApiListingType
