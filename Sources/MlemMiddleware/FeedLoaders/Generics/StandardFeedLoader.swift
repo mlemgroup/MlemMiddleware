@@ -79,17 +79,18 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
   
         try await loadingActor.load { response in
             var newItems: [Item]?
+            var newState: LoadingState
             
             switch response {
             case let .success(items):
                 newItems = items
-                await self.setLoading(items.count > 0 ? .idle : .done)
+                newState = items.count > 0 ? .idle : .done
             case let .done(items):
                 newItems = items
-                await self.setLoading(.done)
+                newState = .done
             case .ignored, .cancelled:
                 print("[\(Item.self) FeedLoader] load did not complete (\(response.description))")
-                await self.setLoading(.idle)
+                newState = .idle
             }
             
             if let newItems {
@@ -100,6 +101,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
                 }
             }
             
+            await self.setLoading(newState)
             print("[\(Item.self) FeedLoader] loadMoreItems complete")
         }
     }
