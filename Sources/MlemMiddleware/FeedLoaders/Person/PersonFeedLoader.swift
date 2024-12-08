@@ -7,6 +7,7 @@
 
 import Foundation
 
+@Observable
 class PersonFetcher: Fetcher<Person2> {
     var query: String
     /// `listing` can be set to `.local` from 0.19.4 onwards.

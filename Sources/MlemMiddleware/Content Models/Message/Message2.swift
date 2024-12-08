@@ -8,7 +8,16 @@
 import Foundation
 
 @Observable
-public final class Message2: Message2Providing {
+public final class Message2: Message2Providing, FeedLoadable {
+    public typealias FilterType = InboxItemFilterType
+    
+    public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
+        switch sortType {
+        case .new:
+            return .new(created)
+        }
+    }
+    
     public static let tierNumber: Int = 2
     public var api: ApiClient
     public var message2: Message2 { self }

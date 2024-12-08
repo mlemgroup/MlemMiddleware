@@ -9,7 +9,16 @@ import Foundation
 import Observation
 
 @Observable
-public final class Reply2: Reply2Providing {    
+public final class Reply2: Reply2Providing, FeedLoadable {
+    public typealias FilterType = InboxItemFilterType 
+    
+    public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
+        switch sortType {
+        case .new:
+            return .new(created)
+        }
+    }
+    
     public static let tierNumber: Int = 2
     public var api: ApiClient
     public var reply2: Reply2 { self }

@@ -18,6 +18,7 @@ import Nuke
 /// in the standard Parent/Child FeedLoader; if either stream reaches the end of its items, it triggers a new load, the response from
 /// which is then incorporated into both child streams.
 
+@Observable
 class PersonContentFetcher: Fetcher<PersonContent> {
     var sortType: FeedLoaderSort.SortType
     var userId: Int
@@ -44,27 +45,24 @@ class PersonContentFetcher: Fetcher<PersonContent> {
         super.init(api: api, pageSize: pageSize, page: withContent == nil ? 0 : 1)
     }
     
-    override func reset() {
+    override func reset() async {
         postStream.reset()
         commentStream.reset()
         
-        super.reset()
+        await super.reset()
     }
     
     override func fetch() async throws -> LoadingResponse<PersonContent> {
         var newItems: [PersonContent] = .init()
         
-        repeat {
+        while newItems.count < pageSize {
             if let nextItem = try await computeNextItem() {
                 newItems.append(nextItem)
             } else {
-                break
+                return .done(newItems)
             }
-        } while newItems.count < pageSize
-        
-        if newItems.count < pageSize {
-            return .done(newItems)
         }
+        
         return .success(newItems)
     }
     
@@ -165,7 +163,7 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
         tempPostStream = postStream
         tempCommentStream = commentStream
         
-        personContentFetcher.api = api
+        await personContentFetcher.changeApi(to: api)
         personContentFetcher.userId = userId
         await loadingActor.reset()
         await setLoading(.done) // prevent loading more items until refreshed

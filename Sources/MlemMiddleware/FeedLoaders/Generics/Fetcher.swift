@@ -5,6 +5,8 @@
 //  Created by Eric Andrews on 2024-11-17.
 //
 
+import Observation
+
 enum LoadingResponse<Item: FeedLoadable> {
     /// Indicates a successful load with more items available to fetch
     case success([Item])
@@ -28,8 +30,9 @@ enum LoadingResponse<Item: FeedLoadable> {
     }
 }
 
+@Observable
 public class Fetcher<Item: FeedLoadable> {
-    var api: ApiClient
+    private(set) var api: ApiClient
     var pageSize: Int
     var page: Int
     private var cursor: String?
@@ -101,8 +104,12 @@ public class Fetcher<Item: FeedLoadable> {
     }
     
     /// Resets the fetcher's page and cursor tracking. This method should only be overridden to handle abnormal pagination behavior (e.g., PersonContentFetcher); it should NOT change loading parameters such as query or sort.
-    func reset() {
+    func reset() async {
         page = 0
         cursor = nil
+    }
+    
+    func changeApi(to newApi: ApiClient) async {
+        api = newApi
     }
 }

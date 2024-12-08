@@ -7,6 +7,7 @@
 
 import Foundation
 
+@Observable
 public class SearchPostFetcher: PostFetcher {
     public var query: String
     public var communityId: Int?
@@ -14,7 +15,9 @@ public class SearchPostFetcher: PostFetcher {
     public var listing: ApiListingType
     
     // setters to allow manual overriding of these for search use cases
-    public func setApi(_ api: ApiClient) { self.api = api }
+    public override func changeApi(to newApi: ApiClient) async {
+        await super.changeApi(to: newApi)
+    }
     public func setSortType(_ sortType: ApiSortType) { self.sortType = sortType }
     
     init(api: ApiClient, sortType: ApiSortType, pageSize: Int, query: String, communityId: Int?, creatorId: Int?, listing: ApiListingType) {
