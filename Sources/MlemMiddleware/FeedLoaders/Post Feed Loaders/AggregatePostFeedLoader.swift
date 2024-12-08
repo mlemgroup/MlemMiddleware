@@ -7,6 +7,7 @@
 
 import Foundation
 
+@Observable
 class AggregatePostFetcher: PostFetcher {
     var feedType: ApiListingType
     

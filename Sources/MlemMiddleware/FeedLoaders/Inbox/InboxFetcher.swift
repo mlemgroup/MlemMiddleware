@@ -7,6 +7,7 @@
 
 import Foundation
 
+@Observable
 public class InboxFetcher: Fetcher<InboxItem> {
     var unreadOnly: Bool
     

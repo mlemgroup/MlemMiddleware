@@ -9,6 +9,7 @@ import Foundation
 import Nuke
 import Observation
 
+@Observable
 public class PostFetcher: Fetcher<Post2> {
     var sortType: ApiSortType
     

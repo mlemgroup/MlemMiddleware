@@ -18,6 +18,7 @@ import Nuke
 /// in the standard Parent/Child FeedLoader; if either stream reaches the end of its items, it triggers a new load, the response from
 /// which is then incorporated into both child streams.
 
+@Observable
 class PersonContentFetcher: Fetcher<PersonContent> {
     var sortType: FeedLoaderSort.SortType
     var userId: Int

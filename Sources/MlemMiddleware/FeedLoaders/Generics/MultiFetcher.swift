@@ -5,6 +5,9 @@
 //  Created by Eric Andrews on 2024-11-24.
 //
 
+import Observation
+
+@Observable
 class MultiFetcher<Item: FeedLoadable>: Fetcher<Item> {
     var sources: [ChildFeedLoader<Item>]
     var sortType: FeedLoaderSort.SortType

@@ -5,6 +5,8 @@
 //  Created by Eric Andrews on 2024-11-17.
 //
 
+import Observation
+
 enum LoadingResponse<Item: FeedLoadable> {
     /// Indicates a successful load with more items available to fetch
     case success([Item])
@@ -28,6 +30,7 @@ enum LoadingResponse<Item: FeedLoadable> {
     }
 }
 
+@Observable
 public class Fetcher<Item: FeedLoadable> {
     private(set) var api: ApiClient
     var pageSize: Int

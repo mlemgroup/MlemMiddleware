@@ -7,6 +7,7 @@
 
 import Foundation
 
+@Observable
 public class SearchPostFetcher: PostFetcher {
     public var query: String
     public var communityId: Int?
