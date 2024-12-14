@@ -10,6 +10,7 @@ import Foundation
 extension Post1: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with post: ApiPost, semaphore: UInt? = nil) {
         setIfChanged(\.updated, post.updated)
         setIfChanged(\.title, post.name)
@@ -32,6 +33,7 @@ extension Post1: CacheIdentifiable {
 extension Post2: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with post: ApiPostView, semaphore: UInt? = nil) {
         setIfChanged(\.creatorIsModerator, post.creatorIsModerator)
         setIfChanged(\.creatorIsAdmin, post.creatorIsAdmin)
@@ -57,6 +59,7 @@ extension Post2: CacheIdentifiable {
 extension Post3: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with post: ApiGetPostResponse, semaphore: UInt? = nil) {
         setIfChanged(\.communityModerators, post.moderators.map { moderatorView in
             api.caches.person1.performModelTranslation(api: api, from: moderatorView.moderator)

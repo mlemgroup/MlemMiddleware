@@ -8,6 +8,7 @@
 import Foundation
 
 class Reply1Cache: CoreCache<Reply1> {
+    @MainActor
     func getModel(api: ApiClient, from apiType: any Reply1ApiBacker, semaphore: UInt? = nil) -> Reply1 {
         if let item = retrieveModel(cacheId: apiType.cacheId) {
             item.update(with: apiType)
@@ -32,6 +33,7 @@ class Reply1Cache: CoreCache<Reply1> {
 class Reply2Cache: CoreCache<Reply2> {
     public var commentIdItemCache: ItemCache = .init()
     
+    @MainActor
     func getModel(api: ApiClient, from apiType: any Reply2ApiBacker, semaphore: UInt? = nil) -> Reply2 {
         if let item = retrieveModel(cacheId: apiType.cacheId) {
             item.update(with: apiType, semaphore: semaphore)
@@ -76,6 +78,11 @@ class Reply2Cache: CoreCache<Reply2> {
     
     public func retrieveModel(commentId: Int) -> Reply2? {
         commentIdItemCache.get(commentId)
+    }
+    
+    @MainActor
+    func getModels(api: ApiClient, from apiTypes: [any Reply2ApiBacker], semaphore: UInt? = nil) -> [Reply2] {
+        apiTypes.map { getModel(api: api, from: $0, semaphore: semaphore) }
     }
     
     override func clean() {
