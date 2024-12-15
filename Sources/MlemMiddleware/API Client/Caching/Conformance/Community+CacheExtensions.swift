@@ -14,7 +14,7 @@ extension Community1: CacheIdentifiable {
         setIfChanged(\.updated, community.updated)
         setIfChanged(\.displayName, community.title)
         setIfChanged(\.description, community.description)
-        setIfChanged(\.removed, community.removed)
+        removedManager.updateWithReceivedValue(community.removed, semaphore: semaphore)
         setIfChanged(\.deleted, community.deleted)
         setIfChanged(\.nsfw, community.nsfw)
         setIfChanged(\.avatar, community.icon)
