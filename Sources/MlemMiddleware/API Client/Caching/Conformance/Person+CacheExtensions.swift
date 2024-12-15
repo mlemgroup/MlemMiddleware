@@ -38,6 +38,7 @@ extension Person2: CacheIdentifiable {
     public var cacheId: Int { id }
     
     func update(with apiType: any Person2ApiBacker, semaphore: UInt? = nil) {
+        setIfChanged(\.isAdmin, apiType.admin)
         setIfChanged(\.postCount, apiType.counts.postCount)
         setIfChanged(\.commentCount, apiType.counts.commentCount)
         person1.update(with: apiType.person, semaphore: semaphore)
@@ -63,7 +64,9 @@ extension Person4: CacheIdentifiable {
         
         let user = apiMyUserInfo.localUserView.localUser
         
-        setIfChanged(\.isAdmin, user.admin)
+        if let admin = user.admin {
+            setIfChanged(\.person2.isAdmin, admin)
+        }
         setIfChanged(\.voteDisplayMode, apiMyUserInfo.localUserView.localUserVoteDisplayMode)
         setIfChanged(\.email, user.email)
         setIfChanged(\.showNsfw, user.showNsfw)
