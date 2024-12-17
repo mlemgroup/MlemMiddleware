@@ -22,6 +22,7 @@ class ReportCache: CoreCache<Report> {
             creator: api.caches.person1.getModel(api: api, from: apiType.creator, semaphore: semaphore),
             resolver: api.caches.person1.getOptionalModel(api: api, from: apiType.resolver, semaphore: semaphore),
             target: apiType.createTarget(api: api),
+            resolved: apiType.resolved,
             reason: apiType.reason,
             created: apiType.published,
             updated: apiType.updated

@@ -10,7 +10,7 @@ import Foundation
 extension ApiCommentReportView: ReportApiBacker {
     public var cacheId: Int {
         var hasher = Hasher()
-        hasher.combine(1)
+        hasher.combine(ReportType.comment)
         hasher.combine(commentReport.id)
         return hasher.finalize()
     }
@@ -25,7 +25,7 @@ extension ApiCommentReportView: ReportApiBacker {
         guard let subscribed, let saved, let creatorBlocked else { return nil }
         return .init(
             comment: comment,
-            creator: creator,
+            creator: commentCreator,
             post: post,
             community: community,
             counts: counts,
@@ -48,7 +48,7 @@ extension ApiCommentReportView: ReportApiBacker {
         return .legacyComment(
             api.caches.comment1.getModel(api: api, from: comment),
             community: api.caches.community1.getModel(api: api, from: community),
-            creator: api.caches.person1.getModel(api: api, from: creator)
+            creator: api.caches.person1.getModel(api: api, from: commentCreator)
         )
     }
 }

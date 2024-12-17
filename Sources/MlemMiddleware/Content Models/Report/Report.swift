@@ -23,12 +23,16 @@ public class Report: CacheIdentifiable, ContentModel {
     public internal(set) var resolver: Person1?
     public internal(set) var reason: String
     
+    internal var resolvedManager: StateManager<Bool>
+    public var resolved: Bool { resolvedManager.wrappedValue }
+    
     init(
         api: ApiClient,
         id: Int,
         creator: Person1,
         resolver: Person1?,
         target: ReportTarget,
+        resolved: Bool,
         reason: String,
         created: Date,
         updated: Date?
@@ -38,8 +42,26 @@ public class Report: CacheIdentifiable, ContentModel {
         self.creator = creator
         self.resolver = resolver
         self.target = target
+        self.resolvedManager = .init(wrappedValue: resolved)
         self.reason = reason
         self.created = created
         self.updated = updated
+    }
+    
+    @discardableResult
+    public func updateResolved(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
+        resolvedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.resolveReport(
+                id: self.id,
+                type: self.target.type,
+                resolved: newValue,
+                semaphore: semaphore
+            )
+        }
+    }
+    
+    @discardableResult
+    public func toggleResolved() -> Task<StateUpdateResult, Never> {
+        updateResolved(!resolved)
     }
 }

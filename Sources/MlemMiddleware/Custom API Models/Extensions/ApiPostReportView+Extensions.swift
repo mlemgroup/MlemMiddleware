@@ -10,7 +10,7 @@ import Foundation
 extension ApiPostReportView: ReportApiBacker {
     public var cacheId: Int {
         var hasher = Hasher()
-        hasher.combine(0)
+        hasher.combine(ReportType.post)
         hasher.combine(postReport.id)
         return hasher.finalize()
     }
@@ -25,7 +25,7 @@ extension ApiPostReportView: ReportApiBacker {
         guard let subscribed, let saved, let read, let creatorBlocked, let unreadComments else { return nil }
         return .init(
             post: post,
-            creator: creator,
+            creator: postCreator,
             community: community,
             creatorBannedFromCommunity: creatorBannedFromCommunity,
             counts: counts,
@@ -51,7 +51,7 @@ extension ApiPostReportView: ReportApiBacker {
         return .legacyPost(
             api.caches.post1.getModel(api: api, from: post),
             community: api.caches.community1.getModel(api: api, from: community),
-            creator: api.caches.person1.getModel(api: api, from: creator)
+            creator: api.caches.person1.getModel(api: api, from: postCreator)
         )
     }
 }

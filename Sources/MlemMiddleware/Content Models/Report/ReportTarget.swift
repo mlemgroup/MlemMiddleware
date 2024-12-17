@@ -31,11 +31,35 @@ public enum ReportTarget {
     /// All comment reports use this case on 0.19.3 and below.
     case legacyComment(Comment1, community: Community1, creator: Person1)
     
-    internal var typeId: Int {
+    internal var type: ReportType {
         switch self {
-        case .post, .legacyPost: 0
-        case .comment, .legacyComment: 1
-        case .message: 2
+        case .post, .legacyPost: .post
+        case .comment, .legacyComment: .comment
+        case .message: .message
         }
     }
+    
+    public var community: Community1? {
+        switch self {
+        case let .legacyPost(_, community, _): community
+        case let .post(post): post.community
+        case let .legacyComment(_, community, _): community
+        case let .comment(comment): comment.community
+        case .message: nil
+        }
+    }
+    
+    public var creator: Person1 {
+        switch self {
+        case let .legacyPost(_, _, creator): creator
+        case let .post(post): post.creator
+        case let .legacyComment(_, _, creator): creator
+        case let .comment(comment): comment.creator
+        case let .message(message): message.creator
+        }
+    }
+}
+
+public enum ReportType: Hashable {
+    case post, comment, message
 }

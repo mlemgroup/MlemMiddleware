@@ -10,7 +10,7 @@ import Foundation
 extension Report {
     public var cacheId: Int {
         var hasher = Hasher()
-        hasher.combine(target.typeId)
+        hasher.combine(target.type)
         hasher.combine(id)
         return hasher.finalize()
     }
@@ -23,6 +23,8 @@ extension Report {
         setIfChanged(\.resolver, api.caches.person1.getOptionalModel(api: api, from: report.resolver))
         
         creator.update(with: report.creator)
+        
+        resolvedManager.updateWithReceivedValue(report.resolved, semaphore: semaphore)
         
         switch target {
         case let .post(post):
@@ -43,7 +45,7 @@ extension Report {
             if let report = report as? ApiPostReportView {
                 post.update(with: report.post)
                 community.update(with: report.community)
-                creator.update(with: report.creator)
+                creator.update(with: report.postCreator)
             } else {
                 assertionFailure()
             }
@@ -51,7 +53,7 @@ extension Report {
             if let report = report as? ApiCommentReportView {
                 comment.update(with: report.comment)
                 community.update(with: report.community)
-                creator.update(with: report.creator)
+                creator.update(with: report.commentCreator)
             } else {
                 assertionFailure()
             }

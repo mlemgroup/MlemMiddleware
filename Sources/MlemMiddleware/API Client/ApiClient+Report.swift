@@ -57,4 +57,27 @@ public extension ApiClient {
         let response = try await perform(request)
         return await caches.report.getModels(api: self, from: response.privateMessageReports)
     }
+    
+    @discardableResult
+    func resolveReport(
+        id: Int,
+        type: ReportType,
+        resolved: Bool,
+        semaphore: UInt? = nil
+    ) async throws -> Report {
+        switch type {
+        case .post:
+            let request = ResolvePostReportRequest(reportId: id, resolved: resolved)
+            let response = try await perform(request)
+            return await caches.report.getModel(api: self, from: response.postReportView, semaphore: semaphore)
+        case .comment:
+            let request = ResolveCommentReportRequest(reportId: id, resolved: resolved)
+            let response = try await perform(request)
+            return await caches.report.getModel(api: self, from: response.commentReportView, semaphore: semaphore)
+        case .message:
+            let request = ResolvePrivateMessageReportRequest(reportId: id, resolved: resolved)
+            let response = try await perform(request)
+            return await caches.report.getModel(api: self, from: response.privateMessageReportView, semaphore: semaphore)
+        }
+    }
 }

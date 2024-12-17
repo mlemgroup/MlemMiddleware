@@ -10,7 +10,7 @@ import Foundation
 extension ApiPrivateMessageReportView: ReportApiBacker {
     public var cacheId: Int {
         var hasher = Hasher()
-        hasher.combine(2)
+        hasher.combine(ReportType.message)
         hasher.combine(privateMessageReport.id)
         return hasher.finalize()
     }
