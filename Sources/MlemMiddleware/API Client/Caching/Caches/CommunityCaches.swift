@@ -8,6 +8,7 @@
 import Foundation
 
 class Community1Cache: ApiTypeBackedCache<Community1, ApiCommunity> {
+    @MainActor
     override func performModelTranslation(api: ApiClient, from apiType: ApiCommunity) -> Community1 {
         .init(
             api: api,
@@ -28,13 +29,14 @@ class Community1Cache: ApiTypeBackedCache<Community1, ApiCommunity> {
         )
     }
     
+    @MainActor
     override func updateModel(_ item: Community1, with apiType: ApiCommunity, semaphore: UInt? = nil) {
         item.update(with: apiType)
     }
 }
 
 class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
-    
+    @MainActor
     override func performModelTranslation(api: ApiClient, from apiType: ApiCommunityView) -> Community2 {
         .init(
             api: api,
@@ -51,12 +53,14 @@ class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
         )
     }
     
+    @MainActor
     override func updateModel(_ item: Community2, with apiType: ApiCommunityView, semaphore: UInt? = nil) {
         item.update(with: apiType, semaphore: semaphore)
     }
 }
 
 class Community3Cache: ApiTypeBackedCache<Community3, ApiGetCommunityResponse> {
+    @MainActor
     override func performModelTranslation(api: ApiClient, from apiType: ApiGetCommunityResponse) -> Community3 {
         .init(
             api: api,
@@ -67,6 +71,7 @@ class Community3Cache: ApiTypeBackedCache<Community3, ApiGetCommunityResponse> {
         )
     }
     
+    @MainActor
     override func updateModel(_ item: Community3, with apiType: ApiGetCommunityResponse, semaphore: UInt? = nil) {
         item.update(with: apiType, semaphore: semaphore)
     }

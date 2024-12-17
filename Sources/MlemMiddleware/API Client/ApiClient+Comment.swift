@@ -11,14 +11,14 @@ public extension ApiClient {
     func getComment(id: Int) async throws -> Comment2 {
         let request = GetCommentRequest(id: id)
         let response = try await perform(request)
-        return caches.comment2.getModel(api: self, from: response.commentView)
+        return await caches.comment2.getModel(api: self, from: response.commentView)
     }
     
     func getComment(actorId: URL) async throws -> Comment2 {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
         do {
             if let response = try await perform(request).comment {
-                return caches.comment2.getModel(api: self, from: response)
+                return await caches.comment2.getModel(api: self, from: response)
             }
         } catch let ApiClientError.response(response, _) where response.couldntFindObject {
             throw ApiClientError.noEntityFound
@@ -49,7 +49,7 @@ public extension ApiClient {
             dislikedOnly: filter == .downvoted
         )
         let response = try await perform(request)
-        return response.comments.map { caches.comment2.getModel(api: self, from: $0) }
+        return await caches.comment2.getModels(api: self, from: response.comments)
     }
     
     func getComments(
@@ -75,28 +75,28 @@ public extension ApiClient {
             dislikedOnly: filter == .downvoted
         )
         let response = try await perform(request)
-        return response.comments.map { caches.comment2.getModel(api: self, from: $0) }
+        return await caches.comment2.getModels(api: self, from: response.comments)
     }
     
     @discardableResult
     func voteOnComment(id: Int, score: ScoringOperation, semaphore: UInt? = nil) async throws -> Comment2 {
         let request = LikeCommentRequest(commentId: id, score: score.rawValue)
         let response = try await perform(request)
-        return caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
+        return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
     
     @discardableResult
     func saveComment(id: Int, save: Bool, semaphore: UInt? = nil) async throws -> Comment2 {
         let request = SaveCommentRequest(commentId: id, save: save)
         let response = try await perform(request)
-        return caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
+        return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
     
     @discardableResult
     func deleteComment(id: Int, delete: Bool, semaphore: UInt? = nil) async throws -> Comment2 {
         let request = DeleteCommentRequest(commentId: id, deleted: delete)
         let response = try await perform(request)
-        return caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
+        return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
     
     @discardableResult
@@ -112,7 +112,7 @@ public extension ApiClient {
             formId: nil
         )
         let response = try await perform(request)
-        return caches.comment2.getModel(api: self, from: response.commentView)
+        return await caches.comment2.getModel(api: self, from: response.commentView)
     }
     
     // There's also a `replyToPost` method in `ApiClient+Post` for creating a comment on a post
@@ -125,7 +125,7 @@ public extension ApiClient {
             formId: nil
         )
         let response = try await perform(request)
-        let comment = caches.comment2.getModel(api: self, from: response.commentView)
+        let comment = await caches.comment2.getModel(api: self, from: response.commentView)
         comment.getCachedInboxReply()?.setKnownReadState(newValue: true)
         return comment
     }
@@ -152,6 +152,6 @@ public extension ApiClient {
     ) async throws -> Comment2 {
         let request = RemoveCommentRequest(commentId: id, removed: remove, reason: reason)
         let response = try await perform(request)
-        return caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
+        return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
 }

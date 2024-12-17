@@ -19,14 +19,14 @@ public extension ApiClient {
             savedOnly: nil
         )
         let response = try await perform(request)
-        return caches.person3.getModel(api: self, from: response)
+        return await caches.person3.getModel(api: self, from: response)
     }
     
     func getPerson(actorId: URL) async throws -> Person2 {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
         do {
             if let response = try await perform(request).person {
-                return caches.person2.getModel(api: self, from: response)
+                return await caches.person2.getModel(api: self, from: response)
             }
         } catch let ApiClientError.response(response, _) where response.couldntFindObject {
             throw ApiClientError.noEntityFound
@@ -47,7 +47,7 @@ public extension ApiClient {
         
         do {
             let response = try await perform(request)
-            return caches.person3.getModel(api: self, from: response)
+            return await caches.person3.getModel(api: self, from: response)
         } catch let ApiClientError.response(response, _) where response.couldntFindObject {
             throw ApiClientError.noEntityFound
         }
@@ -77,14 +77,15 @@ public extension ApiClient {
             page: page,
             limit: limit
         )
-        return try await perform(request).users.map { caches.person2.getModel(api: self, from: $0) }
+        let response = try await perform(request)
+        return await caches.person2.getModels(api: self, from: response.users)
     }
     
     @discardableResult
     func blockPerson(id: Int, block: Bool, semaphore: UInt? = nil) async throws -> Person2 {
         let request = BlockPersonRequest(personId: id, block: block)
         let response = try await perform(request)
-        let person = caches.person2.getModel(api: self, from: response.personView, semaphore: semaphore)
+        let person = await caches.person2.getModel(api: self, from: response.personView, semaphore: semaphore)
         person.person1.blockedManager.updateWithReceivedValue(response.blocked, semaphore: semaphore)
         return person
     }
@@ -114,7 +115,7 @@ public extension ApiClient {
         )
         let response = try await perform(request)
         guard response.banned == ban else { throw ApiClientError.unsuccessful }
-        let person = caches.person2.getModel(api: self, from: response.personView)
+        let person = await caches.person2.getModel(api: self, from: response.personView)
         person.person1.updateKnownCommunityBanState(id: communityId, banned: response.banned)
         return person
     }
@@ -142,7 +143,7 @@ public extension ApiClient {
         )
         let response = try await perform(request)
         guard response.banned == ban else { throw ApiClientError.unsuccessful }
-        let person = caches.person2.getModel(api: self, from: response.personView)
+        let person = await caches.person2.getModel(api: self, from: response.personView)
         return person
     }
     
@@ -171,21 +172,22 @@ public extension ApiClient {
             savedOnly: savedOnly
         )
         let response = try await perform(request)
-        let person = caches.person3.getModel(api: self, from: response)
-        let posts = response.posts.map { caches.post2.getModel(api: self, from: $0) }
-        let comments = response.comments.map { caches.comment2.getModel(api: self, from: $0) }
-        return (person: person, posts: posts, comments: comments)
+        return await (
+            person: caches.person3.getModel(api: self, from: response),
+            posts: caches.post2.getModels(api: self, from: response.posts),
+            comments: caches.comment2.getModels(api: self, from: response.comments)
+        )
     }
     
     func getMyPerson() async throws -> (person: Person4?, instance: Instance3, blocks: BlockList?) {
         let request = GetSiteRequest()
         let response = try await perform(request)
-        let instance = caches.instance3.getModel(api: self, from: response)
+        let instance = await caches.instance3.getModel(api: self, from: response)
         
         var blocks: BlockList? = self.blocks
         var person: Person4?
         if let myUser = response.myUser {
-            person = caches.person4.getModel(api: self, from: myUser)
+            person = await caches.person4.getModel(api: self, from: myUser)
             if let blocks {
                 blocks.update(myUserInfo: myUser)
             } else {

@@ -10,6 +10,7 @@ import Foundation
 extension Reply1: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with reply: any Reply1ApiBacker, semaphore: UInt? = nil) {
         self.readManager.updateWithReceivedValue(reply.read, semaphore: semaphore)
     }
@@ -18,6 +19,7 @@ extension Reply1: CacheIdentifiable {
 extension Reply2: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with reply: any Reply2ApiBacker, semaphore: UInt? = nil) {
         setIfChanged(\.self.subscribed, reply.subscribed.isSubscribed)
         setIfChanged(\.self.commentCount, reply.counts.childCount)

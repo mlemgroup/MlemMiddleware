@@ -11,14 +11,14 @@ public extension ApiClient {
     func getCommunity(id: Int) async throws -> Community3 {
         let request = GetCommunityRequest(id: id, name: nil)
         let response = try await perform(request)
-        return caches.community3.getModel(api: self, from: response)
+        return await caches.community3.getModel(api: self, from: response)
     }
     
     func getCommunity(actorId: URL) async throws -> Community2 {
         let request = ResolveObjectRequest(q: actorId.absoluteString)
         do {
             if let response = try await perform(request).community {
-                return caches.community2.getModel(api: self, from: response)
+                return await caches.community2.getModel(api: self, from: response)
             }
         } catch let ApiClientError.response(response, _) where response.couldntFindObject {
             throw ApiClientError.noEntityFound
@@ -49,7 +49,8 @@ public extension ApiClient {
             page: page,
             limit: limit
         )
-        return try await perform(request).communities.map { caches.community2.getModel(api: self, from: $0) }
+        let response = try await perform(request).communities
+        return await caches.community2.getModels(api: self, from: response)
     }
     
     func setupSubscriptionList(
@@ -83,7 +84,7 @@ public extension ApiClient {
             page += 1
         } while hasMorePages
             
-        let models: Set<Community2> = Set(communities.lazy.map { self.caches.community2.getModel(api: self, from: $0) })
+        let models: Set<Community2> = await Set(self.caches.community2.getModels(api: self, from: communities))
         await subscriptionList.updateCommunities(with: models)
         subscriptionList.hasLoaded = true
         return subscriptionList
@@ -93,14 +94,14 @@ public extension ApiClient {
     func subscribeToCommunity(id: Int, subscribe: Bool, semaphore: UInt?) async throws -> Community2 {
         let request = FollowCommunityRequest(communityId: id, follow: subscribe)
         let response = try await perform(request)
-        return caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
+        return await caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
     }
     
     @discardableResult
     func blockCommunity(id: Int, block: Bool, semaphore: UInt? = nil) async throws -> Community2 {
         let request = BlockCommunityRequest(communityId: id, block: block)
         let response = try await perform(request)
-        let person = caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
+        let person = await caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
         return person
     }
 }
