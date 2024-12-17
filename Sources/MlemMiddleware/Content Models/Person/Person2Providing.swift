@@ -12,6 +12,7 @@ public protocol Person2Providing: Person1Providing {
     
     var postCount: Int { get }
     var commentCount: Int { get }
+    var isAdmin: Bool { get }
 }
 
 public extension Person2Providing {
@@ -19,7 +20,10 @@ public extension Person2Providing {
     
     var postCount: Int { person2.postCount }
     var commentCount: Int { person2.commentCount }
-    
+    var isAdmin: Bool { person2.isAdmin }
+
     var postCount_: Int? { person2.postCount }
     var commentCount_: Int? { person2.commentCount }
+    var isAdmin_: Bool? { person2.isAdmin }
+
 }

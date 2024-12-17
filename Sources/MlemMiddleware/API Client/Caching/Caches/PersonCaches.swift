@@ -59,7 +59,8 @@ class Person2Cache: CoreCache<Person2> {
             api: api,
             person1: api.caches.person1.getModel(api: api, from: apiType.person),
             postCount: apiType.counts.postCount,
-            commentCount: apiType.counts.commentCount
+            commentCount: apiType.counts.commentCount,
+            isAdmin: apiType.admin
         )
         itemCache.put(newItem)
         return newItem
@@ -102,7 +103,6 @@ class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
         return .init(
             api: api,
             person3: api.caches.person3.getModel(api: api, from: apiType),
-            isAdmin: user.admin,
             voteDisplayMode: apiType.localUserView.localUserVoteDisplayMode,
             email: user.email,
             showNsfw: user.showNsfw,

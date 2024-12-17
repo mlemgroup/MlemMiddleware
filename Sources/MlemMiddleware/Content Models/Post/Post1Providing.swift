@@ -13,6 +13,7 @@ public protocol Post1Providing:
         Interactable1Providing,
         SelectableContentProviding,
         DeletableProviding,
+        RemovableProviding,
         PurgableProviding,
         FeedLoadable where FilterType == PostFilterType {
     var post1: Post1 { get }
@@ -33,8 +34,6 @@ public protocol Post1Providing:
     var lockedManager: StateManager<Bool> { get }
     var nsfw: Bool { get }
     var created: Date { get }
-    var removed: Bool { get }
-    var removedManager: StateManager<Bool> { get }
     var thumbnailUrl: URL? { get }
     var updated: Date? { get }
     var languageId: Int { get }
