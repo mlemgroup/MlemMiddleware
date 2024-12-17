@@ -10,6 +10,7 @@ import Foundation
 extension Person1: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with person: ApiPerson, semaphore: UInt? = nil) {
         setIfChanged(\.updated, person.updated)
         setIfChanged(\.displayName, person.displayName ?? person.name)
@@ -37,6 +38,7 @@ extension Person1: CacheIdentifiable {
 extension Person2: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with apiType: any Person2ApiBacker, semaphore: UInt? = nil) {
         setIfChanged(\.isAdmin, apiType.admin)
         setIfChanged(\.postCount, apiType.counts.postCount)
@@ -48,6 +50,7 @@ extension Person2: CacheIdentifiable {
 extension Person3: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(moderatedCommunities: [Community1], person2ApiBacker: any Person2ApiBacker, semaphore: UInt? = nil) {
         setIfChanged(\.self.moderatedCommunities, moderatedCommunities)
         person2.update(with: person2ApiBacker, semaphore: semaphore)
@@ -57,6 +60,7 @@ extension Person3: CacheIdentifiable {
 extension Person4: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with apiMyUserInfo: ApiMyUserInfo, semaphore: UInt? = nil) {
         let moderates = apiMyUserInfo.moderates.map { moderatorView in
             api.caches.community1.performModelTranslation(api: api, from: moderatorView.community)

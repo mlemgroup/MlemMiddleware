@@ -10,6 +10,7 @@ import Foundation
 extension Instance1: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with site: ApiSite) {
         setIfChanged(\.displayName, site.name)
         setIfChanged(\.description, site.sidebar)
@@ -24,6 +25,7 @@ extension Instance1: CacheIdentifiable {
 extension Instance2: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with siteView: ApiSiteView) {
         setIfChanged(\.setup, siteView.localSite.siteSetup)
         setIfChanged(\.downvotesEnabled, siteView.localSite.enableDownvotes)
@@ -65,6 +67,7 @@ extension Instance2: CacheIdentifiable {
 extension Instance3: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with response: ApiGetSiteResponse) {
         setIfChanged(\.version, SiteVersion(response.version))
         setIfChanged(\.allLanguages, response.allLanguages)

@@ -10,6 +10,7 @@ import Foundation
 class Instance1Cache: CoreCache<Instance1> {
     public var instanceIdCache: ItemCache = .init()
     
+    @MainActor
     func getModel(api: ApiClient, from apiType: ApiSite, semaphore: UInt? = nil) -> Instance1 {
         if let item = retrieveModel(cacheId: apiType.cacheId) {
             item.update(with: apiType)
@@ -38,6 +39,11 @@ class Instance1Cache: CoreCache<Instance1> {
         return newItem
     }
     
+    @MainActor
+    func getModels(api: ApiClient, from apiTypes: [ApiSite], semaphore: UInt? = nil) -> [Instance1] {
+        apiTypes.map { getModel(api: api, from: $0, semaphore: semaphore) }
+    }
+    
     /// Get an instance with the given `instanceId` - this is different from the `id` of the instance.
     public func retrieveModel(instanceId: Int) -> Instance1? {
         instanceIdCache.get(instanceId)
@@ -51,6 +57,7 @@ class Instance1Cache: CoreCache<Instance1> {
     }
     
     /// Convenience method for getting an optional site
+    @MainActor
     func getOptionalModel(api: ApiClient, from apiType: ApiSite?) -> Instance1? {
         if let apiType {
             return getModel(api: api, from: apiType)
@@ -60,7 +67,7 @@ class Instance1Cache: CoreCache<Instance1> {
 }
 
 class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
-    
+    @MainActor
     override func performModelTranslation(api: ApiClient, from apiType: ApiSiteView) -> Instance2 {
         .init(
             api: api,
@@ -100,12 +107,14 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
         )
     }
     
+    @MainActor
     override func updateModel(_ item: Instance2, with apiType: ApiSiteView, semaphore: UInt? = nil) {
         item.update(with: apiType)
     }
 }
 
 class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
+    @MainActor
     override func performModelTranslation(api: ApiClient, from apiType: ApiGetSiteResponse) -> Instance3 {
         .init(
             api: api,
@@ -120,6 +129,7 @@ class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
         )
     }
     
+    @MainActor
     override func updateModel(_ item: Instance3, with apiType: ApiGetSiteResponse, semaphore: UInt? = nil) {
         item.update(with: apiType)
     }

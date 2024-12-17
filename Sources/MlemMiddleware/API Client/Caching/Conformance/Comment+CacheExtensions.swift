@@ -10,6 +10,7 @@ import Foundation
 extension Comment1: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with comment: ApiComment, semaphore: UInt? = nil) {
         setIfChanged(\.content, comment.content)
         setIfChanged(\.created, comment.published)
@@ -25,6 +26,7 @@ extension Comment1: CacheIdentifiable {
 extension Comment2: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with comment: ApiCommentView, semaphore: UInt? = nil) {
         setIfChanged(\.creatorIsModerator, comment.creatorIsModerator)
         setIfChanged(\.creatorIsAdmin, comment.creatorIsAdmin)

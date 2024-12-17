@@ -11,7 +11,7 @@ public extension ApiClient {
     func getMyInstance() async throws -> Instance3 {
         let request = GetSiteRequest()
         let response = try await perform(request)
-        let model = caches.instance3.getModel(api: self, from: response)
+        let model = await caches.instance3.getModel(api: self, from: response)
         model.local = true
         myInstance = model
         return model
@@ -43,7 +43,7 @@ public extension ApiClient {
     func blockInstance(actorId: URL, instanceId: Int, block: Bool, semaphore: UInt? = nil) async throws {
         let request = BlockInstanceRequest(instanceId: instanceId, block: block)
         let response = try await perform(request)
-        if let instance = caches.instance1.retrieveModel(instanceId: instanceId) {
+        if let instance = await caches.instance1.retrieveModel(instanceId: instanceId) {
             instance.blockedManager.updateWithReceivedValue(response.blocked, semaphore: semaphore)
         }
         if response.blocked {

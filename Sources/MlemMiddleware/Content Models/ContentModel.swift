@@ -13,6 +13,7 @@ public protocol ContentModel {
 }
 
 internal extension ContentModel {
+    @MainActor
     func setIfChanged<T: Equatable>(_ keyPath: ReferenceWritableKeyPath<Self, T>, _ value: T) {
         if self[keyPath: keyPath] != value {
             self[keyPath: keyPath] = value

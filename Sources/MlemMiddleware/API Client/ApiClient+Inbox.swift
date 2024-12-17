@@ -16,7 +16,7 @@ public extension ApiClient {
     ) async throws -> [Reply2] {
         let request = GetRepliesRequest(sort: sort, page: page, limit: limit, unreadOnly: unreadOnly)
         let response = try await perform(request)
-        return response.replies.map { caches.reply2.getModel(api: self, from: $0) }
+        return await caches.reply2.getModels(api: self, from: response.replies)
     }
     
     func getMentions(
@@ -27,7 +27,7 @@ public extension ApiClient {
     ) async throws -> [Reply2] {
         let request = GetPersonMentionsRequest(sort: sort, page: page, limit: limit, unreadOnly: unreadOnly)
         let response = try await perform(request)
-        return response.mentions.map { caches.reply2.getModel(api: self, from: $0) }
+        return await caches.reply2.getModels(api: self, from: response.mentions)
     }
     
     func getMessages(
@@ -38,7 +38,7 @@ public extension ApiClient {
     ) async throws -> [Message2] {
         let request = GetPrivateMessagesRequest(unreadOnly: unreadOnly, page: page, limit: limit, creatorId: creatorId)
         let response = try await perform(request)
-        return response.privateMessages.map { caches.message2.getModel(api: self, from: $0) }
+        return await caches.message2.getModels(api: self, from: response.privateMessages)
     }
     
     func markAllAsRead() async throws {
@@ -61,7 +61,7 @@ public extension ApiClient {
     ) async throws -> Reply2 {
         let request = MarkCommentReplyAsReadRequest(commentReplyId: id, read: read)
         let response = try await perform(request)
-        return caches.reply2.getModel(api: self, from: response.commentReplyView, semaphore: semaphore)
+        return await caches.reply2.getModel(api: self, from: response.commentReplyView, semaphore: semaphore)
     }
     
     @discardableResult
@@ -72,7 +72,7 @@ public extension ApiClient {
     ) async throws -> Reply2 {
         let request = MarkPersonMentionAsReadRequest(personMentionId: id, read: read)
         let response = try await perform(request)
-        return caches.reply2.getModel(api: self, from: response.personMentionView, semaphore: semaphore)
+        return await caches.reply2.getModel(api: self, from: response.personMentionView, semaphore: semaphore)
     }
     
     @discardableResult
@@ -83,7 +83,7 @@ public extension ApiClient {
     ) async throws -> Message2 {
         let request = MarkPrivateMessageAsReadRequest(privateMessageId: id, read: read)
         let response = try await perform(request)
-        return caches.message2.getModel(api: self, from: response.privateMessageView, semaphore: semaphore)
+        return await caches.message2.getModel(api: self, from: response.privateMessageView, semaphore: semaphore)
     }
     
     @discardableResult
@@ -106,14 +106,14 @@ public extension ApiClient {
     func createMessage(personId: Int, content: String) async throws -> Message2 {
         let request = CreatePrivateMessageRequest(content: content, recipientId: personId)
         let response = try await perform(request)
-        return caches.message2.getModel(api: self, from: response.privateMessageView)
+        return await caches.message2.getModel(api: self, from: response.privateMessageView)
     }
     
     @discardableResult
     func editMessage(id: Int, content: String) async throws -> Message2 {
         let request = EditPrivateMessageRequest(privateMessageId: id, content: content)
         let response = try await perform(request)
-        return caches.message2.getModel(api: self, from: response.privateMessageView)
+        return await caches.message2.getModel(api: self, from: response.privateMessageView)
     }
     
     func reportMessage(id: Int, reason: String) async throws {
@@ -126,6 +126,6 @@ public extension ApiClient {
     func deleteMessage(id: Int, delete: Bool, semaphore: UInt? = nil) async throws -> Message2 {
         let request = DeletePrivateMessageRequest(privateMessageId: id, deleted: delete)
         let response = try await perform(request)
-        return caches.message2.getModel(api: self, from: response.privateMessageView, semaphore: semaphore)
+        return await caches.message2.getModel(api: self, from: response.privateMessageView, semaphore: semaphore)
     }
 }

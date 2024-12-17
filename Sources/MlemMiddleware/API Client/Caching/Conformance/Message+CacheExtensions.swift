@@ -10,6 +10,7 @@ import Foundation
 extension Message1: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with message: ApiPrivateMessage, semaphore: UInt? = nil) {
         setIfChanged(\.content, message.content)
         setIfChanged(\.updated, message.updated)
@@ -22,6 +23,7 @@ extension Message1: CacheIdentifiable {
 extension Message2: CacheIdentifiable {
     public var cacheId: Int { id }
     
+    @MainActor
     func update(with message: ApiPrivateMessageView, semaphore: UInt? = nil) {
         message1.update(with: message.privateMessage, semaphore: semaphore)
         creator.update(with: message.creator, semaphore: semaphore)

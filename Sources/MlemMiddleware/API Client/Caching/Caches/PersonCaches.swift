@@ -8,6 +8,7 @@
 import Foundation
 
 class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
+    @MainActor
     override func performModelTranslation(api: ApiClient, from apiType: ApiPerson) -> Person1 {
         let instanceBan: InstanceBanType
         if apiType.banned {
@@ -39,6 +40,7 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
         )
     }
     
+    @MainActor
     override func updateModel(_ item: Person1, with apiType: ApiPerson, semaphore: UInt? = nil) {
         item.update(with: apiType, semaphore: semaphore)
     }
@@ -46,6 +48,7 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
 
 // Person2 can be created from any Person2ApiBacker, so we can't use ApiTypeBackedCache
 class Person2Cache: CoreCache<Person2> {
+    @MainActor
     func getModel(api: ApiClient, from apiType: any Person2ApiBacker, semaphore: UInt? = nil) -> Person2 {
         if let item = retrieveModel(cacheId: apiType.cacheId) {
             item.update(with: apiType, semaphore: semaphore)
@@ -62,10 +65,16 @@ class Person2Cache: CoreCache<Person2> {
         itemCache.put(newItem)
         return newItem
     }
+    
+    @MainActor
+    func getModels(api: ApiClient, from apiTypes: [any Person2ApiBacker], semaphore: UInt? = nil) -> [Person2] {
+        apiTypes.map { getModel(api: api, from: $0, semaphore: semaphore) }
+    }
 }
 
 // Person3 can be created from any Person3ApiBacker, so can't use ApiTypeBackedCache
 class Person3Cache: CoreCache<Person3> {
+    @MainActor
     func getModel(api: ApiClient, from apiType: any Person3ApiBacker) -> Person3 {
         let moderatedCommunities = apiType.moderates.map { moderatedCommunity in
             api.caches.community1.getModel(api: api, from: moderatedCommunity.community)
@@ -87,8 +96,8 @@ class Person3Cache: CoreCache<Person3> {
     }
 }
 
-// Person4 can be created from any Person4ApiBacker, so can't use ApiTypeBackedCache
 class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
+    @MainActor
     override func performModelTranslation(api: ApiClient, from apiType: ApiMyUserInfo) -> Person4 {
         let user = apiType.localUserView.localUser
         return .init(
@@ -121,6 +130,7 @@ class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
         )
     }
     
+    @MainActor
     override func updateModel(_ item: Person4, with apiType: ApiMyUserInfo, semaphore: UInt? = nil) {
         item.update(with: apiType, semaphore: semaphore)
     }
