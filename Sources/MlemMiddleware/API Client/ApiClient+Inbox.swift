@@ -116,10 +116,11 @@ public extension ApiClient {
         return await caches.message2.getModel(api: self, from: response.privateMessageView)
     }
     
-    func reportMessage(id: Int, reason: String) async throws {
+    @discardableResult
+    func reportMessage(id: Int, reason: String) async throws -> Report {
         let request = CreatePrivateMessageReportRequest(privateMessageId: id, reason: reason)
         let response = try await perform(request)
-        // TODO: return message report
+        return await caches.report.getModel(api: self, from: response.privateMessageReportView)
     }
     
     @discardableResult
