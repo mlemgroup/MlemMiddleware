@@ -20,7 +20,7 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
         } else {
             instanceBan = .notBanned
         }
-        
+
         return .init(
             api: api,
             actorId: apiType.actorId,

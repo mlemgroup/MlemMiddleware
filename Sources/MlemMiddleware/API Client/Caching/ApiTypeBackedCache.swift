@@ -26,6 +26,14 @@ class ApiTypeBackedCache<Content: CacheIdentifiable & AnyObject & ContentModel, 
         apiTypes.map { getModel(api: api, from: $0, semaphore: semaphore) }
     }
     
+    @MainActor
+    func getOptionalModel(api: ApiClient, from apiType: ApiType?, semaphore: UInt? = nil) -> Content? {
+        if let apiType {
+            return getModel(api: api, from: apiType, semaphore: semaphore)
+        }
+        return nil
+    }
+    
     /// Initializes a new middleware model from the associated API type
     /// - Warning: This method DOES NOT CACHE! You almost certainly want to be using `getModel` instead.
     @MainActor

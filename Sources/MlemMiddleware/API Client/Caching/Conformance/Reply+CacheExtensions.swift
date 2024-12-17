@@ -21,10 +21,10 @@ extension Reply2: CacheIdentifiable {
     
     @MainActor
     func update(with reply: any Reply2ApiBacker, semaphore: UInt? = nil) {
-        setIfChanged(\.self.subscribed, reply.subscribed.isSubscribed)
-        setIfChanged(\.self.commentCount, reply.counts.childCount)
-        setIfChanged(\.self.creatorIsModerator, reply.creatorIsModerator)
-        setIfChanged(\.self.creatorIsAdmin, reply.creatorIsAdmin)
+        setIfChanged(\.subscribed, reply.subscribed.isSubscribed)
+        setIfChanged(\.commentCount, reply.counts.childCount)
+        setIfChanged(\.creatorIsModerator, reply.creatorIsModerator)
+        setIfChanged(\.creatorIsAdmin, reply.creatorIsAdmin)
         creator.updateKnownCommunityBanState(id: community.id, banned: reply.creatorBannedFromCommunity)
         
         self.votesManager.updateWithReceivedValue(votes, semaphore: semaphore)
