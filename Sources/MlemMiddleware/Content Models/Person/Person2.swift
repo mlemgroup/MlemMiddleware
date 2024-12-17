@@ -15,18 +15,22 @@ public final class Person2: Person2Providing {
     
     public let person1: Person1
     
-    public var postCount: Int = 0
-    public var commentCount: Int = 0
+    public var postCount: Int
+    public var commentCount: Int
+    
+    public var isAdmin: Bool
     
     internal init(
         api: ApiClient,
         person1: Person1,
-        postCount: Int = 0,
-        commentCount: Int = 0
+        postCount: Int,
+        commentCount: Int,
+        isAdmin: Bool
     ) {
         self.api = api
         self.person1 = person1
         self.postCount = postCount
         self.commentCount = commentCount
+        self.isAdmin = isAdmin
     }
 }

@@ -104,4 +104,23 @@ public extension ApiClient {
         let person = await caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
         return person
     }
+    
+    @discardableResult
+    func removeCommunity(
+        id: Int,
+        remove: Bool,
+        reason: String?,
+        semaphore: UInt? = nil
+    ) async throws -> Community2 {
+        let request = RemoveCommunityRequest(communityId: id, removed: remove, reason: reason, expires: nil)
+        let response = try await perform(request)
+        return await caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
+    }
+    
+    func purgeCommunity(id: Int, reason: String?) async throws {
+        let request = PurgeCommunityRequest(communityId: id, reason: reason)
+        let response = try await perform(request)
+        guard response.success else { throw ApiClientError.unsuccessful }
+        caches.community1.retrieveModel(cacheId: id)?.purged = true
+    }
 }

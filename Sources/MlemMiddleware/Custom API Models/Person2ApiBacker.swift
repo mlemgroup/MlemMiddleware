@@ -11,6 +11,7 @@ import Foundation
 public protocol Person2ApiBacker: ActorIdentifiable, CacheIdentifiable, Identifiable {
     var person: ApiPerson { get }
     var counts: ApiPersonAggregates { get }
+    var admin: Bool { get }
 }
 
 public extension Person2ApiBacker {

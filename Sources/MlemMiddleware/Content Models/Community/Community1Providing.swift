@@ -11,11 +11,12 @@ public protocol Community1Providing:
     CommunityStubProviding,
     Profile2Providing,
     ContentIdentifiable,
+    RemovableProviding,
+    PurgableProviding,
     FeedLoadable where FilterType == CommunityFilterType
 {
     var community1: Community1 { get }
     
-    var removed: Bool { get }
     var deleted: Bool { get }
     var nsfw: Bool { get }
     var hidden: Bool { get }
@@ -36,6 +37,7 @@ public extension Community1Providing {
     var displayName: String { community1.displayName }
     var description: String? { community1.description }
     var removed: Bool { community1.removed }
+    var removedManager: StateManager<Bool> { community1.removedManager }
     var deleted: Bool { community1.deleted }
     var nsfw: Bool { community1.nsfw }
     var avatar: URL? { community1.avatar }
@@ -43,6 +45,7 @@ public extension Community1Providing {
     var hidden: Bool { community1.hidden }
     var onlyModeratorsCanPost: Bool { community1.onlyModeratorsCanPost }
     var blocked: Bool { community1.blocked }
+    var purged: Bool { community1.purged }
     
     var id_: Int? { community1.id }
     var created_: Date? { community1.created }
@@ -50,6 +53,7 @@ public extension Community1Providing {
     var displayName_: String? { community1.displayName }
     var description_: String? { community1.description }
     var removed_: Bool? { community1.removed }
+    var removedManager_: StateManager<Bool>? { community1.removedManager }
     var deleted_: Bool? { community1.deleted }
     var nsfw_: Bool? { community1.nsfw }
     var avatar_: URL? { community1.avatar }
@@ -57,6 +61,7 @@ public extension Community1Providing {
     var hidden_: Bool? { community1.hidden }
     var onlyModeratorsCanPost_: Bool? { community1.onlyModeratorsCanPost }
     var blocked_: Bool? { community1.blocked }
+    var purged_: Bool? { community1.purged }
 }
 
 // FeedLoadable conformance
@@ -110,5 +115,16 @@ public extension Community1Providing {
     @discardableResult
     func toggleBlocked() -> Task<StateUpdateResult, Never> {
         updateBlocked(!blocked)
+    }
+    
+    @discardableResult
+    func updateRemoved(_ newValue: Bool, reason: String?) -> Task<StateUpdateResult, Never> {
+        removedManager.performRequest(expectedResult: newValue) { semaphore in
+            try await self.api.removeCommunity(id: self.id, remove: newValue, reason: reason, semaphore: semaphore)
+        }
+    }
+    
+    func purge(reason: String?) async throws {
+        try await api.purgeCommunity(id: id, reason: reason)
     }
 }

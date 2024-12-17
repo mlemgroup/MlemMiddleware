@@ -15,6 +15,7 @@ public protocol CommunityStubProviding: CommunityOrPersonStub {
     var displayName_: String? { get }
     var description_: String? { get }
     var removed_: Bool? { get }
+    var removedManager_: StateManager<Bool>? { get }
     var deleted_: Bool? { get }
     var nsfw_: Bool? { get }
     var avatar_: URL? { get }
@@ -22,6 +23,7 @@ public protocol CommunityStubProviding: CommunityOrPersonStub {
     var hidden_: Bool? { get }
     var onlyModeratorsCanPost_: Bool? { get }
     var blocked_: Bool? { get }
+    var purged_: Bool? { get }
     
     // From Community2Providing.
     var subscribed_: Bool? { get }
@@ -52,6 +54,7 @@ public extension CommunityStubProviding {
     var displayName_: String? { nil }
     var description_: String? { nil }
     var removed_: Bool? { nil }
+    var removedManager_: StateManager<Bool>? { nil }
     var deleted_: Bool? { nil }
     var nsfw_: Bool? { nil }
     var avatar_: URL? { nil }
@@ -59,6 +62,7 @@ public extension CommunityStubProviding {
     var hidden_: Bool? { nil }
     var onlyModeratorsCanPost_: Bool? { nil }
     var blocked_: Bool? { nil }
+    var purged_: Bool? { nil }
     
     // From Community2Providing.
     var subscribed_: Bool? { nil }

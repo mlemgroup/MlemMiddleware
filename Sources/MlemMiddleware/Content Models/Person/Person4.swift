@@ -16,7 +16,6 @@ public final class Person4: Person4Providing {
 
     public let person3: Person3
     
-    public internal(set) var isAdmin: Bool?
     public internal(set) var voteDisplayMode: ApiLocalUserVoteDisplayMode?
     public internal(set) var email: String?
     public internal(set) var showNsfw: Bool
@@ -45,7 +44,6 @@ public final class Person4: Person4Providing {
     internal init(
         api: ApiClient,
         person3: Person3,
-        isAdmin: Bool?,
         voteDisplayMode: ApiLocalUserVoteDisplayMode?,
         email: String?,
         showNsfw: Bool,
@@ -73,7 +71,6 @@ public final class Person4: Person4Providing {
     ) {
         self.api = api
         self.person3 = person3
-        self.isAdmin = isAdmin
         self.voteDisplayMode = voteDisplayMode
         self.email = email
         self.showNsfw = showNsfw

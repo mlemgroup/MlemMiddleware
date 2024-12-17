@@ -7,4 +7,12 @@
 
 import Foundation
 
-extension ApiLocalUserView: Person2ApiBacker {}
+extension ApiLocalUserView: Person2ApiBacker {
+    public var admin: Bool {
+        if let admin = self.localUser.admin ?? self.person.admin {
+            return admin
+        }
+        assertionFailure()
+        return false
+    }
+}

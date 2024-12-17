@@ -23,7 +23,6 @@ public final class Community1: Community1Providing {
     public var updated: Date? = .distantPast
     public var displayName: String = ""
     public var description: String?
-    public var removed: Bool = false
     public var deleted: Bool = false
     public var nsfw: Bool = false
     public var avatar: URL?
@@ -31,9 +30,14 @@ public final class Community1: Community1Providing {
     public var hidden: Bool = false
     public var onlyModeratorsCanPost: Bool = false
     
+    public var purged: Bool = false
+    
     // This isn't included in ApiCommunity - it's included in ApiCommunityView, but defined here to maintain similarity with Person models. Person models don't have the `blocked` property defined in any of the Api types, annoyingly. Instead, certain parent models such as ApiPostView contain the value.
     internal var blockedManager: StateManager<Bool>
     public var blocked: Bool { blockedManager.wrappedValue }
+    
+    public var removedManager: StateManager<Bool>
+    public var removed: Bool { removedManager.wrappedValue }
   
     internal init(
         api: ApiClient,
@@ -61,7 +65,7 @@ public final class Community1: Community1Providing {
         self.updated = updated
         self.displayName = displayName
         self.description = description
-        self.removed = removed
+        self.removedManager = .init(wrappedValue: removed)
         self.deleted = deleted
         self.nsfw = nsfw
         self.avatar = avatar
