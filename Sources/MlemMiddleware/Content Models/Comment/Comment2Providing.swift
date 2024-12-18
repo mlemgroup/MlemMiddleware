@@ -61,6 +61,10 @@ public extension Comment2Providing {
             try await self.api.saveComment(id: self.id, save: newValue, semaphore: semaphore)
         }
     }
+    
+    func getVotes(page: Int, limit: Int) async throws -> [PersonVote] {
+        try await api.getCommentVotes(id: id, communityId: community.id, page: page, limit: limit)
+    }
 }
 
 /// PersonContentProviding conformance

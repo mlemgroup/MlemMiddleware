@@ -33,7 +33,14 @@ public final class Reply2: Reply2Providing, FeedLoadable {
     public var commentCount: Int
     public var creatorIsModerator: Bool?
     public var creatorIsAdmin: Bool?
-    public var bannedFromCommunity: Bool { creator.communityBanIds.contains(community.id) }
+    
+    public var bannedFromCommunity: Bool {
+        guard let state = creator.isBannedFromCommunity(community) else {
+            assertionFailure("Ban status should be present at this point")
+            return false
+        }
+        return state
+    }
     
     internal var votesManager: StateManager<VotesModel>
     public var votes: VotesModel { votesManager.wrappedValue }
