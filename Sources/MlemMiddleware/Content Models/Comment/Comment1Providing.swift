@@ -188,4 +188,8 @@ public extension Comment1Providing {
         }
         return nil
     }
+    
+    func getVotes(page: Int, limit: Int, communityId: Int) async throws -> [PersonVote] {
+        try await api.getCommentVotes(id: id, communityId: communityId, page: page, limit: limit)
+    }
 }

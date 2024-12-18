@@ -20,7 +20,6 @@ public final class Post2: Post2Providing {
     
     public var creatorIsModerator: Bool?
     public var creatorIsAdmin: Bool?
-    public var bannedFromCommunity: Bool { creator.communityBanIds.contains(community.id) }
     public var commentCount: Int
     public var unreadCommentCount: Int
     
@@ -36,6 +35,14 @@ public final class Post2: Post2Providing {
     
     internal var hiddenManager: StateManager<Bool>
     public var hidden: Bool { hiddenManager.wrappedValue }
+    
+    public var bannedFromCommunity: Bool {
+        guard let state = creator.isBannedFromCommunity(community) else {
+            assertionFailure("Ban status should be present at this point")
+            return false
+        }
+        return state
+    }
     
     internal init(
         api: ApiClient,

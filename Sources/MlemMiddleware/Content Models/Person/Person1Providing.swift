@@ -159,4 +159,12 @@ public extension Person1Providing {
             expires: nil
         )
     }
+    
+    func isBannedFromCommunity(id: Int) -> Bool? {
+        person1.knownCommunityBanStates[id]
+    }
+    
+    func isBannedFromCommunity(_ community: any Community) -> Bool? {
+        isBannedFromCommunity(id: community.id)
+    }
 }

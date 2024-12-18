@@ -246,4 +246,8 @@ public extension Post1Providing {
             try await self.api.removePost(id: self.id, remove: newValue, reason: reason, semaphore: semaphore)
         }
     }
+    
+    func getVotes(page: Int, limit: Int) async throws -> [PersonVote] {
+        try await api.getPostVotes(id: id, communityId: communityId, page: page, limit: limit)
+    }
 }

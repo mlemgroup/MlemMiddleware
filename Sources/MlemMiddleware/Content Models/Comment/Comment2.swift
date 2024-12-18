@@ -22,7 +22,6 @@ public final class Comment2: Comment2Providing {
     
     public var creatorIsModerator: Bool?
     public var creatorIsAdmin: Bool?
-    public var bannedFromCommunity: Bool { creator.communityBanIds.contains(community.id) }
     public var commentCount: Int
     
     internal var votesManager: StateManager<VotesModel>
@@ -30,6 +29,14 @@ public final class Comment2: Comment2Providing {
     
     internal var savedManager: StateManager<Bool>
     public var saved: Bool { savedManager.wrappedValue }
+    
+    public var bannedFromCommunity: Bool {
+        guard let state = creator.isBannedFromCommunity(community) else {
+            assertionFailure("Ban status should be present at this point")
+            return false
+        }
+        return state
+    }
     
     internal init(
         api: ApiClient,

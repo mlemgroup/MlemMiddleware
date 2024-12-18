@@ -154,4 +154,21 @@ public extension ApiClient {
         let response = try await perform(request)
         return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
+    
+    @discardableResult
+    func getCommentVotes(
+        id: Int,
+        communityId: Int,
+        page: Int = 1,
+        limit: Int = 20
+    ) async throws -> [PersonVote] {
+        let request = ListCommentLikesRequest(commentId: id, page: page, limit: limit)
+        let response = try await perform(request)
+        return await caches.personVote.getModels(
+            api: self,
+            from: response.commentLikes,
+            target: .comment(id: id),
+            communityId: communityId
+        )
+    }
 }

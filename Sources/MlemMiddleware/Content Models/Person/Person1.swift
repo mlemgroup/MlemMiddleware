@@ -44,7 +44,7 @@ public final class Person1: Person1Providing {
     // Don't make this public. Instead, use the `bannedFromCommunity` property of
     // Post2/Comment2/Reply2. Accessing it from there guarantees that the ban
     // status is known. Those properties access this set as a shared source-of-truth.
-    internal var communityBanIds: Set<Int> = .init()
+    internal var knownCommunityBanStates: Dictionary<Int, Bool> = .init()
     
     internal init(
         api: ApiClient,
@@ -92,12 +92,12 @@ public final class Person1: Person1Providing {
     internal func updateKnownCommunityBanState(id: Int, banned: Bool) {
         if banned {
             // This `if` statement avoids unneccessary state update
-            if !communityBanIds.contains(id) {
-                self.communityBanIds.insert(id)
+            if !(knownCommunityBanStates[id] ?? false) {
+                knownCommunityBanStates[id] = true
             }
         } else {
-            if communityBanIds.contains(id) {
-                self.communityBanIds.remove(id)
+            if knownCommunityBanStates[id] ?? true {
+                knownCommunityBanStates[id] = false
             }
         }
     }
