@@ -14,9 +14,10 @@ public enum PostFilterType {
 class PostFilter: MultiFilter<Post2> {
     private var readFilter: ReadFilter<Post2>
     private var dedupeFilter: DedupeFilter<Post2> = .init()
-    private var keywordFilter: PostKeywordFilter = .init(keywords: []) // TODO: enable keyword filtering
+    private var keywordFilter: PostKeywordFilter
     
-    init(showRead: Bool) {
+    init(showRead: Bool, filteredKeywords: Set<String>, moderatedCommunities: Set<URL>) {
+        self.keywordFilter = .init(keywords: filteredKeywords, moderatedCommunities: moderatedCommunities)
         self.readFilter = .init()
         if showRead {
             readFilter.active = false

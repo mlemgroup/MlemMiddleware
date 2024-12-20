@@ -58,14 +58,15 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         api: ApiClient,
         pageSize: Int,
         showReadPosts: Bool,
-        filteredKeywords: [String],
+        filteredKeywords: Set<String>,
+        moderatedCommunities: Set<URL>,
         prefetchingConfiguration: PrefetchingConfiguration,
         fetcher: PostFetcher
     ) {
         self.prefetchingConfiguration = prefetchingConfiguration
         
         super.init(
-            filter: PostFilter(showRead: showReadPosts),
+            filter: PostFilter(showRead: showReadPosts, filteredKeywords: filteredKeywords, moderatedCommunities: moderatedCommunities),
             fetcher: fetcher
         )
     }

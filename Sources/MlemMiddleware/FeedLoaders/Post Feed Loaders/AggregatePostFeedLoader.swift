@@ -38,7 +38,8 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         pageSize: Int,
         sortType: ApiSortType,
         showReadPosts: Bool,
-        filteredKeywords: [String],
+        filteredKeywords: Set<String>,
+        moderatedCommunities: Set<URL>,
         prefetchingConfiguration: PrefetchingConfiguration,
         urlCache: URLCache,
         api: ApiClient,
@@ -49,6 +50,7 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
             pageSize: pageSize,
             showReadPosts: showReadPosts,
             filteredKeywords: filteredKeywords,
+            moderatedCommunities: moderatedCommunities,
             prefetchingConfiguration: prefetchingConfiguration,
             fetcher: AggregatePostFetcher(
                 api: api,

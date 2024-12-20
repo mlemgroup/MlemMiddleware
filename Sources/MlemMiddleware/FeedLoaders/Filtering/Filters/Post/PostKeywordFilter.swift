@@ -12,14 +12,16 @@ class PostKeywordFilter: FilterProviding {
     
     var numFiltered: Int = 0
     private var keywords: Set<String>
+    private var moderatedCommunities: Set<URL>
     var active: Bool = true
     
-    init(keywords: Set<String>) {
+    init(keywords: Set<String>, moderatedCommunities: Set<URL>) {
         self.keywords = keywords
+        self.moderatedCommunities = moderatedCommunities
     }
     
     func filter(_ targets: [Post2]) -> [Post2] {
-        let ret = targets.filter { !$0.title.lowercased().isContainedIn(keywords) }
+        let ret = targets.filter { moderatedCommunities.contains($0.community.actorId) || !$0.title.lowercased().isContainedIn(keywords) }
         numFiltered += targets.count - ret.count
         return ret
     }
