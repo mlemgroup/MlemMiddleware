@@ -51,6 +51,8 @@ extension ApiClient {
         
         var report: ReportCache = .init()
         
+        var personVote: PersonVoteCache = .init()
+        
         func clean() {
             community1.clean()
             community2.clean()
@@ -70,6 +72,7 @@ extension ApiClient {
             message2.clean()
             imageUpload1.clean()
             report.clean()
+            personVote.clean()
         }
     }
 }
