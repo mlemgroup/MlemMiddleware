@@ -51,12 +51,15 @@ public class Report: CacheIdentifiable, ContentModel {
     @discardableResult
     public func updateResolved(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         resolvedManager.performRequest(expectedResult: newValue) { semaphore in
-            try await self.api.resolveReport(
-                id: self.id,
-                type: self.target.type,
-                resolved: newValue,
-                semaphore: semaphore
-            )
+            switch self.target.type {
+            case .post:
+                try await self.api.resolvePostReport(id: self.id, resolved: newValue, semaphore: semaphore)
+            case .comment:
+                try await self.api.resolveCommentReport(id: self.id, resolved: newValue, semaphore: semaphore)
+            case .message:
+                try await self.api.resolveMessageReport(id: self.id, resolved: newValue, semaphore: semaphore)
+            }
+            
         }
     }
     
