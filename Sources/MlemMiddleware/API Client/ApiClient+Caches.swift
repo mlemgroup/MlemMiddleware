@@ -49,6 +49,8 @@ extension ApiClient {
         
         var imageUpload1: ImageUpload1Cache = .init()
         
+        var report: ReportCache = .init()
+        
         var personVote: PersonVoteCache = .init()
         
         func clean() {
@@ -69,6 +71,7 @@ extension ApiClient {
             message1.clean()
             message2.clean()
             imageUpload1.clean()
+            report.clean()
             personVote.clean()
         }
     }
