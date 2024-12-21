@@ -17,5 +17,5 @@ public protocol FeedLoading<Item>: AnyObject {
     func loadIfThreshold(_ item: Item) throws
     func refresh(clearBeforeRefresh: Bool) async throws
     func clear() async
-    func changeApi(to newApi: ApiClient) async
+    func changeApi(to newApi: ApiClient, user: Person4?) async
 }

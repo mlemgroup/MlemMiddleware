@@ -89,3 +89,7 @@ public extension Person4Providing {
     var enableAnimatedImages_: Bool? { person4.enableAnimatedImages }
     var collapseBotComments_: Bool? { person4.collapseBotComments }
 }
+
+public extension Person4Providing {
+    var moderatedCommunityIds: Set<URL> { .init(moderatedCommunities.map { $0.actorId }) }
+}

@@ -56,7 +56,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
         )
     }
     
-    override public func changeApi(to newApi: ApiClient) async {
+    override public func changeApi(to newApi: ApiClient, user: Person4?) async {
         do {
             let resolvedCommunity = try await newApi.resolve(actorId: community.actorId)
             
@@ -64,6 +64,8 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
                 assertionFailure("Did not get community back")
                 return
             }
+            
+            filter.updateModeratedCommunities(for: user)
             communityPostFetcher.community = newCommunity
         } catch {
             assertionFailure("Couldn't change API")

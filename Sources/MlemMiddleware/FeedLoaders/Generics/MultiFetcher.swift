@@ -74,11 +74,11 @@ class MultiFetcher<Item: FeedLoadable>: Fetcher<Item> {
         return lhsVal > rhsVal ? (lhsVal, lhsSource) : (rhsVal, rhsSource)
     }
     
-    override func changeApi(to newApi: ApiClient) async {
+    override func changeApi(to newApi: ApiClient, user: Person4?) async {
         for source in sources {
-            await source.changeApi(to: newApi)
+            await source.changeApi(to: newApi, user: user)
         }
         
-        await super.changeApi(to: newApi)
+        await super.changeApi(to: newApi, user: user)
     }
 }

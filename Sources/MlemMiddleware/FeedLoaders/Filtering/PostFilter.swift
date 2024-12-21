@@ -39,4 +39,11 @@ class PostFilter: MultiFilter<Post2> {
         case .keyword: keywordFilter
         }
     }
+    
+    // MARK: Custom Behavior
+    
+    func updateModeratedCommunities(for user: Person4?) {
+        print("DEBUG updating moderated communities in filter")
+        keywordFilter.updateModeratedCommunities(for: user)
+    }
 }
