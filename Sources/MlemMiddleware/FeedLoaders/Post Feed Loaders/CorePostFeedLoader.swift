@@ -49,6 +49,9 @@ public class PostFetcher: Fetcher<Post2> {
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public private(set) var prefetchingConfiguration: PrefetchingConfiguration
     
+    // Store this locally to provide wouldPassKeywordFilter.
+    private let filteredKeywords: Set<String>
+    
     // force unwrap because this should ALWAYS be a PostFetcher
     private var postFetcher: PostFetcher { fetcher as! PostFetcher }
     
@@ -64,6 +67,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         fetcher: PostFetcher
     ) {
         self.prefetchingConfiguration = prefetchingConfiguration
+        self.filteredKeywords = filteredKeywords
         
         super.init(
             filter: PostFilter(showRead: showReadPosts, filteredKeywords: filteredKeywords, moderatedCommunities: moderatedCommunities),
@@ -100,5 +104,13 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {
         prefetchingConfiguration = config
         preloadImages(items)
+    }
+    
+    /// Returns true if the given post would have failed the keyword filter
+    public func keywordFilterBypassed(for post: Post2) -> Bool {
+        print("DEBUG \(filteredKeywords)")
+        print("DEBUG \(post.title.lowercased())")
+        print("DEBUG \(post.title.lowercased().isContainedIn(filteredKeywords))")
+        return post.title.lowercased().isContainedIn(filteredKeywords)
     }
 }
