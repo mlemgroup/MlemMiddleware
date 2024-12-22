@@ -42,8 +42,7 @@ class PostFilter: MultiFilter<Post2> {
     
     // MARK: Custom Behavior
     
-    func updateModeratedCommunities(for user: Person4?) {
-        print("DEBUG updating moderated communities in filter")
-        keywordFilter.updateModeratedCommunities(for: user)
+    func updateModeratedCommunities(with context: FilterContext) {
+        keywordFilter.updateModeratedCommunities(with: context)
     }
 }

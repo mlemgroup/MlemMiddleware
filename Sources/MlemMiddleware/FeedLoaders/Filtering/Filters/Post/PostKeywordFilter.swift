@@ -32,13 +32,7 @@ class PostKeywordFilter: FilterProviding {
         return .init()
     }
     
-    func updateModeratedCommunities(for user: Person4?) {
-        print("DEBUG updating moderated communities")
-        if let user {
-            moderatedCommunities = user.moderatedCommunityIds
-        } else {
-            moderatedCommunities = .init()
-        }
-        print(moderatedCommunities)
+    func updateModeratedCommunities(with context: FilterContext) {
+        moderatedCommunities = context.moderatedCommunityIds
     }
 }

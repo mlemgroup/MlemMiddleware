@@ -89,9 +89,9 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     
     // MARK: Custom Behavior
     
-    override public func changeApi(to newApi: ApiClient, user: Person4?) async {
-        filter.updateModeratedCommunities(for: user)
-        await fetcher.changeApi(to: newApi, user: user)
+    override public func changeApi(to newApi: ApiClient, context: FilterContext) async {
+        filter.updateModeratedCommunities(with: context)
+        await fetcher.changeApi(to: newApi, context: context)
     }
     
     /// Changes the post sort type to the specified value and reloads the feed

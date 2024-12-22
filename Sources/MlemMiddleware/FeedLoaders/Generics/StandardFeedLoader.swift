@@ -152,8 +152,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
         return await loadingActor.filter.numFiltered(for: toCount)
     }
     
-    public func changeApi(to newApi: ApiClient, user: Person4?) async {
+    public func changeApi(to newApi: ApiClient, context: FilterContext) async {
         // `user` isn't used for the StandardFeedLoader but some subtypes need it
-        await fetcher.changeApi(to: newApi, user: user)
+        await fetcher.changeApi(to: newApi, context: context)
     }
 }
