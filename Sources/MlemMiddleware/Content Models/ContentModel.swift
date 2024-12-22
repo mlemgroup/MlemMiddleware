@@ -27,7 +27,7 @@ public extension ContentModel where Self: ActorIdentifiable {
     }
 }
 
-public protocol ContentIdentifiable: AnyObject, ContentModel, Hashable, Identifiable {
+public protocol ContentIdentifiable: AnyObject, ContentModel, Hashable, Identifiable where ID == Int {
     static var modelTypeId: ContentType { get }
 }
 

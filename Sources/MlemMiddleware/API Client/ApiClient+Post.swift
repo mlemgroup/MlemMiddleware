@@ -315,10 +315,11 @@ public extension ApiClient {
         return comment
     }
     
-    func reportPost(id: Int, reason: String) async throws {
+    @discardableResult
+    func reportPost(id: Int, reason: String) async throws -> Report {
         let request = CreatePostReportRequest(postId: id, reason: reason)
         let response = try await perform(request)
-        // TODO: return post report
+        return await caches.report.getModel(api: self, from: response.postReportView)
     }
     
     func purgePost(id: Int, reason: String?) async throws {
