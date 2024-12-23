@@ -110,7 +110,6 @@ public class Fetcher<Item: FeedLoadable> {
     }
     
     func changeApi(to newApi: ApiClient, context: FilterContext) async {
-        // user needed for MultiFetcher
         api = newApi
     }
 }

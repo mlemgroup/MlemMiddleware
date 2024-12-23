@@ -49,7 +49,7 @@ public class PostFetcher: Fetcher<Post2> {
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public private(set) var prefetchingConfiguration: PrefetchingConfiguration
     
-    // Store reference to the filter used by the LoadingActor so we can modify moderatedCommunities from changeApi
+    // store reference to the filter used by the LoadingActor so we can modify its filterContext from changeApi
     internal var filter: PostFilter
     
     // force unwrap because this should ALWAYS be a PostFetcher

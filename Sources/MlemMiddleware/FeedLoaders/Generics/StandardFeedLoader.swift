@@ -153,7 +153,6 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     }
     
     public func changeApi(to newApi: ApiClient, context: FilterContext) async {
-        // `user` isn't used for the StandardFeedLoader but some subtypes need it
         await fetcher.changeApi(to: newApi, context: context)
     }
 }
