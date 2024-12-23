@@ -50,7 +50,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     }
     
     @MainActor
-    func prependItem(_ newItem: Item) async {
+    func prependItem(_ newItem: Item) {
         items.prepend(newItem)
     }
     
