@@ -21,7 +21,7 @@ class PostKeywordFilter: FilterProviding {
     }
     
     func filter(_ targets: [Post2]) -> [Post2] {
-        let ret = targets.filter { moderatedCommunities.contains($0.community.actorId) || !$0.title.lowercased().isContainedIn(keywords) }
+        let ret = targets.filter { shouldPassFilter($0) }
         numFiltered += targets.count - ret.count
         return ret
     }
@@ -30,6 +30,12 @@ class PostKeywordFilter: FilterProviding {
         numFiltered = 0
         if let targets { return filter(targets) }
         return .init()
+    }
+    
+    /// Returns true if the given post should pass the filter, false otherwise
+    public func shouldPassFilter(_ post: Post2) -> Bool {
+        moderatedCommunities.contains(post.community.actorId) ||
+        !post.title.lowercased().containsWordsIn(keywords)
     }
     
     func updateFilterContext(to context: FilterContext) {
