@@ -33,7 +33,7 @@ class PostKeywordFilter: FilterProviding {
     /// Returns true if the given post should pass the filter, false otherwise
     public func shouldPassFilter(_ post: Post2) -> Bool {
         // bypass filter for moderated/administrated posts
-        if context.isAdmin || context.moderatedCommunityIds.contains(post.community.actorId) { return true }
+        if context.isAdmin || context.moderatedCommunityActorIds.contains(post.community.actorId) { return true }
         
         return !post.title.lowercased().containsWordsIn(context.filteredKeywords)
     }
