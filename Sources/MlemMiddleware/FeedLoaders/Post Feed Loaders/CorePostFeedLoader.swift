@@ -90,7 +90,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     // MARK: Custom Behavior
     
     override public func changeApi(to newApi: ApiClient, context: FilterContext) async {
-        filter.updateModeratedCommunities(with: context)
+        filter.updateContext(to: context)
         await fetcher.changeApi(to: newApi, context: context)
     }
     

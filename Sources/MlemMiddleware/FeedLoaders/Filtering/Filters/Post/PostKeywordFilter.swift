@@ -32,7 +32,8 @@ class PostKeywordFilter: FilterProviding {
         return .init()
     }
     
-    func updateModeratedCommunities(with context: FilterContext) {
+    func updateContext(to context: FilterContext) {
+        keywords = context.filteredKeywords
         moderatedCommunities = context.moderatedCommunityIds
     }
 }

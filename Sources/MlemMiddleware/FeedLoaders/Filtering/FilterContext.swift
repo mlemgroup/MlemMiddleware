@@ -10,8 +10,10 @@ import Foundation
 /// Information required to perform filtering (e.g., current user's moderated communities)
 public struct FilterContext {
     public let moderatedCommunityIds: Set<URL>
+    public let filteredKeywords: Set<String>
     
-    public init(moderatedCommunityIds: Set<URL>) {
+    public init(moderatedCommunityIds: Set<URL>, filteredKeywords: Set<String>) {
         self.moderatedCommunityIds = moderatedCommunityIds
+        self.filteredKeywords = filteredKeywords
     }
 }

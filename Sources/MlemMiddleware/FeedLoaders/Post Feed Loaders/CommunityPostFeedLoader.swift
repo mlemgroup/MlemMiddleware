@@ -65,7 +65,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
                 return
             }
             
-            filter.updateModeratedCommunities(with: context)
+            filter.updateContext(to: context)
             communityPostFetcher.community = newCommunity
         } catch {
             assertionFailure("Couldn't change API")
