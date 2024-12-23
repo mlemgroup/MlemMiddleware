@@ -164,6 +164,7 @@ public class StateManager<Value: Equatable> {
                 return .succeeded
             } catch {
                 print("DEBUG [\(semaphore)] failed!")
+                print(error)
                 if let newValue = self.rollback(semaphore: semaphore) {
                     onRollback(newValue)
                 }

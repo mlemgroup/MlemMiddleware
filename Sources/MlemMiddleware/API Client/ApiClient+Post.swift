@@ -315,10 +315,11 @@ public extension ApiClient {
         return comment
     }
     
-    func reportPost(id: Int, reason: String) async throws {
+    @discardableResult
+    func reportPost(id: Int, reason: String) async throws -> Report {
         let request = CreatePostReportRequest(postId: id, reason: reason)
         let response = try await perform(request)
-        // TODO: return post report
+        return await caches.report.getModel(api: self, from: response.postReportView)
     }
     
     func purgePost(id: Int, reason: String?) async throws {
@@ -344,7 +345,7 @@ public extension ApiClient {
     func pinPost(id: Int, pin: Bool, to target: ApiPostFeatureType, semaphore: UInt? = nil) async throws -> Post2 {
         let request = FeaturePostRequest(postId: id, featured: pin, featureType: target)
         let response = try await perform(request)
-        return await caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
+        return await caches.post2 .getModel(api: self, from: response.postView, semaphore: semaphore)
     }
     
     @discardableResult
@@ -353,5 +354,21 @@ public extension ApiClient {
         let response = try await perform(request)
         return await caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
+    
+    @discardableResult
+    func getPostVotes(
+        id: Int,
+        communityId: Int,
+        page: Int = 1,
+        limit: Int = 20
+    ) async throws -> [PersonVote] {
+        let request = ListPostLikesRequest(postId: id, page: page, limit: limit)
+        let response = try await perform(request)
+        return await caches.personVote.getModels(
+            api: self,
+            from: response.postLikes,
+            target: .post(id: id),
+            communityId: communityId
+        )
+    }
 }
-

@@ -130,10 +130,11 @@ public extension ApiClient {
         return comment
     }
     
-    func reportComment(id: Int, reason: String) async throws {
+    @discardableResult
+    func reportComment(id: Int, reason: String) async throws -> Report {
         let request = CreateCommentReportRequest(commentId: id, reason: reason)
         let response = try await perform(request)
-        // TODO: return comment report
+        return await caches.report.getModel(api: self, from: response.commentReportView)
     }
     
     func purgeComment(id: Int, reason: String?) async throws {
@@ -153,5 +154,22 @@ public extension ApiClient {
         let request = RemoveCommentRequest(commentId: id, removed: remove, reason: reason)
         let response = try await perform(request)
         return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
+    }
+    
+    @discardableResult
+    func getCommentVotes(
+        id: Int,
+        communityId: Int,
+        page: Int = 1,
+        limit: Int = 20
+    ) async throws -> [PersonVote] {
+        let request = ListCommentLikesRequest(commentId: id, page: page, limit: limit)
+        let response = try await perform(request)
+        return await caches.personVote.getModels(
+            api: self,
+            from: response.commentLikes,
+            target: .comment(id: id),
+            communityId: communityId
+        )
     }
 }
