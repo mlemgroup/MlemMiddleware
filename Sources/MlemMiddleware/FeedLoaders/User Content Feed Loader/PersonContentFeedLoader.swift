@@ -159,12 +159,6 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
         tempCommentStream = nil
     }
     
-    /// Changes the user this FeedLoader loads.
-    /// 
-    /// - Parameters:
-    ///   - api: ApiClient used to fetch the user
-    ///   - user: The current active user of the app--**not** the user whose content to load!
-    ///   - userId: ID of the user whose content to load
     public func changeUser(api: ApiClient, context: FilterContext, userId: Int) async {
         tempPostStream = postStream
         tempCommentStream = commentStream

@@ -83,9 +83,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     }
     
     // MARK: Custom Behavior
-    
-    // TODO: NOW add updateFilterContext
-    
+
     override public func changeApi(to newApi: ApiClient, context: FilterContext) async {
         filter.updateContext(to: context)
         await fetcher.changeApi(to: newApi, context: context)
