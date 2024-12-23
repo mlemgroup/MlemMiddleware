@@ -49,6 +49,9 @@ public class PostFetcher: Fetcher<Post2> {
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public private(set) var prefetchingConfiguration: PrefetchingConfiguration
     
+    // store reference to the filter used by the LoadingActor so we can modify its filterContext from changeApi
+    internal var filter: PostFilter
+    
     // force unwrap because this should ALWAYS be a PostFetcher
     private var postFetcher: PostFetcher { fetcher as! PostFetcher }
     
@@ -58,14 +61,17 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         api: ApiClient,
         pageSize: Int,
         showReadPosts: Bool,
-        filteredKeywords: [String],
+        filterContext: FilterContext,
         prefetchingConfiguration: PrefetchingConfiguration,
         fetcher: PostFetcher
     ) {
         self.prefetchingConfiguration = prefetchingConfiguration
+
+        let filter: PostFilter = .init(showRead: showReadPosts, context: filterContext)
+        self.filter = filter
         
         super.init(
-            filter: PostFilter(showRead: showReadPosts),
+            filter: filter,
             fetcher: fetcher
         )
     }
@@ -77,6 +83,11 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     }
     
     // MARK: Custom Behavior
+
+    override public func changeApi(to newApi: ApiClient, context: FilterContext) async {
+        filter.updateContext(to: context)
+        await fetcher.changeApi(to: newApi, context: context)
+    }
     
     /// Changes the post sort type to the specified value and reloads the feed
     public func changeSortType(to newSortType: ApiSortType, forceRefresh: Bool = false) async throws {

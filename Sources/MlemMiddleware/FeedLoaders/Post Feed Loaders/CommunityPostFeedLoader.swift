@@ -38,7 +38,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
         pageSize: Int,
         sortType: ApiSortType,
         showReadPosts: Bool,
-        filteredKeywords: [String],
+        filterContext: FilterContext,
         prefetchingConfiguration: PrefetchingConfiguration,
         urlCache: URLCache,
         community: any Community
@@ -48,13 +48,13 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
             api: community.api,
             pageSize: pageSize,
             showReadPosts: showReadPosts,
-            filteredKeywords: filteredKeywords,
+            filterContext: filterContext,
             prefetchingConfiguration: prefetchingConfiguration,
             fetcher: CommunityPostFetcher(sortType: sortType, pageSize: pageSize, community: community)
         )
     }
     
-    override public func changeApi(to newApi: ApiClient) async {
+    override public func changeApi(to newApi: ApiClient, context: FilterContext) async {
         do {
             let resolvedCommunity = try await newApi.resolve(actorId: community.actorId)
             
@@ -62,6 +62,8 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
                 assertionFailure("Did not get community back")
                 return
             }
+            
+            filter.updateContext(to: context)
             communityPostFetcher.community = newCommunity
         } catch {
             assertionFailure("Couldn't change API")

@@ -15,8 +15,8 @@ public class SearchPostFetcher: PostFetcher {
     public var listing: ApiListingType
     
     // setters to allow manual overriding of these for search use cases
-    public override func changeApi(to newApi: ApiClient) async {
-        await super.changeApi(to: newApi)
+    public override func changeApi(to newApi: ApiClient, context: FilterContext) async {
+        await super.changeApi(to: newApi, context: context)
     }
     public func setSortType(_ sortType: ApiSortType) { self.sortType = sortType }
     
@@ -55,7 +55,6 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
         sortType: ApiSortType = .topAll,
         creatorId: Int? = nil,
         communityId: Int? = nil,
-        filteredKeywords: [String] = [],
         prefetchingConfiguration: PrefetchingConfiguration,
         urlCache: URLCache,
         listing: ApiListingType = .all
@@ -64,7 +63,7 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
             api: api,
             pageSize: pageSize,
             showReadPosts: true,
-            filteredKeywords: filteredKeywords,
+            filterContext: .none(), // search doesn't filter, only obscures on the frontend
             prefetchingConfiguration: prefetchingConfiguration,
             fetcher: SearchPostFetcher(
                 api: api,
