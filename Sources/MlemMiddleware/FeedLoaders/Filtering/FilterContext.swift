@@ -16,4 +16,8 @@ public struct FilterContext {
         self.moderatedCommunityIds = moderatedCommunityIds
         self.filteredKeywords = filteredKeywords
     }
+    
+    static func none() -> FilterContext {
+        .init(moderatedCommunityIds: [], filteredKeywords: [])
+    }
 }

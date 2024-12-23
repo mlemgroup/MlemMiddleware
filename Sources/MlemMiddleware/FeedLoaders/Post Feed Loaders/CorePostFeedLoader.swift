@@ -49,9 +49,6 @@ public class PostFetcher: Fetcher<Post2> {
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public private(set) var prefetchingConfiguration: PrefetchingConfiguration
     
-    // Store this locally to provide wouldPassKeywordFilter.
-    private let filteredKeywords: Set<String>
-    
     // Store reference to the filter used by the LoadingActor so we can modify moderatedCommunities from changeApi
     internal var filter: PostFilter
     
@@ -64,15 +61,13 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         api: ApiClient,
         pageSize: Int,
         showReadPosts: Bool,
-        filteredKeywords: Set<String>,
-        moderatedCommunities: Set<URL>,
+        filterContext: FilterContext,
         prefetchingConfiguration: PrefetchingConfiguration,
         fetcher: PostFetcher
     ) {
         self.prefetchingConfiguration = prefetchingConfiguration
-        self.filteredKeywords = filteredKeywords
-        
-        let filter: PostFilter = .init(showRead: showReadPosts, filteredKeywords: filteredKeywords, moderatedCommunities: moderatedCommunities)
+
+        let filter: PostFilter = .init(showRead: showReadPosts, context: filterContext)
         self.filter = filter
         
         super.init(
@@ -88,6 +83,8 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     }
     
     // MARK: Custom Behavior
+    
+    // TODO: NOW add updateFilterContext
     
     override public func changeApi(to newApi: ApiClient, context: FilterContext) async {
         filter.updateContext(to: context)
@@ -115,10 +112,5 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {
         prefetchingConfiguration = config
         preloadImages(items)
-    }
-    
-    /// Returns true if the given post would have failed the keyword filter
-    public func keywordFilterBypassed(for post: Post2) -> Bool {
-        return post.title.lowercased().isContainedIn(filteredKeywords)
     }
 }

@@ -55,8 +55,6 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
         sortType: ApiSortType = .topAll,
         creatorId: Int? = nil,
         communityId: Int? = nil,
-        filteredKeywords: Set<String> = .init(),
-        moderatedCommunities: Set<URL> = .init(),
         prefetchingConfiguration: PrefetchingConfiguration,
         urlCache: URLCache,
         listing: ApiListingType = .all
@@ -65,8 +63,7 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
             api: api,
             pageSize: pageSize,
             showReadPosts: true,
-            filteredKeywords: filteredKeywords,
-            moderatedCommunities: moderatedCommunities,
+            filterContext: .none(), // search doesn't filter, only obscures on the frontend
             prefetchingConfiguration: prefetchingConfiguration,
             fetcher: SearchPostFetcher(
                 api: api,

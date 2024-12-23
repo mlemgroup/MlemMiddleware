@@ -15,9 +15,9 @@ class PostKeywordFilter: FilterProviding {
     private var moderatedCommunities: Set<URL>
     var active: Bool = true
     
-    init(keywords: Set<String>, moderatedCommunities: Set<URL>) {
-        self.keywords = keywords
-        self.moderatedCommunities = moderatedCommunities
+    init(context: FilterContext) {
+        self.keywords = context.filteredKeywords
+        self.moderatedCommunities = context.moderatedCommunityIds
     }
     
     func filter(_ targets: [Post2]) -> [Post2] {
@@ -32,7 +32,7 @@ class PostKeywordFilter: FilterProviding {
         return .init()
     }
     
-    func updateContext(to context: FilterContext) {
+    func updateFilterContext(to context: FilterContext) {
         keywords = context.filteredKeywords
         moderatedCommunities = context.moderatedCommunityIds
     }

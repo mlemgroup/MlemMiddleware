@@ -16,8 +16,8 @@ class PostFilter: MultiFilter<Post2> {
     private var dedupeFilter: DedupeFilter<Post2> = .init()
     private var keywordFilter: PostKeywordFilter
     
-    init(showRead: Bool, filteredKeywords: Set<String>, moderatedCommunities: Set<URL>) {
-        self.keywordFilter = .init(keywords: filteredKeywords, moderatedCommunities: moderatedCommunities)
+    init(showRead: Bool, context: FilterContext) {
+        self.keywordFilter = .init(context: context)
         self.readFilter = .init()
         if showRead {
             readFilter.active = false
@@ -43,7 +43,6 @@ class PostFilter: MultiFilter<Post2> {
     // MARK: Custom Behavior
     
     func updateContext(to context: FilterContext) {
-        print("DEBUG updating post filter context \(context.moderatedCommunityIds)")
-        keywordFilter.updateContext(to: context)
+        keywordFilter.updateFilterContext(to: context)
     }
 }

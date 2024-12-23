@@ -38,8 +38,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
         pageSize: Int,
         sortType: ApiSortType,
         showReadPosts: Bool,
-        filteredKeywords: Set<String>,
-        moderatedCommunities: Set<URL>,
+        filterContext: FilterContext,
         prefetchingConfiguration: PrefetchingConfiguration,
         urlCache: URLCache,
         community: any Community
@@ -49,8 +48,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
             api: community.api,
             pageSize: pageSize,
             showReadPosts: showReadPosts,
-            filteredKeywords: filteredKeywords,
-            moderatedCommunities: moderatedCommunities,
+            filterContext: filterContext,
             prefetchingConfiguration: prefetchingConfiguration,
             fetcher: CommunityPostFetcher(sortType: sortType, pageSize: pageSize, community: community)
         )
