@@ -11,13 +11,11 @@ class PostKeywordFilter: FilterProviding {
     typealias FilterTarget = Post2
     
     var numFiltered: Int = 0
-    private var keywords: Set<String>
-    private var moderatedCommunities: Set<URL>
+    private var context: FilterContext
     var active: Bool = true
     
     init(context: FilterContext) {
-        self.keywords = context.filteredKeywords
-        self.moderatedCommunities = context.moderatedCommunityIds
+        self.context = context
     }
     
     func filter(_ targets: [Post2]) -> [Post2] {
@@ -34,12 +32,13 @@ class PostKeywordFilter: FilterProviding {
     
     /// Returns true if the given post should pass the filter, false otherwise
     public func shouldPassFilter(_ post: Post2) -> Bool {
-        moderatedCommunities.contains(post.community.actorId) ||
-        !post.title.lowercased().containsWordsIn(keywords)
+        // bypass filter for moderated/administrated posts
+        if context.isAdmin || context.moderatedCommunityIds.contains(post.community.actorId) { return true }
+        
+        return !post.title.lowercased().containsWordsIn(context.filteredKeywords)
     }
     
     func updateFilterContext(to context: FilterContext) {
-        keywords = context.filteredKeywords
-        moderatedCommunities = context.moderatedCommunityIds
+        self.context = context
     }
 }

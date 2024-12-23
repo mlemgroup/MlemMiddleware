@@ -9,15 +9,17 @@ import Foundation
 
 /// Information required to perform filtering
 public struct FilterContext {
+    public let isAdmin: Bool
     public let moderatedCommunityIds: Set<URL>
     public let filteredKeywords: Set<String>
     
-    public init(moderatedCommunityIds: Set<URL>, filteredKeywords: Set<String>) {
+    public init(isAdmin: Bool, moderatedCommunityIds: Set<URL>, filteredKeywords: Set<String>) {
+        self.isAdmin = isAdmin
         self.moderatedCommunityIds = moderatedCommunityIds
         self.filteredKeywords = filteredKeywords
     }
     
     static func none() -> FilterContext {
-        .init(moderatedCommunityIds: [], filteredKeywords: [])
+        .init(isAdmin: true, moderatedCommunityIds: [], filteredKeywords: [])
     }
 }
