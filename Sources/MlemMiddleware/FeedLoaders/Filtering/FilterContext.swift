@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// General app state information required to perform filtering (e.g., current user's moderated communities)
+/// Information required to perform filtering (e.g., current user's moderated communities)
 public struct FilterContext {
     public let moderatedCommunityIds: Set<URL>
     
