@@ -19,7 +19,7 @@ class PostKeywordFilter: FilterProviding {
     }
     
     func filter(_ targets: [Post2]) -> [Post2] {
-        let ret = targets.filter { shouldPassFilter($0) }
+        let ret = targets.filter(shouldPassFilter)
         numFiltered += targets.count - ret.count
         return ret
     }
