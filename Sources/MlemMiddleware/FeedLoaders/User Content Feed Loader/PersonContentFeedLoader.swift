@@ -159,11 +159,11 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
         tempCommentStream = nil
     }
     
-    public func changeUser(api: ApiClient, userId: Int) async {
+    public func changeUser(api: ApiClient, context: FilterContext, userId: Int) async {
         tempPostStream = postStream
         tempCommentStream = commentStream
         
-        await personContentFetcher.changeApi(to: api)
+        await personContentFetcher.changeApi(to: api, context: context)
         personContentFetcher.userId = userId
         await loadingActor.reset()
         await setLoading(.done) // prevent loading more items until refreshed

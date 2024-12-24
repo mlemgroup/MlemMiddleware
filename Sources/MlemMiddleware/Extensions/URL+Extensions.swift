@@ -50,6 +50,6 @@ public extension URL {
     }
     
     var isMedia: Bool {
-        proxyAwarePathExtension?.contains(["jpg", "jpeg", "png", "webp", "gif", "mp4"]) ?? false
+        proxyAwarePathExtension?.isContainedIn(["jpg", "jpeg", "png", "webp", "gif", "mp4"]) ?? false
     }
 }

@@ -152,7 +152,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
         return await loadingActor.filter.numFiltered(for: toCount)
     }
     
-    public func changeApi(to newApi: ApiClient) async {
-        await fetcher.changeApi(to: newApi)
+    public func changeApi(to newApi: ApiClient, context: FilterContext) async {
+        await fetcher.changeApi(to: newApi, context: context)
     }
 }

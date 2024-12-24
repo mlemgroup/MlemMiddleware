@@ -14,9 +14,10 @@ public enum PostFilterType {
 class PostFilter: MultiFilter<Post2> {
     private var readFilter: ReadFilter<Post2>
     private var dedupeFilter: DedupeFilter<Post2> = .init()
-    private var keywordFilter: PostKeywordFilter = .init(keywords: []) // TODO: enable keyword filtering
+    private var keywordFilter: PostKeywordFilter
     
-    init(showRead: Bool) {
+    init(showRead: Bool, context: FilterContext) {
+        self.keywordFilter = .init(context: context)
         self.readFilter = .init()
         if showRead {
             readFilter.active = false
@@ -37,5 +38,11 @@ class PostFilter: MultiFilter<Post2> {
         case .dedupe: dedupeFilter
         case .keyword: keywordFilter
         }
+    }
+    
+    // MARK: Custom Behavior
+    
+    func updateContext(to context: FilterContext) {
+        keywordFilter.updateFilterContext(to: context)
     }
 }
