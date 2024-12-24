@@ -41,7 +41,7 @@ public class MessageFeedLoader: StandardFeedLoader<Message2> {
     public var api: ApiClient
 
     // force unwrap because this should ALWAYS be a MessageFetcher
-    var communityFetcher: MessageFetcher { fetcher as! MessageFetcher }
+    var messageFetcher: MessageFetcher { fetcher as! MessageFetcher }
 
     public init(
         api: ApiClient,
