@@ -1,5 +1,5 @@
 //
-//  ReplyFeedLoader.swift
+//  ReplyChildFeedLoader.swift
 //  MlemMiddleware
 //
 //  Created by Eric Andrews on 2024-11-27.

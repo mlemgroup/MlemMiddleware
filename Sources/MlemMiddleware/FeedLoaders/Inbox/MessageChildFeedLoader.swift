@@ -1,5 +1,5 @@
 //
-//  MessageFeedLoader.swift
+//  MessageChildFeedLoader.swift
 //  MlemMiddleware
 //
 //  Created by Eric Andrews on 2024-11-26.
