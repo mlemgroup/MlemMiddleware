@@ -2,22 +2,81 @@
 //  MessageFeedLoader.swift
 //  MlemMiddleware
 //
-//  Created by Eric Andrews on 2024-11-26.
+//  Created by Sjmarf on 2024-12-22.
 //
 
-class MessageFetcher: InboxFetcher {
+import Foundation
+
+@Observable
+class MessageFetcher: Fetcher<Message2> {
+    var personId: Int?
+    
+    init(api: ApiClient, personId: Int?, pageSize: Int) {
+        self.personId = personId
+        
+        super.init(api: api, pageSize: pageSize)
+    }
+    
+    convenience init(person: any Person, pageSize: Int) {
+        self.init(api: person.api, personId: person.id, pageSize: pageSize)
+    }
+    
     override func fetchPage(_ page: Int) async throws -> FetchResponse {
-        let response = try await api.getMessages(page: page, limit: pageSize, unreadOnly: unreadOnly)
+        let messages = try await api.getMessages(
+            creatorId: personId,
+            page: page,
+            limit: pageSize
+        )
+        
         return .init(
-            items: response.map { .message($0) },
+            items: messages,
             prevCursor: nil,
             nextCursor: nil
         )
     }
 }
 
-public class MessageFeedLoader: InboxChildFeedLoader {
-    public init(api: ApiClient, pageSize: Int, sortType: FeedLoaderSort.SortType, showRead: Bool) {
-        super.init(api: api, sortType: sortType, fetcher: MessageFetcher(api: api, pageSize: pageSize, unreadOnly: !showRead), showRead: showRead)
+@Observable
+public class MessageFeedLoader: StandardFeedLoader<Message2> {
+    public var api: ApiClient
+
+    // force unwrap because this should ALWAYS be a MessageFetcher
+    var messageFetcher: MessageFetcher { fetcher as! MessageFetcher }
+
+    public init(
+        api: ApiClient,
+        personId: Int?,
+        pageSize: Int = 20
+    ) {
+        self.api = api
+
+        super.init(
+            filter: .init(),
+            fetcher: MessageFetcher(
+                api: api,
+                personId: personId,
+                pageSize: pageSize
+            )
+        )
+    }
+    
+    public init(
+        person: any Person,
+        pageSize: Int = 20
+    ) {
+        self.api = person.api
+
+        super.init(
+            filter: .init(),
+            fetcher: MessageFetcher(
+                person: person,
+                pageSize: pageSize
+            )
+        )
+    }
+    
+    @MainActor
+    public func insertCreatedMessage(_ message: Message2) {
+        self.prependItem(message)
     }
 }
