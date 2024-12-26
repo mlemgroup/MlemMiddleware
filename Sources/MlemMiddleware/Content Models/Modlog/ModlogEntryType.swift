@@ -1,16 +1,12 @@
 //
-//  ModlogEntry.swift
+//  ModlogEntryType.swift
 //  MlemMiddleware
 //
-//  Created by Sjmarf on 2024-12-23.
+//  Created by Sjmarf on 2024-12-25.
 //
 
 import Foundation
 
-public struct ModlogEntry {
-    public let created: Date
-    public let moderator: Person1?
-}
 
 public enum ModlogEntryType {
     case removePost(
@@ -30,15 +26,17 @@ public enum ModlogEntryType {
         pinned: Bool,
         type: ApiPostFeatureType
     )
+    case purgePost(reason: String?)
     
     case removeComment(
-        _ comment: Comment2,
+        _ comment: Comment1,
         creator: Person1,
         post: Post1,
         community: Community1,
         removed: Bool,
         reason: String?
     )
+    case purgeComment(reason: String?)
     
     case removeCommunity(
         _ community: Community1,
@@ -75,4 +73,19 @@ public enum ModlogEntryType {
         expires: Date
     )
     case purgePerson(reason: String?)
+    
+    public var community: Community1? {
+        switch self {
+        case let .removePost(_, community, _, _): community
+        case let .lockPost(_, community, _): community
+        case let .pinPost(_, community, _, _): community
+        case let .removeComment(_, _, _, community, _, _): community
+        case let .removeCommunity(community, _, _): community
+        case let .hideCommunity(community, _): community
+        case let .transferCommunityOwnership(_, community): community
+        case let .updatePersonModeratorStatus(_, community, _): community
+        case let .banPersonFromCommunity(_, community, _, _, _): community
+        default: nil
+        }
+    }
 }

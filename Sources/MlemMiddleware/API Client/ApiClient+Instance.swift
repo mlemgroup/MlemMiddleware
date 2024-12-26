@@ -43,7 +43,7 @@ public extension ApiClient {
     func blockInstance(actorId: URL, instanceId: Int, block: Bool, semaphore: UInt? = nil) async throws {
         let request = BlockInstanceRequest(instanceId: instanceId, block: block)
         let response = try await perform(request)
-        if let instance = await caches.instance1.retrieveModel(instanceId: instanceId) {
+        if let instance = caches.instance1.retrieveModel(instanceId: instanceId) {
             instance.blockedManager.updateWithReceivedValue(response.blocked, semaphore: semaphore)
         }
         if response.blocked {

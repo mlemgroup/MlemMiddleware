@@ -89,4 +89,39 @@ public extension ApiClient {
             instances: caches.instance1.getModels(api: self, from: myUser.instanceBlocks?.compactMap(\.site) ?? [])
         )
     }
+    
+    func getModlog(
+        page: Int = 1,
+        limit: Int = 20,
+        communityId: Int? = nil,
+        moderatorId: Int? = nil,
+        subjectPersonId: Int? = nil,
+        postId: Int? = nil,
+        commentId: Int? = nil,
+        type: ApiModlogActionType? = nil
+    ) async throws -> [ModlogEntry] {
+        let request = GetModlogRequest(
+            modPersonId: moderatorId,
+            communityId: communityId,
+            page: page,
+            limit: limit,
+            type_: type,
+            otherPersonId: subjectPersonId,
+            postId: postId,
+            commentId: commentId
+        )
+        let response = try await perform(request)
+        return await createModlogEntries(response.allEntries)
+    }
+    
+    @MainActor
+    private func createModlogEntries(_ entries: [any ModlogEntryApiBacker]) -> [ModlogEntry] {
+        entries.map { entry in
+            ModlogEntry(
+                created: entry.published,
+                moderator: caches.person1.getOptionalModel(api: self, from: entry.moderator),
+                type: entry.type(api: self)
+            )
+        }
+    }
 }
