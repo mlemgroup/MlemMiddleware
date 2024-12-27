@@ -41,7 +41,7 @@ extension ApiCommentReportView: ReportApiBacker {
     }
     
     @MainActor
-    func createTarget(api: ApiClient) -> ReportTarget {
+    func createTarget(api: ApiClient, myPersonId: Int) -> ReportTarget {
         if let commentView = toCommentView() {
             return .comment(api.caches.comment2.getModel(api: api, from: commentView))
         }

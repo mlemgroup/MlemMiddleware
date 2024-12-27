@@ -16,10 +16,9 @@ extension Message1: CacheIdentifiable {
         setIfChanged(\.updated, message.updated)
         
         deletedManager.updateWithReceivedValue(message.deleted, semaphore: semaphore)
-        readManager.updateWithReceivedValue(
-            (api.myPerson?.id == message.creatorId) ? true : message.read,
-            semaphore: semaphore
-        )
+        if !isOwnMessage {
+            readManager.updateWithReceivedValue(message.read, semaphore: semaphore)
+        }
     }
 }
 

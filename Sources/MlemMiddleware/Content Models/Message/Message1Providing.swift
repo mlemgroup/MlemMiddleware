@@ -61,6 +61,7 @@ public extension Message1Providing {
     var created: Date { message1.created }
     var updated: Date? { message1.updated }
     var read: Bool { message1.read }
+    var isOwnMessage: Bool { message1.isOwnMessage }
     
     var id_: Int? { message1.id }
     var creatorId_: Int? { message1.creatorId }
@@ -70,6 +71,7 @@ public extension Message1Providing {
     var created_: Date? { message1.created }
     var updated_: Date? { message1.updated }
     var read_: Bool? { message1.read }
+    var isOwnMessage_: Bool? { message1.isOwnMessage }
     
     var creator_: Person1? { nil }
     var recipient_: Person1? { nil }

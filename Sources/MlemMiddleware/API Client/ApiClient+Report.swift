@@ -22,8 +22,13 @@ public extension ApiClient {
             communityId: communityId,
             postId: postId
         )
-        let response = try await perform(request)
-        return await caches.report.getModels(api: self, from: response.postReports)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.report.getModels(
+            api: self,
+            from: try response.postReports,
+            myPersonId: myPersonId
+        )
     }
     
     func getCommentReports(
@@ -40,8 +45,13 @@ public extension ApiClient {
             communityId: communityId,
             commentId: commentId
         )
-        let response = try await perform(request)
-        return await caches.report.getModels(api: self, from: response.commentReports)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.report.getModels(
+            api: self,
+            from: try response.commentReports,
+            myPersonId: myPersonId
+        )
     }
     
     func getMessageReports(
@@ -54,8 +64,13 @@ public extension ApiClient {
             limit: limit,
             unresolvedOnly: unresolvedOnly
         )
-        let response = try await perform(request)
-        return await caches.report.getModels(api: self, from: response.privateMessageReports)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.report.getModels(
+            api: self,
+            from: try response.privateMessageReports,
+            myPersonId: myPersonId
+        )
     }
     
     @discardableResult
@@ -65,8 +80,14 @@ public extension ApiClient {
         semaphore: UInt? = nil
     ) async throws -> Report {
         let request = ResolvePostReportRequest(reportId: id, resolved: resolved)
-        let response = try await perform(request)
-        return await caches.report.getModel(api: self, from: response.postReportView, semaphore: semaphore)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.report.getModel(
+            api: self,
+            from: try response.postReportView,
+            myPersonId: myPersonId,
+            semaphore: semaphore
+        )
     }
     
     @discardableResult
@@ -76,8 +97,14 @@ public extension ApiClient {
         semaphore: UInt? = nil
     ) async throws -> Report {
         let request = ResolveCommentReportRequest(reportId: id, resolved: resolved)
-        let response = try await perform(request)
-        return await caches.report.getModel(api: self, from: response.commentReportView, semaphore: semaphore)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.report.getModel(
+            api: self,
+            from: try response.commentReportView,
+            myPersonId: myPersonId,
+            semaphore: semaphore
+        )
     }
     
     @discardableResult
@@ -87,7 +114,13 @@ public extension ApiClient {
         semaphore: UInt? = nil
     ) async throws -> Report {
         let request = ResolvePrivateMessageReportRequest(reportId: id, resolved: resolved)
-        let response = try await perform(request)
-        return await caches.report.getModel(api: self, from: response.privateMessageReportView, semaphore: semaphore)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.report.getModel(
+            api: self,
+            from: try response.privateMessageReportView,
+            myPersonId: myPersonId,
+            semaphore: semaphore
+        )
     }
 }

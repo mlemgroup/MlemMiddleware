@@ -7,17 +7,18 @@
 
 import Foundation
 
-internal class SharedTaskManager<Value> {
-    let fetchTask: () async throws -> Value
+public class SharedTaskManager<Value> {
+    internal var fetchTask: (() async throws -> Value)!
     
     private var ongoingTask: Task<Value, Error>?
     internal private(set) var fetchedValue: Value?
     
-    init(fetchTask: @escaping () async throws -> Value) {
+    init(fetchTask: (() async throws -> Value)? = nil) {
         self.fetchTask = fetchTask
     }
     
-    func getValue() async throws -> Value {
+    @discardableResult
+    public func getValue(task: Task<Value, Error>? = nil) async throws -> Value {
         if let fetchedValue {
             return fetchedValue
         } else {
@@ -25,6 +26,10 @@ internal class SharedTaskManager<Value> {
                 let result = await ongoingTask.result
                 return try result.get()
             } else {
+                let task = task ?? ongoingTask ?? Task { try await fetchTask() }
+                ongoingTask = task
+                let result = await task.result
+                fetchedValue = try result.get()
                 return try await fetchTask()
             }
         }

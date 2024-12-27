@@ -7,38 +7,77 @@
 
 import Foundation
 
-class Message1Cache: ApiTypeBackedCache<Message1, ApiPrivateMessage> {
-    override func performModelTranslation(api: ApiClient, from apiType: ApiPrivateMessage) -> Message1 {
-        .init(
+class Message1Cache: CoreCache<Message1> {
+    @MainActor
+    func getModel(
+        api: ApiClient,
+        from apiType: ApiPrivateMessage,
+        myPersonId: Int,
+        semaphore: UInt? = nil
+    ) -> Message1 {
+        if let item = retrieveModel(cacheId: apiType.cacheId) {
+            item.update(with: apiType, semaphore: semaphore)
+            return item
+        }
+        
+        let newItem: Message1 = .init(
             api: api,
             actorId: apiType.apId,
             id: apiType.id,
             creatorId: apiType.creatorId,
             recipientId: apiType.recipientId,
+            isOwnMessage: (myPersonId == apiType.creatorId),
             content: apiType.content,
             deleted: apiType.deleted,
             created: apiType.published,
             updated: apiType.updated,
-            read: (api.myPerson?.id == apiType.creatorId) ? true : apiType.read
+            read: apiType.read
         )
+        itemCache.put(newItem)
+        return newItem
     }
     
-    override func updateModel(_ item: Message1, with apiType: ApiPrivateMessage, semaphore: UInt? = nil) {
-        item.update(with: apiType)
+    @MainActor
+    func getModels(
+        api: ApiClient,
+        from apiTypes: [ApiPrivateMessage],
+        myPersonId: Int,
+        semaphore: UInt? = nil
+    ) -> [Message1] {
+        apiTypes.map { getModel(api: api, from: $0, myPersonId: myPersonId, semaphore: semaphore) }
     }
 }
 
-class Message2Cache: ApiTypeBackedCache<Message2, ApiPrivateMessageView> {
-    override func performModelTranslation(api: ApiClient, from apiType: ApiPrivateMessageView) -> Message2 {
-        .init(
+class Message2Cache: CoreCache<Message2> {
+    @MainActor
+    func getModel(
+        api: ApiClient,
+        from apiType: ApiPrivateMessageView,
+        myPersonId: Int,
+        semaphore: UInt? = nil
+    ) -> Message2 {
+        if let item = retrieveModel(cacheId: apiType.cacheId) {
+            item.update(with: apiType, semaphore: semaphore)
+            return item
+        }
+        
+        let newItem: Message2 = .init(
             api: api,
-            message1: api.caches.message1.getModel(api: api, from: apiType.privateMessage),
+            message1: api.caches.message1.getModel(api: api, from: apiType.privateMessage, myPersonId: myPersonId),
             creator: api.caches.person1.getModel(api: api, from: apiType.creator),
             recipient: api.caches.person1.getModel(api: api, from: apiType.recipient)
         )
+        itemCache.put(newItem)
+        return newItem
     }
     
-    override func updateModel(_ item: Message2, with apiType: ApiPrivateMessageView, semaphore: UInt? = nil) {
-        item.update(with: apiType, semaphore: semaphore)
+    @MainActor
+    func getModels(
+        api: ApiClient,
+        from apiTypes: [ApiPrivateMessageView],
+        myPersonId: Int,
+        semaphore: UInt? = nil
+    ) -> [Message2] {
+        apiTypes.map { getModel(api: api, from: $0, myPersonId: myPersonId, semaphore: semaphore) }
     }
 }
