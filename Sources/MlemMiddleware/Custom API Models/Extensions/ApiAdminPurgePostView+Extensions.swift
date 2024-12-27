@@ -8,11 +8,12 @@
 import Foundation
 
 extension ApiAdminPurgePostView: ModlogEntryApiBacker {
-    var published: Date { self.adminPurgePost.when_ }
-    var moderator: ApiPerson? { self.admin }
+    var published: Date { adminPurgePost.when_ }
+    var moderator: ApiPerson? { admin }
+    var moderatorId: Int { adminPurgePost.id }
     
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType {
-        .purgePost(reason: self.adminPurgePost.reason)
+        .purgePost(reason: adminPurgePost.reason)
     }
 }

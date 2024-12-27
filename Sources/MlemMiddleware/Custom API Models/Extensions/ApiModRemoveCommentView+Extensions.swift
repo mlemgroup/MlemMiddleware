@@ -8,7 +8,8 @@
 import Foundation
 
 extension ApiModRemoveCommentView: ModlogEntryApiBacker {
-    var published: Date { self.modRemoveComment.when_ }
+    var published: Date { modRemoveComment.when_ }
+    var moderatorId: Int { modRemoveComment.id }
     
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType {

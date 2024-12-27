@@ -2,7 +2,7 @@
 //  Community3Providing.swift
 //  Mlem
 //
-//  Created by Sam Marfleet on 12/02/2024.
+//  Created by Sjmarf on 12/02/2024.
 //
 
 import Foundation

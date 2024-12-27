@@ -2,7 +2,7 @@
 //  SearchPostFeedLoader.swift
 //  MlemMiddleware
 //
-//  Created by Sam Marfleet on 04/10/2024.
+//  Created by Sjmarf on 04/10/2024.
 //
 
 import Foundation

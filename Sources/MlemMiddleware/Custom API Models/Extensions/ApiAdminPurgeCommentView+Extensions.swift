@@ -8,11 +8,12 @@
 import Foundation
 
 extension ApiAdminPurgeCommentView: ModlogEntryApiBacker {
-    var published: Date { self.adminPurgeComment.when_ }
-    var moderator: ApiPerson? { self.admin }
+    var published: Date { adminPurgeComment.when_ }
+    var moderator: ApiPerson? { admin }
+    var moderatorId: Int { adminPurgeComment.id }
     
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType {
-        .purgeComment(reason: self.adminPurgeComment.reason)
+        .purgeComment(reason: adminPurgeComment.reason)
     }
 }

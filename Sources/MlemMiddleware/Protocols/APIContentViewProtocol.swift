@@ -2,7 +2,7 @@
 //  ApiContentViewProtocol.swift
 //  Mlem
 //
-//  Created by Sam Marfleet on 09/08/2023.
+//  Created by Sjmarf on 09/08/2023.
 //
 
 import Foundation

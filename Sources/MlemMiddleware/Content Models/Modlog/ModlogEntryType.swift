@@ -44,7 +44,11 @@ public enum ModlogEntryType {
         reason: String?
     )
     case purgeCommunity(reason: String?)
-    case hideCommunity(_ community: Community1, hidden: Bool)
+    case hideCommunity(
+        _ community: Community1,
+        hidden: Bool,
+        reason: String?
+    )
     case transferCommunityOwnership(
         person: Person1,
         community: Community1
@@ -81,7 +85,7 @@ public enum ModlogEntryType {
         case let .pinPost(_, community, _, _): community
         case let .removeComment(_, _, _, community, _, _): community
         case let .removeCommunity(community, _, _): community
-        case let .hideCommunity(community, _): community
+        case let .hideCommunity(community, _, _): community
         case let .transferCommunityOwnership(_, community): community
         case let .updatePersonModeratorStatus(_, community, _): community
         case let .banPersonFromCommunity(_, community, _, _, _): community

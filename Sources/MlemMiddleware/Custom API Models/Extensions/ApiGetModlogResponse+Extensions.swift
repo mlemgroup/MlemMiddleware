@@ -18,6 +18,10 @@ extension ApiGetModlogResponse {
         output += removedComments
         output += adminPurgedComments
         output += removedCommunities
+        output += adminPurgedCommunities
+        output += hiddenCommunities
+        output += transferredToCommunity
+        output += addedToCommunity
         return output
     }
 }

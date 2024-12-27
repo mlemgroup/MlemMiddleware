@@ -8,7 +8,8 @@
 import Foundation
 
 extension ApiModFeaturePostView: ModlogEntryApiBacker {
-    var published: Date { self.modFeaturePost.when_ }
+    var published: Date { modFeaturePost.when_ }
+    var moderatorId: Int { modFeaturePost.id }
     
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType {

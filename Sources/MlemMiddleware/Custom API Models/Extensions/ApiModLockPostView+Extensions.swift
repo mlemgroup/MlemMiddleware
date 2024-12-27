@@ -8,7 +8,8 @@
 import Foundation
 
 extension ApiModLockPostView: ModlogEntryApiBacker {
-    var published: Date { self.modLockPost.when_ }
+    var published: Date { modLockPost.when_ }
+    var moderatorId: Int { modLockPost.id }
     
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType {

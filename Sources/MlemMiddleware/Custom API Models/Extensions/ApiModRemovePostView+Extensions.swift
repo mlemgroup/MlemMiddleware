@@ -2,13 +2,14 @@
 //  ApiModRemovePostView+Extensions.swift
 //  MlemMiddleware
 //
-//  Created by Sam Marfleet on 2024-12-25.
+//  Created by Sjmarf on 2024-12-25.
 //
 
 import Foundation
 
 extension ApiModRemovePostView: ModlogEntryApiBacker {
-    var published: Date { self.modRemovePost.when_ }
+    var published: Date { modRemovePost.when_ }
+    var moderatorId: Int { modRemovePost.id }
     
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType {

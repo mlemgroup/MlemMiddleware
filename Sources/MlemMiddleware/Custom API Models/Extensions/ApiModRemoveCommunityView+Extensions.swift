@@ -8,8 +8,9 @@
 import Foundation
 
 extension ApiModRemoveCommunityView: ModlogEntryApiBacker {
-    var published: Date { self.modRemoveCommunity.when_ }
-    
+    var published: Date { modRemoveCommunity.when_ }
+    var moderatorId: Int { modRemoveCommunity.id }
+
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType {
         .removeCommunity(

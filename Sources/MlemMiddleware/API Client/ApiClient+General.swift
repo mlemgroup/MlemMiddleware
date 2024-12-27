@@ -120,6 +120,7 @@ public extension ApiClient {
             ModlogEntry(
                 created: entry.published,
                 moderator: caches.person1.getOptionalModel(api: self, from: entry.moderator),
+                moderatorId: entry.moderatorId,
                 type: entry.type(api: self)
             )
         }

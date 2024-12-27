@@ -10,6 +10,7 @@ import Foundation
 internal protocol ModlogEntryApiBacker {
     var moderator: ApiPerson? { get }
     var published: Date { get }
+    var moderatorId: Int { get }
     
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType
