@@ -19,7 +19,7 @@ class Message1Cache: ApiTypeBackedCache<Message1, ApiPrivateMessage> {
             deleted: apiType.deleted,
             created: apiType.published,
             updated: apiType.updated,
-            read: apiType.read
+            read: (api.myPerson?.id == apiType.creatorId) ? true : apiType.read
         )
     }
     
