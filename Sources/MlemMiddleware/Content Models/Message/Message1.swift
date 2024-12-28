@@ -21,6 +21,7 @@ public final class Message1: Message1Providing {
     public var content: String
     public let created: Date
     public var updated: Date?
+    public let isOwnMessage: Bool
     
     internal let readManager: StateManager<Bool>
     public var read: Bool { readManager.wrappedValue }
@@ -33,6 +34,7 @@ public final class Message1: Message1Providing {
          id: Int,
          creatorId: Int,
          recipientId: Int,
+         isOwnMessage: Bool,
          content: String,
          deleted: Bool,
          created: Date,
@@ -44,11 +46,12 @@ public final class Message1: Message1Providing {
         self.id = id
         self.creatorId = creatorId
         self.recipientId = recipientId
+        self.isOwnMessage = isOwnMessage
         self.content = content
         self.deletedManager = .init(wrappedValue: deleted)
         self.created = created
         self.updated = updated
-        self.readManager = .init(wrappedValue: read)
+        self.readManager = .init(wrappedValue: isOwnMessage ? true : read)
         self.readManager.onSet = { newValue, type, semaphore in
             if type == .begin || type == .rollback {
                 api.unreadCount?.updateUnverifiedItem(itemType: .message, isRead: newValue)

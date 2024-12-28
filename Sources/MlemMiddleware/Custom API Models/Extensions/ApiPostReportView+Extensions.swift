@@ -44,7 +44,7 @@ extension ApiPostReportView: ReportApiBacker {
     }
     
     @MainActor
-    func createTarget(api: ApiClient) -> ReportTarget {
+    func createTarget(api: ApiClient, myPersonId: Int) -> ReportTarget {
         if let postView = toPostView() {
             return .post(api.caches.post2.getModel(api: api, from: postView))
         }

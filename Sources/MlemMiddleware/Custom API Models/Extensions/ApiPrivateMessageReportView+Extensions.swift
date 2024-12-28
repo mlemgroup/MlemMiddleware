@@ -30,8 +30,14 @@ extension ApiPrivateMessageReportView: ReportApiBacker {
     }
     
     @MainActor
-    func createTarget(api: ApiClient) -> ReportTarget {
-        .message(api.caches.message2.getModel(api: api, from: toPrivateMessageView()))
+    func createTarget(api: ApiClient, myPersonId: Int) -> ReportTarget {
+        .message(
+            api.caches.message2.getModel(
+                api: api,
+                from: toPrivateMessageView(),
+                myPersonId: myPersonId
+            )
+        )
     }
 }
 

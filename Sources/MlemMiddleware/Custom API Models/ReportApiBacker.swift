@@ -17,5 +17,5 @@ protocol ReportApiBacker: CacheIdentifiable, Identifiable where ID == Int {
     var updated: Date? { get }
     
     @MainActor
-    func createTarget(api: ApiClient) -> ReportTarget
+    func createTarget(api: ApiClient, myPersonId: Int) -> ReportTarget
 }

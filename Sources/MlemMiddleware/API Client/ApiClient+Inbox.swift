@@ -37,8 +37,13 @@ public extension ApiClient {
         unreadOnly: Bool = false
     ) async throws -> [Message2] {
         let request = GetPrivateMessagesRequest(unreadOnly: unreadOnly, page: page, limit: limit, creatorId: creatorId)
-        let response = try await perform(request)
-        return await caches.message2.getModels(api: self, from: response.privateMessages)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.message2.getModels(
+            api: self,
+            from: try response.privateMessages,
+            myPersonId: myPersonId
+        )
     }
     
     func markAllAsRead() async throws {
@@ -82,8 +87,14 @@ public extension ApiClient {
         semaphore: UInt? = nil
     ) async throws -> Message2 {
         let request = MarkPrivateMessageAsReadRequest(privateMessageId: id, read: read)
-        let response = try await perform(request)
-        return await caches.message2.getModel(api: self, from: response.privateMessageView, semaphore: semaphore)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.message2.getModel(
+            api: self,
+            from: try response.privateMessageView,
+            myPersonId: myPersonId,
+            semaphore: semaphore
+        )
     }
     
     @discardableResult
@@ -105,28 +116,49 @@ public extension ApiClient {
     
     func createMessage(personId: Int, content: String) async throws -> Message2 {
         let request = CreatePrivateMessageRequest(content: content, recipientId: personId)
-        let response = try await perform(request)
-        return await caches.message2.getModel(api: self, from: response.privateMessageView)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.message2.getModel(
+            api: self,
+            from: try response.privateMessageView,
+            myPersonId: myPersonId
+        )
     }
     
     @discardableResult
     func editMessage(id: Int, content: String) async throws -> Message2 {
         let request = EditPrivateMessageRequest(privateMessageId: id, content: content)
-        let response = try await perform(request)
-        return await caches.message2.getModel(api: self, from: response.privateMessageView)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.message2.getModel(
+            api: self,
+            from: try response.privateMessageView,
+            myPersonId: myPersonId
+        )
     }
     
     @discardableResult
     func reportMessage(id: Int, reason: String) async throws -> Report {
         let request = CreatePrivateMessageReportRequest(privateMessageId: id, reason: reason)
-        let response = try await perform(request)
-        return await caches.report.getModel(api: self, from: response.privateMessageReportView)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.report.getModel(
+            api: self,
+            from: try response.privateMessageReportView,
+            myPersonId: myPersonId
+        )
     }
     
     @discardableResult
     func deleteMessage(id: Int, delete: Bool, semaphore: UInt? = nil) async throws -> Message2 {
         let request = DeletePrivateMessageRequest(privateMessageId: id, deleted: delete)
-        let response = try await perform(request)
-        return await caches.message2.getModel(api: self, from: response.privateMessageView, semaphore: semaphore)
+        async let response = try await perform(request)
+        guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
+        return await caches.message2.getModel(
+            api: self,
+            from: try response.privateMessageView,
+            myPersonId: myPersonId,
+            semaphore: semaphore
+        )
     }
 }

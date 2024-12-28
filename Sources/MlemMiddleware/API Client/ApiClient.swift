@@ -22,8 +22,8 @@ public class ApiClient {
     public let baseUrl: URL
     let endpointUrl: URL
     public private(set) var token: String?
-    public private(set) var fetchedVersion: SiteVersion?
-    private var fetchSiteTask: Task<SiteVersion, Error>?
+    
+    public private(set) var contextDataManager: SharedTaskManager<Context> = .init()
     
     /// When `true`, the token will not be attatched to any API requests. This is useful for ensuring that inactive accounts don't accidentally make requests
     public var permissions: RequestPermissions = .all
@@ -39,20 +39,25 @@ public class ApiClient {
     /// Stores the IDs of posts that are queued to be marked read.
     internal var markReadQueue: MarkReadQueue = .init()
     
+    public var fetchedVersion: SiteVersion? {
+        contextDataManager.fetchedValue?.siteVersion
+    }
+    
     /// Returns the `fetchedVersion` if the version has already been fetched. Otherwise, waits until the version has been fetched before returning the received value.
     public var version: SiteVersion {
         get async throws {
-            if let fetchedVersion {
-                return fetchedVersion
-            } else {
-                if let fetchSiteTask {
-                    let result = await fetchSiteTask.result
-                    return try result.get()
-                } else {
-                    return try await fetchSiteVersion()
-                }
-            }
+            try await contextDataManager.getValue().siteVersion
         }
+    }
+    
+    public var myPersonId: Int? {
+        get async throws {
+            try await contextDataManager.getValue().myPersonId
+        }
+    }
+    
+    public func ensureContextPresence() async throws {
+        try await contextDataManager.getValue()
     }
     
     /// Returns whether the version supports the given feature
@@ -93,6 +98,10 @@ public class ApiClient {
         self.endpointUrl = baseUrl.appendingPathComponent("api/v3")
         self.token = token
         self.permissions = permissions
+        contextDataManager.fetchTask = {
+            let (person, instance, _) = try await self.getMyPerson()
+            return .init(instance: instance, person: person)
+        }
     }
     
     public func cleanCaches() {
@@ -118,17 +127,6 @@ public class ApiClient {
         }
         Self.apiClientCache.changeToken(for: baseUrl, oldToken: token, newToken: newToken)
         self.token = newToken
-    }
-    
-    
-    @discardableResult
-    public func fetchSiteVersion(task: Task<SiteVersion, Error>? = nil) async throws -> SiteVersion {
-        let task = task ?? fetchSiteTask ?? Task { try await getMyInstance().version }
-        fetchSiteTask = task
-        let result = await task.result
-        let version = try result.get()
-        fetchedVersion = version
-        return version
     }
     
     @discardableResult
@@ -257,6 +255,18 @@ extension ApiClient: Hashable {
     
     public static func == (lhs: ApiClient, rhs: ApiClient) -> Bool {
         lhs === rhs
+    }
+}
+
+extension ApiClient {
+    public struct Context {
+        let siteVersion: SiteVersion
+        let myPersonId: Int?
+        
+        public init(instance: Instance3, person: Person4?) {
+            self.siteVersion = instance.version
+            self.myPersonId = person?.id
+        }
     }
 }
 
