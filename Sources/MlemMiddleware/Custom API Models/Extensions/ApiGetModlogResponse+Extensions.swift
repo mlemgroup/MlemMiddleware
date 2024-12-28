@@ -22,6 +22,31 @@ extension ApiGetModlogResponse {
         output += hiddenCommunities
         output += transferredToCommunity
         output += addedToCommunity
+        output += added
+        output += bannedFromCommunity
+        output += banned
+        output += adminPurgedPersons
         return output
+    }
+    
+    func getEntries(ofType type: ApiModlogActionType) -> [any ModlogEntryApiBacker] {
+        switch type {
+        case .all: allEntries
+        case .modRemovePost: removedPosts
+        case .modLockPost: lockedPosts
+        case .modFeaturePost: featuredPosts
+        case .modRemoveComment: removedComments
+        case .modRemoveCommunity: removedCommunities
+        case .modBanFromCommunity: bannedFromCommunity
+        case .modAddCommunity: addedToCommunity
+        case .modTransferCommunity: transferredToCommunity
+        case .modAdd: added
+        case .modBan: banned
+        case .modHideCommunity: hiddenCommunities
+        case .adminPurgePerson: adminPurgedPersons
+        case .adminPurgeCommunity: adminPurgedCommunities
+        case .adminPurgePost: adminPurgedPosts
+        case .adminPurgeComment: adminPurgedComments
+        }
     }
 }

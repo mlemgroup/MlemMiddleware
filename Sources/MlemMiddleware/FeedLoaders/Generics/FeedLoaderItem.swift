@@ -7,17 +7,9 @@
 
 import Foundation
 
-public protocol FeedLoadable: ActorIdentifiable, Filterable, Equatable {
+public protocol FeedLoadable: Filterable, Equatable {
     associatedtype FilterType
     var api: ApiClient { get }
     
     func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort
-    
-    static func == (lhs: any FeedLoadable, rhs: any FeedLoadable) -> Bool
-}
-
-public extension FeedLoadable {
-    static func == (lhs: any FeedLoadable, rhs: any FeedLoadable) -> Bool {
-        lhs.actorId == rhs.actorId
-    }
 }

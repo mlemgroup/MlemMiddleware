@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class PersonContent: Hashable, Equatable, FeedLoadable {
+public class PersonContent: Hashable, Equatable, FeedLoadable, ActorIdentifiable {
     public typealias FilterType = PersonContentFilterType
     
     public let wrappedValue: Value
@@ -55,6 +55,6 @@ public class PersonContent: Hashable, Equatable, FeedLoadable {
     }
     
     public static func == (lhs: PersonContent, rhs: PersonContent) -> Bool {
-        lhs.hashValue == rhs.hashValue
+        lhs.actorId == rhs.actorId
     }
 }

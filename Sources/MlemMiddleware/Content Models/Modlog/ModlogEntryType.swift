@@ -8,7 +8,7 @@
 import Foundation
 
 
-public enum ModlogEntryType {
+public enum ModlogEntryType: Equatable {
     case removePost(
         _ post: Post1,
         community: Community1,
@@ -68,13 +68,13 @@ public enum ModlogEntryType {
         community: Community1,
         banned: Bool,
         reason: String?,
-        expires: Date
+        expires: Date?
     )
     case banPersonFromInstance(
         person: Person1,
         banned: Bool,
         reason: String?,
-        expires: Date
+        expires: Date?
     )
     case purgePerson(reason: String?)
     
