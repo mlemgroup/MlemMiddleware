@@ -123,4 +123,10 @@ public extension ApiClient {
         guard response.success else { throw ApiClientError.unsuccessful }
         caches.community1.retrieveModel(cacheId: id)?.purged = true
     }
+    
+    func hideCommunity(id: Int, hide: Bool, reason: String?) async throws {
+        let request = HideCommunityRequest(communityId: id, hidden: hide, reason: reason)
+        let response = try await perform(request)
+        guard response.success else { throw ApiClientError.unsuccessful }
+    }
 }

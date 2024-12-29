@@ -7,13 +7,13 @@
 
 import Foundation
 
-public enum InboxItem: FeedLoadable, ReadableProviding {
+public enum InboxItem: FeedLoadable, ReadableProviding, ActorIdentifiable {
     public typealias FilterType = InboxItemFilterType
     
     case message(Message2)
     case reply(Reply2)
     
-    var baseValue: any FeedLoadable {
+    var baseValue: any FeedLoadable & ActorIdentifiable {
         switch self {
         case let .message(message2): message2
         case let .reply(reply2): reply2
@@ -35,6 +35,10 @@ public enum InboxItem: FeedLoadable, ReadableProviding {
     
     public var actorId: URL {
         baseValue.actorId
+    }
+    
+    public static func == (lhs: InboxItem, rhs: InboxItem) -> Bool {
+        lhs.actorId == rhs.actorId
     }
 }
 
