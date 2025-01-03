@@ -20,6 +20,7 @@ public protocol PersonStubProviding: CommunityOrPersonStub {
     // From Person1Providing.
     var id_: Int? { get }
     var created_: Date? { get }
+    var instanceId_: Int? { get }
     var updated_: Date? { get }
     var displayName_: String? { get }
     var description_: String? { get }
@@ -74,6 +75,7 @@ public extension PersonStubProviding {
     
     var id_: Int? { nil }
     var created_: Date? { nil }
+    var instanceId_: Int? { nil }
     var updated_: Date? { nil }
     var displayName_: String? { nil }
     var description_: String? { nil }

@@ -16,6 +16,7 @@ class Community1Cache: ApiTypeBackedCache<Community1, ApiCommunity> {
             id: apiType.id,
             name: apiType.name,
             created: apiType.published,
+            instanceId: apiType.instanceId,
             updated: apiType.updated,
             displayName: apiType.title,
             description: apiType.description,
@@ -25,7 +26,9 @@ class Community1Cache: ApiTypeBackedCache<Community1, ApiCommunity> {
             avatar: apiType.icon,
             banner: apiType.banner,
             hidden: apiType.hidden,
-            onlyModeratorsCanPost: apiType.postingRestrictedToMods
+            onlyModeratorsCanPost: apiType.postingRestrictedToMods,
+            blocked: nil,
+            visibility: apiType.visibility
         )
     }
     
@@ -49,7 +52,8 @@ class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
                 month: apiType.counts.usersActiveMonth,
                 week: apiType.counts.usersActiveWeek,
                 day: apiType.counts.usersActiveDay
-            )
+            ),
+            bannedFromCommunity: apiType.bannedFromCommunity
         )
     }
     

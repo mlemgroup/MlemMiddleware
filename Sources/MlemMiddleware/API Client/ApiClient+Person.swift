@@ -8,6 +8,26 @@
 import Foundation
 
 public extension ApiClient {
+    func decodePerson(_ data: Person1.CodedData) async throws -> Person1 {
+        guard data.apiUrl == baseUrl else {
+            throw ApiClientError.mismatchingUrl
+        }
+        guard data.apiMyPersonId == (try await myPersonId) else {
+            throw ApiClientError.mismatchingPersonId
+        }
+        return await caches.person1.getModel(api: self, from: data.apiPerson, isStale: true)
+    }
+    
+    func decodePerson(_ data: Person2.CodedData) async throws -> Person2 {
+        guard data.apiUrl == baseUrl else {
+            throw ApiClientError.mismatchingUrl
+        }
+        guard data.apiMyPersonId == (try await myPersonId) else {
+            throw ApiClientError.mismatchingPersonId
+        }
+        return await caches.person2.getModel(api: self, from: data.apiPersonView, isStale: true)
+    }
+    
     func getPerson(id: Int) async throws -> Person3 {
         let request = GetPersonDetailsRequest(
             personId: id,

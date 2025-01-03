@@ -8,6 +8,26 @@
 import Foundation
 
 public extension ApiClient {
+    func decodeCommunity(_ data: Community1.CodedData) async throws -> Community1 {
+        guard data.apiUrl == baseUrl else {
+            throw ApiClientError.mismatchingUrl
+        }
+        guard data.apiMyPersonId == (try await myPersonId) else {
+            throw ApiClientError.mismatchingPersonId
+        }
+        return await caches.community1.getModel(api: self, from: data.apiCommunity, isStale: true)
+    }
+    
+    func decodeCommunity(_ data: Community2.CodedData) async throws -> Community2 {
+        guard data.apiUrl == baseUrl else {
+            throw ApiClientError.mismatchingUrl
+        }
+        guard data.apiMyPersonId == (try await myPersonId) else {
+            throw ApiClientError.mismatchingPersonId
+        }
+        return await caches.community2.getModel(api: self, from: data.apiCommunityView, isStale: true)
+    }
+    
     func getCommunity(id: Int) async throws -> Community3 {
         let request = GetCommunityRequest(id: id, name: nil)
         let response = try await perform(request)

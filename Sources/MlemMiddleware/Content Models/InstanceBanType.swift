@@ -11,4 +11,11 @@ public enum InstanceBanType: Equatable {
     case notBanned
     case permanentlyBanned
     case temporarilyBanned(expires: Date)
+    
+    var expiryDate: Date? {
+        switch self {
+        case let .temporarilyBanned(expires): expires
+        default: nil
+        }
+    }
 }

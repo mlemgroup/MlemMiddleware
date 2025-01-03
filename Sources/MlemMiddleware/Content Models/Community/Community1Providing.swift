@@ -33,6 +33,7 @@ public extension Community1Providing {
     
     var id: Int { community1.id }
     var created: Date { community1.created }
+    var instanceId: Int { community1.instanceId }
     var updated: Date? { community1.updated }
     var displayName: String { community1.displayName }
     var description: String? { community1.description }
@@ -46,9 +47,11 @@ public extension Community1Providing {
     var onlyModeratorsCanPost: Bool { community1.onlyModeratorsCanPost }
     var blocked: Bool { community1.blocked }
     var purged: Bool { community1.purged }
+    var visibility: ApiCommunityVisibility? { community1.visibility }
     
     var id_: Int? { community1.id }
     var created_: Date? { community1.created }
+    var instanceId_: Int? { community1.instanceId }
     var updated_: Date? { community1.updated }
     var displayName_: String? { community1.displayName }
     var description_: String? { community1.description }
@@ -62,6 +65,7 @@ public extension Community1Providing {
     var onlyModeratorsCanPost_: Bool? { community1.onlyModeratorsCanPost }
     var blocked_: Bool? { community1.blocked }
     var purged_: Bool? { community1.purged }
+    var visibility_: ApiCommunityVisibility? { community1.visibility }
 }
 
 // FeedLoadable conformance

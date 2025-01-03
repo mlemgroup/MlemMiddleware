@@ -9,8 +9,8 @@ import Foundation
 
 internal struct SubscriptionModel: Hashable, Equatable {
     // These are the values actually provided by the API.
-    private var actualTotal: Int
-    private var actualLocal: Int?
+    internal var actualTotal: Int
+    internal var actualLocal: Int?
     
     var subscribed: Bool
     
@@ -74,6 +74,14 @@ internal struct SubscriptionModel: Hashable, Equatable {
 }
 
 extension SubscriptionModel {
+    internal var subscribedType: ApiSubscribedType {
+        if subscribed {
+            pending ? .pending : .subscribed
+        } else {
+            .notSubscribed
+        }
+    }
+    
     func withSubscriptionStatus(subscribed shouldSubscribe: Bool, isLocal: Bool) -> SubscriptionModel {
         guard shouldSubscribe != self.subscribed else { return self }
         

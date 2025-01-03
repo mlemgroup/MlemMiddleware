@@ -19,6 +19,7 @@ public final class Community1: Community1Providing {
     
     public let name: String
     public let created: Date
+    public let instanceId: Int
     
     public var updated: Date? = .distantPast
     public var displayName: String = ""
@@ -29,6 +30,7 @@ public final class Community1: Community1Providing {
     public var banner: URL?
     public var hidden: Bool = false
     public var onlyModeratorsCanPost: Bool = false
+    public var visibility: ApiCommunityVisibility?
     
     public var purged: Bool = false
     
@@ -45,23 +47,26 @@ public final class Community1: Community1Providing {
         id: Int,
         name: String,
         created: Date,
-        updated: Date? = .distantPast,
-        displayName: String = "",
-        description: String? = nil,
-        removed: Bool = false,
-        deleted: Bool = false,
-        nsfw: Bool = false,
-        avatar: URL? = nil,
-        banner: URL? = nil,
-        hidden: Bool = false,
-        onlyModeratorsCanPost: Bool = false,
-        blocked: Bool? = nil
+        instanceId: Int,
+        updated: Date?,
+        displayName: String,
+        description: String?,
+        removed: Bool,
+        deleted: Bool,
+        nsfw: Bool,
+        avatar: URL?,
+        banner: URL?,
+        hidden: Bool,
+        onlyModeratorsCanPost: Bool,
+        blocked: Bool?,
+        visibility: ApiCommunityVisibility?
     ) {
         self.api = api
         self.actorId = actorId
         self.id = id
         self.name = name
         self.created = created
+        self.instanceId = instanceId
         self.updated = updated
         self.displayName = displayName
         self.description = description
@@ -72,6 +77,7 @@ public final class Community1: Community1Providing {
         self.banner = banner
         self.hidden = hidden
         self.onlyModeratorsCanPost = onlyModeratorsCanPost
+        self.visibility = visibility
         self.blockedManager = .init(wrappedValue: blocked ?? api.blocks?.communities.keys.contains(actorId) ?? false)
         self.blockedManager.onSet = { newValue, type, _ in
             if type != .receive {

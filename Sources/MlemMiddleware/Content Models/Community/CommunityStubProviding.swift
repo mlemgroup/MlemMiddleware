@@ -11,6 +11,7 @@ public protocol CommunityStubProviding: CommunityOrPersonStub {
     // From Community1Providing.
     var id_: Int? { get }
     var created_: Date? { get }
+    var instanceId_: Int? { get }
     var updated_: Date? { get }
     var displayName_: String? { get }
     var description_: String? { get }
@@ -24,6 +25,7 @@ public protocol CommunityStubProviding: CommunityOrPersonStub {
     var onlyModeratorsCanPost_: Bool? { get }
     var blocked_: Bool? { get }
     var purged_: Bool? { get }
+    var visibility_: ApiCommunityVisibility? { get }
     
     // From Community2Providing.
     var subscribed_: Bool? { get }
@@ -50,6 +52,7 @@ public extension CommunityStubProviding {
     // From Community1Providing.
     var id_: Int? { nil }
     var created_: Date? { nil }
+    var instanceId_: Int? { nil }
     var updated_: Date? { nil }
     var displayName_: String? { nil }
     var description_: String? { nil }
@@ -63,6 +66,7 @@ public extension CommunityStubProviding {
     var onlyModeratorsCanPost_: Bool? { nil }
     var blocked_: Bool? { nil }
     var purged_: Bool? { nil }
+    var visibility_: ApiCommunityVisibility? { nil }
     
     // From Community2Providing.
     var subscribed_: Bool? { nil }
