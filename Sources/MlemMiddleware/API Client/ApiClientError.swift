@@ -27,6 +27,8 @@ public enum ApiClientError: Error {
     case noEntityFound
     case invalidInput
     case imageTooLarge
+    case mismatchingUrl
+    case mismatchingPersonId
 }
 
 extension ApiClientError: CustomStringConvertible {
@@ -69,6 +71,10 @@ extension ApiClientError: CustomStringConvertible {
             return "No entity returned in response."
         case .invalidInput:
             return "Invalid input"
+        case .mismatchingUrl:
+            return "URL of the decoding ApiClient doesn't match the URL of the ApiClient that encoded the data"
+        case .mismatchingPersonId:
+            return "Person ID of the decoding ApiClient doesn't match the Person ID of the ApiClient that encoded the data"
         }
     }
 }

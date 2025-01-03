@@ -9,10 +9,17 @@ import Foundation
 
 /// Class providing caching behavior for models associated with API types
 class ApiTypeBackedCache<Content: CacheIdentifiable & AnyObject & ContentModel, ApiType: CacheIdentifiable>: CoreCache<Content> {
-    @MainActor
-    func getModel(api: ApiClient, from apiType: ApiType, semaphore: UInt? = nil) -> Content {
+    @MainActor func getModel(
+        api: ApiClient,
+        from apiType: ApiType,
+        // If `true`, the model will not be updated with the incoming data if the model already exists.
+        isStale: Bool = false,
+        semaphore: UInt? = nil
+    ) -> Content {
         if let item = retrieveModel(cacheId: apiType.cacheId) {
-            updateModel(item, with: apiType, semaphore: semaphore)
+            if !isStale {
+                updateModel(item, with: apiType, semaphore: semaphore)
+            }
             return item
         }
         
@@ -22,14 +29,24 @@ class ApiTypeBackedCache<Content: CacheIdentifiable & AnyObject & ContentModel, 
     }
     
     @MainActor
-    func getModels(api: ApiClient, from apiTypes: any Sequence<ApiType>, semaphore: UInt? = nil) -> [Content] {
-        apiTypes.map { getModel(api: api, from: $0, semaphore: semaphore) }
+    func getModels(
+        api: ApiClient,
+        from apiTypes: any Sequence<ApiType>,
+        isStale: Bool = false,
+        semaphore: UInt? = nil
+    ) -> [Content] {
+        apiTypes.map { getModel(api: api, from: $0, isStale: isStale, semaphore: semaphore) }
     }
     
     @MainActor
-    func getOptionalModel(api: ApiClient, from apiType: ApiType?, semaphore: UInt? = nil) -> Content? {
+    func getOptionalModel(
+        api: ApiClient,
+        from apiType: ApiType?,
+        isStale: Bool = false,
+        semaphore: UInt? = nil
+    ) -> Content? {
         if let apiType {
-            return getModel(api: api, from: apiType, semaphore: semaphore)
+            return getModel(api: api, from: apiType, isStale: isStale, semaphore: semaphore)
         }
         return nil
     }

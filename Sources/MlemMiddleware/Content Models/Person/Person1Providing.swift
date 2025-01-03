@@ -37,6 +37,7 @@ public extension Person1Providing {
     var name: String { person1.name }
     
     var created: Date { person1.created }
+    var instanceId: Int { person1.instanceId }
     var updated: Date? { person1.updated }
     var displayName: String { person1.displayName }
     var description: String? { person1.description }
@@ -51,6 +52,7 @@ public extension Person1Providing {
     
     var id_: Int? { person1.id }
     var created_: Date? { person1.created }
+    var instanceId_: Int? { person1.instanceId }
     var updated_: Date? { person1.updated }
     var displayName_: String? { person1.displayName }
     var description_: String? { person1.description }
