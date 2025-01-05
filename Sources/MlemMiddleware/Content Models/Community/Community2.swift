@@ -25,17 +25,18 @@ public final class Community2: Community2Providing {
     /// Used to state-fake internally.
     internal var shouldBeFavorited: Bool = false
 
-    public var postCount: Int = 0
-    public var commentCount: Int = 0
-    public var activeUserCount: ActiveUserCount = .zero
+    public var postCount: Int
+    public var commentCount: Int
+    public var activeUserCount: ActiveUserCount
 
     internal init(
         api: ApiClient,
         community1: Community1,
         subscription: SubscriptionModel,
-        postCount: Int = 0,
-        commentCount: Int = 0,
-        activeUserCount: ActiveUserCount = .zero
+        postCount: Int,
+        commentCount: Int,
+        activeUserCount: ActiveUserCount,
+        bannedFromCommunity: Bool?
     ) {
         self.api = api
         self.community1 = community1
@@ -52,5 +53,8 @@ public final class Community2: Community2Providing {
         }
         self.shouldBeFavorited = favorited
         self.subscriptionManager.onSet(subscription, .receive, nil)
+        if let bannedFromCommunity {
+            api.myPerson?.person1.updateKnownCommunityBanState(id: id, banned: bannedFromCommunity)
+        }
     }
 }

@@ -19,6 +19,7 @@ public final class Person1: Person1Providing {
     
     public let name: String
     public let created: Date
+    public let instanceId: Int
     
     public var updated: Date? = .distantPast
     public var displayName: String
@@ -52,22 +53,24 @@ public final class Person1: Person1Providing {
         id: Int,
         name: String,
         created: Date,
-        updated: Date? = .distantPast,
-        displayName: String = "",
-        description: String? = nil,
-        matrixId: String? = nil,
-        avatar: URL? = nil,
-        banner: URL? = nil,
-        deleted: Bool = false,
-        isBot: Bool = false,
-        instanceBan: InstanceBanType = .notBanned,
-        blocked: Bool? = nil
+        instanceId: Int,
+        updated: Date?,
+        displayName: String,
+        description: String?,
+        matrixId: String?,
+        avatar: URL?,
+        banner: URL?,
+        deleted: Bool,
+        isBot: Bool,
+        instanceBan: InstanceBanType,
+        blocked: Bool?
     ) {
         self.api = api
         self.actorId = actorId
         self.id = id
         self.name = name
         self.created = created
+        self.instanceId = instanceId
         self.updated = updated
         self.displayName = displayName
         self.description = description

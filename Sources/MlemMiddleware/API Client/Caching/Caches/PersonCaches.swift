@@ -27,6 +27,7 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
             id: apiType.id,
             name: apiType.name,
             created: apiType.published,
+            instanceId: apiType.instanceId,
             updated: apiType.updated,
             displayName: apiType.displayName ?? apiType.name,
             description: apiType.bio,
@@ -49,9 +50,16 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
 // Person2 can be created from any Person2ApiBacker, so we can't use ApiTypeBackedCache
 class Person2Cache: CoreCache<Person2> {
     @MainActor
-    func getModel(api: ApiClient, from apiType: any Person2ApiBacker, semaphore: UInt? = nil) -> Person2 {
+    func getModel(
+        api: ApiClient,
+        from apiType: any Person2ApiBacker,
+        isStale: Bool = false,
+        semaphore: UInt? = nil
+    ) -> Person2 {
         if let item = retrieveModel(cacheId: apiType.cacheId) {
-            item.update(with: apiType, semaphore: semaphore)
+            if !isStale {
+                item.update(with: apiType, semaphore: semaphore)
+            }
             return item
         }
         
@@ -67,8 +75,13 @@ class Person2Cache: CoreCache<Person2> {
     }
     
     @MainActor
-    func getModels(api: ApiClient, from apiTypes: [any Person2ApiBacker], semaphore: UInt? = nil) -> [Person2] {
-        apiTypes.map { getModel(api: api, from: $0, semaphore: semaphore) }
+    func getModels(
+        api: ApiClient,
+        from apiTypes: [any Person2ApiBacker],
+        isStale: Bool = false,
+        semaphore: UInt? = nil
+    ) -> [Person2] {
+        apiTypes.map { getModel(api: api, from: $0, isStale: isStale, semaphore: semaphore) }
     }
 }
 
