@@ -10,7 +10,12 @@ import Observation
 @Observable
 public class SubscriptionList {
     /// All subscribed-to communities, including favorited communities.
-    public private(set) var communities: Set<Community2> = .init()
+    public private(set) var communities: Set<Community2> = .init() {
+        didSet {
+            communityIds = .init(communities.map(\.id))
+        }
+    }
+    public private(set) var communityIds: Set<Int> = .init()
     public private(set) var favorites: [Community2] = .init()
     public private(set) var alphabeticSections: [String?: [Community2]] = .init()
     public private(set) var instanceSections: [String?: [Community2]] = .init()
