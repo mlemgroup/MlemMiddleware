@@ -66,6 +66,16 @@ actor LoadingActor<Item: FeedLoadable> {
         print("[\(Item.self) LoadingActor] finished loading")
     }
     
+    @discardableResult
+    func filterItem(_ target: Item) -> Item? {
+        let filtered = filter.filter([target])
+        if filtered.isEmpty {
+            return nil
+        } else {
+            return filtered[0]
+        }
+    }
+    
     func activateFilter(_ target: Item.FilterType, callback: () async throws -> Void) async throws {
         loadingTask?.cancel()
         loadingTask = nil

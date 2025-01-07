@@ -19,4 +19,8 @@ public protocol FeedLoading<Item>: AnyObject {
     func refresh(clearBeforeRefresh: Bool) async throws
     func clear() async
     func changeApi(to newApi: ApiClient, context: FilterContext) async
+    
+    /// Adds the given item to the beginning of the items array, regardless of whether it should be filtered
+    /// - Warning: when using this method with multi-feed loaders, you must call this on both the parent loader and the relevant child loader!
+    func prependItem(_ newItem: Item)
 }
