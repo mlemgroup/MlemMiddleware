@@ -74,9 +74,4 @@ public class MessageFeedLoader: StandardFeedLoader<Message2> {
             )
         )
     }
-    
-    @MainActor
-    public func insertCreatedMessage(_ message: Message2) {
-        self.prependItem(message)
-    }
 }

@@ -107,6 +107,7 @@ public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
     var personContentFetcher: PersonContentFetcher { fetcher as! PersonContentFetcher }
     
     public var api: ApiClient { personContentFetcher.api }
+    public var userId: Int { personContentFetcher.userId }
     
     // MARK: Custom Behavior
     // This FeedLoader is slightly awkward because it functions like a multi-loader but draws its posts and comments from a single API call. The streams act essentially like child loaders, but are populated using custom behavior in the fetcher. This FeedLoader is best understood as a multi-loader with the streams as child loaders.

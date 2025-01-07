@@ -50,8 +50,13 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     }
     
     @MainActor
-    func prependItem(_ newItem: Item) {
+    public func prependItem(_ newItem: Item) {
         items.prepend(newItem)
+        
+        // filter the item on a background thread for deduping
+        Task {
+            await loadingActor.filterItem(newItem)
+        }
     }
     
     // MARK: - External methods
