@@ -45,4 +45,8 @@ public final class Instance3: Instance3Providing {
         self.blockedUrls = blockedUrls
         self.administrators = administrators
     }
+    
+    public func addAdmin(personId: Int, added: Bool) async throws {
+        try await api.addAdmin(to: self, personId: personId, added: added)
+    }
 }

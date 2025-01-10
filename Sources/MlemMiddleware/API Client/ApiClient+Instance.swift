@@ -53,3 +53,22 @@ public extension ApiClient {
         }
     }
 }
+
+extension ApiClient {
+    /// Adds an admin to this API's instance
+    func addAdmin(to instance: Instance3, personId: Int, added: Bool) async throws {
+        guard instance.api == self else {
+            assertionFailure("Instance API does not match self")
+            throw ApiClientError.invalidInput
+        }
+        
+        // the `to: instance` is a bit clunky but needed to set administrators without re-fetching the whole instance or
+        // asserting the presence of `myInstance`
+        let request = AddAdminRequest(personId: personId, added: added)
+        let response = try await perform(request)
+        instance.administrators = await caches.person2.getModels(
+            api: self,
+            from: response.admins
+        )
+    }
+}
