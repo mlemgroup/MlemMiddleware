@@ -56,31 +56,28 @@ public extension ApiClient {
 
 extension ApiClient {
     /// Adds or removes an admin from this API's instance
-    func addAdmin(to instance: Instance3, personId: Int, added: Bool) async throws {
+    func addAdmin(to instance_: any Instance3Providing, person: any Person, added: Bool) async throws {
+        let instance = instance_.instance3
+        
         guard instance.api == self else {
             assertionFailure("Instance API does not match self")
             throw ApiClientError.invalidInput
         }
         
-        let person = instance.administrators.first(where: { $0.id == personId })
+        // let person = instance.administrators.first(where: { $0.id == personId })
         
         // the `to: instance` is a bit clunky but needed to set administrators without re-fetching the whole instance or
         // asserting the presence of `myInstance`
-        let request = AddAdminRequest(personId: personId, added: added)
+        let request = AddAdminRequest(personId: person.id, added: added)
         let response = try await perform(request)
         instance.administrators = await caches.person2.getModels(
             api: self,
             from: response.admins
         )
         
-        if !added {
-            guard let person,
-                  !instance.administrators.contains(where: { $0.id == personId }) else {
-                assertionFailure("Invalid request")
-                return
-            }
-            
-            person.isAdmin = false
+        // only need to update this manually if removing admin, otherwise handled by above caching logic
+        if !added, let person2 = person as? any Person2Providing {
+            person2.person2.isAdmin = false
         }
     }
 }

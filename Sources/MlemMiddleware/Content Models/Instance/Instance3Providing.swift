@@ -17,8 +17,6 @@ public protocol Instance3Providing: Instance2Providing {
     var customEmojis: [ApiCustomEmojiView] { get }
     var blockedUrls: [ApiLocalSiteUrlBlocklist]? { get }
     var administrators: [Person2] { get }
-    
-    func addAdmin(personId: Int, added: Bool) async throws
 }
 
 public extension Instance3Providing {
@@ -39,4 +37,9 @@ public extension Instance3Providing {
     var customEmojis_: [ApiCustomEmojiView]? { instance3.customEmojis }
     var blockedUrls_: [ApiLocalSiteUrlBlocklist]? { instance3.blockedUrls }
     var administrators_: [Person2]? { instance3.administrators }
+    
+    
+    public func addAdmin(person: any Person, added: Bool) async throws {
+        try await api.addAdmin(to: self.instance3, person: person, added: added)
+    }
 }
