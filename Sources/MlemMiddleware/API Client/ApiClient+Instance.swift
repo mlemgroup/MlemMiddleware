@@ -64,8 +64,6 @@ extension ApiClient {
             throw ApiClientError.invalidInput
         }
         
-        // let person = instance.administrators.first(where: { $0.id == personId })
-        
         // the `to: instance` is a bit clunky but needed to set administrators without re-fetching the whole instance or
         // asserting the presence of `myInstance`
         let request = AddAdminRequest(personId: person.id, added: added)
