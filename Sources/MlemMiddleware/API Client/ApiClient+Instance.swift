@@ -55,12 +55,14 @@ public extension ApiClient {
 }
 
 extension ApiClient {
-    /// Adds an admin to this API's instance
+    /// Adds or removes an admin from this API's instance
     func addAdmin(to instance: Instance3, personId: Int, added: Bool) async throws {
         guard instance.api == self else {
             assertionFailure("Instance API does not match self")
             throw ApiClientError.invalidInput
         }
+        
+        let person = instance.administrators.first(where: { $0.id == personId })
         
         // the `to: instance` is a bit clunky but needed to set administrators without re-fetching the whole instance or
         // asserting the presence of `myInstance`
@@ -70,5 +72,15 @@ extension ApiClient {
             api: self,
             from: response.admins
         )
+        
+        if !added {
+            guard let person,
+                  !instance.administrators.contains(where: { $0.id == personId }) else {
+                assertionFailure("Invalid request")
+                return
+            }
+            
+            person.isAdmin = false
+        }
     }
 }
