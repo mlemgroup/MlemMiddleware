@@ -31,7 +31,6 @@ public protocol PersonStubProviding: CommunityOrPersonStub {
     var isBot_: Bool? { get }
     var instanceBan_: InstanceBanType? { get }
     var blocked_: Bool? { get }
-    var local_: Bool? { get }
     
     // From Person2Providing.
     var postCount_: Int? { get }
@@ -87,7 +86,6 @@ public extension PersonStubProviding {
     var isBot_: Bool? { nil }
     var instanceBan_: InstanceBanType? { nil }
     var blocked_: Bool? { nil }
-    var local_: Bool? { nil }
     
     var postCount_: Int? { nil }
     var commentCount_: Int? { nil }

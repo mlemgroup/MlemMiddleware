@@ -50,7 +50,6 @@ public extension Person1Providing {
     var instanceBan: InstanceBanType { person1.instanceBan }
     var blocked: Bool { person1.blocked }
     var purged: Bool { person1.purged }
-    var local: Bool { person1.local }
     
     var id_: Int? { person1.id }
     var created_: Date? { person1.created }
