@@ -52,9 +52,7 @@ public extension ApiClient {
             blocks?.instances.removeValue(forKey: actorId)
         }
     }
-}
-
-extension ApiClient {
+    
     /// Adds or removes an admin from this API's instance
     @discardableResult
     func addAdmin(personId: Int, added: Bool) async throws -> [Person2] {
