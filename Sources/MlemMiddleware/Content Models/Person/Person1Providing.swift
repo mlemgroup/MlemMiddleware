@@ -23,7 +23,6 @@ public protocol Person1Providing:
     var deleted: Bool { get }
     var isBot: Bool { get }
     var instanceBan: InstanceBanType { get }
-    var local: Bool { get }
     
     var blocked: Bool { get }
 }
