@@ -42,4 +42,8 @@ public extension Instance3Providing {
     func addAdmin(personId: Int, added: Bool) async throws {
         try await api.addAdmin(personId: personId, added: added)
     }
+    
+    func addAdmin(_ person: any Person, added: Bool) async throws {
+        try await addAdmin(personId: person.id, added: added)
+    }
 }
