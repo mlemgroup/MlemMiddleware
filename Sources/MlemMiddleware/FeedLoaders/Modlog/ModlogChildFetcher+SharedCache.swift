@@ -10,7 +10,7 @@ import Foundation
 extension ModlogChildFetcher {
     class SharedCache {
         typealias TaskResponse = Dictionary<ApiModlogActionType, [ModlogEntry]>
-        let api: ApiClient
+        var api: ApiClient
         let pageSize: Int
         var communityId: Int?
         var ongoingTask: Task<TaskResponse, Error>?

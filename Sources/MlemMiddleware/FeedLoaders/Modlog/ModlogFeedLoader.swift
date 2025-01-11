@@ -48,17 +48,28 @@ public class ModlogFeedLoader: StandardFeedLoader<ModlogEntry> {
         }
     }
     
-    public func items(ofType type: ApiModlogActionType) -> [ModlogEntry] {
-        modlogSources.first { $0.modlogFetcher.type == type }?.items ?? []
+    public func items(ofType type: ApiModlogActionType?) -> [ModlogEntry] {
+        if let type, type != .all {
+            modlogSources.first { $0.modlogFetcher.type == type }?.items ?? []
+        } else {
+            items
+        }
+    }
+    
+    public func childLoader(ofType type: ApiModlogActionType) -> ModlogChildFeedLoader {
+        modlogSources.first(where: { $0.modlogFetcher.type == type })!
     }
     
     public func refresh(
+        api: ApiClient? = nil,
         communityId: Int? = nil,
         clearBeforeRefresh: Bool = false
     ) async throws {
+        sharedCache.api = api ?? sharedCache.api
         sharedCache.communityId = communityId
-        modlogSources.forEach { item in
-            item.modlogFetcher.communityId = communityId ?? item.modlogFetcher.communityId
+        for source in modlogSources {
+            await source.changeApi(to: api ?? sharedCache.api, context: .none())
+            source.modlogFetcher.communityId = communityId ?? source.modlogFetcher.communityId
         }
         try await refresh(clearBeforeRefresh: clearBeforeRefresh)
     }
