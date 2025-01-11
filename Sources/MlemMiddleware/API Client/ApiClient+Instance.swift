@@ -56,18 +56,27 @@ public extension ApiClient {
 
 extension ApiClient {
     /// Adds or removes an admin from this API's instance
-    func addAdmin(_ person: any Person, added: Bool) async throws -> [Person2] {
-        let request = AddAdminRequest(personId: person.id, added: added)
+    @discardableResult
+    func addAdmin(personId: Int, added: Bool) async throws -> [Person2] {
+        let request = AddAdminRequest(personId: personId, added: added)
         let response = try await perform(request)
         
-        // only need to update this manually if removing admin, otherwise handled by above caching logic
-        if !added, let person2 = person as? any Person2Providing {
-            person2.person2.isAdmin = false
-        }
-        
-        return await caches.person2.getModels(
+        let updatedAdministrators = await caches.person2.getModels(
             api: self,
             from: response.admins
         )
+        
+        // update person's admin status
+        // only need to do this manually if removing admin, otherwise handled by above caching logic
+        if !added, let person = caches.person2.retrieveModel(cacheId: personId) {
+            person.isAdmin = false
+        }
+        
+        // update instance admins
+        if let myInstance {
+            myInstance.administrators = updatedAdministrators
+        }
+        
+        return updatedAdministrators
     }
 }
