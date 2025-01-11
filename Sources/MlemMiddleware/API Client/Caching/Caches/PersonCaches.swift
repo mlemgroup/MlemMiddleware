@@ -25,7 +25,6 @@ class Person1Cache: ApiTypeBackedCache<Person1, ApiPerson> {
             api: api,
             actorId: apiType.actorId,
             id: apiType.id,
-            local: apiType.local,
             name: apiType.name,
             created: apiType.published,
             instanceId: apiType.instanceId,

@@ -39,7 +39,7 @@ public extension Instance3Providing {
     var administrators_: [Person2]? { instance3.administrators }
     
     
-    public func addAdmin(person: any Person, added: Bool) async throws {
-        try await api.addAdmin(to: self.instance3, person: person, added: added)
+    func addAdmin(person: any Person, added: Bool) async throws {
+        instance3.administrators = try await api.addAdmin(person, added: added)
     }
 }

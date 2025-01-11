@@ -16,7 +16,6 @@ public final class Person1: Person1Providing {
     
     public let actorId: URL
     public let id: Int
-    public let local: Bool
     
     public let name: String
     public let created: Date
@@ -52,7 +51,6 @@ public final class Person1: Person1Providing {
         api: ApiClient,
         actorId: URL,
         id: Int,
-        local: Bool,
         name: String,
         created: Date,
         instanceId: Int,
@@ -70,7 +68,6 @@ public final class Person1: Person1Providing {
         self.api = api
         self.actorId = actorId
         self.id = id
-        self.local = local
         self.name = name
         self.created = created
         self.instanceId = instanceId
