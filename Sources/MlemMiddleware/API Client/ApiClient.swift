@@ -258,6 +258,12 @@ extension ApiClient: Hashable {
     }
 }
 
+extension ApiClient: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        "ApiClient(\(host ?? ""), authenticated: \(token != nil))"
+    }
+}
+
 extension ApiClient {
     public struct Context {
         let siteVersion: SiteVersion

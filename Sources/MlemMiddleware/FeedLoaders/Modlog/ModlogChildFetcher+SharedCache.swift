@@ -10,17 +10,19 @@ import Foundation
 extension ModlogChildFetcher {
     class SharedCache {
         typealias TaskResponse = Dictionary<ApiModlogActionType, [ModlogEntry]>
-        let api: ApiClient
+        var api: ApiClient
         let pageSize: Int
+        var communityId: Int?
         var ongoingTask: Task<TaskResponse, Error>?
         
-        init(api: ApiClient, pageSize: Int) {
+        init(api: ApiClient, pageSize: Int, communityId: Int?) {
             self.api = api
             self.pageSize = pageSize
+            self.communityId = communityId
         }
         
         private func fetchItems() async throws -> TaskResponse {
-            let response = try await api.getModlog(page: 1, limit: pageSize)
+            let response = try await api.getModlog(page: 1, limit: pageSize, communityId: communityId)
             return .init(grouping: response, by: { $0.type.type })
         }
         
@@ -35,6 +37,11 @@ extension ModlogChildFetcher {
             }
             let response = try await task.result.get()
             return response[type] ?? []
+        }
+        
+        @MainActor
+        func reset() {
+            ongoingTask = nil
         }
     }
 }
