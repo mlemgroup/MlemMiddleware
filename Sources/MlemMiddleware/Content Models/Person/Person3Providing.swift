@@ -29,10 +29,34 @@ public extension Person3Providing {
     func upgrade() async throws -> any Person { self }
     
     func moderates(communityId: Int) -> Bool {
-        self.moderatedCommunities.contains { $0.id == communityId }
+        self.isAdmin || self.moderatedCommunities.contains { $0.id == communityId }
     }
     
     func moderates(community: any CommunityStubProviding) -> Bool {
-        self.moderatedCommunities.contains { $0.actorId == community.actorId }
+        self.isAdmin || self.moderatedCommunities.contains { $0.actorId == community.actorId }
+    }
+    
+    /// Returns true if this person can perform moderator actions on the target person
+    func canModerate(_ person: any Person, in community: any Community3Providing) -> Bool {
+        // admins can moderate anybody but a higher-ranking admin
+        if isAdmin {
+            if person.isAdmin_ ?? false {
+                return api.isHigherAdmin(than: person)
+            }
+            return true
+        }
+        
+        // if this person is not a mod, can't moderate
+        guard let myModIndex = community.moderators.firstIndex(where: { $0.id == id }) else {
+            return false
+        }
+        
+        // if target is a mod, check that this person outranks them
+        if let targetModIndex = community.moderators.firstIndex(where: { $0.id == person.id }) {
+            return myModIndex < targetModIndex
+        }
+        
+        // if target not a mod, can moderate
+        return true
     }
 }
