@@ -29,11 +29,11 @@ public extension Person3Providing {
     func upgrade() async throws -> any Person { self }
     
     func moderates(communityId: Int) -> Bool {
-        self.isAdmin || self.moderatedCommunities.contains { $0.id == communityId }
+        self.moderatedCommunities.contains { $0.id == communityId }
     }
     
     func moderates(community: any CommunityStubProviding) -> Bool {
-        self.isAdmin || self.moderatedCommunities.contains { $0.actorId == community.actorId }
+        self.moderatedCommunities.contains { $0.actorId == community.actorId }
     }
     
     /// Returns true if this person can perform moderator actions on the target person
