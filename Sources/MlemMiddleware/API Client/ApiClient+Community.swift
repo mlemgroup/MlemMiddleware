@@ -149,4 +149,29 @@ public extension ApiClient {
         let response = try await perform(request)
         guard response.success else { throw ApiClientError.unsuccessful }
     }
+    
+    @discardableResult
+    func addModerator(communityId: Int, personId: Int, added: Bool) async throws -> [Person1] {
+        let request = AddModToCommunityRequest(communityId: communityId, personId: personId, added: added)
+        let response = try await perform(request)
+        
+        let updatedModerators = await caches.person1.getModels(api: self, from: response.moderators.map { $0.moderator })
+        
+        if let community = caches.community3.retrieveModel(cacheId: communityId) {
+            community.moderators = updatedModerators
+        }
+        
+        if let person = caches.person3.retrieveModel(cacheId: personId) {
+            let newModerator = response.moderators.first(where: { $0.moderator.id == personId })
+            if added {
+                guard let newModerator else { throw ApiClientError.unsuccessful }
+                await person.moderatedCommunities.append(caches.community1.getModel(api: self, from: newModerator.community))
+            } else {
+                guard newModerator == nil else { throw ApiClientError.unsuccessful }
+                await person.moderatedCommunities.removeAll(where: { $0.id == communityId })
+            }
+        }
+        
+        return updatedModerators
+    }
 }
