@@ -12,6 +12,17 @@ public extension ApiClient {
         myInstance?.administrators.contains(where: { $0.id == myPerson?.id }) ?? false
     }
     
+    /// Returns true if both myPerson and the given person are admins on this instance and myPerson outranks the given person, false otherwise
+    func isHigherAdmin(than person: any Person1Providing) -> Bool {
+        guard person.api.actorId == actorId,
+              let myPerson,
+              let myAdminIndex = myInstance?.administrators.firstIndex(of: myPerson.person2),
+              let targetAdminIndex = myInstance?.administrators.firstIndex(where: { $0.actorId == person.actorId } ) else {
+            return false
+        }
+        return myAdminIndex < targetAdminIndex
+    }
+    
     // Returns a raw API type :(
     // Probably OK because it's part of onboarding, which is cursed and bootstrappy
     func logIn(username: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {

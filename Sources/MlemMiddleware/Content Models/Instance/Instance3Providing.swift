@@ -37,4 +37,13 @@ public extension Instance3Providing {
     var customEmojis_: [ApiCustomEmojiView]? { instance3.customEmojis }
     var blockedUrls_: [ApiLocalSiteUrlBlocklist]? { instance3.blockedUrls }
     var administrators_: [Person2]? { instance3.administrators }
+    
+    
+    func addAdmin(personId: Int, added: Bool) async throws {
+        try await api.addAdmin(personId: personId, added: added)
+    }
+    
+    func addAdmin(_ person: any Person, added: Bool) async throws {
+        try await addAdmin(personId: person.id, added: added)
+    }
 }
