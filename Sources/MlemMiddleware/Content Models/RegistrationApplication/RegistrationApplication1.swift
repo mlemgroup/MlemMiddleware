@@ -27,7 +27,7 @@ public final class RegistrationApplication1: RegistrationApplication1Providing {
         id: Int,
         questionResponse: String,
         resolverId: Int?,
-        denialReason: String,
+        denialReason: String?,
         created: Date
     ) {
         self.api = api
