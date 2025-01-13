@@ -155,7 +155,7 @@ public extension ApiClient {
         let request = AddModToCommunityRequest(communityId: communityId, personId: personId, added: added)
         let response = try await perform(request)
         
-        let updatedModerators = await caches.person1.getModels(api: self, from: response.moderators.map { $0.moderator })
+        let updatedModerators = await caches.person1.getModels(api: self, from: response.moderators.map(\.moderator)
         
         if let community = caches.community3.retrieveModel(cacheId: communityId) {
             community.moderators = updatedModerators
