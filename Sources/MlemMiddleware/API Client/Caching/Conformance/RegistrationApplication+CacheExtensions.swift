@@ -7,28 +7,26 @@
 
 import Foundation
 
-extension RegistrationApplication1: CacheIdentifiable {
-    public var cacheId: Int { id }
-    
-    @MainActor
-    func update(with application: ApiRegistrationApplication, semaphore: UInt? = nil) {
-        setIfChanged(\.questionResponse, application.answer)
-        setIfChanged(\.resolverId, application.adminId)
-        setIfChanged(\.denialReason, application.denyReason)
-        resolvedManager.updateWithReceivedValue(application.adminId == nil, semaphore: semaphore)
-    }
-}
-
-extension RegistrationApplication2: CacheIdentifiable {
+extension RegistrationApplication: CacheIdentifiable {
     public var cacheId: Int { id }
     
     @MainActor
     func update(with applicationView: ApiRegistrationApplicationView, semaphore: UInt? = nil) {
+        let resolution: RegistrationApplication.ResolutionState
+        if applicationView.creatorLocalUser.acceptedApplication {
+            resolution = .approved
+        } else if applicationView.admin != nil {
+            resolution = .denied(reason: applicationView.registrationApplication.denyReason)
+        } else {
+            resolution = .unresolved
+        }
+        
+        setIfChanged(\.questionResponse, applicationView.registrationApplication.answer)
+        resolutionManager.updateWithReceivedValue(resolution, semaphore: semaphore)
         setIfChanged(\.resolver, api.caches.person1.getOptionalModel(api: api, from: applicationView.admin))
         setIfChanged(\.email, applicationView.creatorLocalUser.email)
         setIfChanged(\.emailVerified, applicationView.creatorLocalUser.emailVerified)
         setIfChanged(\.showNsfw, applicationView.creatorLocalUser.showNsfw)
         creator.update(with: applicationView.creator)
-        registrationApplication1.update(with: applicationView.registrationApplication, semaphore: semaphore)
     }
 }
