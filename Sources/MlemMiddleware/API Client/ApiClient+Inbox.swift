@@ -97,19 +97,14 @@ public extension ApiClient {
         )
     }
     
-    @discardableResult
-    internal func refreshUnreadCount() async throws -> ApiGetUnreadCountResponse {
-        let request = GetUnreadCountRequest()
-        let response = try await perform(request)
-        await self.unreadCount?.update(with: response)
-        return response
+    func getPersonalUnreadCount() async throws -> ApiGetUnreadCountResponse {
+        try await perform(GetUnreadCountRequest())
     }
     
     /// Get an ``UnreadCount`` object that continues to be updated by the ``ApiClient`` whenever an inbox item is marked read/unread.
     func getUnreadCount() async throws -> UnreadCount {
         let unreadCount = self.unreadCount ?? .init(api: self)
-        let response: ApiGetUnreadCountResponse = try await self.refreshUnreadCount()
-        await unreadCount.update(with: response)
+        try await unreadCount.refresh()
         self.unreadCount = unreadCount
         return unreadCount
     }

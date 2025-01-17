@@ -8,6 +8,10 @@
 import Foundation
 
 public extension ApiClient {
+    func getRegistrationApplicationCount() async throws -> ApiGetUnreadRegistrationApplicationCountResponse {
+        try await perform(GetUnreadRegistrationApplicationCountRequest())
+    }
+    
     func getRegistrationApplications(
         page: Int = 1,
         limit: Int = 20,

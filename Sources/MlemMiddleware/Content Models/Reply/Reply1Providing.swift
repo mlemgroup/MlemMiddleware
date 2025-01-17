@@ -114,12 +114,15 @@ public extension Reply1Providing {
         try await api.purgeComment(id: commentId, reason: reason)
     }
     
+    // This is called by `ApiClient` when the associated comment is replied to.
+    // This needs to happen because the Lemmy backend automatically marks the reply
+    // as read in this case.
     internal func setKnownReadState(newValue: Bool) {
         readManager.updateWithReceivedValue(newValue, semaphore: nil)
         if isMention {
-            api.unreadCount?.verifiedCount.mentions += newValue ? -1 : 1
+            api.unreadCount?.verifiedCount[.mention, default: 0] += newValue ? -1 : 1
         } else {
-            api.unreadCount?.verifiedCount.replies += newValue ? -1 : 1
+            api.unreadCount?.verifiedCount[.reply, default: 0] += newValue ? -1 : 1
         }
     }
 }
