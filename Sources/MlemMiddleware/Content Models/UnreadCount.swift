@@ -88,17 +88,18 @@ public final class UnreadCount {
             taskGroup.addTask {
                 try await self.api.getPersonalUnreadCount()
             }
-            if self.api.myPerson == nil {
+            if self.api.myPerson == nil || self.api.myInstance == nil {
                 // The theoretical solution to this is to store the moderated
                 // community IDs in `ApiClient.Context` and `await` them here.
-                print("Warning: ApiClient.myPerson is nil at UnreadCount refresh - this may lead to unneeded API calls")
+                print("Warning: ApiClient.myPerson or ApiClient.myInstance is nil at UnreadCount refresh - this may lead to unneeded API calls")
             }
             if !(self.api.myPerson?.moderatedCommunities.isEmpty ?? false) || self.api.isAdmin {
                 taskGroup.addTask {
                     try await self.api.getReportCount(communityId: nil)
                 }
             }
-            if self.api.isAdmin {
+            // Don't use `api.isAdmin` here; it falls back to `false` and we need to fallback to `true`
+            if api.myInstance?.administrators.contains(where: { $0.id == api.myPerson?.id }) ?? true {
                 taskGroup.addTask {
                     try await self.api.getRegistrationApplicationCount()
                 }
