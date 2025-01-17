@@ -101,7 +101,11 @@ public final class UnreadCount {
             // Don't use `api.isAdmin` here; it falls back to `false` and we need to fallback to `true`
             if api.myInstance?.administrators.contains(where: { $0.id == api.myPerson?.id }) ?? true {
                 taskGroup.addTask {
-                    try await self.api.getRegistrationApplicationCount()
+                    do {
+                        try await self.api.getRegistrationApplicationCount()
+                    } catch ApiErrorResponse(error: "not_an_admin") {
+                        // no-op
+                    }
                 }
             }
             return try await taskGroup.reduce(into: []) { $0.append($1) }
