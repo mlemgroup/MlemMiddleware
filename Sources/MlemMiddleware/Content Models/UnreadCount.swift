@@ -81,12 +81,12 @@ public final class UnreadCount {
     }
     
     public func refresh() async throws {
-        let sources: [UnreadCount.DictionaryConvertible] = try await withThrowingTaskGroup(
-            of: (any UnreadCount.DictionaryConvertible).self,
-            returning: [any UnreadCount.DictionaryConvertible].self
+        let values: [InboxItemType: Int] = try await withThrowingTaskGroup(
+            of: [InboxItemType: Int].self,
+            returning: [InboxItemType: Int].self
         ) { taskGroup in
             taskGroup.addTask {
-                try await self.api.getPersonalUnreadCount()
+                try await self.api.getPersonalUnreadCount().unreadCountDictionary
             }
             if self.api.myPerson == nil || self.api.myInstance == nil {
                 // The theoretical solution to this is to store the moderated
@@ -95,22 +95,22 @@ public final class UnreadCount {
             }
             if !(self.api.myPerson?.moderatedCommunities.isEmpty ?? false) || self.api.isAdmin {
                 taskGroup.addTask {
-                    try await self.api.getReportCount(communityId: nil)
+                    try await self.api.getReportCount(communityId: nil).unreadCountDictionary
                 }
             }
             // Don't use `api.isAdmin` here; it falls back to `false` and we need to fallback to `true`
             if api.myInstance?.administrators.contains(where: { $0.id == api.myPerson?.id }) ?? true {
                 taskGroup.addTask {
                     do {
-                        try await self.api.getRegistrationApplicationCount()
-                    } catch ApiErrorResponse(error: "not_an_admin") {
-                        // no-op
+                        return try await self.api.getRegistrationApplicationCount().unreadCountDictionary
+                    } catch let ApiClientError.response(response, _) where response.error == "not_an_admin" {
+                        return [:]
                     }
                 }
             }
-            return try await taskGroup.reduce(into: []) { $0.append($1) }
+            return try await taskGroup.reduce(into: [:]) { $0.merge($1) { $1 } }
         }
-        await self.update(with: sources)
+        await self.update(with: values)
     }
 }
 
