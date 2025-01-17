@@ -42,10 +42,19 @@ public class Report: CacheIdentifiable, ContentModel {
         self.creator = creator
         self.resolver = resolver
         self.target = target
-        self.resolvedManager = .init(wrappedValue: resolved)
         self.reason = reason
         self.created = created
         self.updated = updated
+        
+        self.resolvedManager = .init(wrappedValue: resolved)
+        self.resolvedManager.onSet = { newValue, type, semaphore in
+            if type == .begin || type == .rollback {
+                api.unreadCount?.updateUnverifiedItem(itemType: target.type.inboxItemType, isRead: newValue)
+            }
+        }
+        self.resolvedManager.onVerify = { newValue, semaphore in
+            api.unreadCount?.verifyItem(itemType: target.type.inboxItemType, isRead: newValue)
+        }
     }
     
     @discardableResult

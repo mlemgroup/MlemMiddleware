@@ -8,6 +8,10 @@
 import Foundation
 
 public extension ApiClient {
+    func getReportCount(communityId: Int? = nil) async throws -> ApiGetReportCountResponse {
+        try await perform(GetReportCountRequest(communityId: communityId))
+    }
+    
     func getPostReports(
         page: Int = 1,
         limit: Int = 20,

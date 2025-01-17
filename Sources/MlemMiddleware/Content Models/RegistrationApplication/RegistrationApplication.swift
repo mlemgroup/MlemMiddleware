@@ -51,6 +51,14 @@ public final class RegistrationApplication: ContentIdentifiable {
         self.showNsfw = showNsfw
         self.created = created
         self.resolutionManager = .init(wrappedValue: resolution)
+        self.resolutionManager.onSet = { newValue, type, semaphore in
+            if type == .begin || type == .rollback {
+                api.unreadCount?.updateUnverifiedItem(itemType: .registrationApplication, isRead: newValue != .unresolved)
+            }
+        }
+        self.resolutionManager.onVerify = { newValue, semaphore in
+            api.unreadCount?.verifyItem(itemType: .registrationApplication, isRead: newValue != .unresolved)
+        }
     }
     
     @discardableResult
