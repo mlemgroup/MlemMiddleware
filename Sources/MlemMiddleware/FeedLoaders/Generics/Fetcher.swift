@@ -109,7 +109,7 @@ public class Fetcher<Item: FeedLoadable> {
         cursor = nil
     }
     
-    func changeApi(to newApi: ApiClient, context: FilterContext) async {
+    public func changeApi(to newApi: ApiClient, context: FilterContext) async {
         api = newApi
     }
 }
