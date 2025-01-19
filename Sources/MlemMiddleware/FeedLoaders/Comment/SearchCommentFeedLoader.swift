@@ -56,7 +56,7 @@ public class SearchCommentFetcher: Fetcher<Comment2> {
 public class SearchCommentFeedLoader: StandardFeedLoader<Comment2> {
     public var api: ApiClient
     
-    // force unwrap because this should ALWAYS be a CommunityFetcher
+    // force unwrap because this should ALWAYS be a SearchCommentFetcher
     public var searchCommentFetcher: SearchCommentFetcher { fetcher as! SearchCommentFetcher }
     
     public init(
