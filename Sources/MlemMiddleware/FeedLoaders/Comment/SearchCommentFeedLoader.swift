@@ -50,6 +50,10 @@ public class SearchCommentFetcher: Fetcher<Comment2> {
             nextCursor: nil
         )
     }
+    
+    public func changeApi(to newApi: ApiClient) async {
+        await super.changeApi(to: newApi, context: .none())
+    }
 }
 
 @Observable
