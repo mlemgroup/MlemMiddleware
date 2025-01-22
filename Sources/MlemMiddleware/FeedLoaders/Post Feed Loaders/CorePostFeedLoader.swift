@@ -48,7 +48,7 @@ public class PostFetcher: Fetcher<Post2> {
 @Observable
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public private(set) var prefetchingConfiguration: PrefetchingConfiguration
-    let loopsIntegration: Bool
+    let embedLoops: Bool
     
     // store reference to the filter used by the LoadingActor so we can modify its filterContext from changeApi
     internal var filter: PostFilter
@@ -63,12 +63,12 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         pageSize: Int,
         showReadPosts: Bool,
         filterContext: FilterContext,
-        loopsIntegration: Bool,
+        embedLoops: Bool,
         prefetchingConfiguration: PrefetchingConfiguration,
         fetcher: PostFetcher
     ) {
         self.prefetchingConfiguration = prefetchingConfiguration
-        self.loopsIntegration = loopsIntegration
+        self.embedLoops = embedLoops
 
         let filter: PostFilter = .init(showRead: showReadPosts, context: filterContext)
         self.filter = filter
@@ -82,9 +82,7 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     // MARK: StandardFeedLoader Loading Methods
   
     override func processNewItems(_ items: [Post2]) {
-        Task {
-            await preloadImages(items)
-        }
+        preloadImages(items)
     }
     
     // MARK: Custom Behavior
@@ -106,26 +104,26 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     }
     
     /// Preloads images for the given post
-    private func preloadImages(_ posts: [Post2]) async {
-        if loopsIntegration {
-            let loopsParses = await withTaskGroup(of: Void.self) { taskGroup in
-                posts.forEach { post in
-                    taskGroup.addTask {
-                        await post.parseLoops()
+    private func preloadImages(_ posts: [Post2]) {
+        Task {
+            if embedLoops {
+                let loopsParses = await withTaskGroup(of: Void.self) { taskGroup in
+                    posts.forEach { post in
+                        taskGroup.addTask {
+                            await post.parseLoops()
+                        }
                     }
                 }
             }
+            
+            prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
+                $0.imageRequests(configuration: prefetchingConfiguration)
+            })
         }
-        
-        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
-            $0.imageRequests(configuration: prefetchingConfiguration)
-        })
     }
     
     public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {
         prefetchingConfiguration = config
-        Task {
-            await preloadImages(items)
-        }
+        preloadImages(items)
     }
 }

@@ -74,17 +74,31 @@ public class PersonContentStream<Item: PersonContentProviding> {
     
     /// Preloads images for the given PersonContent items
     func preloadImages(_ items: [PersonContent]) {
-        // TODO: prefetch comment images
-        var numPosts: Int = 0
-        var imageRequests = items.flatMap { item in
-            switch item.wrappedValue {
-            case let .post(post):
-                numPosts += 1
-                return post.imageRequests(configuration: prefetchingConfiguration)
-            default: return []
+        Task {
+            // TODO: prefetch comment images
+            // var numPosts: Int = 0
+            var posts = items.compactMap { item in
+                switch item.wrappedValue {
+                case let .post(post):
+                    // numPosts += 1
+                    return post // .imageRequests(configuration: prefetchingConfiguration)
+                default: return nil
+                }
             }
+            
+            if prefetchingConfiguration.embedLoops {
+                let loopsParses = await withTaskGroup(of: Void.self) { taskGroup in
+                    posts.forEach { post in
+                        taskGroup.addTask {
+                            await post.parseLoops()
+                        }
+                    }
+                }
+            }
+            
+            prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
+                $0.imageRequests(configuration: prefetchingConfiguration)
+            })
         }
-        
-        prefetchingConfiguration.prefetcher.startPrefetching(with: imageRequests)
     }
 }
