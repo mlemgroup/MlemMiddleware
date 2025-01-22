@@ -30,6 +30,7 @@ public final class Post1: Post1Providing {
     // We can't name this 'body' because @Observable uses that property name already
     public var content: String?
     public var linkUrl: URL?
+    public var loopsMediaUrl: URL?
     public var embed: PostEmbed?
     public var nsfw: Bool
     public var thumbnailUrl: URL?

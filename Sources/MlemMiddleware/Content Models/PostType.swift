@@ -10,6 +10,7 @@ import Foundation
 public enum PostType: Equatable {
     case text(String)
     case image(URL)
+    case loop(URL)
     case link(PostLink)
     case titleOnly
     
@@ -21,10 +22,15 @@ public enum PostType: Equatable {
     }
     
     public var isMedia: Bool {
-        if case .image = self {
-            return true
+        switch self {
+        case .image, .loop: return true
+        default: return false
         }
-        return false
+        
+//        if case .image = self {
+//            return true
+//        }
+//        return false
     }
     
     public var isLink: Bool {

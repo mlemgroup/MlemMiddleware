@@ -131,7 +131,7 @@ public extension Post2Providing {
         }
         
         switch type {
-        case let .image(url):
+        case let .image(url), let .loop(url):
             // images: only load the image
             switch config.imageSize {
             case .unlimited:

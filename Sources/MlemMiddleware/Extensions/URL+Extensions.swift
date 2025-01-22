@@ -33,6 +33,27 @@ public extension URL {
         return components.url!
     }
     
+    /// Attempts to extract the underlying loops.video media URL from this URL
+    /// - Returns: loops.video media URL if this is a loops.video url and the underlying URL was successfully parsed, nil otherwise
+    func parseLoopsMediaUrl() async -> URL? {
+        guard host() == "loops.video" else { return nil }
+        
+        do {
+            let urlRegex = /video-src="(?<url>.*)"/
+            let request: URLRequest = .init(url: self)
+            let (websiteContent, _) = try await URLSession.shared.data(for: request)
+            
+            if let str = String(data: websiteContent, encoding: .utf8),
+               let match = str.firstMatch(of: urlRegex),
+               let loopUrl: URL = .init(string: .init(match.url)) {
+                return loopUrl
+            }
+        } catch {
+            print(error)
+        }
+        return nil
+    }
+    
     /// Path extension of this URL, taking into account image proxy behavior
     var proxyAwarePathExtension: String? {
         var ret = pathExtension
