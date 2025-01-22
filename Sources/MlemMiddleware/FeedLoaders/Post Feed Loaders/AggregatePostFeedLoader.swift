@@ -39,7 +39,6 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         sortType: ApiSortType,
         showReadPosts: Bool,
         filterContext: FilterContext,
-        embedLoops: Bool,
         prefetchingConfiguration: PrefetchingConfiguration,
         urlCache: URLCache,
         api: ApiClient,
@@ -50,7 +49,6 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
             pageSize: pageSize,
             showReadPosts: showReadPosts,
             filterContext: filterContext,
-            embedLoops: embedLoops,
             prefetchingConfiguration: prefetchingConfiguration,
             fetcher: AggregatePostFetcher(
                 api: api,

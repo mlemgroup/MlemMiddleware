@@ -114,9 +114,15 @@ public extension Post2Providing {
         }
     }
     
-    /// Generates an array of image requests to fetch all images associated with this Post2Providing
-    func imageRequests(configuration config: PrefetchingConfiguration) -> [ImageRequest] {
+    /// Generates an array of image requests to fetch all images associated with this Post2Providing.
+    /// If configuration specifies any embeddings, parses and handles them before creating the ImageRequests.
+    func imageRequests(configuration config: PrefetchingConfiguration) async -> [ImageRequest] {
         var ret: [ImageRequest] = .init()
+        
+        // handle loops.video embedding
+        if config.embedLoops {
+            await parseLoopEmbeds()
+        }
         
         // preload user and community avatars--fetching both because we don't know which we'll need, but these are super tiny
         // so it's probably not an API crime, right?
@@ -131,8 +137,8 @@ public extension Post2Providing {
         }
         
         switch type {
-        case let .image(url), let .loop(url):
-            // images: only load the image
+        case let .media(url), let .embedded(url, _):
+            // media/embedded media: only load the media
             switch config.imageSize {
             case .unlimited:
                 ret.append(ImageRequest(url: url, priority: .high))

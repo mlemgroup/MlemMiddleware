@@ -48,7 +48,6 @@ public class PostFetcher: Fetcher<Post2> {
 @Observable
 public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public private(set) var prefetchingConfiguration: PrefetchingConfiguration
-    let embedLoops: Bool
     
     // store reference to the filter used by the LoadingActor so we can modify its filterContext from changeApi
     internal var filter: PostFilter
@@ -63,12 +62,10 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         pageSize: Int,
         showReadPosts: Bool,
         filterContext: FilterContext,
-        embedLoops: Bool,
         prefetchingConfiguration: PrefetchingConfiguration,
         fetcher: PostFetcher
     ) {
         self.prefetchingConfiguration = prefetchingConfiguration
-        self.embedLoops = embedLoops
 
         let filter: PostFilter = .init(showRead: showReadPosts, context: filterContext)
         self.filter = filter
@@ -103,21 +100,11 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         try await refresh(clearBeforeRefresh: true)
     }
     
-    /// Preloads images for the given post
+    /// Preloads images for the given posts
     private func preloadImages(_ posts: [Post2]) {
         Task {
-            if embedLoops {
-                let loopsParses = await withTaskGroup(of: Void.self) { taskGroup in
-                    posts.forEach { post in
-                        taskGroup.addTask {
-                            await post.parseLoops()
-                        }
-                    }
-                }
-            }
-            
-            prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
-                $0.imageRequests(configuration: prefetchingConfiguration)
+            prefetchingConfiguration.prefetcher.startPrefetching(with: await posts.concurrentFlatMap { post -> [ImageRequest] in
+                await post.imageRequests(configuration: self.prefetchingConfiguration)
             })
         }
     }

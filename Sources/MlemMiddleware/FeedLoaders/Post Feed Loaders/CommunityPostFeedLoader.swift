@@ -39,7 +39,6 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
         sortType: ApiSortType,
         showReadPosts: Bool,
         filterContext: FilterContext,
-        embedLoops: Bool,
         prefetchingConfiguration: PrefetchingConfiguration,
         urlCache: URLCache,
         community: any Community
@@ -50,7 +49,6 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
             pageSize: pageSize,
             showReadPosts: showReadPosts,
             filterContext: filterContext,
-            embedLoops: embedLoops,
             prefetchingConfiguration: prefetchingConfiguration,
             fetcher: CommunityPostFetcher(sortType: sortType, pageSize: pageSize, community: community)
         )

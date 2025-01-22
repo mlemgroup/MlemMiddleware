@@ -35,7 +35,7 @@ public extension URL {
     
     /// Attempts to extract the underlying loops.video media URL from this URL
     /// - Returns: loops.video media URL if this is a loops.video url and the underlying URL was successfully parsed, nil otherwise
-    func parseLoopsMediaUrl() async -> URL? {
+    func parseEmbeddedLoops() async -> URL? {
         guard host() == "loops.video" else { return nil }
         
         do {
