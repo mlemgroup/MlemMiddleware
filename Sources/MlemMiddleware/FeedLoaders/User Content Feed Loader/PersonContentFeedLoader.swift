@@ -102,7 +102,6 @@ class PersonContentFetcher: Fetcher<PersonContent> {
     }
 }
 
-// TODO: NOW loops.video integration
 public class PersonContentFeedLoader: StandardFeedLoader<PersonContent> {
     // force unwrap because this should ALWAYS be a PersonContentFetcher
     var personContentFetcher: PersonContentFetcher { fetcher as! PersonContentFetcher }
