@@ -26,11 +26,6 @@ public enum PostType: Equatable {
         case .image, .loop: return true
         default: return false
         }
-        
-//        if case .image = self {
-//            return true
-//        }
-//        return false
     }
     
     public var isLink: Bool {
