@@ -20,13 +20,17 @@ public struct PrefetchingConfiguration {
     /// If `nil`, does not fetch avatars.
     public var avatarSize: Int?
     
+    let embedLoops: Bool
+    
     public init(
         prefetcher: ImagePrefetcher,
         imageSize: ImageResolution,
+        embedLoops: Bool,
         avatarSize: Int? = nil
     ) {
         self.prefetcher = prefetcher
         self.imageSize = imageSize
         self.avatarSize = avatarSize
+        self.embedLoops = embedLoops
     }
 }

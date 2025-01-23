@@ -8,9 +8,15 @@
 import Foundation
 
 public enum PostType: Equatable {
+    /// Post containing both a title and text
     case text(String)
-    case image(URL)
+    /// Post containing only media
+    case media(URL)
+    /// Link post with embedded media content
+    case embedded(URL, originalLink: URL)
+    /// Link post
     case link(PostLink)
+    /// Post containing only a title
     case titleOnly
     
     public var isText: Bool {
@@ -21,10 +27,10 @@ public enum PostType: Equatable {
     }
     
     public var isMedia: Bool {
-        if case .image = self {
-            return true
+        switch self {
+        case .media, .embedded: return true
+        default: return false
         }
-        return false
     }
     
     public var isLink: Bool {

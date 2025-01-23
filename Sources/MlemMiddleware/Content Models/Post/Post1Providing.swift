@@ -24,6 +24,7 @@ public protocol Post1Providing:
     var title: String { get }
     var content: String? { get }
     var linkUrl: URL? { get }
+    var embeddedMediaUrl: URL? { get }
     var deleted: Bool { get }
     var embed: PostEmbed? { get }
     var pinnedCommunity: Bool { get }
@@ -53,6 +54,7 @@ public extension Post1Providing {
     var title: String { post1.title }
     var content: String? { post1.content }
     var linkUrl: URL? { post1.linkUrl }
+    var embeddedMediaUrl: URL? { post1.embeddedMediaUrl }
     var deleted: Bool { post1.deleted }
     var embed: PostEmbed? { post1.embed }
     var pinnedCommunity: Bool { post1.pinnedCommunity }
@@ -117,16 +119,29 @@ public extension Post1Providing {
 }
 
 public extension Post1Providing {
+    /// If this post links to loops.video, attempts to parse the underlying media url and set embeddedMediaUrl
+    func parseLoopEmbeds() async {
+        if let loopsUrl = await linkUrl?.parseEmbeddedLoops() {
+            _ = await Task { @MainActor in
+                post1.embeddedMediaUrl = loopsUrl
+            }.result
+        }
+    }
+    
     var type: PostType {
-        // post with URL: either image or link
+        // post with URL: image, embedded, or link
         if let linkUrl {
+            if let embeddedMediaUrl {
+                return .embedded(embeddedMediaUrl, originalLink: linkUrl)
+            }
+            
             // if image, return image link, otherwise return thumbnail
             if linkUrl.isMedia {
                 if let thumbnailUrl {
                     // lemmy-ui always shows the `thumbnailUrl` if available even in expanded view
-                    return .image(thumbnailUrl)
+                    return .media(thumbnailUrl)
                 }
-                return .image(linkUrl)
+                return .media(linkUrl)
             }
             return .link(.init(content: linkUrl, thumbnail: thumbnailUrl, label: embed?.title ?? title))
         }

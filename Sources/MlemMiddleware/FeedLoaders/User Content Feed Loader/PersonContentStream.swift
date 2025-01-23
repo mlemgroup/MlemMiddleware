@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import CollectionConcurrencyKit
+import Nuke
 
 // This struct is just a convenience wrapper to handle stream state--all loading operations happen at the FeedLoader level to 
 // avoid parent/child concurrency control hell
@@ -74,17 +76,19 @@ public class PersonContentStream<Item: PersonContentProviding> {
     
     /// Preloads images for the given PersonContent items
     func preloadImages(_ items: [PersonContent]) {
-        // TODO: prefetch comment images
-        var numPosts: Int = 0
-        var imageRequests = items.flatMap { item in
-            switch item.wrappedValue {
-            case let .post(post):
-                numPosts += 1
-                return post.imageRequests(configuration: prefetchingConfiguration)
-            default: return []
+        Task {
+            // TODO: prefetch comment images
+            let posts = items.compactMap { item in
+                switch item.wrappedValue {
+                case let .post(post):
+                    return post
+                default: return nil
+                }
             }
+            
+            prefetchingConfiguration.prefetcher.startPrefetching(with: await posts.concurrentFlatMap { post -> [ImageRequest] in
+                await post.imageRequests(configuration: self.prefetchingConfiguration)
+            })
         }
-        
-        prefetchingConfiguration.prefetcher.startPrefetching(with: imageRequests)
     }
 }

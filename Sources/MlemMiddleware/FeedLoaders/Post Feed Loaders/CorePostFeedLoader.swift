@@ -100,11 +100,13 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         try await refresh(clearBeforeRefresh: true)
     }
     
-    /// Preloads images for the given post
+    /// Preloads images for the given posts
     private func preloadImages(_ posts: [Post2]) {
-        prefetchingConfiguration.prefetcher.startPrefetching(with: posts.flatMap {
-            $0.imageRequests(configuration: prefetchingConfiguration)
-        })
+        Task {
+            prefetchingConfiguration.prefetcher.startPrefetching(with: await posts.concurrentFlatMap { post -> [ImageRequest] in
+                await post.imageRequests(configuration: self.prefetchingConfiguration)
+            })
+        }
     }
     
     public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {
