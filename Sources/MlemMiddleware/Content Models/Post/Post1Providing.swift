@@ -122,7 +122,9 @@ public extension Post1Providing {
     /// If this post links to loops.video, attempts to parse the underlying media url and set embeddedMediaUrl
     func parseLoopEmbeds() async {
         if let loopsUrl = await linkUrl?.parseEmbeddedLoops() {
-            post1.embeddedMediaUrl = loopsUrl
+            Task { @MainActor in
+                post1.embeddedMediaUrl = loopsUrl
+            }
         }
     }
     
