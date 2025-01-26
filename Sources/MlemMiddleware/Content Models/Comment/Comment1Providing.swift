@@ -35,7 +35,7 @@ public typealias Comment = Comment1Providing
 public extension Comment1Providing {
     static var modelTypeId: ContentType { .comment }
     
-    var actorId: URL { comment1.actorId }
+    var actorId: ActorIdentifier { comment1.actorId }
     
     var id: Int { comment1.id }
     var content: String { comment1.content }

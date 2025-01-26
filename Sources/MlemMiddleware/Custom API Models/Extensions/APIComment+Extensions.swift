@@ -10,7 +10,7 @@ import Foundation
 extension ApiComment: ActorIdentifiable, CacheIdentifiable {
     public var cacheId: Int { id }
 
-    public var actorId: URL { apId }
+    public var actorId: ActorIdentifier { apId }
 }
 
 public extension ApiComment {

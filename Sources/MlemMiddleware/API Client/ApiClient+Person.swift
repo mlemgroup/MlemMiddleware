@@ -42,8 +42,8 @@ public extension ApiClient {
         return await caches.person3.getModel(api: self, from: response)
     }
     
-    func getPerson(actorId: URL) async throws -> Person2 {
-        let request = ResolveObjectRequest(q: actorId.absoluteString)
+    func getPerson(url: URL) async throws -> Person2 {
+        let request = ResolveObjectRequest(q: url.absoluteString)
         do {
             if let response = try await perform(request).person {
                 return await caches.person2.getModel(api: self, from: response)
@@ -73,8 +73,8 @@ public extension ApiClient {
         }
     }
     
-    func getPerson(actorId: URL) async throws -> Person3 {
-        let person: Person2 = try await getPerson(actorId: actorId)
+    func getPerson(url: URL) async throws -> Person3 {
+        let person: Person2 = try await getPerson(url: url)
         return try await getPerson(id: person.id)
     }
     

@@ -18,5 +18,5 @@ public extension Person3ApiBacker {
     var cacheId: Int { id }
     
     var id: Int { person2ApiBacker.id }
-    var actorId: URL { person2ApiBacker.actorId }
+    var actorId: ActorIdentifier { person2ApiBacker.actorId }
 }

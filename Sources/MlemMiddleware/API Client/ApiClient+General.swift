@@ -88,8 +88,8 @@ public extension ApiClient {
         return .init(id: uuid, imageData: data)
     }
     
-    func resolve(actorId: URL) async throws -> (any ActorIdentifiable) {
-        let request = ResolveObjectRequest(q: actorId.absoluteString)
+    func resolve(url: URL) async throws -> (any ActorIdentifiable) {
+        let request = ResolveObjectRequest(q: url.absoluteString)
         let response = try await perform(request)
         if let post = response.post {
             return await caches.post2.getModel(api: self, from: post)

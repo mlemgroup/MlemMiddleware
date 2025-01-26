@@ -94,8 +94,8 @@ public extension ApiClient {
         return await caches.post3.getModel(api: self, from: response)
     }
     
-    func getPost(actorId: URL) async throws -> Post2 {
-        let request = ResolveObjectRequest(q: actorId.absoluteString)
+    func getPost(url: URL) async throws -> Post2 {
+        let request = ResolveObjectRequest(q: url.absoluteString)
         do {
             if let response = try await perform(request).post {
                 return await caches.post2.getModel(api: self, from: response)

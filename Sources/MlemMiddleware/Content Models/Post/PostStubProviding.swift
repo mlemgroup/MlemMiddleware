@@ -94,6 +94,6 @@ public extension PostStubProviding {
 
 public extension PostStubProviding {
     func upgrade() async throws -> any Post {
-        try await api.getPost(actorId: actorId)
+        try await api.getPost(url: actorId.url)
     }
 }

@@ -14,7 +14,7 @@ public final class Message1: Message1Providing {
     public var api: ApiClient
     public var message1: Message1 { self }
     
-    public let actorId: URL
+    public let actorId: ActorIdentifier
     public let id: Int
     public let creatorId: Int
     public let recipientId: Int
@@ -30,7 +30,7 @@ public final class Message1: Message1Providing {
     public var deleted: Bool { deletedManager.wrappedValue }
     
     init(api: ApiClient, 
-         actorId: URL,
+         actorId: ActorIdentifier,
          id: Int,
          creatorId: Int,
          recipientId: Int,

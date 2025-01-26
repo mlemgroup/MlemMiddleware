@@ -10,7 +10,7 @@ import Foundation
 public protocol Reply2Providing: Reply1Providing, Interactable2Providing, ActorIdentifiable {
     var reply2: Reply2 { get }
     
-    var actorId: URL { get }
+    var actorId: ActorIdentifier { get }
     var reply1: Reply1 { get }
     var comment: Comment1 { get }
     var creator: any Person { get }
@@ -28,7 +28,7 @@ public protocol Reply2Providing: Reply1Providing, Interactable2Providing, ActorI
 
 public extension Reply2Providing {
     var reply1: Reply1 { reply2.reply1 }
-    var actorId: URL { reply2.comment.actorId }
+    var actorId: ActorIdentifier { reply2.comment.actorId }
     var comment: Comment1 { reply2.comment }
     var creator: any Person { reply2.creator }
     var post: Post1 { reply2.post }

@@ -10,15 +10,15 @@ import Foundation
 public struct CommentStub: CommentStubProviding, Hashable {
     public static let tierNumber: Int = 0
     public var api: ApiClient
-    public let actorId: URL
+    public let actorId: ActorIdentifier
     
-    public init(api: ApiClient, actorId: URL) {
+    public init(api: ApiClient, actorId: ActorIdentifier) {
         self.api = api
         self.actorId = actorId
     }
     
     public func asLocal() -> Self {
-        .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
+        .init(api: .getApiClient(for: actorId.hostUrl, with: nil), actorId: actorId)
     }
     
     public func hash(into hasher: inout Hasher) {

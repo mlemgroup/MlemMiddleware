@@ -119,11 +119,11 @@ public extension PersonStubProviding {
     var enableAnimatedImages_: Bool? { nil }
     var collapseBotComments_: Bool? { nil }
     
-    var isMlemDeveloper: Bool { developerNames.contains(actorId.absoluteString) }
+    var isMlemDeveloper: Bool { developerNames.contains(actorId.description) }
 }
 
 public extension PersonStubProviding {
     func upgrade() async throws -> any Person {
-        try await api.getPerson(actorId: actorId) as Person2
+        try await api.getPerson(url: actorId.url) as Person2
     }
 }

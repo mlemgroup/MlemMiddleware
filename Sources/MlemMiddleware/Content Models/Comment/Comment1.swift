@@ -14,7 +14,7 @@ public final class Comment1: Comment1Providing {
     public var api: ApiClient
     public var comment1: Comment1 { self }
     
-    public let actorId: URL
+    public let actorId: ActorIdentifier
     public let id: Int
     public let parentCommentIds: [Int]
     public let creatorId: Int
@@ -36,7 +36,7 @@ public final class Comment1: Comment1Providing {
     
     internal init(
         api: ApiClient,
-        actorId: URL,
+        actorId: ActorIdentifier,
         id: Int,
         content: String,
         removed: Bool,

@@ -10,6 +10,6 @@ import Foundation
 extension ApiCommunityView: ActorIdentifiable, CacheIdentifiable, Identifiable {
     public var cacheId: Int { id }
 
-    public var actorId: URL { community.actorId }
+    public var actorId: ActorIdentifier { community.actorId }
     public var id: Int { community.id }
 }

@@ -40,7 +40,9 @@ public extension ApiClient {
     
     /// `instanceId` is distinct from `id`. Make sure to pass `instance.instanceId` and not `id`.
     ///  Technically only `instanceId` is needed to perform this request, but `actorId` is also needed to properly update the `BlockList`.
-    func blockInstance(actorId: URL, instanceId: Int, block: Bool, semaphore: UInt? = nil) async throws {
+    func blockInstance(url: URL, instanceId: Int, block: Bool, semaphore: UInt? = nil) async throws {
+        guard let host = url.host() else { throw ApiClientError.invalidInput }
+        let actorId: ActorIdentifier = .instance(host: host)
         let request = BlockInstanceRequest(instanceId: instanceId, block: block)
         let response = try await perform(request)
         if let instance = caches.instance1.retrieveModel(instanceId: instanceId) {

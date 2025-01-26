@@ -87,6 +87,6 @@ public extension CommunityStubProviding {
 
 public extension CommunityStubProviding {
     func upgrade() async throws -> any Community {
-        try await api.getCommunity(actorId: actorId) as Community2
+        try await api.getCommunity(url: actorId.url) as Community2
     }
 }

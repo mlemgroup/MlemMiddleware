@@ -31,7 +31,7 @@ public typealias Instance = Instance1Providing
 public extension Instance1Providing {
     static var modelTypeId: ContentType { .instance }
     
-    var actorId: URL { instance1.actorId }
+    var actorId: ActorIdentifier { instance1.actorId }
     var id: Int { instance1.id }
     var instanceId: Int { instance1.instanceId }
     var displayName: String { instance1.displayName }
@@ -67,17 +67,18 @@ public extension Instance1Providing {
 public extension Instance1Providing {
     private var blockedManager: StateManager<Bool> { instance1.blockedManager }
     
-    var name: String { host ?? "unknown" }
+    @inlinable
+    var name: String { host } // TODO: Remove this?
     
     var guestApi: ApiClient {
-        .getApiClient(for: local ? api.baseUrl : actorId, with: nil)
+        .getApiClient(for: local ? api.baseUrl : actorId.hostUrl, with: nil)
     }
     
     @discardableResult
     func updateBlocked(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         blockedManager.performRequest(expectedResult: newValue) { semaphore in
             try await self.api.blockInstance(
-                actorId: self.actorId,
+                url: self.actorId.url,
                 instanceId: self.instanceId,
                 block: newValue, semaphore: semaphore
             )

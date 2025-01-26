@@ -52,7 +52,7 @@ public extension Message1Providing {
 public extension Message1Providing {
     static var modelTypeId: ContentType { .message }
     
-    var actorId: URL { message1.actorId }
+    var actorId: ActorIdentifier { message1.actorId }
     var id: Int { message1.id }
     var creatorId: Int { message1.creatorId }
     var recipientId: Int { message1.recipientId }

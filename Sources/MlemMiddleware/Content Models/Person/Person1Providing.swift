@@ -32,7 +32,7 @@ public typealias Person = Person1Providing
 public extension Person1Providing {
     static var modelTypeId: ContentType { .person }
     
-    var actorId: URL { person1.actorId }
+    var actorId: ActorIdentifier { person1.actorId }
     var id: Int { person1.id }
     var name: String { person1.name }
     

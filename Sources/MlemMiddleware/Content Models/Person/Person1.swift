@@ -14,7 +14,7 @@ public final class Person1: Person1Providing {
     public var api: ApiClient
     public var person1: Person1 { self }
     
-    public let actorId: URL
+    public let actorId: ActorIdentifier
     public let id: Int
     
     public let name: String
@@ -49,7 +49,7 @@ public final class Person1: Person1Providing {
     
     internal init(
         api: ApiClient,
-        actorId: URL,
+        actorId: ActorIdentifier,
         id: Int,
         name: String,
         created: Date,

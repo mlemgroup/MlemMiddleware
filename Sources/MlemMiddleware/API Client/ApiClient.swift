@@ -244,7 +244,7 @@ extension ApiClient: CacheIdentifiable {
 }
 
 extension ApiClient: ActorIdentifiable {
-    public var actorId: URL { baseUrl }
+    public var actorId: ActorIdentifier { .instance(host: baseUrl.host()!) }
 }
 
 extension ApiClient: Hashable {
@@ -260,7 +260,7 @@ extension ApiClient: Hashable {
 
 extension ApiClient: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "ApiClient(\(host ?? ""), authenticated: \(token != nil))"
+        "ApiClient(\(host), authenticated: \(token != nil))"
     }
 }
 

@@ -9,7 +9,7 @@ import Foundation
 
 class DedupeFilter<FilterTarget: ActorIdentifiable>: FilterProviding {
     var numFiltered: Int = 0
-    private var seen: Set<URL> = .init()
+    private var seen: Set<ActorIdentifier> = .init()
     var active: Bool = true
     
     func filter(_ targets: [FilterTarget]) -> [FilterTarget] {

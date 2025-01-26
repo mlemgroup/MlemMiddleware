@@ -15,15 +15,9 @@ public protocol CommunityOrPersonStub: ActorIdentifiable, ContentModel {
 }
 
 public extension CommunityOrPersonStub {
-    var name: String { actorId.lastPathComponent }
+    var name: String { actorId.url.lastPathComponent } // TODO Fix this
 
-    var fullName: String? {
-        guard let host else { return nil }
-        return "\(name)@\(host)"
-    }
+    var fullName: String { "\(name)@\(host)" }
     
-    var fullNameWithPrefix: String? {
-        guard let host else { return nil }
-        return "\(Self.identifierPrefix)\(name)@\(host)"
-    }
+    var fullNameWithPrefix: String { "\(Self.identifierPrefix)\(name)@\(host)" }
 }

@@ -64,6 +64,6 @@ public extension CommentStubProviding {
 
 public extension CommentStubProviding {
     func upgrade() async throws -> any Comment {
-        try await api.getComment(actorId: actorId)
+        try await api.getComment(url: actorId.url)
     }
 }

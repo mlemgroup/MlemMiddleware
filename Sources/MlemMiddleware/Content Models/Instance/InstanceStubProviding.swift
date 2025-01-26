@@ -125,7 +125,7 @@ public enum InstanceUpgradeError: Error {
 public extension InstanceStubProviding {
     /// Upgrade to an ``Instance3``, using the instance's local ``ApiClient``. This will not work for locally running instances.
     func upgradeLocal() async throws -> Instance3 {
-        let externalApi: ApiClient = apiIsLocal ? api : .getApiClient(for: actorId, with: nil)
+        let externalApi: ApiClient = apiIsLocal ? api : .getApiClient(for: actorId.url, with: nil)
         return try await externalApi.getMyInstance()
     }
 }

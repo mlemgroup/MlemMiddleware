@@ -33,9 +33,7 @@ public enum InboxItem: FeedLoadable, ReadableProviding, ActorIdentifiable {
         baseValue.sortVal(sortType: sortType)
     }
     
-    public var actorId: URL {
-        baseValue.actorId
-    }
+    public var actorId: ActorIdentifier { baseValue.actorId }
     
     public static func == (lhs: InboxItem, rhs: InboxItem) -> Bool {
         lhs.actorId == rhs.actorId

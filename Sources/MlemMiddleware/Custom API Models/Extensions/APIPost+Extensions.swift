@@ -10,7 +10,7 @@ import Foundation
 extension ApiPost: ActorIdentifiable, CacheIdentifiable, Identifiable {
     public var cacheId: Int { id }
 
-    public var actorId: URL { apId }
+    public var actorId: ActorIdentifier { apId }
 }
 
 extension ApiPost {

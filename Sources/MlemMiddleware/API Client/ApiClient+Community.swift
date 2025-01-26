@@ -34,8 +34,8 @@ public extension ApiClient {
         return await caches.community3.getModel(api: self, from: response)
     }
     
-    func getCommunity(actorId: URL) async throws -> Community2 {
-        let request = ResolveObjectRequest(q: actorId.absoluteString)
+    func getCommunity(url: URL) async throws -> Community2 {
+        let request = ResolveObjectRequest(q: url.absoluteString)
         do {
             if let response = try await perform(request).community {
                 return await caches.community2.getModel(api: self, from: response)
@@ -46,8 +46,8 @@ public extension ApiClient {
         throw ApiClientError.noEntityFound
     }
     
-    func getCommunity(actorId: URL) async throws -> Community3 {
-        let comm: Community2 = try await getCommunity(actorId: actorId)
+    func getCommunity(url: URL) async throws -> Community3 {
+        let comm: Community2 = try await getCommunity(url: url)
         return try await getCommunity(id: comm.id)
     }
     

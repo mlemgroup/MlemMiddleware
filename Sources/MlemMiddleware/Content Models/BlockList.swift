@@ -12,18 +12,18 @@ public class BlockList {
     private let api: ApiClient
 
     /// Mapping `actorId` to `id`.
-    internal var people: Dictionary<URL, Int> = .init()
+    internal var people: Dictionary<ActorIdentifier, Int> = .init()
     /// Mapping `actorId` to `id`.
-    internal var communities: Dictionary<URL, Int> = .init()
+    internal var communities: Dictionary<ActorIdentifier, Int> = .init()
     /// Mapping `actorId` to `instanceId`.
-    internal var instances: Dictionary<URL, Int> = .init()
+    internal var instances: Dictionary<ActorIdentifier, Int> = .init()
 
     
     internal init(
         api: ApiClient,
-        people: Dictionary<URL, Int>,
-        communities: Dictionary<URL, Int>,
-        instances: Dictionary<URL, Int>
+        people: Dictionary<ActorIdentifier, Int>,
+        communities: Dictionary<ActorIdentifier, Int>,
+        instances: Dictionary<ActorIdentifier, Int>
     ) {
         self.api = api
         self.people = people
@@ -39,9 +39,9 @@ public class BlockList {
     ) {
         self.init(
             api: api,
-            people: Dictionary<URL, Int>(),
-            communities: Dictionary<URL, Int>(),
-            instances: Dictionary<URL, Int>()
+            people: Dictionary<ActorIdentifier, Int>(),
+            communities: Dictionary<ActorIdentifier, Int>(),
+            instances: Dictionary<ActorIdentifier, Int>()
         )
         
         self.update(people: people, communities: communities, instances: instances)
@@ -61,17 +61,16 @@ public class BlockList {
         communities newCommunities: [ApiCommunityBlockView],
         instances newInstances: [ApiInstanceBlockView]
     ) {
-        let newPeople: Dictionary<URL, Int> = newPeople.reduce(into: [:]) {
+        let newPeople: Dictionary<ActorIdentifier, Int> = newPeople.reduce(into: [:]) {
             $0[$1.target.actorId] = $1.target.id
         }
-        let newCommunities: Dictionary<URL, Int> = newCommunities.reduce(into: [:]) {
+        let newCommunities: Dictionary<ActorIdentifier, Int> = newCommunities.reduce(into: [:]) {
             $0[$1.community.actorId] = $1.community.id
         }
         
-        let newInstances: Dictionary<URL, Int> = newInstances.reduce(into: [:]) {
-            if let url = URL(string: "https://\($1.instance.domain)/") {
-                $0[url] = $1.instance.id
-            }
+        let newInstances: Dictionary<ActorIdentifier, Int> = newInstances.reduce(into: [:]) {
+            let actorId: ActorIdentifier = .instance(host: $1.instance.domain)
+            $0[actorId] = $1.instance.id
         }
         
         // People
@@ -147,9 +146,9 @@ public class BlockList {
         instances.keys.contains(instance.actorId)
     }
     
-    public func idOfBlockedPerson(actorId: URL) -> Int? { people[actorId] }
-    public func idOfBlockedCommunity(actorId: URL) -> Int? { communities[actorId] }
-    public func instanceIdOfBlockedInstance(actorId: URL) -> Int? { instances[actorId] }
+    public func idOfBlockedPerson(actorId: ActorIdentifier) -> Int? { people[actorId] }
+    public func idOfBlockedCommunity(actorId: ActorIdentifier) -> Int? { communities[actorId] }
+    public func instanceIdOfBlockedInstance(actorId: ActorIdentifier) -> Int? { instances[actorId] }
     
     public var personCount: Int { people.count }
     public var communityCount: Int { communities.count }
