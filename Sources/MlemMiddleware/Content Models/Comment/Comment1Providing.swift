@@ -10,6 +10,7 @@ import Observation
 
 public protocol Comment1Providing:
         CommentStubProviding,
+        ActorIdentifiable,
         ContentIdentifiable,
         Interactable1Providing,
         DeletableProviding,
@@ -18,7 +19,6 @@ public protocol Comment1Providing:
         SelectableContentProviding,
         FeedLoadable where FilterType == CommentFilterType {
     var comment1: Comment1 { get }
-    var id: Int { get }
     var content: String { get }
     var created: Date { get }
     var updated: Date? { get }
@@ -36,7 +36,6 @@ public extension Comment1Providing {
     static var modelTypeId: ContentType { .comment }
     
     var actorId: ActorIdentifier { comment1.actorId }
-    
     var id: Int { comment1.id }
     var content: String { comment1.content }
     var created: Date { comment1.created }
@@ -51,7 +50,7 @@ public extension Comment1Providing {
     var languageId: Int { comment1.languageId }
     var purged: Bool { comment1.purged }
     
-    var id_: Int? { comment1.id }
+    var actorId_: ActorIdentifier? { comment1.actorId }
     var content_: String? { comment1.content }
     var created_: Date? { comment1.created }
     var updated_: Date? { comment1.updated }
@@ -63,6 +62,14 @@ public extension Comment1Providing {
     var removed_: Bool? { comment1.distinguished }
     var removedManager_: StateManager<Bool>? { comment1.removedManager }
     var languageId_: Int? { comment1.languageId }
+}
+
+// Resolvable conformance
+public extension Comment1Providing {
+    @inlinable
+    var allResolvableUrls: [URL] {
+        ContentModelUrlType.allCases.map { resolvableUrl(from: $0) }
+    }
 }
 
 // SelectableContentProviding conformance
@@ -83,6 +90,14 @@ public extension Comment1Providing {
 public extension Comment1Providing {
     private var deletedManager: StateManager<Bool> { comment1.deletedManager }
 
+    /// Returns a `URL` that can be resolved by another `ApiClient`.
+    func resolvableUrl(from instance: ContentModelUrlType) -> URL {
+        switch instance {
+        case .host: actorId.url
+        case .provider: .comment(host: api.host, id: id)
+        }
+    }
+    
     var depth: Int { parentCommentIds.count }
     
     func upgrade() async throws -> any Comment {

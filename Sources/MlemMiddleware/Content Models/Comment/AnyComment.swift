@@ -23,7 +23,7 @@ public class AnyComment: Hashable, Upgradable {
 /// Hashable, Equatable conformance
 public extension AnyComment {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(wrappedValue.actorId)
+        hasher.combine(ObjectIdentifier(self))
     }
     
     static func == (lhs: AnyComment, rhs: AnyComment) -> Bool {
@@ -57,7 +57,7 @@ public extension AnyComment {
         if let api {
             initialValue = api === wrappedValue.api ? wrappedValue : CommentStub(
                 api: api,
-                actorId: wrappedValue.actorId
+                url: wrappedValue.allResolvableUrls[0]
             )
         } else {
             initialValue = wrappedValue

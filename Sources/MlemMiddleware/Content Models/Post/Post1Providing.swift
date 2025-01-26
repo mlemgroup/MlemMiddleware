@@ -7,8 +7,9 @@
 
 import Foundation
 
-public protocol Post1Providing: 
+public protocol Post1Providing:
         PostStubProviding,
+        ActorIdentifiable,
         ContentIdentifiable,
         Interactable1Providing,
         SelectableContentProviding,
@@ -47,7 +48,6 @@ public extension Post1Providing {
     static var modelTypeId: ContentType { .post }
     
     var actorId: ActorIdentifier { post1.actorId }
-    
     var id: Int { post1.id }
     var creatorId: Int { post1.creatorId }
     var communityId: Int { post1.communityId }
@@ -73,7 +73,7 @@ public extension Post1Providing {
     var altText: String? { post1.altText }
     var purged: Bool { post1.purged }
     
-    var id_: Int? { post1.id }
+    var actorId_: ActorIdentifier? { actorId }
     var creatorId_: Int? { post1.creatorId }
     var communityId_: Int? { post1.communityId }
     var title_: String? { post1.title }
@@ -95,6 +95,14 @@ public extension Post1Providing {
     var updated_: Date? { post1.updated }
     var languageId_: Int? { post1.languageId }
     var altText_: String? { post1.altText }
+}
+
+// Resolvable conformance
+public extension Post1Providing {
+    @inlinable
+    var allResolvableUrls: [URL] {
+        ContentModelUrlType.allCases.map { resolvableUrl(from: $0) }
+    }
 }
 
 // FeedLoadable conformance
@@ -119,6 +127,14 @@ public extension Post1Providing {
 }
 
 public extension Post1Providing {
+    /// Returns a `URL` that can be resolved by another `ApiClient`.
+    func resolvableUrl(from instance: ContentModelUrlType) -> URL {
+        switch instance {
+        case .host: actorId.url
+        case .provider: .post(host: api.host, id: id)
+        }
+    }
+    
     /// If this post links to loops.video, attempts to parse the underlying media url and set embeddedMediaUrl
     func parseLoopEmbeds() async {
         if let loopsUrl = await linkUrl?.parseEmbeddedLoops() {
