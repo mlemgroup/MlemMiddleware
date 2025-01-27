@@ -58,6 +58,24 @@ public extension ApiClient {
         return try await perform(request)
     }
     
+    @discardableResult
+    func changePassword(
+        newPassword: String,
+        confirmNewPassword: String,
+        oldPassword: String
+    ) async throws -> ApiLoginResponse {
+        let request = ChangePasswordRequest(
+            newPassword: newPassword,
+            newPasswordVerify: confirmNewPassword,
+            oldPassword: oldPassword
+        )
+        let response = try await perform(request)
+        if let token = response.jwt {
+            self.updateToken(token)
+        }
+        return response
+    }
+    
     func getCaptcha() async throws -> Captcha {
         let request = GetCaptchaRequest()
         let response = try await perform(request)
