@@ -95,7 +95,8 @@ public extension ApiClient {
             sort: sort,
             listingType: filter,
             page: page,
-            limit: limit
+            limit: limit,
+            postTitleOnly: false
         )
         let response = try await perform(request)
         return await caches.person2.getModels(api: self, from: response.users)

@@ -67,7 +67,8 @@ public extension ApiClient {
             sort: sort,
             listingType: filter,
             page: page,
-            limit: limit
+            limit: limit,
+            postTitleOnly: false
         )
         let response = try await perform(request).communities
         return await caches.community2.getModels(api: self, from: response)
