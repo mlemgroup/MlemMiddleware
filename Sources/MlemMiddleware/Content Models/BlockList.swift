@@ -134,11 +134,19 @@ public class BlockList {
         )
     }
     
-    public func contains(_ person: any PersonStubProviding) -> Bool {
+    public func contains(personActorId: ActorIdentifier) -> Bool {
+        people.keys.contains(personActorId)
+    }
+    
+    public func contains(_ person: any Person) -> Bool {
         people.keys.contains(person.actorId)
     }
     
-    public func contains(_ community: any CommunityStubProviding) -> Bool {
+    public func contains(communityActorId: ActorIdentifier) -> Bool {
+        communities.keys.contains(communityActorId)
+    }
+    
+    public func contains(_ community: any Community) -> Bool {
         communities.keys.contains(community.actorId)
     }
     

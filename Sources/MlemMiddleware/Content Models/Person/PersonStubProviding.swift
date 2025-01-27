@@ -16,8 +16,9 @@ let developerNames = [
     "https://lemmy.ml/u/sjmarf"
 ]
 
-public protocol PersonStubProviding: CommunityOrPersonStub {
+public protocol PersonStubProviding: ContentModel, Resolvable {
     // From Person1Providing.
+    var actorId_: ActorIdentifier? { get }
     var id_: Int? { get }
     var created_: Date? { get }
     var instanceId_: Int? { get }
@@ -73,6 +74,7 @@ public protocol PersonStubProviding: CommunityOrPersonStub {
 public extension PersonStubProviding {
     static var identifierPrefix: String { "@" }
     
+    var actorId_: ActorIdentifier? { nil }
     var id_: Int? { nil }
     var created_: Date? { nil }
     var instanceId_: Int? { nil }
@@ -118,12 +120,4 @@ public extension PersonStubProviding {
     var enableKeyboardNavigation_: Bool? { nil }
     var enableAnimatedImages_: Bool? { nil }
     var collapseBotComments_: Bool? { nil }
-    
-    var isMlemDeveloper: Bool { developerNames.contains(actorId.description) }
-}
-
-public extension PersonStubProviding {
-    func upgrade() async throws -> any Person {
-        try await api.getPerson(url: actorId.url) as Person2
-    }
 }

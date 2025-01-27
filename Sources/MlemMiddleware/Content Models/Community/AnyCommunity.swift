@@ -23,7 +23,7 @@ public class AnyCommunity: Hashable, Upgradable {
 /// Hashable, Equatable conformance
 public extension AnyCommunity {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(wrappedValue.actorId)
+        hasher.combine(ObjectIdentifier(self))
     }
     
     static func == (lhs: AnyCommunity, rhs: AnyCommunity) -> Bool {
@@ -57,7 +57,7 @@ public extension AnyCommunity {
         if let api {
             initialValue = api === wrappedValue.api ? wrappedValue : CommunityStub(
                 api: api,
-                actorId: wrappedValue.actorId
+                url: wrappedValue.allResolvableUrls[0]
             )
         } else {
             initialValue = wrappedValue

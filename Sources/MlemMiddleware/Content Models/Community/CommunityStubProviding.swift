@@ -7,12 +7,14 @@
 
 import Foundation
 
-public protocol CommunityStubProviding: CommunityOrPersonStub {
+public protocol CommunityStubProviding: ContentModel, Resolvable {
     // From Community1Providing.
+    var actorId_: ActorIdentifier? { get }
     var id_: Int? { get }
     var created_: Date? { get }
     var instanceId_: Int? { get }
     var updated_: Date? { get }
+    var name_: String? { get }
     var displayName_: String? { get }
     var description_: String? { get }
     var removed_: Bool? { get }
@@ -50,10 +52,12 @@ public extension CommunityStubProviding {
     static var identifierPrefix: String { "!" }
     
     // From Community1Providing.
+    var actorId_: ActorIdentifier? { nil }
     var id_: Int? { nil }
     var created_: Date? { nil }
     var instanceId_: Int? { nil }
     var updated_: Date? { nil }
+    var name_: String? { nil }
     var displayName_: String? { nil }
     var description_: String? { nil }
     var removed_: Bool? { nil }
@@ -83,10 +87,4 @@ public extension CommunityStubProviding {
     var moderators_: [Person1]? { nil }
     var discussionLanguages_: [Int]? { nil }
     var defaultPostLanguage_: Int? { nil }
-}
-
-public extension CommunityStubProviding {
-    func upgrade() async throws -> any Community {
-        try await api.getCommunity(url: actorId.url) as Community2
-    }
 }

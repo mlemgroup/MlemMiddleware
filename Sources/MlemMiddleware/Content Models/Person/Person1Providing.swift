@@ -10,6 +10,7 @@ import Foundation
 public protocol Person1Providing:
         PersonStubProviding,
         Profile2Providing,
+        CommunityOrPerson,
         ContentIdentifiable,
         SelectableContentProviding,
         PurgableProviding,
@@ -50,6 +51,7 @@ public extension Person1Providing {
     var blocked: Bool { person1.blocked }
     var purged: Bool { person1.purged }
     
+    var actorId_: ActorIdentifier? { person1.actorId }
     var id_: Int? { person1.id }
     var created_: Date? { person1.created }
     var instanceId_: Int? { person1.instanceId }
@@ -63,6 +65,14 @@ public extension Person1Providing {
     var isBot_: Bool? { person1.isBot }
     var instanceBan_: InstanceBanType? { person1.instanceBan }
     var blocked_: Bool? { person1.blocked }
+}
+
+// Resolvable conformance
+public extension Person1Providing {
+    @inlinable
+    var allResolvableUrls: [URL] {
+        ContentModelUrlType.allCases.map { resolvableUrl(from: $0) }
+    }
 }
 
 // FeedLoadable conformance
@@ -83,6 +93,16 @@ public extension Person1Providing {
 public extension Person1Providing {
     private var blockedManager: StateManager<Bool> { person1.blockedManager }
 
+    var isMlemDeveloper: Bool { developerNames.contains(actorId.description) }
+    
+    /// Returns a `URL` that can be resolved by another `ApiClient`.
+    func resolvableUrl(from instance: ContentModelUrlType) -> URL {
+        switch instance {
+        case .host: actorId.url
+        case .provider: .person(host: api.host, name: name)
+        }
+    }
+    
     var bannedFromInstance: Bool { instanceBan != .notBanned }
 
     func upgrade() async throws -> any Person {

@@ -8,15 +8,13 @@
 import Foundation
 import Observation
 
-public protocol CommunityOrPersonStub: ActorIdentifiable, ContentModel {
+public protocol CommunityOrPerson: ContentModel, ActorIdentifiable {
     static var identifierPrefix: String { get }
     
     var name: String { get }
 }
 
-public extension CommunityOrPersonStub {
-    var name: String { actorId.url.lastPathComponent } // TODO Fix this
-
+public extension CommunityOrPerson {
     var fullName: String { "\(name)@\(host)" }
     
     var fullNameWithPrefix: String { "\(Self.identifierPrefix)\(name)@\(host)" }

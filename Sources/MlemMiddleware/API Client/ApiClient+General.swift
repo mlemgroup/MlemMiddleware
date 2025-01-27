@@ -88,6 +88,17 @@ public extension ApiClient {
         return .init(id: uuid, imageData: data)
     }
     
+    /// Returns an object associated with the given URL.
+    ///
+    /// ## Overview
+    ///
+    /// The backend performs two steps to do this:
+    /// 1) Check it already has the given actorId mapped in the database, in which case it returns the entity.
+    /// 2) If the entity is not present in the database, it contacts the URL host to ask for it, then returns it back to us.
+    ///   When this happens, the call will take longer to resolve.
+    ///
+    /// **Importantly, step 2) is only performed if the `ApiClient` is authenticated.**
+    ///
     func resolve(url: URL) async throws -> (any ActorIdentifiable) {
         let request = ResolveObjectRequest(q: url.absoluteString)
         let response = try await perform(request)

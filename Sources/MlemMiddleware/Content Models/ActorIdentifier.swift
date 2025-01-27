@@ -58,32 +58,6 @@ public struct ActorIdentifier: Hashable {
         components.host = host
         return components.url! // This will always succeed
     }
-    
-    // TODO: Flesh this out; we should ideally include Mastodon etc.
-    /// A `Set` of possible softwares for this ActorIdentifier.
-    public var possibleSoftwares: Set<SiteSoftware> {
-        switch url.pathComponents[safeIndex: 1] {
-        case "m", "t":
-            [.kbin, .other]
-        case "post", "comment", "c", "u", "private_message":
-            [.lemmy, .other]
-        case "users":
-            [.misskey, .other]
-        default:
-            Set(SiteSoftware.allCases)
-        }
-    }
-    
-    public var probableEntityType: EntityType? {
-        switch url.pathComponents[safeIndex: 1] {
-        case "post": .post
-        case "comment": .comment
-        case "c", "m": .community
-        case "u", "users": .person
-        case "private_message": .message
-        default: nil
-        }
-    }
 }
 
 extension ActorIdentifier: Codable {
