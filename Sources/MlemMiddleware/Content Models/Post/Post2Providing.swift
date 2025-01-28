@@ -147,9 +147,8 @@ public extension Post2Providing {
             }
         case let .link(link):
             // websites: load image and favicon
-            if let baseURL = linkUrl?.host,
-               let favIconURL = URL(string: "https://www.google.com/s2/favicons?sz=64&domain=\(baseURL)") {
-                ret.append(ImageRequest(url: favIconURL))
+            if config.fetchFavicons, let url = link.favicon {
+                ret.append(ImageRequest(url: url))
             }
             if let url = link.thumbnail {
                 switch config.imageSize {
