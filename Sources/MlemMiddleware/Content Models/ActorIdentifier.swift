@@ -30,6 +30,7 @@ import Foundation
 ///
 public struct ActorIdentifier: Hashable {
     public let url: URL
+    public let host: String
     
     /// Create an `ActorIdentifier` from a given URL.
     ///
@@ -37,19 +38,21 @@ public struct ActorIdentifier: Hashable {
     /// ID for the given entity, and not just any URL pointing to it. If possible, avoid using this initialiser.
     ///
     public init?(url: URL) {
-        guard url.host() != nil else { return nil }
+        guard let host = url.host() else { return nil }
         self.url = url
+        self.host = host
+    }
+    
+    private init(url: URL, host: String) {
+        self.url = url
+        self.host = host
     }
     
     public static func instance(host: String) -> Self {
         var components = URLComponents()
         components.scheme = "https"
         components.host = host
-        return ActorIdentifier(url: components.url!)!
-    }
-    
-    public var host: String {
-        url.host()! // We can force-unwrap here because we ensured that the host is extractable in `init`
+        return ActorIdentifier(url: components.url!, host: host)
     }
 
     public var hostUrl: URL {
