@@ -27,7 +27,7 @@ public extension Upgradable {
     func upgradeFromLocal() async throws {
         if let wrappedValue = wrappedValue as? any ActorIdentifiable {
             try await upgrade(
-                api: .getApiClient(for: wrappedValue.actorId.removingPathComponents(), with: nil),
+                api: .getApiClient(for: wrappedValue.actorId.hostUrl, with: nil),
                 upgradeOperation: nil
             )
         } else {

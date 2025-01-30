@@ -23,7 +23,7 @@ public class AnyPerson: Hashable, Upgradable {
 /// Hashable, Equatable conformance
 public extension AnyPerson {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(wrappedValue.actorId)
+        hasher.combine(ObjectIdentifier(self))
     }
     
     static func == (lhs: AnyPerson, rhs: AnyPerson) -> Bool {
@@ -57,7 +57,7 @@ public extension AnyPerson {
         if let api {
             initialValue = api === wrappedValue.api ? wrappedValue : PersonStub(
                 api: api,
-                actorId: wrappedValue.actorId
+                url: wrappedValue.allResolvableUrls[0]
             )
         } else {
             initialValue = wrappedValue

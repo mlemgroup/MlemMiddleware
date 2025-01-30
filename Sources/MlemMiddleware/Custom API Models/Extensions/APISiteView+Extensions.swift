@@ -10,6 +10,6 @@ import Foundation
 extension ApiSiteView: CacheIdentifiable, ActorIdentifiable, Identifiable {
     public var cacheId: Int { id }
     
-    public var actorId: URL { site.actorId }
+    public var actorId: ActorIdentifier { site.actorId }
     public var id: Int { site.id }
 }

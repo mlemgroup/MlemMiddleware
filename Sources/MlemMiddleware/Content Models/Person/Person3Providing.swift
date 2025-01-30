@@ -32,8 +32,12 @@ public extension Person3Providing {
         self.moderatedCommunities.contains { $0.id == communityId }
     }
     
-    func moderates(community: any CommunityStubProviding) -> Bool {
-        self.moderatedCommunities.contains { $0.actorId == community.actorId }
+    func moderates(communityActorId: ActorIdentifier) -> Bool {
+        self.moderatedCommunities.contains { $0.actorId == actorId }
+    }
+    
+    func moderates(community: any Community) -> Bool {
+        moderates(communityActorId: community.actorId)
     }
     
     /// Returns true if this person can perform moderator actions on the target person

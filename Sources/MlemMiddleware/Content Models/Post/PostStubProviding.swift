@@ -7,9 +7,9 @@
 
 import Foundation
 
-public protocol PostStubProviding: ActorIdentifiable, ContentModel {
+public protocol PostStubProviding: ContentModel, Resolvable {
     // From Post1Providing. These are defined as nil in the extension below
-    var id_: Int? { get }
+    var actorId_: ActorIdentifier? { get }
     var creatorId_: Int? { get }
     var communityId_: Int? { get }
     var title_: String? { get }
@@ -53,7 +53,7 @@ public protocol PostStubProviding: ActorIdentifiable, ContentModel {
 }
 
 public extension PostStubProviding {
-    var id_: Int? { nil }
+    var actorId_: ActorIdentifier? { nil }
     var creatorId_: Int? { nil }
     var communityId_: Int? { nil }
     var title_: String? { nil }
@@ -90,10 +90,4 @@ public extension PostStubProviding {
     
     var communityModerators_: [Person1]? { nil }
     var crossPosts_: [Post2]? { nil }
-}
-
-public extension PostStubProviding {
-    func upgrade() async throws -> any Post {
-        try await api.getPost(actorId: actorId)
-    }
 }

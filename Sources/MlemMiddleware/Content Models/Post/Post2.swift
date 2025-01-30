@@ -5,6 +5,7 @@
 //  Created by Sjmarf on 16/02/2024.
 //
 
+import Foundation
 import Observation
 
 @Observable

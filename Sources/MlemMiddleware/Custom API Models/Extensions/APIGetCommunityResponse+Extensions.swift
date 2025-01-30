@@ -10,6 +10,6 @@ import Foundation
 extension ApiGetCommunityResponse: CacheIdentifiable, ActorIdentifiable, Identifiable {
     public var cacheId: Int { id }
     
-    public var actorId: URL { communityView.community.actorId }
+    public var actorId: ActorIdentifier { communityView.community.actorId }
     public var id: Int { communityView.community.id }
 }

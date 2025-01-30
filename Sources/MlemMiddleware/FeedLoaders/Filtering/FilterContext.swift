@@ -10,10 +10,10 @@ import Foundation
 /// Information required to perform filtering
 public struct FilterContext {
     public let isAdmin: Bool
-    public let moderatedCommunityActorIds: Set<URL>
+    public let moderatedCommunityActorIds: Set<ActorIdentifier>
     public let filteredKeywords: Set<String>
     
-    public init(isAdmin: Bool, moderatedCommunityActorIds: Set<URL>, filteredKeywords: Set<String>) {
+    public init(isAdmin: Bool, moderatedCommunityActorIds: Set<ActorIdentifier>, filteredKeywords: Set<String>) {
         self.isAdmin = isAdmin
         self.moderatedCommunityActorIds = moderatedCommunityActorIds
         self.filteredKeywords = filteredKeywords

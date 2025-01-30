@@ -14,8 +14,8 @@ public extension ApiClient {
         return await caches.comment2.getModel(api: self, from: response.commentView)
     }
     
-    func getComment(actorId: URL) async throws -> Comment2 {
-        let request = ResolveObjectRequest(q: actorId.absoluteString)
+    func getComment(url: URL) async throws -> Comment2 {
+        let request = ResolveObjectRequest(q: url.absoluteString)
         do {
             if let response = try await perform(request).comment {
                 return await caches.comment2.getModel(api: self, from: response)
@@ -96,7 +96,8 @@ public extension ApiClient {
             sort: sort,
             listingType: filter,
             page: page,
-            limit: limit
+            limit: limit,
+            postTitleOnly: false
         )
         let response = try await perform(request)
         return await caches.comment2.getModels(api: self, from: response.comments)

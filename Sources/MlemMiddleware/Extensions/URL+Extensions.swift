@@ -7,8 +7,42 @@
 
 import Foundation
 
-extension URL: Identifiable {
+extension URL: @retroactive Identifiable {
     public var id: URL { absoluteURL }
+}
+
+public extension URL {
+    static func post(host: String, id: Int) -> Self {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = host
+        components.path = "/post/\(id)"
+        return components.url! // This will always succeed
+    }
+    
+    static func comment(host: String, id: Int) -> Self {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = host
+        components.path = "/comment/\(id)"
+        return components.url! // This will always succeed
+    }
+    
+    static func community(host: String, name: String) -> Self {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = host
+        components.path = "/c/\(name)"
+        return components.url! // This will always succeed
+    }
+
+    static func person(host: String, name: String) -> Self {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = host
+        components.path = "/u/\(name)"
+        return components.url! // This will always succeed
+    }
 }
 
 public extension URL {

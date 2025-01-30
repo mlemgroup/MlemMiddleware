@@ -14,7 +14,7 @@ public final class Community1: Community1Providing {
     public var community1: Community1 { self }
     public var api: ApiClient
 
-    public let actorId: URL
+    public let actorId: ActorIdentifier
     public let id: Int
     
     public let name: String
@@ -43,7 +43,7 @@ public final class Community1: Community1Providing {
   
     internal init(
         api: ApiClient,
-        actorId: URL,
+        actorId: ActorIdentifier,
         id: Int,
         name: String,
         created: Date,

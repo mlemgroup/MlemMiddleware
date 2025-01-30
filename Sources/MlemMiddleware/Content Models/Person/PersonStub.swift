@@ -11,22 +11,34 @@ import Observation
 public struct PersonStub: PersonStubProviding, Hashable {
     public static let tierNumber: Int = 0
     public var api: ApiClient
-    public let actorId: URL
+    public let url: URL
     
-    public init(api: ApiClient, actorId: URL) {
+    public init(api: ApiClient, url: URL) {
         self.api = api
-        self.actorId = actorId
+        self.url = url
     }
     
     public func asLocal() -> Self {
-        .init(api: .getApiClient(for: actorId.removingPathComponents(), with: nil), actorId: actorId)
+        .init(api: .getApiClient(for: url, with: nil), url: url)
     }
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(actorId)
+        hasher.combine(url)
     }
     
     public static func == (lhs: PersonStub, rhs: PersonStub) -> Bool {
-        lhs.actorId == rhs.actorId
+        lhs.url == rhs.url
     }
+    
+    public func upgrade() async throws -> any Person {
+        try await api.getPerson(url: url) as Person2
+    }
+}
+
+// Resolvable conformance
+public extension PersonStub {
+    var resolvableUrl: URL { url }
+    
+    @inlinable
+    var allResolvableUrls: [URL] { [resolvableUrl] }
 }

@@ -91,5 +91,5 @@ public extension Person4Providing {
 }
 
 public extension Person4Providing {
-    var moderatedCommunityActorIds: Set<URL> { .init(moderatedCommunities.map { $0.actorId }) }
+    var moderatedCommunityActorIds: Set<ActorIdentifier> { .init(moderatedCommunities.map(\.actorId)) }
 }

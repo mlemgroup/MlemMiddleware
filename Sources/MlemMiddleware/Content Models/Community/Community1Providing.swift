@@ -10,6 +10,7 @@ import Foundation
 public protocol Community1Providing:
     CommunityStubProviding,
     Profile2Providing,
+    CommunityOrPerson,
     ContentIdentifiable,
     RemovableProviding,
     PurgableProviding,
@@ -17,6 +18,7 @@ public protocol Community1Providing:
 {
     var community1: Community1 { get }
     
+    var name: String { get }
     var deleted: Bool { get }
     var nsfw: Bool { get }
     var hidden: Bool { get }
@@ -28,7 +30,7 @@ public typealias Community = Community1Providing
 public extension Community1Providing {
     static var modelTypeId: ContentType { .community }
     
-    var actorId: URL { community1.actorId }
+    var actorId: ActorIdentifier { community1.actorId }
     var name: String { community1.name }
     
     var id: Int { community1.id }
@@ -49,10 +51,12 @@ public extension Community1Providing {
     var purged: Bool { community1.purged }
     var visibility: ApiCommunityVisibility? { community1.visibility }
     
+    var actorId_: ActorIdentifier? { community1.actorId }
     var id_: Int? { community1.id }
     var created_: Date? { community1.created }
     var instanceId_: Int? { community1.instanceId }
     var updated_: Date? { community1.updated }
+    var name_: String? { community1.name }
     var displayName_: String? { community1.displayName }
     var description_: String? { community1.description }
     var removed_: Bool? { community1.removed }
@@ -66,6 +70,14 @@ public extension Community1Providing {
     var blocked_: Bool? { community1.blocked }
     var purged_: Bool? { community1.purged }
     var visibility_: ApiCommunityVisibility? { community1.visibility }
+}
+
+// Resolvable conformance
+public extension Community1Providing {
+    @inlinable
+    var allResolvableUrls: [URL] {
+        ContentModelUrlType.allCases.map { resolvableUrl(from: $0) }
+    }
 }
 
 // FeedLoadable conformance
@@ -85,6 +97,14 @@ public extension Community1Providing {
 
 public extension Community1Providing {
     private var blockedManager: StateManager<Bool> { community1.blockedManager }
+    
+    /// Returns a `URL` that can be resolved by another `ApiClient`.
+    func resolvableUrl(from instance: ContentModelUrlType) -> URL {
+        switch instance {
+        case .host: actorId.url
+        case .provider: .community(host: api.host, name: name)
+        }
+    }
     
     func upgrade() async throws -> any Community {
         try await api.getCommunity(id: id)

@@ -7,12 +7,13 @@
 
 import Foundation
 
-/// Represents a Lemmy entity that can be represented by an ActivityPub Actor ID.
+/// Represents a Lemmy entity that can be represented by an ``ActorIdentifier``.
 public protocol ActorIdentifiable {
-    /// The URL of the entity on it's host instance. For example, "https://lemmy.ml/c/mlemapp". Useful for identifying entities across instances.
-    var actorId: URL { get }
+    // An identifier that is unique across Lemmy instances.
+    var actorId: ActorIdentifier { get }
 }
 
 extension ActorIdentifiable {
-    public var host: String? { actorId.host() }
+    @inlinable
+    public var host: String { actorId.host }
 }

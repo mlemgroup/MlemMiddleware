@@ -7,9 +7,9 @@
 
 import Foundation
 
-public protocol CommentStubProviding: ActorIdentifiable, ContentModel {
+public protocol CommentStubProviding: ContentModel, Resolvable {
     // From Comment1Providing. These are defined as nil in the extension below
-    var id_: Int? { get }
+    var actorId_: ActorIdentifier? { get }
     var content_: String? { get }
     var created_: Date? { get }
     var updated_: Date? { get }
@@ -33,10 +33,11 @@ public protocol CommentStubProviding: ActorIdentifiable, ContentModel {
     var bannedFromCommunity_: Bool? { get }
     var commentCount_: Int? { get }
     
+    func upgrade() async throws -> any Comment
 }
 
 public extension CommentStubProviding {
-    var id_: Int? { nil }
+    var actorId_: ActorIdentifier? { nil }
     var content_: String? { nil }
     var created_: Date? { nil }
     var updated_: Date? { nil }
@@ -60,10 +61,4 @@ public extension CommentStubProviding {
     var commentCount_: Int? { nil }
     
     var depth_: Int? { parentCommentIds_?.count }
-}
-
-public extension CommentStubProviding {
-    func upgrade() async throws -> any Comment {
-        try await api.getComment(actorId: actorId)
-    }
 }

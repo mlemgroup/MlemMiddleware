@@ -20,7 +20,7 @@ public final class Post1: Post1Providing {
     public var api: ApiClient
     public var post1: Post1 { self }
     
-    public let actorId: URL
+    public let actorId: ActorIdentifier
     public let id: Int
     public let creatorId: Int
     public let communityId: Int
@@ -59,23 +59,23 @@ public final class Post1: Post1Providing {
     
     internal init(
         api: ApiClient,
-        actorId: URL,
+        actorId: ActorIdentifier,
         id: Int,
         creatorId: Int,
         communityId: Int,
         created: Date,
-        title: String = "",
-        content: String? = "",
-        linkUrl: URL? = nil,
-        deleted: Bool = false,
-        embed: PostEmbed? = nil,
-        pinnedCommunity: Bool = false,
-        pinnedInstance: Bool = false,
-        locked: Bool = false,
-        nsfw: Bool = false,
-        removed: Bool = false,
-        thumbnailUrl: URL? = nil,
-        updated: Date? = nil,
+        title: String,
+        content: String?,
+        linkUrl: URL?,
+        deleted: Bool,
+        embed: PostEmbed?,
+        pinnedCommunity: Bool,
+        pinnedInstance: Bool,
+        locked: Bool,
+        nsfw: Bool,
+        removed: Bool,
+        thumbnailUrl: URL?,
+        updated: Date?,
         languageId: Int,
         altText: String?
     ) {

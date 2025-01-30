@@ -29,7 +29,9 @@ public extension ApiClient {
             likedOnly: filter == .upvoted,
             dislikedOnly: filter == .downvoted,
             pageCursor: cursor,
-            showHidden: showHidden
+            showHidden: showHidden,
+            showRead: nil,
+            showNsfw: nil
         )
         let response = try await perform(request)
         let posts = await caches.post2.getModels(api: self, from: response.posts)
@@ -57,7 +59,9 @@ public extension ApiClient {
             likedOnly: filter == .upvoted,
             dislikedOnly: filter == .downvoted,
             pageCursor: cursor,
-            showHidden: showHidden
+            showHidden: showHidden,
+            showRead: nil,
+            showNsfw: nil
         )
         let response = try await perform(request)
         let posts = await caches.post2.getModels(api: self, from: response.posts)
@@ -94,8 +98,8 @@ public extension ApiClient {
         return await caches.post3.getModel(api: self, from: response)
     }
     
-    func getPost(actorId: URL) async throws -> Post2 {
-        let request = ResolveObjectRequest(q: actorId.absoluteString)
+    func getPost(url: URL) async throws -> Post2 {
+        let request = ResolveObjectRequest(q: url.absoluteString)
         do {
             if let response = try await perform(request).post {
                 return await caches.post2.getModel(api: self, from: response)
@@ -124,7 +128,8 @@ public extension ApiClient {
             sort: sort,
             listingType: filter,
             page: page,
-            limit: limit
+            limit: limit,
+            postTitleOnly: false
         )
         let response = try await perform(request)
         return await caches.post2.getModels(api: self, from: response.posts)

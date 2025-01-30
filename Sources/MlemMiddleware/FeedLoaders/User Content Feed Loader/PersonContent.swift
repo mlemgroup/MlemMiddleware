@@ -29,7 +29,7 @@ public class PersonContent: Hashable, Equatable, FeedLoadable, ActorIdentifiable
         }
     }
     
-    public var actorId: URL {
+    public var actorId: ActorIdentifier {
         switch wrappedValue {
         case let .post(post2): post2.actorId
         case let .comment(comment2): comment2.actorId

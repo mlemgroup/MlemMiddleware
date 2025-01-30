@@ -31,7 +31,8 @@ class Instance1Cache: CoreCache<Instance1> {
             avatar: apiType.icon,
             banner: apiType.banner,
             lastRefresh: apiType.lastRefreshedAt,
-            contentWarning: apiType.contentWarning
+            contentWarning: apiType.contentWarning,
+            blocked: nil
         )
         
         itemCache.put(newItem)

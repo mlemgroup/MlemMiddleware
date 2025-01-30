@@ -56,7 +56,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     
     override public func changeApi(to newApi: ApiClient, context: FilterContext) async {
         do {
-            let resolvedCommunity = try await newApi.resolve(actorId: community.actorId)
+            let resolvedCommunity = try await newApi.resolve(url: community.actorId.url)
             
             guard let newCommunity = resolvedCommunity as? any Community else {
                 assertionFailure("Did not get community back")

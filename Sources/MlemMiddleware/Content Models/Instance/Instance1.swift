@@ -14,7 +14,7 @@ public final class Instance1: Instance1Providing {
     public var api: ApiClient
     public var instance1: Instance1 { self }
     
-    public let actorId: URL
+    public let actorId: ActorIdentifier
     
     // For some reason, instances have two different IDs.
     // `instanceId` should be used when blocking the instance.
@@ -42,20 +42,20 @@ public final class Instance1: Instance1Providing {
     
     internal init(
         api: ApiClient,
-        actorId: URL,
+        actorId: ActorIdentifier,
         id: Int,
         instanceId: Int,
         created: Date,
         updated: Date?,
         publicKey: String,
-        displayName: String = "",
-        description: String? = nil,
-        shortDescription: String? = nil,
-        avatar: URL? = nil,
-        banner: URL? = nil,
-        lastRefresh: Date = .distantPast,
-        contentWarning: String? = nil,
-        blocked: Bool? = nil
+        displayName: String,
+        description: String?,
+        shortDescription: String?,
+        avatar: URL?,
+        banner: URL?,
+        lastRefresh: Date,
+        contentWarning: String?,
+        blocked: Bool?
     ) {
         self.api = api
         self.actorId = actorId
@@ -71,7 +71,7 @@ public final class Instance1: Instance1Providing {
         self.banner = banner
         self.lastRefresh = lastRefresh
         self.contentWarning = contentWarning
-        self.local = actorId == api.baseUrl
+        self.local = actorId.url == api.baseUrl
         self.blockedManager = .init(
             wrappedValue: blocked ?? api.blocks?.instances.keys.contains(actorId) ?? false
         )
