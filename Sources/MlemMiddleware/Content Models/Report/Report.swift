@@ -9,7 +9,9 @@ import Foundation
 import Observation
 
 @Observable
-public class Report: CacheIdentifiable, ContentModel {
+public class Report: CacheIdentifiable, ContentModel, FeedLoadable {
+    public typealias FilterType = ModMailItemFilterType
+    
     public static let tierNumber: Int = 1
     public var api: ApiClient
     
@@ -75,5 +77,15 @@ public class Report: CacheIdentifiable, ContentModel {
     @discardableResult
     public func toggleResolved() -> Task<StateUpdateResult, Never> {
         updateResolved(!resolved)
+    }
+    
+    public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
+        switch sortType {
+        case .new: .new(created)
+        }
+    }
+    
+    public static func == (lhs: Report, rhs: Report) -> Bool {
+        return lhs.target.case == rhs.target.case && lhs.id == rhs.id
     }
 }

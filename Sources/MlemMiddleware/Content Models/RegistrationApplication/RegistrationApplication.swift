@@ -12,7 +12,9 @@ import Foundation
 // useless. At this time, only tier 2 applications are returned anyways.
 
 @Observable
-public final class RegistrationApplication: ContentIdentifiable {
+public final class RegistrationApplication: ContentIdentifiable, FeedLoadable {
+    public typealias FilterType = ModMailItemFilterType
+    
     public static let modelTypeId: ContentType = .registrationApplication
     public static let tierNumber: Int = 1
     public let api: ApiClient
@@ -58,6 +60,12 @@ public final class RegistrationApplication: ContentIdentifiable {
         }
         self.resolutionManager.onVerify = { newValue, semaphore in
             api.unreadCount?.verifyItem(itemType: .registrationApplication, isRead: newValue != .unresolved)
+        }
+    }
+    
+    public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
+        switch sortType {
+        case .new: .new(created)
         }
     }
     
