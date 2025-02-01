@@ -59,6 +59,14 @@ public class Report: CacheIdentifiable, ContentModel, FeedLoadable {
         }
     }
     
+    public var modMailId: Int {
+        var hasher: Hasher = .init()
+        hasher.combine("report")
+        hasher.combine(target.case)
+        hasher.combine(id)
+        return hasher.finalize()
+    }
+    
     @discardableResult
     public func updateResolved(_ newValue: Bool) -> Task<StateUpdateResult, Never> {
         resolvedManager.performRequest(expectedResult: newValue) { semaphore in

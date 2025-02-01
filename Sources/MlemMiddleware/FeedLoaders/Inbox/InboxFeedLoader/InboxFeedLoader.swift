@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum InboxItem: FeedLoadable, ReadableProviding, ActorIdentifiable {
+public enum InboxItem: FeedLoadable, ReadableProviding, InboxIdentifiable {
     public typealias FilterType = InboxItemFilterType
     
     case message(Message2)
@@ -33,10 +33,15 @@ public enum InboxItem: FeedLoadable, ReadableProviding, ActorIdentifiable {
         baseValue.sortVal(sortType: sortType)
     }
     
-    public var actorId: ActorIdentifier { baseValue.actorId }
-    
-    public static func == (lhs: InboxItem, rhs: InboxItem) -> Bool {
-        lhs.actorId == rhs.actorId
+    public var inboxId: Int {
+        var hasher: Hasher = .init()
+        
+        switch self {
+        case let .message(message): hasher.combine(message.actorId)
+        case let .reply(reply): hasher.combine(reply.actorId)
+        }
+        
+        return hasher.finalize()
     }
 }
 

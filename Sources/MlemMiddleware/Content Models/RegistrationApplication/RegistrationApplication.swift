@@ -63,6 +63,13 @@ public final class RegistrationApplication: ContentIdentifiable, FeedLoadable {
         }
     }
     
+    var modMailId: Int {
+        var hasher: Hasher = .init()
+        hasher.combine("application")
+        hasher.combine(id)
+        return hasher.finalize()
+    }
+    
     public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
         switch sortType {
         case .new: .new(created)

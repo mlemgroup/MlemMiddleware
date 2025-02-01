@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ModMailItem: FeedLoadable, ReadableProviding {
+public enum ModMailItem: FeedLoadable, ReadableProviding, InboxIdentifiable {
     public typealias FilterType = ModMailItemFilterType
     
     case report(Report)
@@ -24,6 +24,14 @@ public enum ModMailItem: FeedLoadable, ReadableProviding {
         switch self {
         case .report(let report): report.resolved
         case .application(let application): application.resolution != .unresolved
+        }
+    }
+    
+    /// id that uniquely distinguishes this from other mod mail items
+    public var inboxId: Int {
+        switch self {
+        case let .report(report): report.modMailId
+        case let .application(application): application.modMailId
         }
     }
     
