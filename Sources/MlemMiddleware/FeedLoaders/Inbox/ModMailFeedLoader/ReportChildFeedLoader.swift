@@ -7,7 +7,7 @@
 
 class ReportFetcher: MultiFetcher<ModMailItem> {}
 
-public class ReportChildFeedLoader: ChildFeedLoader<ModMailItem> {
+public class ReportChildFeedLoader: ChildFeedLoader<ModMailItem>, InboxFeedLoading {
     
     var reportFetcher: MultiFetcher<ModMailItem> { fetcher as! ReportFetcher }
     

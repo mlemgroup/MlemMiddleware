@@ -5,7 +5,7 @@
 //  Created by Eric Andrews on 2024-12-04.
 //
 
-public class ModMailChildFeedLoader: ChildFeedLoader<ModMailItem> {
+public class ModMailChildFeedLoader: ChildFeedLoader<ModMailItem>, InboxFeedLoading {
     
     var modMailFetcher: ModMailFetcher { fetcher as! ModMailFetcher }
     

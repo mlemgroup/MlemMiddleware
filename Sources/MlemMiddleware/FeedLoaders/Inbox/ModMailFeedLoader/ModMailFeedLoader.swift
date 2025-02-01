@@ -111,8 +111,8 @@ public class ModMailFeedLoader: StandardFeedLoader<ModMailItem> {
     public func hideRead() async throws {
         await withThrowingTaskGroup(of: Void.self) { group in
             modMailFetcher.sources.forEach { source in
-                group.addTask {
-                    guard let childSource = source as? ModMailChildFeedLoader else {
+                group.addTask {                    
+                    guard let childSource = source as? any InboxFeedLoading else {
                         assertionFailure("Child is not ModMailChildFeedLoader")
                         return
                     }
@@ -128,7 +128,7 @@ public class ModMailFeedLoader: StandardFeedLoader<ModMailItem> {
         await withThrowingTaskGroup(of: Void.self) { group in
             modMailFetcher.sources.forEach { source in
                 group.addTask {
-                    guard let childSource = source as? ModMailChildFeedLoader else {
+                    guard let childSource = source as? any InboxFeedLoading else {
                         assertionFailure("Child is not ModMailChildFeedLoader")
                         return
                     }
