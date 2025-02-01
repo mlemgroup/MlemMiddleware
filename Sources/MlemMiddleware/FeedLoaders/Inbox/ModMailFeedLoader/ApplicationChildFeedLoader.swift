@@ -8,6 +8,8 @@
 public class ApplicationChildFeedLoader: ModMailChildFeedLoader {
     class Fetcher: ModMailFetcher {
         override func fetchPage(_ page: Int) async throws -> FetchResponse {
+            guard api.isAdmin else { return .init(items: [], prevCursor: nil, nextCursor: nil) }
+            
             let response = try await api.getRegistrationApplications(page: page, limit: pageSize, unreadOnly: unreadOnly)
             return .init(
                 items: response.map { .application($0) },

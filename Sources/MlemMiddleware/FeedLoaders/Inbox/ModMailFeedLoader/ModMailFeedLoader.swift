@@ -60,9 +60,7 @@ public class ModMailFeedLoader: StandardFeedLoader<ModMailItem> {
         sortType: FeedLoaderSort.SortType,
         showRead: Bool
     ) -> (
-        postReportFeedLoader: PostReportChildFeedLoader,
-        commentReportFeedLoader: CommentReportChildFeedLoader,
-        messageReportFeedLoader: MessageReportChildFeedLoader,
+        reportFeedLoader: ReportChildFeedLoader,
         applicationFeedLoader: ApplicationChildFeedLoader,
         modMailFeedLoader: ModMailFeedLoader
     ) {
@@ -84,6 +82,14 @@ public class ModMailFeedLoader: StandardFeedLoader<ModMailItem> {
             sortType: sortType,
             showRead: showRead
         )
+        
+        let reportFeedLoader: ReportChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            sources: [postReportFeedLoader, commentReportFeedLoader, messageReportFeedLoader],
+            showRead: showRead)
+        
         let applicationFeedLoader: ApplicationChildFeedLoader = .init(
             api: api,
             pageSize: pageSize,
@@ -94,12 +100,12 @@ public class ModMailFeedLoader: StandardFeedLoader<ModMailItem> {
         let modMailFeedLoader: ModMailFeedLoader = .init(
             api: api,
             pageSize: pageSize,
-            sources: [postReportFeedLoader, commentReportFeedLoader, messageReportFeedLoader, applicationFeedLoader],
+            sources: [reportFeedLoader, applicationFeedLoader],
             sortType: sortType,
             showRead: showRead
         )
         
-        return (postReportFeedLoader, commentReportFeedLoader, messageReportFeedLoader, applicationFeedLoader, modMailFeedLoader)
+        return (reportFeedLoader, applicationFeedLoader, modMailFeedLoader)
     }
     
     public func hideRead() async throws {
