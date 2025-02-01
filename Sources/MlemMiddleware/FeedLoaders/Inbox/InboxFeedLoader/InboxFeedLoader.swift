@@ -52,6 +52,52 @@ public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
         }
     }
     
+    public static func setup(
+        api: ApiClient,
+        pageSize: Int,
+        sortType: FeedLoaderSort.SortType,
+        showRead: Bool
+    ) -> (
+        replyFeedLoader: ReplyChildFeedLoader,
+        mentionFeedLoader: MentionChildFeedLoader,
+        messageFeedLoader: MessageChildFeedLoader,
+        inboxFeedLoader: InboxFeedLoader
+    ) {
+        let replyFeedLoader: ReplyChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        let mentionFeedLoader: MentionChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        let messageFeedLoader: MessageChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        
+        let inboxFeedLoader: InboxFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sources: [replyFeedLoader, mentionFeedLoader, messageFeedLoader],
+            sortType: sortType,
+            showRead: showRead
+        )
+        
+        return (
+            replyFeedLoader,
+            mentionFeedLoader,
+            messageFeedLoader,
+            inboxFeedLoader
+        )
+    }
+    
     public func hideRead() async throws {
         await withThrowingTaskGroup(of: Void.self) { group in
             inboxFetcher.sources.forEach { source in

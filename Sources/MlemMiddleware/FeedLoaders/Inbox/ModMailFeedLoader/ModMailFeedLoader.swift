@@ -54,6 +54,54 @@ public class ModMailFeedLoader: StandardFeedLoader<ModMailItem> {
         }
     }
     
+    public static func setup(
+        api: ApiClient,
+        pageSize: Int,
+        sortType: FeedLoaderSort.SortType,
+        showRead: Bool
+    ) -> (
+        postReportFeedLoader: PostReportChildFeedLoader,
+        commentReportFeedLoader: CommentReportChildFeedLoader,
+        messageReportFeedLoader: MessageReportChildFeedLoader,
+        applicationFeedLoader: ApplicationChildFeedLoader,
+        modMailFeedLoader: ModMailFeedLoader
+    ) {
+        let postReportFeedLoader: PostReportChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        let commentReportFeedLoader: CommentReportChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        let messageReportFeedLoader: MessageReportChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        let applicationFeedLoader: ApplicationChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        
+        let modMailFeedLoader: ModMailFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sources: [postReportFeedLoader, commentReportFeedLoader, messageReportFeedLoader, applicationFeedLoader],
+            sortType: sortType,
+            showRead: showRead
+        )
+        
+        return (postReportFeedLoader, commentReportFeedLoader, messageReportFeedLoader, applicationFeedLoader, modMailFeedLoader)
+    }
+    
     public func hideRead() async throws {
         await withThrowingTaskGroup(of: Void.self) { group in
             modMailFetcher.sources.forEach { source in
