@@ -6,11 +6,12 @@
 //
 
 public enum ModMailItemFilterType {
-    case read
+    case read, dedupe
 }
 
 class ModMailItemFilter: MultiFilter<ModMailItem> {
     private var readFilter: ReadFilter<ModMailItem>
+    private var dedupeFilter: InboxDedupeFilter<ModMailItem> = .init()
     
     init(showRead: Bool) {
         self.readFilter = .init()
@@ -21,13 +22,15 @@ class ModMailItemFilter: MultiFilter<ModMailItem> {
 
     override func allFilters() -> [any FilterProviding<ModMailItem>] {
         [
-            readFilter
+            readFilter,
+            dedupeFilter
         ]
     }
     
     override func getFilter(_ toGet: ModMailItemFilterType) -> any FilterProviding<ModMailItem> {
         switch toGet {
         case .read: readFilter
+        case .dedupe: dedupeFilter
         }
     }
 }
