@@ -39,12 +39,15 @@ public struct ActorIdentifier: Hashable {
     ///
     public init?(url: URL) {
         guard let host = url.host() else { return nil }
-        self.url = url
-        self.host = host
+        self.init(url: url, host: host)
     }
     
     private init(url: URL, host: String) {
-        self.url = url
+        if url.pathComponents.isEmpty {
+            self.url = url.appendingPathComponent("/")
+        } else {
+            self.url = url
+        }
         self.host = host
     }
     
