@@ -55,7 +55,7 @@ public extension ApiClient {
         for message in caches.message1.itemCache.value.values {
             message.content?.readManager.updateWithReceivedValue(true, semaphore: nil)
         }
-        self.unreadCount?.clear()
+        self.unreadCount?.clear(.personal)
     }
     
     @discardableResult

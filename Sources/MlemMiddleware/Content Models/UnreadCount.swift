@@ -65,6 +65,13 @@ public final class UnreadCount {
         self.unverifiedCount = .init()
     }
     
+    internal func clear(_ types: Set<InboxItemType>) {
+        for type in types {
+            self.verifiedCount[type] = 0
+            self.unverifiedCount[type] = 0
+        }
+    }
+    
     internal func updateUnverifiedItem(itemType: InboxItemType, isRead: Bool) {
         let diff = isRead ? -1 : 1
         self.unverifiedCount[itemType, default: 0] += diff
