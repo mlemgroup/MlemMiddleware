@@ -1,20 +1,18 @@
 //
-//  PostDedupeFilter.swift
+//  InboxDedupeFilter.swift
+//  MlemMiddleware
 //
-//
-//  Created by Eric Andrews on 2024-05-31.
+//  Created by Eric Andrews on 2025-02-01.
 //
 
-import Foundation
-
-/// Filter that dedupes ActorIdentifiable items by actorId
-class DedupeFilter<FilterTarget: ActorIdentifiable>: FilterProviding {
+/// Filter that dedupes InboxIdentifiable items by inboxId
+class InboxDedupeFilter<FilterTarget: InboxIdentifiable>: FilterProviding {
     var numFiltered: Int = 0
-    private var seen: Set<ActorIdentifier> = .init()
+    private var seen: Set<Int> = .init()
     var active: Bool = true
     
     func filter(_ targets: [FilterTarget]) -> [FilterTarget] {
-        let ret = targets.filter { seen.insert($0.actorId).inserted }
+        let ret = targets.filter { seen.insert($0.inboxId).inserted }
         numFiltered += targets.count - ret.count
         return ret
     }

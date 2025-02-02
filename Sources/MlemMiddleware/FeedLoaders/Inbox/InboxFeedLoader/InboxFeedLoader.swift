@@ -7,39 +7,6 @@
 
 import Foundation
 
-public enum InboxItem: FeedLoadable, ReadableProviding, ActorIdentifiable {
-    public typealias FilterType = InboxItemFilterType
-    
-    case message(Message2)
-    case reply(Reply2)
-    
-    var baseValue: any FeedLoadable & ActorIdentifiable {
-        switch self {
-        case let .message(message2): message2
-        case let .reply(reply2): reply2
-        }
-    }
-    
-    public var read: Bool {
-        switch self {
-        case .message(let message2): message2.read
-        case .reply(let reply2): reply2.read
-        }
-    }
-    
-    public var api: ApiClient { baseValue.api }
-    
-    public func sortVal(sortType: FeedLoaderSort.SortType) -> FeedLoaderSort {
-        baseValue.sortVal(sortType: sortType)
-    }
-    
-    public var actorId: ActorIdentifier { baseValue.actorId }
-    
-    public static func == (lhs: InboxItem, rhs: InboxItem) -> Bool {
-        lhs.actorId == rhs.actorId
-    }
-}
-
 public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
     
     var inboxFetcher: MultiFetcher<InboxItem> { fetcher as! MultiFetcher }
@@ -50,6 +17,52 @@ public class InboxFeedLoader: StandardFeedLoader<InboxItem> {
         sources.forEach { source in
             source.setParent(parent: self)
         }
+    }
+    
+    public static func setup(
+        api: ApiClient,
+        pageSize: Int,
+        sortType: FeedLoaderSort.SortType,
+        showRead: Bool
+    ) -> (
+        replyFeedLoader: ReplyChildFeedLoader,
+        mentionFeedLoader: MentionChildFeedLoader,
+        messageFeedLoader: MessageChildFeedLoader,
+        inboxFeedLoader: InboxFeedLoader
+    ) {
+        let replyFeedLoader: ReplyChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        let mentionFeedLoader: MentionChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        let messageFeedLoader: MessageChildFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sortType: sortType,
+            showRead: showRead
+        )
+        
+        let inboxFeedLoader: InboxFeedLoader = .init(
+            api: api,
+            pageSize: pageSize,
+            sources: [replyFeedLoader, mentionFeedLoader, messageFeedLoader],
+            sortType: sortType,
+            showRead: showRead
+        )
+        
+        return (
+            replyFeedLoader,
+            mentionFeedLoader,
+            messageFeedLoader,
+            inboxFeedLoader
+        )
     }
     
     public func hideRead() async throws {

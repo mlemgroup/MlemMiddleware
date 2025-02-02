@@ -8,6 +8,20 @@
 import Foundation
 
 public enum ReportTarget {
+    enum Case {
+        case post, comment, message, legacyPost, legacyComment
+    }
+    
+    var `case`: Case {
+        switch self {
+        case .post: .post
+        case .comment: .comment
+        case .message: .message
+        case .legacyPost: .legacyPost
+        case .legacyComment: .legacyComment
+        }
+    }
+    
     /// All post reports use this case on 0.19.4 and above.
     case post(Post2)
     /// All comment reports use this case on 0.19.4 and above.

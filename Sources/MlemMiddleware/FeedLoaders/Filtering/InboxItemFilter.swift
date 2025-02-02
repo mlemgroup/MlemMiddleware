@@ -11,7 +11,7 @@ public enum InboxItemFilterType {
 
 class InboxItemFilter: MultiFilter<InboxItem> {
     private var readFilter: ReadFilter<InboxItem>
-    private var dedupeFilter: DedupeFilter<InboxItem> = .init()
+    private var dedupeFilter: InboxDedupeFilter<InboxItem> = .init()
     
     init(showRead: Bool) {
         self.readFilter = .init()
