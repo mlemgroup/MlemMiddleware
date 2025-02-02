@@ -20,8 +20,8 @@ public enum InboxItem: FeedLoadable, ReadableProviding, InboxIdentifiable {
     
     public var read: Bool {
         switch self {
-        case .message(let message2): message2.read
-        case .reply(let reply2): reply2.read
+        case let .message(message2): message2.read
+        case let .reply(reply2): reply2.read
         }
     }
     
