@@ -33,12 +33,7 @@ public enum InboxItem: FeedLoadable, ReadableProviding, InboxIdentifiable {
     
     public var inboxId: Int {
         var hasher: Hasher = .init()
-        
-        switch self {
-        case let .message(message): hasher.combine(message.actorId)
-        case let .reply(reply): hasher.combine(reply.actorId)
-        }
-        
+        hasher.combine(baseValue.actorId)
         return hasher.finalize()
     }
 }
