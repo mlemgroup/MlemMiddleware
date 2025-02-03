@@ -88,8 +88,8 @@ public class ApiClient {
         apiClientCache.createOrRetrieveApiClient(for: url, with: token)
     }
     
-    /// Creates a new API Client. Private because it should never be used outside of ApiClientCache, as the caching system depends on one ApiClient existing for any given session
-    private init(
+    /// This should never be used outside of ApiClientCache (and MockApiClient), as the caching system depends on one ApiClient existing for any given session.
+    internal init(
         baseUrl: URL,
         token: String? = nil,
         permissions: RequestPermissions = .all

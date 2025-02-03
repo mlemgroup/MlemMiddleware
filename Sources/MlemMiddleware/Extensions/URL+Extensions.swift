@@ -48,6 +48,7 @@ public extension URL {
 public extension URL {
     // Spec described here: https://join-lemmy.org/docs/contributors/04-api.html#images
     func withIconSize(_ size: Int?) -> URL {
+        guard scheme == "http" || scheme == "https" else { return self }
         guard let size else { return self }
         guard var components = URLComponents(url: self, resolvingAgainstBaseURL: true) else {
             print("Failed to create URLComponents")
