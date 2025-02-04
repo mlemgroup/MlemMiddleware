@@ -11,6 +11,7 @@ import Foundation
 public extension Post1 {
     static func mock(
         api: MockApiClient = .mock,
+        actorId: ActorIdentifier? = nil,
         id: Int,
         creatorId: Int,
         communityId: Int,
@@ -32,7 +33,7 @@ public extension Post1 {
     ) -> Post1 {
         return .init(
             api: api,
-            actorId: .init(url: URL(string: "https://\(api.host)/post/\(id)")!)!,
+            actorId: actorId ?? .init(url: URL(string: "https://\(api.host)/post/\(id)")!)!,
             id: id,
             creatorId: creatorId,
             communityId: communityId,

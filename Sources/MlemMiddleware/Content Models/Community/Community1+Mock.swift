@@ -2,16 +2,16 @@
 //  File.swift
 //  MlemMiddleware
 //
-//  Created by Sjmarf on 2025-02-02.
+//  Created by Sjmarf on 2025-02-03.
 //  
 
 import Foundation
 
 #if DEBUG
-public extension Person1 {
+public extension Community1 {
     static func mock(
         api: MockApiClient = .mock,
-        actorId: ActorIdentifier?,
+        actorId: ActorIdentifier? = nil,
         id: Int,
         name: String,
         created: Date,
@@ -19,17 +19,19 @@ public extension Person1 {
         updated: Date?,
         displayName: String,
         description: String?,
-        matrixId: String?,
+        removed: Bool,
+        deleted: Bool,
+        nsfw: Bool,
         avatar: URL?,
         banner: URL?,
-        deleted: Bool,
-        isBot: Bool,
-        instanceBan: InstanceBanType,
-        blocked: Bool
-    ) -> Person1 {
+        hidden: Bool,
+        onlyModeratorsCanPost: Bool,
+        blocked: Bool,
+        visibility: ApiCommunityVisibility?
+    ) -> Community1 {
         .init(
             api: api,
-            actorId: actorId ?? .init(url: URL(string: "https://\(api.host)/u/\(name)")!)!,
+            actorId: actorId ?? .init(url: URL(string: "https://\(api.host)/u/\(id)")!)!,
             id: id,
             name: name,
             created: created,
@@ -37,13 +39,15 @@ public extension Person1 {
             updated: updated,
             displayName: displayName,
             description: description,
-            matrixId: matrixId,
+            removed: removed,
+            deleted: deleted,
+            nsfw: nsfw,
             avatar: avatar,
             banner: banner,
-            deleted: deleted,
-            isBot: isBot,
-            instanceBan: instanceBan,
-            blocked: blocked
+            hidden: hidden,
+            onlyModeratorsCanPost: onlyModeratorsCanPost,
+            blocked: blocked,
+            visibility: visibility
         )
     }
 }

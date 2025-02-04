@@ -13,6 +13,7 @@ public protocol Community2Providing: Community1Providing {
     var subscribed: Bool { get }
     var favorited: Bool { get }
     var subscriberCount: Int { get }
+    var localSubscriberCount: Int? { get }
     var postCount: Int { get }
     var commentCount: Int { get }
     var activeUserCount: ActiveUserCount { get }
