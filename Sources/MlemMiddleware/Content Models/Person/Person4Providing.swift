@@ -22,6 +22,7 @@ public protocol Person4Providing: Person3Providing {
     var showScores: Bool { get }
     var showBotAccounts: Bool { get }
     var showReadPosts: Bool { get }
+    var discussionLanguages: Set<Int> { get }
     var showNewPostNotifs: Bool? { get }
     var emailVerified: Bool { get }
     var acceptedApplication: Bool { get }
@@ -51,6 +52,7 @@ public extension Person4Providing {
     var showScores: Bool { person4.showScores }
     var showBotAccounts: Bool { person4.showBotAccounts }
     var showReadPosts: Bool { person4.showReadPosts }
+    var discussionLanguages: Set<Int> { person4.discussionLanguages }
     var showNewPostNotifs: Bool? { person4.showNewPostNotifs }
     var emailVerified: Bool { person4.emailVerified }
     var acceptedApplication: Bool { person4.acceptedApplication }
