@@ -151,6 +151,7 @@ public final class Person4: Person4Providing {
         self.showNsfw = showNsfw ?? self.showNsfw
         self.blurNsfw = blurNsfw ?? self.blurNsfw
         self.showBotAccounts = showBotAccounts ?? self.showBotAccounts
+        self.discussionLanguages = discussionLanguages ?? self.discussionLanguages
         self.sendNotificationsToEmail = sendNotificationsToEmail ?? self.sendNotificationsToEmail
         self.person1.isBot = isBot ?? self.isBot
     }
