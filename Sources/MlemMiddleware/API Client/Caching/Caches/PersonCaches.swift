@@ -128,6 +128,7 @@ class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
             showScores: user.showScores,
             showBotAccounts: user.showBotAccounts,
             showReadPosts: user.showReadPosts,
+            discussionLanguages: .init(apiType.discussionLanguages),
             showNewPostNotifs: user.showNewPostNotifs,
             emailVerified: user.emailVerified,
             acceptedApplication: user.acceptedApplication,
