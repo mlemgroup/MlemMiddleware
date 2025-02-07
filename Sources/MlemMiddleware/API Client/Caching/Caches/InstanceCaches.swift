@@ -121,7 +121,7 @@ class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
             api: api,
             instance2: api.caches.instance2.getModel(api: api, from: apiType.siteView),
             version: .init(apiType.version),
-            allLanguages: apiType.allLanguages,
+            allLanguages: apiType.allLanguages.map { .init(from: $0) },
             discussionLanguages: apiType.discussionLanguages,
             taglines: apiType.taglines,
             customEmojis: apiType.customEmojis,

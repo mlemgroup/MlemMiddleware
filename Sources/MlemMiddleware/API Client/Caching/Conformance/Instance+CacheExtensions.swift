@@ -70,7 +70,6 @@ extension Instance3: CacheIdentifiable {
     @MainActor
     func update(with response: ApiGetSiteResponse) {
         setIfChanged(\.version, SiteVersion(response.version))
-        setIfChanged(\.allLanguages, response.allLanguages)
         setIfChanged(\.discussionLanguages, response.discussionLanguages)
         setIfChanged(\.taglines, response.taglines)
         setIfChanged(\.customEmojis, response.customEmojis)

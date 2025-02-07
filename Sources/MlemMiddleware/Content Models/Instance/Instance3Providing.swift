@@ -11,7 +11,7 @@ public protocol Instance3Providing: Instance2Providing {
     var instance3: Instance3 { get }
     
     var version: SiteVersion { get }
-    var allLanguages: [ApiLanguage] { get }
+    var allLanguages: [Language] { get }
     var discussionLanguages: [Int] { get }
     var taglines: [ApiTagline] { get }
     var customEmojis: [ApiCustomEmojiView] { get }
@@ -23,7 +23,7 @@ public extension Instance3Providing {
     var instance2: Instance2 { instance3.instance2 }
     
     var version: SiteVersion { instance3.version }
-    var allLanguages: [ApiLanguage] { instance3.allLanguages }
+    var allLanguages: [Language] { instance3.allLanguages }
     var discussionLanguages: [Int] { instance3.discussionLanguages }
     var taglines: [ApiTagline] { instance3.taglines }
     var customEmojis: [ApiCustomEmojiView] { instance3.customEmojis }
@@ -31,7 +31,7 @@ public extension Instance3Providing {
     var administrators: [Person2] { instance3.administrators }
     
     var version_: SiteVersion? { instance3.version }
-    var allLanguages_: [ApiLanguage]? { instance3.allLanguages }
+    var allLanguages_: [Language]? { instance3.allLanguages }
     var discussionLanguages_: [Int]? { instance3.discussionLanguages }
     var taglines_: [ApiTagline]? { instance3.taglines }
     var customEmojis_: [ApiCustomEmojiView]? { instance3.customEmojis }

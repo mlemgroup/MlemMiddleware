@@ -17,7 +17,7 @@ public final class Instance3: Instance3Providing {
     public let instance2: Instance2
     
     public var version: SiteVersion
-    public var allLanguages: [ApiLanguage]
+    public let allLanguages: [Language]
     public var discussionLanguages: [Int]
     public var taglines: [ApiTagline]
     public var customEmojis: [ApiCustomEmojiView]
@@ -28,7 +28,7 @@ public final class Instance3: Instance3Providing {
         api: ApiClient,
         instance2: Instance2,
         version: SiteVersion,
-        allLanguages: [ApiLanguage],
+        allLanguages: [Language],
         discussionLanguages: [Int],
         taglines: [ApiTagline],
         customEmojis: [ApiCustomEmojiView],
