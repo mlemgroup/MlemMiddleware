@@ -29,7 +29,7 @@ public final class Post2: Post2Providing {
     
     internal var readManager: StateManager<Bool>
     public var read: Bool { readManager.wrappedValue || readQueued }
-    internal var readQueued: Bool = false
+    private var readQueued: Bool = false
     
     internal var savedManager: StateManager<Bool>
     public var saved: Bool { savedManager.wrappedValue }
@@ -73,5 +73,10 @@ public final class Post2: Post2Providing {
         self.readManager = .init(wrappedValue: read)
         self.hiddenManager = .init(wrappedValue: hidden)
         creator.updateKnownCommunityBanState(id: community.id, banned: bannedFromCommunity)
+    }
+    
+    @MainActor
+    internal func updateReadQueued(_ newValue: Bool) {
+        self.readQueued = newValue
     }
 }

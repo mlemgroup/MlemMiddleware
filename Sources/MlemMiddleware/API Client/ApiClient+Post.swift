@@ -160,9 +160,11 @@ public extension ApiClient {
                 throw ApiClientError.unsuccessful
             }
             await markReadQueue.remove(id)
-            if let post = caches.post2.retrieveModel(cacheId: id) {
-                post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
-                post.readQueued = false
+            Task { @MainActor in
+                if let post = caches.post2.retrieveModel(cacheId: id) {
+                    post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
+                    post.updateReadQueued(false)
+                }
             }
         }
     }
@@ -203,9 +205,11 @@ public extension ApiClient {
             await self.markReadQueue.union(markReadQueueCopy)
             throw error
         }
-        for post in idsToSend.compactMap({ caches.post2.retrieveModel(cacheId: $0) }) {
-            post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
-            post.readQueued = false
+        Task { @MainActor in
+            for post in idsToSend.compactMap({ caches.post2.retrieveModel(cacheId: $0) }) {
+                post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
+                post.updateReadQueued(false)
+            }
         }
     }
     
