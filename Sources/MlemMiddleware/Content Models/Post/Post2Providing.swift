@@ -55,13 +55,13 @@ public extension Post2Providing {
     @discardableResult
     func updateRead(_ newValue: Bool, shouldQueue: Bool = false) -> Task<StateUpdateResult, Never> {
         if shouldQueue {
-            return Task {
+            return Task { @MainActor in
                 if newValue {
                     await api.markReadQueue.add(self.id)
-                    post2.readQueued = true
+                    post2.updateReadQueued(true)
                 } else {
                     await api.markReadQueue.remove(self.id)
-                    post2.readQueued = false
+                    post2.updateReadQueued(false)
                 }
                 return .deferred
             }
