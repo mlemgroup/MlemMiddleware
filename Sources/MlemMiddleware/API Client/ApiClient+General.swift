@@ -31,7 +31,7 @@ public extension ApiClient {
             password: password,
             totp2faToken: totpToken
         )
-        return try await perform(request, allowedWhenTokenless: true)
+        return try await perform(request, requiresToken: false)
     }
     
     func login(password: String, totpToken: String?) async throws {
