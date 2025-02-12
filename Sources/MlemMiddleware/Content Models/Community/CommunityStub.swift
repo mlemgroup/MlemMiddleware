@@ -18,7 +18,7 @@ public struct CommunityStub: CommunityStubProviding, Hashable {
     }
     
     public func asLocal() -> Self {
-        .init(api: .getApiClient(for: url.removingPathComponents(), with: nil), url: url)
+        .init(api: .getApiClient(url: url.removingPathComponents(), username: nil), url: url)
     }
     
     public func hash(into hasher: inout Hasher) {

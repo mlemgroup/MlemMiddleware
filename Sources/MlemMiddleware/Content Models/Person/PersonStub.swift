@@ -19,7 +19,7 @@ public struct PersonStub: PersonStubProviding, Hashable {
     }
     
     public func asLocal() -> Self {
-        .init(api: .getApiClient(for: url, with: nil), url: url)
+        .init(api: .getApiClient(url: url, username: nil), url: url)
     }
     
     public func hash(into hasher: inout Hasher) {

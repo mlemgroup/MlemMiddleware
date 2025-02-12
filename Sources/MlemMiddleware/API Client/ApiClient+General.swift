@@ -25,7 +25,7 @@ public extension ApiClient {
     
     // Returns a raw API type :(
     // Probably OK because it's part of onboarding, which is cursed and bootstrappy
-    func logIn(username: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {
+    func getAccountToken(username: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {
         let request = LoginRequest(
             usernameOrEmail: username,
             password: password,
