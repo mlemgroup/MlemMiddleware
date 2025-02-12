@@ -15,8 +15,8 @@ public extension ApiClient {
 public class MockApiClient: ApiClient {
     public init() {
         super.init(
-            baseUrl: URL(string: "https://example.com/")!,
-            token: nil, permissions: .none
+            url: URL(string: "https://example.com/")!,
+            username: nil, permissions: .none
         )
     }
 }

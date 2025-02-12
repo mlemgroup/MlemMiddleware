@@ -203,6 +203,12 @@ public extension ApiClient {
     func getMyPerson() async throws -> (person: Person4?, instance: Instance3, blocks: BlockList?) {
         let request = GetSiteRequest()
         let response = try await perform(request)
+        
+        guard response.myUser?.localUserView.person.name == self.username else {
+            assertionFailure()
+            throw ApiClientError.mismatchingToken
+        }
+        
         let instance = await caches.instance3.getModel(api: self, from: response)
         
         var blocks: BlockList? = self.blocks

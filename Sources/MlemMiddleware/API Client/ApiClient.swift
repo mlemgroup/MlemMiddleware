@@ -18,9 +18,11 @@ public class ApiClient {
     let decoder: JSONDecoder = .defaultDecoder
     let urlSession: URLSession = .init(configuration: .default)
     
-    // url and token MAY NOT be modified! Downstream code expects that a given ApiClient will *always* submit requests from the same user to the same instance.
+    // url and username MAY NOT be modified! Downstream code expects that a given ApiClient will *always* submit requests from the same user to the same instance.
     public let baseUrl: URL
     let endpointUrl: URL
+    public let username: String?
+    
     public private(set) var token: String?
     
     public private(set) var contextDataManager: SharedTaskManager<Context> = .init()
@@ -81,22 +83,19 @@ public class ApiClient {
     static var apiClientCache: ApiClientCache = .init()
     
     /// Creates or retrieves an API client for the given connection parameters
-    public static func getApiClient(
-        for url: URL,
-        with token: String?
-    ) -> ApiClient {
-        apiClientCache.createOrRetrieveApiClient(for: url, with: token)
+    public static func getApiClient(url: URL, username: String?) -> ApiClient {
+        apiClientCache.createOrRetrieveApiClient(url: url, username: username)
     }
     
     /// This should never be used outside of ApiClientCache (and MockApiClient), as the caching system depends on one ApiClient existing for any given session.
     internal init(
-        baseUrl: URL,
-        token: String? = nil,
+        url: URL,
+        username: String? = nil,
         permissions: RequestPermissions = .all
     ) {
-        self.baseUrl = baseUrl
-        self.endpointUrl = baseUrl.appendingPathComponent("api/v3")
-        self.token = token
+        self.baseUrl = url
+        self.username = username
+        self.endpointUrl = url.appendingPathComponent("api/v3")
         self.permissions = permissions
         contextDataManager.fetchTask = {
             let (person, instance, _) = try await self.getMyPerson()
@@ -109,28 +108,35 @@ public class ApiClient {
         ApiClient.apiClientCache.clean()
     }
     
-    /// Return a new `ApiClient` without a token.
-    public func loggedOut() -> ApiClient {
-        .getApiClient(for: self.baseUrl, with: nil)
+    /// Return a new guest `ApiClient`.
+    public func asGuest() -> ApiClient {
+        .getApiClient(url: self.baseUrl, username: nil)
     }
     
-    /// Return a new `ApiClient` with the given token.
-    public func loggedIn(token: String) -> ApiClient {
-        .getApiClient(for: self.baseUrl, with: token)
+    /// Return a new `ApiClient` targeting the given user.
+    public func asUser(name: String) -> ApiClient {
+        .getApiClient(url: self.baseUrl, username: name)
     }
     
     /// This should **only** be used when we get a new token for **the same** account!
     public func updateToken(_ newToken: String) {
-        guard token != nil else {
+        guard username != nil else {
             assertionFailure()
             return
         }
-        Self.apiClientCache.changeToken(for: baseUrl, oldToken: token, newToken: newToken)
         self.token = newToken
     }
     
     @discardableResult
-    func perform<Request: ApiRequest>(_ request: Request) async throws -> Request.Response {
+    func perform<Request: ApiRequest>(
+        _ request: Request,
+        requiresToken: Bool = true // This should be `true` for the vast majority of requests, even GET requests
+    ) async throws -> Request.Response {
+        
+        guard !requiresToken || self.username == nil || self.token != nil else {
+            throw ApiClientError.noToken
+        }
+        
         let urlRequest = try urlRequest(from: request)
         // this line intentionally left commented for convenient future debugging
         // urlRequest.debug()
@@ -239,7 +245,7 @@ public class ApiClient {
 
 extension ApiClient: CacheIdentifiable {
     public var cacheId: Int {
-        ApiClient.apiClientCache.getCacheId(for: baseUrl, with: token)
+        ApiClient.apiClientCache.getCacheId(url: baseUrl, username: username)
     }
 }
 
@@ -250,7 +256,7 @@ extension ApiClient: ActorIdentifiable {
 extension ApiClient: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.baseUrl)
-        hasher.combine(self.token)
+        hasher.combine(self.username)
     }
     
     public static func == (lhs: ApiClient, rhs: ApiClient) -> Bool {
@@ -283,32 +289,20 @@ extension ApiClient {
 extension ApiClient {
     /// Cache for ApiClient--exception case because there's no ApiType and it may need to perform ApiClient bootstrapping
     class ApiClientCache: CoreCache<ApiClient> {
-        func getCacheId(for baseUrl: URL, with token: String?) -> Int {
+        func getCacheId(url: URL, username: String?) -> Int {
             var hasher: Hasher = .init()
-            hasher.combine(baseUrl)
-            hasher.combine(token)
+            hasher.combine(url)
+            hasher.combine(username)
             return hasher.finalize()
         }
-        func createOrRetrieveApiClient(for baseUrl: URL, with token: String?) -> ApiClient {
-            if let client = retrieveModel(cacheId: getCacheId(for: baseUrl, with: token)) {
+        func createOrRetrieveApiClient(url: URL, username: String?) -> ApiClient {
+            if let client = retrieveModel(cacheId: getCacheId(url: url, username: username)) {
                 return client
             }
             
-            let ret: ApiClient = .init(baseUrl: baseUrl, token: token)
+            let ret: ApiClient = .init(url: url, username: username)
             itemCache.put(ret)
             return ret
-        }
-        
-        // Should ONLY be used when we get a new token for THE SAME account
-        func changeToken(for baseUrl: URL, oldToken: String?, newToken: String?) {
-            let oldCacheId = getCacheId(for: baseUrl, with: oldToken)
-            let newCacheId = getCacheId(for: baseUrl, with: newToken)
-            guard let cachedClient = itemCache.get(oldCacheId) else {
-                assertionFailure("Failed to find old ApiClient in cache!")
-                return
-            }
-            itemCache.put(cachedClient, overrideCacheId: newCacheId)
-            itemCache.remove(oldCacheId)
         }
     }
 }

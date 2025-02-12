@@ -29,6 +29,8 @@ public enum ApiClientError: Error {
     case imageTooLarge
     case mismatchingUrl
     case mismatchingPersonId
+    case mismatchingToken
+    case noToken
 }
 
 extension ApiClientError: CustomStringConvertible {
@@ -75,6 +77,10 @@ extension ApiClientError: CustomStringConvertible {
             return "URL of the decoding ApiClient doesn't match the URL of the ApiClient that encoded the data"
         case .mismatchingPersonId:
             return "Person ID of the decoding ApiClient doesn't match the Person ID of the ApiClient that encoded the data"
+        case .mismatchingToken:
+            return "A valid token was assigned to an ApiClient for the wrong account."
+        case .noToken:
+            return "A call was made to an ApiClient that doesn't have a token yet."
         }
     }
 }
