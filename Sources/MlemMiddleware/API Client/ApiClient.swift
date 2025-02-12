@@ -130,10 +130,10 @@ public class ApiClient {
     @discardableResult
     func perform<Request: ApiRequest>(
         _ request: Request,
-        allowedWhenTokenless: Bool = false // This should be `false` for the vast majority of requests, even GET requests
+        requiresToken: Bool = true // This should be `true` for the vast majority of requests, even GET requests
     ) async throws -> Request.Response {
         
-        guard allowedWhenTokenless || self.username == nil || self.token != nil else {
+        guard !requiresToken || self.username == nil || self.token != nil else {
             throw ApiClientError.noToken
         }
         
