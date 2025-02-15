@@ -221,9 +221,11 @@ public extension ApiClient {
                 blocks = .init(api: self, myUserInfo: myUser)
             }
         }
-        self.blocks = blocks
-        myPerson = person
-        myInstance = instance
+        _ = await Task { @MainActor in
+            self.blocks = blocks
+            myPerson = person
+            myInstance = instance
+        }.result
         return (person: person, instance: instance, blocks: blocks)
     }
     

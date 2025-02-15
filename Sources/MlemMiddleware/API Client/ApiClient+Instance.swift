@@ -13,7 +13,9 @@ public extension ApiClient {
         let response = try await perform(request)
         let model = await caches.instance3.getModel(api: self, from: response)
         model.local = true
-        myInstance = model
+        _ = await Task { @MainActor in
+            myInstance = model
+        }.result
         return model
     }
     
