@@ -291,12 +291,12 @@ extension ApiClient {
     class ApiClientCache: CoreCache<ApiClient> {
         func getCacheId(url: URL, username: String?) -> Int {
             var hasher: Hasher = .init()
-            hasher.combine(url.removingPathComponents())
+            hasher.combine(url.removingPathComponents().appendingPathComponent("/"))
             hasher.combine(username)
             return hasher.finalize()
         }
         func createOrRetrieveApiClient(url: URL, username: String?) -> ApiClient {
-            let url = url.removingPathComponents()
+            let url = url.removingPathComponents().appendingPathComponent("/")
             if let client = retrieveModel(cacheId: getCacheId(url: url, username: username)) {
                 return client
             }
