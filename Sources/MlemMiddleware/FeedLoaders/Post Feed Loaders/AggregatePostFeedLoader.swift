@@ -44,6 +44,7 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         api: ApiClient,
         feedType: ApiListingType
     ) {
+        print("DEBUG 2 \(api.token)")
         super.init(
             api: api,
             pageSize: pageSize,

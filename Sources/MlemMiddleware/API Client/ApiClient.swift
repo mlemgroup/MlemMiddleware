@@ -139,6 +139,10 @@ public class ApiClient {
             throw ApiClientError.noToken
         }
         
+        guard token != "cannotRetrieveFromKeychain" else {
+            throw ApiClientError.invalidSession(self)
+        }
+        
         let urlRequest = try urlRequest(from: request, tokenOverride: tokenOverride)
         // this line intentionally left commented for convenient future debugging
         // urlRequest.debug()
