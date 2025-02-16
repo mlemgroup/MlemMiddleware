@@ -130,17 +130,19 @@ public class ApiClient {
     @discardableResult
     func perform<Request: ApiRequest>(
         _ request: Request,
+        tokenOverride: String? = nil,
         requiresToken: Bool = true // This should be `true` for the vast majority of requests, even GET requests
     ) async throws -> Request.Response {
+        let token = tokenOverride ?? self.token
         
-        guard !requiresToken || self.username == nil || self.token != nil else {
+        guard !requiresToken || self.username == nil || token != nil else {
             throw ApiClientError.noToken
         }
         
-        let urlRequest = try urlRequest(from: request)
+        let urlRequest = try urlRequest(from: request, tokenOverride: tokenOverride)
         // this line intentionally left commented for convenient future debugging
         // urlRequest.debug()
-        let (data, response) = try await execute(urlRequest)
+        let (data, response) = try await execute(urlRequest, tokenOverride: tokenOverride)
         if let response = response as? HTTPURLResponse {
             if response.statusCode >= 500 { // Error code for server being offline.
                 throw ApiClientError.response(
@@ -167,8 +169,12 @@ public class ApiClient {
         return try decode(Request.Response.self, from: data)
     }
     
-    internal func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
+    internal func execute(
+        _ urlRequest: URLRequest,
+        tokenOverride: String? = nil
+    ) async throws -> (Data, URLResponse) {
         var urlRequest: URLRequest = urlRequest // make mutable
+        let token = tokenOverride ?? self.token
 
         if urlRequest.httpMethod != "GET", // GET requests do not support body
            !fetchedVersionSupports(.headerAuthentication),
@@ -195,7 +201,11 @@ public class ApiClient {
         }
     }
     
-    func urlRequest(from definition: any ApiRequest) throws -> URLRequest {
+    func urlRequest(
+        from definition: any ApiRequest,
+        tokenOverride: String? = nil
+    ) throws -> URLRequest {
+        let token = tokenOverride ?? self.token
         guard permissions != .none else { throw ApiClientError.insufficientPermissions }
         let url = definition.endpoint(base: endpointUrl)
         var urlRequest = URLRequest(url: url)

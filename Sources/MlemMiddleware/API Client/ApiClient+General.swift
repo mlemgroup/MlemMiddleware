@@ -25,18 +25,27 @@ public extension ApiClient {
     
     // Returns a raw API type :(
     // Probably OK because it's part of onboarding, which is cursed and bootstrappy
-    func getAccountToken(username: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {
+    func getAccountToken(usernameOrEmail: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {
         let request = LoginRequest(
-            usernameOrEmail: username,
+            usernameOrEmail: usernameOrEmail,
             password: password,
             totp2faToken: totpToken
         )
         return try await perform(request, requiresToken: false)
     }
     
+    func getUsernameFromToken(token: String) async throws -> String {
+        let request = GetSiteRequest()
+        let response = try await perform(request, tokenOverride: token)
+        if let name = response.myUser?.localUserView.person.name {
+            return name
+        }
+        throw ApiClientError.notLoggedIn
+    }
+    
     func login(password: String, totpToken: String?) async throws {
         guard let username else { throw ApiClientError.notLoggedIn }
-        let response = try await self.getAccountToken(username: username, password: password, totpToken: totpToken)
+        let response = try await self.getAccountToken(usernameOrEmail: username, password: password, totpToken: totpToken)
         if let jwt = response.jwt {
             self.updateToken(jwt)
         } else {
