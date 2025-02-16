@@ -205,7 +205,6 @@ public extension ApiClient {
         let response = try await perform(request)
         
         guard response.myUser?.localUserView.person.name == self.username else {
-            assertionFailure()
             throw ApiClientError.mismatchingToken
         }
         
