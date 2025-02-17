@@ -59,7 +59,7 @@ public class Fetcher<Item: FeedLoadable> {
     func fetch() async throws -> LoadingResponse<Item> {
         do {
             if let cursor, page > 0 {
-                print("[\(Item.self) Fetcher] loading cursor \(cursor)")
+                print("[\(Self.self)] loading cursor \(cursor)")
                 let response = try await fetchCursor(cursor)
                 
                 // if same cursor returned, loading is finished
@@ -71,12 +71,12 @@ public class Fetcher<Item: FeedLoadable> {
                 return .success(response.items)
             } else {
                 page += 1
-                print("[\(Item.self) Fetcher] loading page \(page)")
+                print("[\(Self.self)] loading page \(page)")
                 let response = try await fetchPage(page)
                 
                 // if nothing returned, loading is finished
                 if response.items.count < pageSize {
-                    print("[\(Item.self) Fetcher] received undersized page (\(response.items.count)/\(pageSize))")
+                    print("[\(Self.self)] received undersized page (\(response.items.count)/\(pageSize))")
                     return .done(response.items)
                 }
                 self.cursor = response.nextCursor
