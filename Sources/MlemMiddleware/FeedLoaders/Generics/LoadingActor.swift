@@ -36,16 +36,16 @@ actor LoadingActor<Item: FeedLoadable> {
     /// - Returns: on success, .success with FetchResponse containing loaded items; if another load is underway, .ignored; if the load is cancelled, .cancelled
     func load(_ callback: @escaping (LoadingResponse<Item>) async -> Void) async throws {
         guard !done else {
-            print("[\(Item.self) LoadingActor] ignoring request, finished loading")
+            print("[\(Self.self)] ignoring request, finished loading")
             return
         }
         
         // if already loading something, ignore the request
         if let loadingTask {
-            print("[\(Item.self) LoadingActor] ignoring request, load underway")
+            print("[\(Self.self)] ignoring request, load underway")
             // return .ignored
             let _ = try await loadingTask.result.get()
-            print("[\(Item.self) LoadingActor] preexisting load finished, returning")
+            print("[\(Self.self)] preexisting load finished, returning")
             return
         }
         
@@ -63,7 +63,7 @@ actor LoadingActor<Item: FeedLoadable> {
         }
         
         let _ = try await loadingTask.result.get()
-        print("[\(Item.self) LoadingActor] finished loading")
+        print("[\(Self.self)] finished loading")
     }
     
     @discardableResult
@@ -97,14 +97,14 @@ actor LoadingActor<Item: FeedLoadable> {
             
             switch response {
             case let .success(items):
-                print("[\(Item.self) LoadingActor] received success (\(items.count))")
+                print("[\(Self.self)] received success (\(items.count))")
                 newItems.append(contentsOf: filter.filter(items))
             case let .done(items):
-                print("[\(Item.self) LoadingActor] received finished (\(items.count))")
+                print("[\(Self.self)] received finished (\(items.count))")
                 newItems.append(contentsOf: filter.filter(items))
                 return .done(newItems)
             case .cancelled, .ignored:
-                print("[\(Item.self) LoadingActor] load did not complete (\(response.description))")
+                print("[\(Self.self)] load did not complete (\(response.description))")
                 break fetchLoop
             }
         } while newItems.count < MiddlewareConstants.infiniteLoadThresholdOffset
