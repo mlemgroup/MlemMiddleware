@@ -143,6 +143,9 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
             
             if items.isEmpty {
                 try await refresh(clearBeforeRefresh: false)
+            } else if thresholds.fallback == nil {
+                // if too few items are present after filtering to trigger threshold loading, initiate new load
+                try await loadMoreItems()
             }
         }
     }
