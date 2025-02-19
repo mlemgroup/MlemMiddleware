@@ -33,7 +33,7 @@ public extension Person3Providing {
     }
     
     func moderates(communityActorId: ActorIdentifier) -> Bool {
-        self.moderatedCommunities.contains { $0.actorId == actorId }
+        self.moderatedCommunities.contains { $0.actorId == communityActorId }
     }
     
     func moderates(community: any Community) -> Bool {
