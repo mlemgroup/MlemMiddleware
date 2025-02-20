@@ -207,7 +207,7 @@ public class ApiClient {
     ) throws -> URLRequest {
         let token = tokenOverride ?? self.token
         guard permissions != .none else { throw ApiClientError.insufficientPermissions }
-        let url = try definition.endpoint(base: endpointUrl, version: fetchedVersion ?? .infinity)
+        let url = try definition.endpoint(base: endpointUrl)
         var urlRequest = URLRequest(url: url)
         for header in definition.headers {
             urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
