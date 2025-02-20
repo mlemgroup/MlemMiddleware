@@ -17,8 +17,8 @@ extension ApiCommunity: Comparable {
     }
     
     public static func < (lhs: ApiCommunity, rhs: ApiCommunity) -> Bool {
-        let lhsFullCommunity = lhs.name + (lhs.actorId.host ?? "")
-        let rhsFullCommunity = rhs.name + (rhs.actorId.host ?? "")
+        let lhsFullCommunity = lhs.name + lhs.actorId.host
+        let rhsFullCommunity = rhs.name + rhs.actorId.host
         return lhsFullCommunity < rhsFullCommunity
     }
 }

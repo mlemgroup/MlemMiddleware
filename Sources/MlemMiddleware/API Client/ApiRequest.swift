@@ -17,10 +17,10 @@ enum ApiRequestError: Error {
 protocol ApiRequest {
     associatedtype Response: Decodable
 
-    var path: String { get }
     var headers: [String: String] { get }
     
-    func endpoint(base: URL) -> URL
+    func path(on version: SiteVersion) -> String
+    func endpoint(base: URL, version: SiteVersion) throws -> URL
 }
 
 extension ApiRequest {
@@ -34,21 +34,27 @@ extension ApiRequest {
 // MARK: - ApiGetRequest
 
 protocol ApiGetRequest: ApiRequest {
-    var queryItems: [URLQueryItem] { get }
+    associatedtype Parameters: Encodable
+    var parameters: Parameters? { get }
 }
 
 extension ApiRequest {
-    func endpoint(base: URL) -> URL {
+    func endpoint(base: URL, version: SiteVersion) throws -> URL {
         base
-            .appending(path: path)
+            .appending(path: path(on: version))
     }
 }
 
 extension ApiGetRequest {
-    func endpoint(base: URL) -> URL {
-        base
-            .appending(path: path)
-            .appending(queryItems: queryItems.filter { $0.value != nil })
+    func endpoint(base: URL, version: SiteVersion) throws -> URL {
+        if let parameters {
+            base
+                .appending(path: path(on: version))
+                .appending(queryItems: try URLQueryItemEncoder.encode(parameters))
+        } else {
+            base
+                .appending(path: path(on: version))
+        }
     }
 }
 
