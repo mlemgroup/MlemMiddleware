@@ -28,7 +28,7 @@ import Foundation
 ///
 /// It should be noted that private messages cannot be resolved using ``ResolveObjectRequest``.
 ///
-public struct ActorIdentifier: Hashable {
+public struct ActorIdentifier: Hashable, Sendable {
     public let url: URL
     public let host: String
     
