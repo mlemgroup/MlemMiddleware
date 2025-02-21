@@ -141,11 +141,16 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
         try await loadingActor.activateFilter(target) {
             await setItems(loadingActor.filter.reset(with: items))
             
+            print("[\(Self.self)] DEBUG activated filter. Remaining items: \(items.count)")
             if items.isEmpty {
+                print("[\(Self.self)] DEBUG items are empty, refreshing")
                 try await refresh(clearBeforeRefresh: false)
             } else if thresholds.fallback == nil {
+                print("[\(Self.self)] DEBUG fallback threshold nil, loading more items")
                 // if too few items are present after filtering to trigger threshold loading, initiate new load
                 try await loadMoreItems()
+            } else {
+                print("[\(Self.self)] DEBUG no loading action will be taken")
             }
         }
     }
