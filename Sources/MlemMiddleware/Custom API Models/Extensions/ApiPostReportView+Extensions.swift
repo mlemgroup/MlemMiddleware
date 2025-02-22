@@ -39,7 +39,8 @@ extension ApiPostReportView: ReportApiBacker {
             creatorIsAdmin: creatorIsAdmin,
             bannedFromCommunity: nil, // Can we assume this to be false? Can admins be banned from a local community?
             hidden: hidden,
-            imageDetails: nil
+            imageDetails: nil,
+            tags: nil // TODO: Store tags here!
         )
     }
     

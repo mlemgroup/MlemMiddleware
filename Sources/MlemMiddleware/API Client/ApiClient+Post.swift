@@ -178,7 +178,7 @@ public extension ApiClient {
         semaphore: UInt? = nil
     ) async throws {
         let version = try await version
-        guard version >= .v19_0 else { throw ApiClientError.unsupportedLemmyVersion }
+        guard version >= .v0_19_0 else { throw ApiClientError.unsupportedLemmyVersion }
         
         let idsToSend: Set<Int>
         let markReadQueueCopy: Set<Int>

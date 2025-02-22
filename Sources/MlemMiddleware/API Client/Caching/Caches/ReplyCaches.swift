@@ -48,7 +48,7 @@ class Reply2Cache: CoreCache<Reply2> {
             savedManager = comment.savedManager
         } else {
             votesManager = .init(wrappedValue: .init(
-                from: apiType.counts,
+                from: apiType.resolvedCounts,
                 myVote: ScoringOperation.guaranteedInit(from: apiType.myVote)
             ))
             savedManager = .init(wrappedValue: apiType.saved)
@@ -63,7 +63,7 @@ class Reply2Cache: CoreCache<Reply2> {
             community: api.caches.community1.getModel(api: api, from: apiType.community),
             recipient: api.caches.person1.getModel(api: api, from: apiType.recipient),
             subscribed: apiType.subscribed.isSubscribed,
-            commentCount: apiType.counts.childCount,
+            commentCount: apiType.resolvedCounts.childCount,
             creatorIsModerator: apiType.creatorIsModerator,
             creatorIsAdmin: apiType.creatorIsAdmin,
             bannedFromCommunity: apiType.creatorBannedFromCommunity,

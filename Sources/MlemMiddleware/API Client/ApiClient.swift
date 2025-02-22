@@ -175,7 +175,7 @@ public class ApiClient {
     ) async throws -> (Data, URLResponse) {
         var urlRequest: URLRequest = urlRequest // make mutable
         let token = tokenOverride ?? self.token
-
+        
         if urlRequest.httpMethod != "GET", // GET requests do not support body
            !fetchedVersionSupports(.headerAuthentication),
            let token { // only add if we have a token
@@ -221,6 +221,9 @@ public class ApiClient {
         } else if let putDefinition = definition as? any ApiPutRequest {
             urlRequest.httpMethod = "PUT"
             urlRequest.httpBody = try createBodyData(for: putDefinition)
+        } else if let deleteDefinition = definition as? any ApiDeleteRequest {
+            urlRequest.httpMethod = "DElETE"
+            urlRequest.httpBody = try createBodyData(for: deleteDefinition)
         }
         
         if let token, permissions == .all {
@@ -246,6 +249,12 @@ public class ApiClient {
     
     private func decode<T: Decodable>(_ model: T.Type, from data: Data) throws -> T {
         do {
+            var data = data
+            // This can only ever match a key called "apId" - it can't match cases of "apId"
+            // in a value because the quotation marks would need to be escaped inside of a JSON value
+            if let apIdRange = data.range(of: "\"apId\": ".data(using: .utf8)!) {
+                data.replaceSubrange(apIdRange, with: "\"actorId\": ".data(using: .utf8)!)
+            }
             return try decoder.decode(model, from: data)
         } catch {
             throw ApiClientError.decoding(data, error)
