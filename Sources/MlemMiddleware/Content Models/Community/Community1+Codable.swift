@@ -35,7 +35,18 @@ extension Community1 {
             followersUrl: nil,
             inboxUrl: nil,
             onlyFollowersCanVote: nil,
-            visibility: visibility
+            visibility: visibility,
+            sidebar: nil,
+            subscribers: nil,
+            posts: nil,
+            comments: nil,
+            usersActiveDay: nil,
+            usersActiveWeek: nil,
+            usersActiveMonth: nil,
+            usersActiveHalfYear: nil,
+            subscribersLocal: nil,
+            reportCount: nil,
+            unresolvedReportCount: nil
         )
     }
     

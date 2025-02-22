@@ -12,4 +12,10 @@ extension ApiCommunityView: ActorIdentifiable, CacheIdentifiable, Identifiable {
 
     public var actorId: ActorIdentifier { community.actorId }
     public var id: Int { community.id }
+    
+    public var resolvedCounts: ApiCommunityAggregates {
+        if let counts = counts ?? community.backportedCounts { return counts }
+        assertionFailure()
+        return .zero
+    }
 }

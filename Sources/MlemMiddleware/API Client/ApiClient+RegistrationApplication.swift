@@ -9,7 +9,7 @@ import Foundation
 
 public extension ApiClient {
     func getRegistrationApplicationCount() async throws -> ApiGetUnreadRegistrationApplicationCountResponse {
-        try await perform(GetUnreadRegistrationApplicationCountRequest())
+        try await perform(GetUnreadRegistrationApplicationCountRequest(endpoint: .v3))
     }
     
     func getRegistrationApplications(
@@ -18,6 +18,7 @@ public extension ApiClient {
         unreadOnly: Bool = false
     ) async throws -> [RegistrationApplication] {
         let request = ListRegistrationApplicationsRequest(
+            endpoint: .v3,
             unreadOnly: unreadOnly,
             page: page,
             limit: limit
@@ -31,7 +32,7 @@ public extension ApiClient {
         id: Int,
         semaphore: UInt? = nil
     ) async throws -> RegistrationApplication {
-        let request = ApproveRegistrationApplicationRequest(id: id, approve: true, denyReason: nil)
+        let request = ApproveRegistrationApplicationRequest(endpoint: .v3, id: id, approve: true, denyReason: nil)
         let response = try await perform(request)
         return await caches.registrationApplication.getModel(
             api: self,
@@ -46,7 +47,7 @@ public extension ApiClient {
         reason: String?,
         semaphore: UInt? = nil
     ) async throws -> RegistrationApplication {
-        let request = ApproveRegistrationApplicationRequest(id: id, approve: false, denyReason: reason)
+        let request = ApproveRegistrationApplicationRequest(endpoint: .v3, id: id, approve: false, denyReason: reason)
         let response = try await perform(request)
         return await caches.registrationApplication.getModel(
             api: self,

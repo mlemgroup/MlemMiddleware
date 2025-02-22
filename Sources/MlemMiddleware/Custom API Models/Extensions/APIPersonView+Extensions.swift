@@ -15,4 +15,10 @@ extension ApiPersonView: Person2ApiBacker {
         }
         return admin
     }
+    
+    public var resolvedCounts: ApiPersonAggregates {
+        if let counts = counts ?? person.backportedCounts { return counts }
+        assertionFailure()
+        return .zero
+    }
 }

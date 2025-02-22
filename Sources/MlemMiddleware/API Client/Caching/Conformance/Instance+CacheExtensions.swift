@@ -28,8 +28,8 @@ extension Instance2: CacheIdentifiable {
     @MainActor
     func update(with siteView: ApiSiteView) {
         setIfChanged(\.setup, siteView.localSite.siteSetup)
-        setIfChanged(\.downvotesEnabled, siteView.localSite.enableDownvotes)
-        setIfChanged(\.nsfwContentEnabled, siteView.localSite.enableNsfw)
+        setIfChanged(\.downvotesEnabled, siteView.localSite.enableDownvotes ?? true) // TODO 0.20 support: we shouldn't be coalescing to true here
+        setIfChanged(\.nsfwContentEnabled, siteView.localSite.enableNsfw ?? false) // TODO 0.20 support: we shouldn't be coalescing to false here
         setIfChanged(\.communityCreationRestrictedToAdmins, siteView.localSite.communityCreationAdminOnly)
         setIfChanged(\.emailVerificationRequired, siteView.localSite.requireEmailVerification)
         setIfChanged(\.applicationQuestion, siteView.localSite.applicationQuestion)
@@ -49,15 +49,15 @@ extension Instance2: CacheIdentifiable {
         setIfChanged(\.federationSignedFetch, siteView.localSite.federationSignedFetch)
         setIfChanged(\.defaultPostListingMode, siteView.localSite.defaultPostListingMode)
         setIfChanged(\.defaultSortType, siteView.localSite.defaultSortType)
-        setIfChanged(\.userCount, siteView.counts.users)
-        setIfChanged(\.postCount, siteView.counts.posts)
-        setIfChanged(\.commentCount, siteView.counts.comments)
-        setIfChanged(\.communityCount, siteView.counts.communities)
+        setIfChanged(\.userCount, siteView.resolvedCounts.users)
+        setIfChanged(\.postCount, siteView.resolvedCounts.posts)
+        setIfChanged(\.commentCount, siteView.resolvedCounts.comments)
+        setIfChanged(\.communityCount, siteView.resolvedCounts.communities)
         setIfChanged(\.activeUserCount, .init(
-            sixMonths: siteView.counts.usersActiveHalfYear,
-            month: siteView.counts.usersActiveMonth,
-            week: siteView.counts.usersActiveWeek,
-            day: siteView.counts.usersActiveDay
+            sixMonths: siteView.resolvedCounts.usersActiveHalfYear,
+            month: siteView.resolvedCounts.usersActiveMonth,
+            week: siteView.resolvedCounts.usersActiveWeek,
+            day: siteView.resolvedCounts.usersActiveDay
         ))
         
         instance1.update(with: siteView.site)
@@ -72,8 +72,8 @@ extension Instance3: CacheIdentifiable {
         setIfChanged(\.version, SiteVersion(response.version))
         setIfChanged(\.allLanguages, response.allLanguages)
         setIfChanged(\.discussionLanguages, response.discussionLanguages)
-        setIfChanged(\.taglines, response.taglines)
-        setIfChanged(\.customEmojis, response.customEmojis)
+        setIfChanged(\.taglines, response.taglines ?? [response.tagline].compactMap { $0 })
+        setIfChanged(\.customEmojis, response.customEmojis ?? []) // TODO 0.20 support: we shouldn't be coalescing to [] here
         setIfChanged(\.blockedUrls, response.blockedUrls)
         setIfChanged(\.administrators, response.admins.map { api.caches.person2.getModel(api: api, from: $0) })
         

@@ -44,14 +44,14 @@ class Community2Cache: ApiTypeBackedCache<Community2, ApiCommunityView> {
         .init(
             api: api,
             community1: api.caches.community1.getModel(api: api, from: apiType.community),
-            subscription: .init(from: apiType.counts, subscribedType: apiType.subscribed),
-            postCount: apiType.counts.posts,
-            commentCount: apiType.counts.comments,
+            subscription: .init(from: apiType.resolvedCounts, subscribedType: apiType.subscribed),
+            postCount: apiType.resolvedCounts.posts,
+            commentCount: apiType.resolvedCounts.comments,
             activeUserCount: .init(
-                sixMonths: apiType.counts.usersActiveHalfYear,
-                month: apiType.counts.usersActiveMonth,
-                week: apiType.counts.usersActiveWeek,
-                day: apiType.counts.usersActiveDay
+                sixMonths: apiType.resolvedCounts.usersActiveHalfYear,
+                month: apiType.resolvedCounts.usersActiveMonth,
+                week: apiType.resolvedCounts.usersActiveWeek,
+                day: apiType.resolvedCounts.usersActiveDay
             ),
             bannedFromCommunity: apiType.bannedFromCommunity
         )

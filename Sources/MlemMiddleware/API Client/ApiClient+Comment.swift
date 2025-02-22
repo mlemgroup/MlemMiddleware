@@ -9,13 +9,13 @@ import Foundation
 
 public extension ApiClient {
     func getComment(id: Int) async throws -> Comment2 {
-        let request = GetCommentRequest(id: id)
+        let request = GetCommentRequest(endpoint: .v3, id: id)
         let response = try await perform(request)
         return await caches.comment2.getModel(api: self, from: response.commentView)
     }
     
     func getComment(url: URL) async throws -> Comment2 {
-        let request = ResolveObjectRequest(q: url.absoluteString)
+        let request = ResolveObjectRequest(endpoint: .v3, q: url.absoluteString)
         do {
             if let response = try await perform(request).comment {
                 return await caches.comment2.getModel(api: self, from: response)
@@ -35,6 +35,7 @@ public extension ApiClient {
         filter: GetContentFilter? = nil
     ) async throws -> [Comment2] {
         let request = GetCommentsRequest(
+            endpoint: .v3,
             type_: .all,
             sort: sort,
             maxDepth: maxDepth,
@@ -61,6 +62,7 @@ public extension ApiClient {
         filter: GetContentFilter? = nil
     ) async throws -> [Comment2] {
         let request = GetCommentsRequest(
+            endpoint: .v3,
             type_: .all,
             sort: sort,
             maxDepth: maxDepth,
@@ -88,6 +90,7 @@ public extension ApiClient {
         sort: ApiSortType = .topAll
     ) async throws -> [Comment2] {
         let request = SearchRequest(
+            endpoint: .v3,
             q: query,
             communityId: communityId,
             communityName: nil,
@@ -97,29 +100,36 @@ public extension ApiClient {
             listingType: filter,
             page: page,
             limit: limit,
-            postTitleOnly: false
+            postTitleOnly: false,
+            searchTerm: nil,
+            titleOnly: nil,
+            postUrlOnly: nil,
+            likedOnly: nil,
+            dislikedOnly: nil,
+            pageCursor: nil,
+            pageBack: nil
         )
         let response = try await perform(request)
-        return await caches.comment2.getModels(api: self, from: response.comments)
+        return await caches.comment2.getModels(api: self, from: response.comments ?? [])
     }
     
     @discardableResult
     func voteOnComment(id: Int, score: ScoringOperation, semaphore: UInt? = nil) async throws -> Comment2 {
-        let request = LikeCommentRequest(commentId: id, score: score.rawValue)
+        let request = LikeCommentRequest(endpoint: .v3, commentId: id, score: score.rawValue)
         let response = try await perform(request)
         return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
     
     @discardableResult
     func saveComment(id: Int, save: Bool, semaphore: UInt? = nil) async throws -> Comment2 {
-        let request = SaveCommentRequest(commentId: id, save: save)
+        let request = SaveCommentRequest(endpoint: .v3, commentId: id, save: save)
         let response = try await perform(request)
         return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
     
     @discardableResult
     func deleteComment(id: Int, delete: Bool, semaphore: UInt? = nil) async throws -> Comment2 {
-        let request = DeleteCommentRequest(commentId: id, deleted: delete)
+        let request = DeleteCommentRequest(endpoint: .v3, commentId: id, deleted: delete)
         let response = try await perform(request)
         return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
@@ -131,6 +141,7 @@ public extension ApiClient {
         languageId: Int?
     ) async throws -> Comment2 {
         let request = EditCommentRequest(
+            endpoint: .v3,
             commentId: id,
             content: content,
             languageId: languageId,
@@ -143,6 +154,7 @@ public extension ApiClient {
     // There's also a `replyToPost` method in `ApiClient+Post` for creating a comment on a post
     func replyToComment(postId: Int, parentId: Int?, content: String, languageId: Int? = nil) async throws -> Comment2 {
         let request = CreateCommentRequest(
+            endpoint: .v3,
             content: content,
             postId: postId,
             parentId: parentId,
@@ -157,7 +169,7 @@ public extension ApiClient {
     
     @discardableResult
     func reportComment(id: Int, reason: String) async throws -> Report {
-        let request = CreateCommentReportRequest(commentId: id, reason: reason)
+        let request = CreateCommentReportRequest(endpoint: .v3, commentId: id, reason: reason)
         async let response = try await perform(request)
         guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
         return await caches.report.getModel(
@@ -168,7 +180,7 @@ public extension ApiClient {
     }
     
     func purgeComment(id: Int, reason: String?) async throws {
-        let request = PurgeCommentRequest(commentId: id, reason: reason)
+        let request = PurgeCommentRequest(endpoint: .v3, commentId: id, reason: reason)
         let response = try await perform(request)
         guard response.success else { throw ApiClientError.unsuccessful }
         caches.comment1.retrieveModel(cacheId: id)?.purged = true
@@ -181,7 +193,7 @@ public extension ApiClient {
         reason: String?,
         semaphore: UInt? = nil
     ) async throws -> Comment2 {
-        let request = RemoveCommentRequest(commentId: id, removed: remove, reason: reason)
+        let request = RemoveCommentRequest(endpoint: .v3, commentId: id, removed: remove, reason: reason)
         let response = try await perform(request)
         return await caches.comment2.getModel(api: self, from: response.commentView, semaphore: semaphore)
     }
@@ -193,7 +205,7 @@ public extension ApiClient {
         page: Int = 1,
         limit: Int = 20
     ) async throws -> [PersonVote] {
-        let request = ListCommentLikesRequest(commentId: id, page: page, limit: limit)
+        let request = ListCommentLikesRequest(endpoint: .v3, commentId: id, page: page, limit: limit)
         let response = try await perform(request)
         return await caches.personVote.getModels(
             api: self,

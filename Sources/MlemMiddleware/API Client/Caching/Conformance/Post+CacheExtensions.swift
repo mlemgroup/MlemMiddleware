@@ -38,14 +38,14 @@ extension Post2: CacheIdentifiable {
         setIfChanged(\.creatorIsModerator, post.creatorIsModerator)
         setIfChanged(\.creatorIsAdmin, post.creatorIsAdmin)
         creator.updateKnownCommunityBanState(id: community.id, banned: post.creatorBannedFromCommunity)
-        setIfChanged(\.commentCount, post.counts.comments)
+        setIfChanged(\.commentCount, post.resolvedCounts.comments)
         setIfChanged(\.unreadCommentCount, post.unreadComments)
         
         savedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
         readManager.updateWithReceivedValue(post.read, semaphore: semaphore)
         hiddenManager.updateWithReceivedValue(post.hidden ?? false, semaphore: semaphore)
         votesManager.updateWithReceivedValue(
-            .init(from: post.counts, myVote: ScoringOperation.guaranteedInit(from: post.myVote)),
+            .init(from: post.resolvedCounts, myVote: ScoringOperation.guaranteedInit(from: post.myVote)),
             semaphore: semaphore
         )
         creator.blockedManager.updateWithReceivedValue(post.creatorBlocked, semaphore: semaphore)

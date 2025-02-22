@@ -12,4 +12,10 @@ extension ApiSiteView: CacheIdentifiable, ActorIdentifiable, Identifiable {
     
     public var actorId: ActorIdentifier { site.actorId }
     public var id: Int { site.id }
+    
+    public var resolvedCounts: ApiSiteAggregates {
+        if let counts = counts ?? localSite.backportedCounts { return counts }
+        assertionFailure()
+        return .zero
+    }
 }

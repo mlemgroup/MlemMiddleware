@@ -74,8 +74,8 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
             api: api,
             instance1: api.caches.instance1.getModel(api: api, from: apiType.site),
             setup: apiType.localSite.siteSetup,
-            downvotesEnabled: apiType.localSite.enableDownvotes,
-            nsfwContentEnabled: apiType.localSite.enableNsfw,
+            downvotesEnabled: apiType.localSite.enableDownvotes ?? true, // TODO 0.20 support: we shouldn't be coalescing to true here
+            nsfwContentEnabled: apiType.localSite.enableNsfw ?? false, // TODO 0.20 support: we shouldn't be coalescing to false here
             communityCreationRestrictedToAdmins: apiType.localSite.communityCreationAdminOnly,
             emailVerificationRequired: apiType.localSite.requireEmailVerification,
             applicationQuestion: apiType.localSite.applicationQuestion,
@@ -95,15 +95,15 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
             federationSignedFetch: apiType.localSite.federationSignedFetch,
             defaultPostListingMode: apiType.localSite.defaultPostListingMode,
             defaultSortType: apiType.localSite.defaultSortType,
-            userCount: apiType.counts.users,
-            postCount: apiType.counts.posts,
-            commentCount: apiType.counts.comments,
-            communityCount: apiType.counts.communities,
+            userCount: apiType.resolvedCounts.users,
+            postCount: apiType.resolvedCounts.posts,
+            commentCount: apiType.resolvedCounts.comments,
+            communityCount: apiType.resolvedCounts.communities,
             activeUserCount: .init(
-                sixMonths: apiType.counts.usersActiveHalfYear,
-                month: apiType.counts.usersActiveMonth,
-                week: apiType.counts.usersActiveWeek,
-                day: apiType.counts.usersActiveDay
+                sixMonths: apiType.resolvedCounts.usersActiveHalfYear,
+                month: apiType.resolvedCounts.usersActiveMonth,
+                week: apiType.resolvedCounts.usersActiveWeek,
+                day: apiType.resolvedCounts.usersActiveDay
             )
         )
     }
@@ -123,8 +123,8 @@ class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
             version: .init(apiType.version),
             allLanguages: apiType.allLanguages,
             discussionLanguages: apiType.discussionLanguages,
-            taglines: apiType.taglines,
-            customEmojis: apiType.customEmojis,
+            taglines: apiType.taglines ?? [apiType.tagline].compactMap { $0 },
+            customEmojis: apiType.customEmojis ?? [], // TODO 0.20 support: we shouldn't be coalescing to [] here
             blockedUrls: apiType.blockedUrls,
             administrators: apiType.admins.map { api.caches.person2.getModel(api: api, from: $0) }
         )

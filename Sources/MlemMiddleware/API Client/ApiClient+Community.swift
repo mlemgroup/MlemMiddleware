@@ -29,13 +29,13 @@ public extension ApiClient {
     }
     
     func getCommunity(id: Int) async throws -> Community3 {
-        let request = GetCommunityRequest(id: id, name: nil)
+        let request = GetCommunityRequest(endpoint: .v3, id: id, name: nil)
         let response = try await perform(request)
         return await caches.community3.getModel(api: self, from: response)
     }
     
     func getCommunity(url: URL) async throws -> Community2 {
-        let request = ResolveObjectRequest(q: url.absoluteString)
+        let request = ResolveObjectRequest(endpoint: .v3, q: url.absoluteString)
         do {
             if let response = try await perform(request).community {
                 return await caches.community2.getModel(api: self, from: response)
@@ -59,6 +59,7 @@ public extension ApiClient {
         sort: ApiSortType = .topAll
     ) async throws -> [Community2] {
         let request = SearchRequest(
+            endpoint: .v3,
             q: query,
             communityId: nil,
             communityName: nil,
@@ -68,10 +69,17 @@ public extension ApiClient {
             listingType: filter,
             page: page,
             limit: limit,
-            postTitleOnly: false
+            postTitleOnly: false,
+            searchTerm: nil,
+            titleOnly: nil,
+            postUrlOnly: nil,
+            likedOnly: nil,
+            dislikedOnly: nil,
+            pageCursor: nil,
+            pageBack: nil
         )
         let response = try await perform(request).communities
-        return await caches.community2.getModels(api: self, from: response)
+        return await caches.community2.getModels(api: self, from: response ?? [])
     }
     
     func setupSubscriptionList(
@@ -98,7 +106,7 @@ public extension ApiClient {
         var communities = [ApiCommunityView]()
         
         repeat {
-            let request = ListCommunitiesRequest(type_: .subscribed, sort: nil, page: page, limit: limit, showNsfw: true)
+            let request = ListCommunitiesRequest(endpoint: .v3, type_: .subscribed, sort: nil, page: page, limit: limit, showNsfw: true)
             let response = try await perform(request)
             communities.append(contentsOf: response.communities)
             hasMorePages = response.communities.count >= limit
@@ -113,14 +121,14 @@ public extension ApiClient {
     
     @discardableResult
     func subscribeToCommunity(id: Int, subscribe: Bool, semaphore: UInt?) async throws -> Community2 {
-        let request = FollowCommunityRequest(communityId: id, follow: subscribe)
+        let request = FollowCommunityRequest(endpoint: .v3, communityId: id, follow: subscribe)
         let response = try await perform(request)
         return await caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
     }
     
     @discardableResult
     func blockCommunity(id: Int, block: Bool, semaphore: UInt? = nil) async throws -> Community2 {
-        let request = BlockCommunityRequest(communityId: id, block: block)
+        let request = BlockCommunityRequest(endpoint: .v3, communityId: id, block: block)
         let response = try await perform(request)
         let person = await caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
         return person
@@ -133,27 +141,27 @@ public extension ApiClient {
         reason: String?,
         semaphore: UInt? = nil
     ) async throws -> Community2 {
-        let request = RemoveCommunityRequest(communityId: id, removed: remove, reason: reason, expires: nil)
+        let request = RemoveCommunityRequest(endpoint: .v3, communityId: id, removed: remove, reason: reason, expires: nil)
         let response = try await perform(request)
         return await caches.community2.getModel(api: self, from: response.communityView, semaphore: semaphore)
     }
     
     func purgeCommunity(id: Int, reason: String?) async throws {
-        let request = PurgeCommunityRequest(communityId: id, reason: reason)
+        let request = PurgeCommunityRequest(endpoint: .v3, communityId: id, reason: reason)
         let response = try await perform(request)
         guard response.success else { throw ApiClientError.unsuccessful }
         caches.community1.retrieveModel(cacheId: id)?.purged = true
     }
     
     func hideCommunity(id: Int, hide: Bool, reason: String?) async throws {
-        let request = HideCommunityRequest(communityId: id, hidden: hide, reason: reason)
+        let request = HideCommunityRequest(endpoint: .v3, communityId: id, hidden: hide, reason: reason)
         let response = try await perform(request)
         guard response.success else { throw ApiClientError.unsuccessful }
     }
     
     @discardableResult
     func addModerator(communityId: Int, personId: Int, added: Bool) async throws -> [Person1] {
-        let request = AddModToCommunityRequest(communityId: communityId, personId: personId, added: added)
+        let request = AddModToCommunityRequest(endpoint: .v3, communityId: communityId, personId: personId, added: added)
         let response = try await perform(request)
         
         let updatedModerators = await caches.person1.getModels(api: self, from: response.moderators.map(\.moderator))

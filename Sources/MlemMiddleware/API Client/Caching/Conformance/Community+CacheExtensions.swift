@@ -30,17 +30,17 @@ extension Community2: CacheIdentifiable {
     
     @MainActor
     func update(with communityView: ApiCommunityView, semaphore: UInt? = nil) {
-        setIfChanged(\.postCount, communityView.counts.posts)
-        setIfChanged(\.commentCount, communityView.counts.comments)
+        setIfChanged(\.postCount, communityView.resolvedCounts.posts)
+        setIfChanged(\.commentCount, communityView.resolvedCounts.comments)
         setIfChanged(\.activeUserCount, .init(
-            sixMonths: communityView.counts.usersActiveHalfYear,
-            month: communityView.counts.usersActiveMonth,
-            week: communityView.counts.usersActiveWeek,
-            day: communityView.counts.usersActiveDay
+            sixMonths: communityView.resolvedCounts.usersActiveHalfYear,
+            month: communityView.resolvedCounts.usersActiveMonth,
+            week: communityView.resolvedCounts.usersActiveWeek,
+            day: communityView.resolvedCounts.usersActiveDay
         ))
         
         subscriptionManager.updateWithReceivedValue(
-            .init(from: communityView.counts, subscribedType: communityView.subscribed),
+            .init(from: communityView.resolvedCounts, subscribedType: communityView.subscribed),
             semaphore: semaphore
         )
         

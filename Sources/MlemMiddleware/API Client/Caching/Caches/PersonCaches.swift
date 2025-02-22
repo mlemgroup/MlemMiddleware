@@ -66,8 +66,8 @@ class Person2Cache: CoreCache<Person2> {
         let newItem: Person2 = .init(
             api: api,
             person1: api.caches.person1.getModel(api: api, from: apiType.person),
-            postCount: apiType.counts.postCount,
-            commentCount: apiType.counts.commentCount,
+            postCount: apiType.resolvedCounts.postCount,
+            commentCount: apiType.resolvedCounts.commentCount,
             isAdmin: apiType.admin
         )
         itemCache.put(newItem)
@@ -120,12 +120,12 @@ class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
             email: user.email,
             showNsfw: user.showNsfw,
             theme: user.theme,
-            defaultSortType: user.defaultSortType,
+            defaultSortType: user.defaultSortType ?? .hot, // TODO 0.20 support: we shouldn't be coalescing to .hot here
             defaultListingType: user.defaultListingType,
             interfaceLanguage: user.interfaceLanguage,
             showAvatars: user.showAvatars,
             sendNotificationsToEmail: user.sendNotificationsToEmail,
-            showScores: user.showScores,
+            showScores: user.showScores ?? true, // TODO 0.20 support: we shouldn't be coalescing to true here
             showBotAccounts: user.showBotAccounts,
             showReadPosts: user.showReadPosts,
             discussionLanguages: .init(apiType.discussionLanguages),

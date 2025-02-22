@@ -15,4 +15,10 @@ extension ApiLocalUserView: Person2ApiBacker {
         assertionFailure()
         return false
     }
+    
+    public var resolvedCounts: ApiPersonAggregates {
+        if let counts = counts ?? self.person.backportedCounts { return counts }
+        assertionFailure()
+        return .zero
+    }
 }

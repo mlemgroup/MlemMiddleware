@@ -26,7 +26,7 @@ extension ApiGetModlogResponse {
         output += bannedFromCommunity ?? []
         output += banned ?? []
         output += adminPurgedPersons ?? []
-        output += modlog?.map(\.wrappedValue) ?? []
+        // TODO: 0.20 support add items from the new `modlog` field
         return output
     }
     
