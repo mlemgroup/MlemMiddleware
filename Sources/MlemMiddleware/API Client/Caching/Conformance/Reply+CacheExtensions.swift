@@ -22,7 +22,7 @@ extension Reply2: CacheIdentifiable {
     @MainActor
     func update(with reply: any Reply2ApiBacker, semaphore: UInt? = nil) {
         setIfChanged(\.subscribed, reply.subscribed.isSubscribed)
-        setIfChanged(\.commentCount, reply.resolvedCounts.childCount)
+        setIfChanged(\.commentCount, reply.counts.childCount)
         setIfChanged(\.creatorIsModerator, reply.creatorIsModerator)
         setIfChanged(\.creatorIsAdmin, reply.creatorIsAdmin)
         creator.updateKnownCommunityBanState(id: community.id, banned: reply.creatorBannedFromCommunity)

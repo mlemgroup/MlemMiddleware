@@ -41,8 +41,8 @@ extension Person2: CacheIdentifiable {
     @MainActor
     func update(with apiType: any Person2ApiBacker, semaphore: UInt? = nil) {
         setIfChanged(\.isAdmin, apiType.admin)
-        setIfChanged(\.postCount, apiType.resolvedCounts.postCount)
-        setIfChanged(\.commentCount, apiType.resolvedCounts.commentCount)
+        setIfChanged(\.postCount, apiType.counts.postCount)
+        setIfChanged(\.commentCount, apiType.counts.commentCount)
         person1.update(with: apiType.person, semaphore: semaphore)
     }
 }

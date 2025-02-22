@@ -12,7 +12,7 @@ public protocol Person2ApiBacker: ActorIdentifiable, CacheIdentifiable, Identifi
     var person: ApiPerson { get }
     var admin: Bool { get }
     
-    var resolvedCounts: ApiPersonAggregates { get }
+    var counts: ApiPersonAggregates { get }
 }
 
 public extension Person2ApiBacker {

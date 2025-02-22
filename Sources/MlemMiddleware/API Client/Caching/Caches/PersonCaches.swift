@@ -66,8 +66,8 @@ class Person2Cache: CoreCache<Person2> {
         let newItem: Person2 = .init(
             api: api,
             person1: api.caches.person1.getModel(api: api, from: apiType.person),
-            postCount: apiType.resolvedCounts.postCount,
-            commentCount: apiType.resolvedCounts.commentCount,
+            postCount: apiType.counts.postCount,
+            commentCount: apiType.counts.commentCount,
             isAdmin: apiType.admin
         )
         itemCache.put(newItem)

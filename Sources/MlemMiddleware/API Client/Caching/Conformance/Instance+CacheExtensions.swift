@@ -49,15 +49,15 @@ extension Instance2: CacheIdentifiable {
         setIfChanged(\.federationSignedFetch, siteView.localSite.federationSignedFetch)
         setIfChanged(\.defaultPostListingMode, siteView.localSite.defaultPostListingMode)
         setIfChanged(\.defaultSortType, siteView.localSite.defaultSortType)
-        setIfChanged(\.userCount, siteView.resolvedCounts.users)
-        setIfChanged(\.postCount, siteView.resolvedCounts.posts)
-        setIfChanged(\.commentCount, siteView.resolvedCounts.comments)
-        setIfChanged(\.communityCount, siteView.resolvedCounts.communities)
+        setIfChanged(\.userCount, siteView.counts.users)
+        setIfChanged(\.postCount, siteView.counts.posts)
+        setIfChanged(\.commentCount, siteView.counts.comments)
+        setIfChanged(\.communityCount, siteView.counts.communities)
         setIfChanged(\.activeUserCount, .init(
-            sixMonths: siteView.resolvedCounts.usersActiveHalfYear,
-            month: siteView.resolvedCounts.usersActiveMonth,
-            week: siteView.resolvedCounts.usersActiveWeek,
-            day: siteView.resolvedCounts.usersActiveDay
+            sixMonths: siteView.counts.usersActiveHalfYear,
+            month: siteView.counts.usersActiveMonth,
+            week: siteView.counts.usersActiveWeek,
+            day: siteView.counts.usersActiveDay
         ))
         
         instance1.update(with: siteView.site)

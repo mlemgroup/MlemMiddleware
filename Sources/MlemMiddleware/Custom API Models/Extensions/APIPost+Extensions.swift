@@ -9,26 +9,6 @@ import Foundation
 
 extension ApiPost: ActorIdentifiable, CacheIdentifiable, Identifiable {
     public var cacheId: Int { id }
-    
-    /// Added in 0.20.0
-    var backportedCounts: ApiPostAggregates? {
-        guard let comments, let score, let upvotes, let downvotes, let newestCommentTime else { return nil }
-        return .init(
-            id: nil,
-            postId: id,
-            comments: comments,
-            score: score,
-            upvotes: upvotes,
-            downvotes: downvotes,
-            published: published,
-            newestCommentTimeNecro: nil,
-            newestCommentTime: newestCommentTime,
-            featuredCommunity: featuredCommunity,
-            featuredLocal: featuredLocal,
-            hotRank: nil,
-            hotRankActive: nil
-        )
-    }
 }
 
 extension ApiPost {

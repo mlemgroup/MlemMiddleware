@@ -15,7 +15,7 @@ extension Community1 {
     }
     
     internal var apiCommunity: ApiCommunity {
-        .init(
+        ApiCommunity(
             id: id,
             name: name,
             title: displayName,
@@ -36,17 +36,7 @@ extension Community1 {
             inboxUrl: nil,
             onlyFollowersCanVote: nil,
             visibility: visibility,
-            sidebar: nil,
-            subscribers: nil,
-            posts: nil,
-            comments: nil,
-            usersActiveDay: nil,
-            usersActiveWeek: nil,
-            usersActiveMonth: nil,
-            usersActiveHalfYear: nil,
-            subscribersLocal: nil,
-            reportCount: nil,
-            unresolvedReportCount: nil
+            sidebar: nil
         )
     }
     

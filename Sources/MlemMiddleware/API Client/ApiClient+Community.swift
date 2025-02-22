@@ -58,6 +58,7 @@ public extension ApiClient {
         filter: ApiListingType = .all,
         sort: ApiSortType = .topAll
     ) async throws -> [Community2] {
+        let endpointVersion = try await self.version.highestSupportedEndpointVersion
         let request = SearchRequest(
             endpoint: .v3,
             q: query,
@@ -65,12 +66,13 @@ public extension ApiClient {
             communityName: nil,
             creatorId: nil,
             type_: .communities,
-            sort: sort,
+            sort: .init(oldSortType: endpointVersion == .v3 ? sort : nil, newSortType: endpointVersion == .v4 ? .top : nil),
             listingType: filter,
             page: page,
             limit: limit,
             postTitleOnly: false,
-            searchTerm: nil,
+            searchTerm: query,
+            timeRangeSeconds: .max,
             titleOnly: nil,
             postUrlOnly: nil,
             likedOnly: nil,
@@ -106,7 +108,15 @@ public extension ApiClient {
         var communities = [ApiCommunityView]()
         
         repeat {
-            let request = ListCommunitiesRequest(endpoint: .v3, type_: .subscribed, sort: nil, page: page, limit: limit, showNsfw: true)
+            let request = ListCommunitiesRequest(
+                endpoint: .v3,
+                type_: .subscribed,
+                sort: nil,
+                page: page,
+                limit: limit,
+                showNsfw: true,
+                timeRangeSeconds: nil
+            )
             let response = try await perform(request)
             communities.append(contentsOf: response.communities)
             hasMorePages = response.communities.count >= limit

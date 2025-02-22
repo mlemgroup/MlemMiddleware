@@ -12,10 +12,4 @@ extension ApiCommentView: ActorIdentifiable, CacheIdentifiable, Identifiable {
 
     public var actorId: ActorIdentifier { post.actorId }
     public var id: Int { comment.id }
-    
-    public var resolvedCounts: ApiCommentAggregates {
-        if let counts = counts ?? comment.backportedCounts { return counts }
-        assertionFailure()
-        return .zero
-    }
 }

@@ -9,21 +9,6 @@ import Foundation
 
 extension ApiComment: ActorIdentifiable, CacheIdentifiable {
     public var cacheId: Int { id }
-    
-    /// Added in 0.20.0
-    var backportedCounts: ApiCommentAggregates? {
-        guard let score, let upvotes, let downvotes, let childCount else { return nil }
-        return .init(
-            id: nil,
-            commentId: id,
-            score: score,
-            upvotes: upvotes,
-            downvotes: downvotes,
-            published: published,
-            childCount: childCount,
-            hotRank: nil
-        )
-    }
 }
 
 public extension ApiComment {

@@ -31,13 +31,13 @@ extension Comment2: CacheIdentifiable {
         setIfChanged(\.creatorIsModerator, comment.creatorIsModerator)
         setIfChanged(\.creatorIsAdmin, comment.creatorIsAdmin)
         creator.updateKnownCommunityBanState(id: community.id, banned: comment.creatorBannedFromCommunity)
-        setIfChanged(\.commentCount, comment.resolvedCounts.childCount)
+        setIfChanged(\.commentCount, comment.counts.childCount)
 
         votesManager.updateWithReceivedValue(
-            .init(from: comment.resolvedCounts, myVote: ScoringOperation.guaranteedInit(from: comment.myVote)),
+            .init(from: comment.counts, myVote: ScoringOperation.guaranteedInit(from: comment.myVote)),
             semaphore: semaphore
         )
-        savedManager.updateWithReceivedValue(comment.saved, semaphore: semaphore)
+        savedManager.updateWithReceivedValue(comment.saved ?? false, semaphore: semaphore)
         
         self.comment1.update(with: comment.comment, semaphore: semaphore)
         self.creator.update(with: comment.creator, semaphore: semaphore)

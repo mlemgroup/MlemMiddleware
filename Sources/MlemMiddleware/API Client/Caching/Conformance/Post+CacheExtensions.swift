@@ -38,14 +38,14 @@ extension Post2: CacheIdentifiable {
         setIfChanged(\.creatorIsModerator, post.creatorIsModerator)
         setIfChanged(\.creatorIsAdmin, post.creatorIsAdmin)
         creator.updateKnownCommunityBanState(id: community.id, banned: post.creatorBannedFromCommunity)
-        setIfChanged(\.commentCount, post.resolvedCounts.comments)
+        setIfChanged(\.commentCount, post.counts.comments)
         setIfChanged(\.unreadCommentCount, post.unreadComments)
         
-        savedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
+        savedManager.updateWithReceivedValue(post.saved ?? false, semaphore: semaphore)
         readManager.updateWithReceivedValue(post.read, semaphore: semaphore)
         hiddenManager.updateWithReceivedValue(post.hidden ?? false, semaphore: semaphore)
         votesManager.updateWithReceivedValue(
-            .init(from: post.resolvedCounts, myVote: ScoringOperation.guaranteedInit(from: post.myVote)),
+            .init(from: post.counts, myVote: ScoringOperation.guaranteedInit(from: post.myVote)),
             semaphore: semaphore
         )
         creator.blockedManager.updateWithReceivedValue(post.creatorBlocked, semaphore: semaphore)
@@ -61,9 +61,9 @@ extension Post3: CacheIdentifiable {
     
     @MainActor
     func update(with post: ApiGetPostResponse, semaphore: UInt? = nil) {
-        setIfChanged(\.communityModerators, post.moderators.map { moderatorView in
+        setIfChanged(\.communityModerators, post.moderators?.map { moderatorView in
             api.caches.person1.performModelTranslation(api: api, from: moderatorView.moderator)
-        })
+        } ?? [])
         
         setIfChanged(\.crossPosts, post.crossPosts.map { crossPost in
             api.caches.post2.performModelTranslation(api: api, from: crossPost)

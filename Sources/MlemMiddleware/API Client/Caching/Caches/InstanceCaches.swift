@@ -95,15 +95,15 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
             federationSignedFetch: apiType.localSite.federationSignedFetch,
             defaultPostListingMode: apiType.localSite.defaultPostListingMode,
             defaultSortType: apiType.localSite.defaultSortType,
-            userCount: apiType.resolvedCounts.users,
-            postCount: apiType.resolvedCounts.posts,
-            commentCount: apiType.resolvedCounts.comments,
-            communityCount: apiType.resolvedCounts.communities,
+            userCount: apiType.counts.users,
+            postCount: apiType.counts.posts,
+            commentCount: apiType.counts.comments,
+            communityCount: apiType.counts.communities,
             activeUserCount: .init(
-                sixMonths: apiType.resolvedCounts.usersActiveHalfYear,
-                month: apiType.resolvedCounts.usersActiveMonth,
-                week: apiType.resolvedCounts.usersActiveWeek,
-                day: apiType.resolvedCounts.usersActiveDay
+                sixMonths: apiType.counts.usersActiveHalfYear,
+                month: apiType.counts.usersActiveMonth,
+                week: apiType.counts.usersActiveWeek,
+                day: apiType.counts.usersActiveDay
             )
         )
     }

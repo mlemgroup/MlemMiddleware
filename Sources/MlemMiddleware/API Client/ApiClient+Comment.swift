@@ -47,7 +47,8 @@ public extension ApiClient {
             parentId: nil,
             savedOnly: filter == .saved,
             likedOnly: filter == .upvoted,
-            dislikedOnly: filter == .downvoted
+            dislikedOnly: filter == .downvoted,
+            timeRangeSeconds: nil
         )
         let response = try await perform(request)
         return await caches.comment2.getModels(api: self, from: response.comments)
@@ -74,7 +75,8 @@ public extension ApiClient {
             parentId: parentId,
             savedOnly: filter == .saved,
             likedOnly: filter == .upvoted,
-            dislikedOnly: filter == .downvoted
+            dislikedOnly: filter == .downvoted,
+            timeRangeSeconds: nil
         )
         let response = try await perform(request)
         return await caches.comment2.getModels(api: self, from: response.comments)
@@ -89,6 +91,7 @@ public extension ApiClient {
         filter: ApiListingType = .all,
         sort: ApiSortType = .topAll
     ) async throws -> [Comment2] {
+        let endpointVersion = try await self.version.highestSupportedEndpointVersion
         let request = SearchRequest(
             endpoint: .v3,
             q: query,
@@ -96,12 +99,13 @@ public extension ApiClient {
             communityName: nil,
             creatorId: creatorId,
             type_: .comments,
-            sort: sort,
+            sort: .init(oldSortType: endpointVersion == .v3 ? sort : nil, newSortType: endpointVersion == .v4 ? .top : nil),
             listingType: filter,
             page: page,
             limit: limit,
             postTitleOnly: false,
             searchTerm: nil,
+            timeRangeSeconds: .max,
             titleOnly: nil,
             postUrlOnly: nil,
             likedOnly: nil,
@@ -169,7 +173,12 @@ public extension ApiClient {
     
     @discardableResult
     func reportComment(id: Int, reason: String) async throws -> Report {
-        let request = CreateCommentReportRequest(endpoint: .v3, commentId: id, reason: reason)
+        let request = CreateCommentReportRequest(
+            endpoint: .v3,
+            commentId: id,
+            reason: reason,
+            violatesInstanceRules: nil
+        )
         async let response = try await perform(request)
         guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
         return await caches.report.getModel(

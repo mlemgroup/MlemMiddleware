@@ -33,6 +33,7 @@ public extension ApiClient {
             showHidden: showHidden,
             showRead: nil,
             showNsfw: nil,
+            timeRangeSeconds: nil,
             readOnly: nil,
             hideMedia: nil,
             markAsRead: nil,
@@ -69,6 +70,7 @@ public extension ApiClient {
             showHidden: showHidden,
             showRead: nil,
             showNsfw: nil,
+            timeRangeSeconds: nil,
             readOnly: nil,
             hideMedia: nil,
             markAsRead: nil,
@@ -132,6 +134,7 @@ public extension ApiClient {
         filter: ApiListingType = .all,
         sort: ApiSortType = .topAll
     ) async throws -> [Post2] {
+        let endpointVersion = try await self.version.highestSupportedEndpointVersion
         let request = SearchRequest(
             endpoint: .v3,
             q: query,
@@ -139,12 +142,13 @@ public extension ApiClient {
             communityName: nil,
             creatorId: creatorId,
             type_: .posts,
-            sort: sort,
+            sort: .init(oldSortType: endpointVersion == .v3 ? sort : nil, newSortType: endpointVersion == .v4 ? .top : nil),
             listingType: filter,
             page: page,
             limit: limit,
             postTitleOnly: false,
-            searchTerm: nil,
+            searchTerm: query,
+            timeRangeSeconds: .max,
             titleOnly: nil,
             postUrlOnly: nil,
             likedOnly: nil,
@@ -354,7 +358,7 @@ public extension ApiClient {
     
     @discardableResult
     func reportPost(id: Int, reason: String) async throws -> Report {
-        let request = CreatePostReportRequest(endpoint: .v3, postId: id, reason: reason)
+        let request = CreatePostReportRequest(endpoint: .v3, postId: id, reason: reason, violatesInstanceRules: nil)
         async let response = try await perform(request)
         guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
         return await caches.report.getModel(

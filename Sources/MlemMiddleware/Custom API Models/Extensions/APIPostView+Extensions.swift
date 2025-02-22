@@ -12,10 +12,4 @@ extension ApiPostView: ActorIdentifiable, CacheIdentifiable, Identifiable {
 
     public var actorId: ActorIdentifier { post.actorId }
     public var id: Int { post.id }
-    
-    public var resolvedCounts: ApiPostAggregates {
-        if let counts = counts ?? post.backportedCounts { return counts }
-        assertionFailure()
-        return .zero
-    }
 }

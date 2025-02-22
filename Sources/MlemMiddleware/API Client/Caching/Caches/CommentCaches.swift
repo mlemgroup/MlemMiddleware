@@ -41,10 +41,10 @@ class Comment2Cache: ApiTypeBackedCache<Comment2, ApiCommentView> {
             savedManager = comment.savedManager
         } else {
             votesManager = .init(wrappedValue: .init(
-                from: apiType.resolvedCounts,
+                from: apiType.counts,
                 myVote: ScoringOperation.guaranteedInit(from: apiType.myVote)
             ))
-            savedManager = .init(wrappedValue: apiType.saved)
+            savedManager = .init(wrappedValue: apiType.saved ?? false)
         }
         
         return .init(
@@ -58,7 +58,7 @@ class Comment2Cache: ApiTypeBackedCache<Comment2, ApiCommentView> {
             creatorIsModerator: apiType.creatorIsModerator,
             creatorIsAdmin: apiType.creatorIsAdmin,
             bannedFromCommunity: apiType.creatorBannedFromCommunity,
-            commentCount: apiType.resolvedCounts.childCount
+            commentCount: apiType.counts.childCount
         )
     }
     

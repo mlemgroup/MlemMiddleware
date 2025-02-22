@@ -45,13 +45,13 @@ class Post2Cache: ApiTypeBackedCache<Post2, ApiPostView> {
             post1: api.caches.post1.getModel(api: api, from: apiType.post),
             creator: api.caches.person1.getModel(api: api, from: apiType.creator),
             community: api.caches.community1.getModel(api: api, from: apiType.community),
-            votes: .init(from: apiType.resolvedCounts, myVote: ScoringOperation.guaranteedInit(from: apiType.myVote)),
+            votes: .init(from: apiType.counts, myVote: ScoringOperation.guaranteedInit(from: apiType.myVote)),
             creatorIsModerator: apiType.creatorIsModerator,
             creatorIsAdmin: apiType.creatorIsAdmin,
             bannedFromCommunity: apiType.creatorBannedFromCommunity,
-            commentCount: apiType.resolvedCounts.comments,
+            commentCount: apiType.counts.comments,
             unreadCommentCount: apiType.unreadComments,
-            saved: apiType.saved,
+            saved: apiType.saved ?? false,
             read: apiType.read,
             hidden: apiType.hidden ?? false
         )
@@ -68,7 +68,7 @@ class Post3Cache: ApiTypeBackedCache<Post3, ApiGetPostResponse> {
             api: api,
             post2: api.caches.post2.getModel(api: api, from: apiType.postView),
             community: api.caches.community2.getModel(api: api, from: apiType.communityView),
-            communityModerators: apiType.moderators.map { api.caches.person1.getModel(api: api, from: $0.moderator) },
+            communityModerators: apiType.moderators?.map { api.caches.person1.getModel(api: api, from: $0.moderator) } ?? [],
             crossPosts: apiType.crossPosts.map { api.caches.post2.getModel(api: api, from: $0) }
         )
     }

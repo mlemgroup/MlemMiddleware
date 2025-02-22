@@ -172,6 +172,7 @@ public extension ApiClient {
             otherPersonId: subjectPersonId,
             postId: postId,
             commentId: commentId,
+            listingType: nil,
             pageCursor: nil,
             pageBack: nil
         )

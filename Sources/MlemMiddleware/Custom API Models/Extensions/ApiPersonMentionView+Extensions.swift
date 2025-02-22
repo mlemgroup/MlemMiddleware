@@ -11,5 +11,5 @@ extension ApiPersonMentionView: CacheIdentifiable, Reply2ApiBacker {
     public var cacheId: Int { personMention.id }
     public var reply: any Reply1ApiBacker { personMention }
     
-    public var resolvedCounts: ApiCommentAggregates { counts }
+    public var resolvedSaved: Bool { saved }
 }

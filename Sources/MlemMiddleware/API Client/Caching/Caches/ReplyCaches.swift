@@ -48,10 +48,10 @@ class Reply2Cache: CoreCache<Reply2> {
             savedManager = comment.savedManager
         } else {
             votesManager = .init(wrappedValue: .init(
-                from: apiType.resolvedCounts,
+                from: apiType.counts,
                 myVote: ScoringOperation.guaranteedInit(from: apiType.myVote)
             ))
-            savedManager = .init(wrappedValue: apiType.saved)
+            savedManager = .init(wrappedValue: apiType.resolvedSaved)
         }
         
         let newItem: Reply2 = .init(
@@ -63,7 +63,7 @@ class Reply2Cache: CoreCache<Reply2> {
             community: api.caches.community1.getModel(api: api, from: apiType.community),
             recipient: api.caches.person1.getModel(api: api, from: apiType.recipient),
             subscribed: apiType.subscribed.isSubscribed,
-            commentCount: apiType.resolvedCounts.childCount,
+            commentCount: apiType.counts.childCount,
             creatorIsModerator: apiType.creatorIsModerator,
             creatorIsAdmin: apiType.creatorIsAdmin,
             bannedFromCommunity: apiType.creatorBannedFromCommunity,
