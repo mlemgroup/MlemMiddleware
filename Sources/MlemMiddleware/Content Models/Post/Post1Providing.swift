@@ -148,12 +148,12 @@ public extension Post1Providing {
         // post with URL: image, embedded, or link
         if let linkUrl {
             if let embeddedMediaUrl {
-                return .embedded(embeddedMediaUrl, originalLink: linkUrl)
+                return .embedded(embeddedMediaUrl, thumbnail: thumbnailUrl, originalLink: linkUrl)
             }
             
             // if image, return image link, otherwise return thumbnail
             if linkUrl.isMedia {
-                return .media(linkUrl)
+                return .media(linkUrl, thumbnail: thumbnailUrl)
             }
             return .link(.init(content: linkUrl, thumbnail: thumbnailUrl, label: embed?.title ?? title))
         }

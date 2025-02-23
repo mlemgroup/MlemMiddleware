@@ -137,13 +137,19 @@ public extension Post2Providing {
         }
         
         switch type {
-        case let .media(url), let .embedded(url, _):
+        case let .media(url, thumbnail), let .embedded(url, thumbnail, _):
             // media/embedded media: only load the media
             switch config.imageSize {
             case .unlimited:
                 ret.append(ImageRequest(url: url, priority: .high))
+                if let thumbnail, url.proxyAwarePathExtension?.isMovieExtension ?? false {
+                    ret.append(ImageRequest(url: thumbnail, priority: .high))
+                }
             case let .limited(size):
                 ret.append(ImageRequest(url: url.withIconSize(size), priority: .high))
+                if let thumbnail, url.proxyAwarePathExtension?.isMovieExtension ?? false {
+                    ret.append(ImageRequest(url: thumbnail.withIconSize(size), priority: .high))
+                }
             }
         case let .link(link):
             // websites: load image and favicon

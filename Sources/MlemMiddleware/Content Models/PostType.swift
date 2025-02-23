@@ -11,9 +11,9 @@ public enum PostType: Equatable {
     /// Post containing both a title and text
     case text(String)
     /// Post containing only media
-    case media(URL)
+    case media(URL, thumbnail: URL?)
     /// Link post with embedded media content
-    case embedded(URL, originalLink: URL)
+    case embedded(URL, thumbnail: URL?, originalLink: URL)
     /// Link post
     case link(PostLink)
     /// Post containing only a title

@@ -23,4 +23,6 @@ public extension String {
         let words = self.split(separator: " ").map { $0.lowercased() }
         return words.contains { strings.contains($0) }
     }
+    
+    var isMovieExtension: Bool { ["mp4", "m4v", "mov"].contains(self) }
 }
