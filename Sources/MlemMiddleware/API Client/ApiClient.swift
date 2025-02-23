@@ -20,7 +20,6 @@ public class ApiClient {
     
     // url and username MAY NOT be modified! Downstream code expects that a given ApiClient will *always* submit requests from the same user to the same instance.
     public let baseUrl: URL
-    let endpointUrl: URL
     public let username: String?
     
     public private(set) var token: String?
@@ -95,7 +94,6 @@ public class ApiClient {
     ) {
         self.baseUrl = url
         self.username = username
-        self.endpointUrl = url.appendingPathComponent("api/v3")
         self.permissions = permissions
         contextDataManager.fetchTask = {
             let (person, instance, _) = try await self.getMyPerson()
@@ -130,17 +128,19 @@ public class ApiClient {
     @discardableResult
     func perform<Request: ApiRequest>(
         _ request: Request,
+        tokenOverride: String? = nil,
         requiresToken: Bool = true // This should be `true` for the vast majority of requests, even GET requests
     ) async throws -> Request.Response {
+        let token = tokenOverride ?? self.token
         
-        guard !requiresToken || self.username == nil || self.token != nil else {
+        guard !requiresToken || self.username == nil || token != nil else {
             throw ApiClientError.noToken
         }
         
-        let urlRequest = try urlRequest(from: request)
+        let urlRequest = try urlRequest(from: request, tokenOverride: tokenOverride)
         // this line intentionally left commented for convenient future debugging
-        // urlRequest.debug()
-        let (data, response) = try await execute(urlRequest)
+//         urlRequest.debug()
+        let (data, response) = try await execute(urlRequest, tokenOverride: tokenOverride)
         if let response = response as? HTTPURLResponse {
             if response.statusCode >= 500 { // Error code for server being offline.
                 throw ApiClientError.response(
@@ -167,9 +167,13 @@ public class ApiClient {
         return try decode(Request.Response.self, from: data)
     }
     
-    internal func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
+    internal func execute(
+        _ urlRequest: URLRequest,
+        tokenOverride: String? = nil
+    ) async throws -> (Data, URLResponse) {
         var urlRequest: URLRequest = urlRequest // make mutable
-
+        let token = tokenOverride ?? self.token
+        
         if urlRequest.httpMethod != "GET", // GET requests do not support body
            !fetchedVersionSupports(.headerAuthentication),
            let token { // only add if we have a token
@@ -195,9 +199,13 @@ public class ApiClient {
         }
     }
     
-    func urlRequest(from definition: any ApiRequest) throws -> URLRequest {
+    func urlRequest(
+        from definition: any ApiRequest,
+        tokenOverride: String? = nil
+    ) throws -> URLRequest {
+        let token = tokenOverride ?? self.token
         guard permissions != .none else { throw ApiClientError.insufficientPermissions }
-        let url = definition.endpoint(base: endpointUrl)
+        let url = try definition.endpoint(base: baseUrl)
         var urlRequest = URLRequest(url: url)
         for header in definition.headers {
             urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
@@ -211,6 +219,9 @@ public class ApiClient {
         } else if let putDefinition = definition as? any ApiPutRequest {
             urlRequest.httpMethod = "PUT"
             urlRequest.httpBody = try createBodyData(for: putDefinition)
+        } else if let deleteDefinition = definition as? any ApiDeleteRequest {
+            urlRequest.httpMethod = "DElETE"
+            urlRequest.httpBody = try createBodyData(for: deleteDefinition)
         }
         
         if let token, permissions == .all {
@@ -226,7 +237,6 @@ public class ApiClient {
     func createBodyData(for defintion: any ApiRequestBodyProviding) throws -> Data {
         do {
             let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
             let body = defintion.body ?? ""
             return try encoder.encode(body)
         } catch {
@@ -291,11 +301,12 @@ extension ApiClient {
     class ApiClientCache: CoreCache<ApiClient> {
         func getCacheId(url: URL, username: String?) -> Int {
             var hasher: Hasher = .init()
-            hasher.combine(url)
+            hasher.combine(url.removingPathComponents().appendingPathComponent("/"))
             hasher.combine(username)
             return hasher.finalize()
         }
         func createOrRetrieveApiClient(url: URL, username: String?) -> ApiClient {
+            let url = url.removingPathComponents().appendingPathComponent("/")
             if let client = retrieveModel(cacheId: getCacheId(url: url, username: username)) {
                 return client
             }

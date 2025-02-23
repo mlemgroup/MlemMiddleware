@@ -10,7 +10,6 @@ import Foundation
 public extension JSONDecoder {
     static var defaultDecoder: JSONDecoder {
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         
         let formats = [
             "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ",

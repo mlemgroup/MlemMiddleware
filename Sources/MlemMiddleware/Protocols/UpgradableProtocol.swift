@@ -25,9 +25,9 @@ public extension Upgradable {
     var isUpgraded: Bool { wrappedValue is Upgraded }
     
     func upgradeFromLocal() async throws {
-        if let wrappedValue = wrappedValue as? any ActorIdentifiable {
+        if let wrappedValue = wrappedValue as? any Resolvable {
             try await upgrade(
-                api: .getApiClient(url: wrappedValue.actorId.hostUrl, username: nil),
+                api: .getApiClient(url: wrappedValue.allResolvableUrls[0].removingPathComponents(), username: nil),
                 upgradeOperation: nil
             )
         } else {

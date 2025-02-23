@@ -25,18 +25,28 @@ public extension ApiClient {
     
     // Returns a raw API type :(
     // Probably OK because it's part of onboarding, which is cursed and bootstrappy
-    func getAccountToken(username: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {
+    func getAccountToken(usernameOrEmail: String, password: String, totpToken: String?) async throws -> ApiLoginResponse {
         let request = LoginRequest(
-            usernameOrEmail: username,
+            endpoint: .v3,
+            usernameOrEmail: usernameOrEmail,
             password: password,
             totp2faToken: totpToken
         )
         return try await perform(request, requiresToken: false)
     }
     
+    func getUsernameFromToken(token: String) async throws -> String {
+        let request = GetSiteRequest(endpoint: .v3)
+        let response = try await perform(request, tokenOverride: token)
+        if let name = response.myUser?.localUserView.person.name {
+            return name
+        }
+        throw ApiClientError.notLoggedIn
+    }
+    
     func login(password: String, totpToken: String?) async throws {
         guard let username else { throw ApiClientError.notLoggedIn }
-        let response = try await self.getAccountToken(username: username, password: password, totpToken: totpToken)
+        let response = try await self.getAccountToken(usernameOrEmail: username, password: password, totpToken: totpToken)
         if let jwt = response.jwt {
             self.updateToken(jwt)
         } else {
@@ -55,6 +65,7 @@ public extension ApiClient {
         applicationQuestionResponse: String?
     ) async throws -> ApiLoginResponse {
         let request = RegisterRequest(
+            endpoint: .v3,
             username: username,
             password: password,
             passwordVerify: confirmPassword,
@@ -75,6 +86,7 @@ public extension ApiClient {
         oldPassword: String
     ) async throws -> ApiLoginResponse {
         let request = ChangePasswordRequest(
+            endpoint: .v3,
             newPassword: newPassword,
             newPasswordVerify: confirmNewPassword,
             oldPassword: oldPassword
@@ -87,7 +99,7 @@ public extension ApiClient {
     }
     
     func getCaptcha() async throws -> Captcha {
-        let request = GetCaptchaRequest()
+        let request = GetCaptchaRequest(endpoint: .v3)
         let response = try await perform(request)
         
         guard let info = response.ok,
@@ -110,7 +122,7 @@ public extension ApiClient {
     /// **Importantly, step 2) is only performed if the `ApiClient` is authenticated.**
     ///
     func resolve(url: URL) async throws -> (any ActorIdentifiable) {
-        let request = ResolveObjectRequest(q: url.absoluteString)
+        let request = ResolveObjectRequest(endpoint: .v3, q: url.absoluteString)
         let response = try await perform(request)
         if let post = response.post {
             return await caches.post2.getModel(api: self, from: post)
@@ -128,7 +140,7 @@ public extension ApiClient {
     }
     
     func getBlocked() async throws -> (people: [Person1], communities: [Community1], instances: [Instance1]) {
-        let request = GetSiteRequest()
+        let request = GetSiteRequest(endpoint: .v3)
         let response = try await perform(request)
         
         guard let myUser = response.myUser else { return ([], [], []) }
@@ -151,6 +163,7 @@ public extension ApiClient {
         type: ApiModlogActionType = .all
     ) async throws -> [ModlogEntry] {
         let request = GetModlogRequest(
+            endpoint: .v3,
             modPersonId: moderatorId,
             communityId: communityId,
             page: page,
@@ -158,7 +171,10 @@ public extension ApiClient {
             type_: type,
             otherPersonId: subjectPersonId,
             postId: postId,
-            commentId: commentId
+            commentId: commentId,
+            listingType: nil,
+            pageCursor: nil,
+            pageBack: nil
         )
         let response = try await perform(request)
         return await createModlogEntries(response.getEntries(ofType: type))

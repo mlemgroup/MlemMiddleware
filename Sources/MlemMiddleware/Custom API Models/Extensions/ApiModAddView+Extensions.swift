@@ -8,13 +8,13 @@
 import Foundation
 
 extension ApiModAddView: ModlogEntryApiBacker {
-    var published: Date { modAdd.when_ }
+    var published: Date { modAdd.published }
     var moderatorId: Int { modAdd.id }
     
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType {
         .updatePersonAdminStatus(
-            person: api.caches.person1.getModel(api: api, from: moddedPerson),
+            person: api.caches.person1.getModel(api: api, from: otherPerson),
             appointed: !modAdd.removed
         )
     }

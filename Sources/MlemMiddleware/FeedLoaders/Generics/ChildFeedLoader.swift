@@ -34,7 +34,7 @@ public class ChildFeedLoader<Item: FeedLoadable>: StandardFeedLoader<Item> {
         assert(sortType == self.sortType, "Conflicting types for sortType! This will lead to unexpected sorting behavior.")
         
         guard let stream, stream.parent != nil else {
-            print("[\(Item.self) ChildFeedLoader] could not find stream or parent")
+            print("[\(Self.self)] could not find stream or parent")
             return nil
         }
         
@@ -42,11 +42,11 @@ public class ChildFeedLoader<Item: FeedLoadable>: StandardFeedLoader<Item> {
             return items[safeIndex: stream.cursor]?.sortVal(sortType: sortType)
         } else {
             if loadingState == .done {
-                print("[\(Item.self) ChildFeedLoader] done loading")
+                print("[\(Self.self)] done loading")
                 return nil
             }
             
-            print("[\(Item.self) ChildFeedLoader] out of items (\(items.count)), loading more")
+            print("[\(Self.self)] out of items (\(items.count)), loading more")
             try await loadMoreItems()
             
             if stream.cursor >= items.count {
@@ -55,14 +55,14 @@ public class ChildFeedLoader<Item: FeedLoadable>: StandardFeedLoader<Item> {
                 return nil
             }
             
-            print("[\(Item.self) ChildFeedLoader] fetched more items (\(items.count))")
+            print("[\(Self.self)] fetched more items (\(items.count))")
             return items[stream.cursor].sortVal(sortType: sortType)
         }
     }
     
     public func consumeNextItem() -> Item? {
         guard let stream, stream.parent != nil else {
-            assertionFailure("[\(Item.self) ChildFeedLoader] could not find stream or parent")
+            assertionFailure("[\(Item.self)] could not find stream or parent")
             return nil
         }
         

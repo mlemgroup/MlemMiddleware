@@ -8,13 +8,13 @@
 import Foundation
 
 extension ApiModBanFromCommunityView: ModlogEntryApiBacker {
-    var published: Date { modBanFromCommunity.when_ }
+    var published: Date { modBanFromCommunity.published }
     var moderatorId: Int { modBanFromCommunity.id }
     
     @MainActor
     func type(api: ApiClient) -> ModlogEntryType {
         return .banPersonFromCommunity(
-            person: api.caches.person1.getModel(api: api, from: bannedPerson),
+            person: api.caches.person1.getModel(api: api, from: otherPerson),
             community: api.caches.community1.getModel(api: api, from: community),
             banned: modBanFromCommunity.banned,
             reason: modBanFromCommunity.reason,

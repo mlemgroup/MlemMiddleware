@@ -74,8 +74,8 @@ class Instance2Cache: ApiTypeBackedCache<Instance2, ApiSiteView> {
             api: api,
             instance1: api.caches.instance1.getModel(api: api, from: apiType.site),
             setup: apiType.localSite.siteSetup,
-            downvotesEnabled: apiType.localSite.enableDownvotes,
-            nsfwContentEnabled: apiType.localSite.enableNsfw,
+            downvotesEnabled: apiType.localSite.enableDownvotes ?? true, // TODO 0.20 support: we shouldn't be coalescing to true here
+            nsfwContentEnabled: apiType.localSite.enableNsfw ?? false, // TODO 0.20 support: we shouldn't be coalescing to false here
             communityCreationRestrictedToAdmins: apiType.localSite.communityCreationAdminOnly,
             emailVerificationRequired: apiType.localSite.requireEmailVerification,
             applicationQuestion: apiType.localSite.applicationQuestion,
@@ -123,8 +123,8 @@ class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
             version: .init(apiType.version),
             allLanguages: apiType.allLanguages,
             discussionLanguages: apiType.discussionLanguages,
-            taglines: apiType.taglines,
-            customEmojis: apiType.customEmojis,
+            taglines: apiType.taglines ?? [apiType.tagline].compactMap { $0 },
+            customEmojis: apiType.customEmojis ?? [], // TODO 0.20 support: we shouldn't be coalescing to [] here
             blockedUrls: apiType.blockedUrls,
             administrators: apiType.admins.map { api.caches.person2.getModel(api: api, from: $0) }
         )

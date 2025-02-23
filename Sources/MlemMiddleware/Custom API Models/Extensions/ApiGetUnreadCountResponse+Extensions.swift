@@ -10,9 +10,9 @@ import Foundation
 extension ApiGetUnreadCountResponse: UnreadCount.DictionaryConvertible {
     internal var unreadCountDictionary: [InboxItemType : Int] {
         [
-            .reply: replies,
-            .mention: mentions,
-            .message: privateMessages
+            .reply: replies ?? 0,
+            .mention: mentions ?? 0,
+            .message: privateMessages ?? 0
         ]
     }
 }

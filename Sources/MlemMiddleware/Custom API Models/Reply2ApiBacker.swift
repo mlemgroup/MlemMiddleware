@@ -15,10 +15,8 @@ public protocol Reply2ApiBacker: CacheIdentifiable, Identifiable {
     var post: ApiPost { get }
     var community: ApiCommunity { get }
     var recipient: ApiPerson { get }
-    var counts: ApiCommentAggregates { get }
     var creatorBannedFromCommunity: Bool { get }
     var subscribed: ApiSubscribedType { get }
-    var saved: Bool { get }
     var creatorBlocked: Bool { get }
     var myVote: Int? { get }
     /// Added in 0.19.0
@@ -27,6 +25,9 @@ public protocol Reply2ApiBacker: CacheIdentifiable, Identifiable {
     var creatorIsAdmin: Bool? { get }
     /// Added in 0.19.4
     var bannedFromCommunity: Bool? { get }
+    var counts: ApiCommentAggregates { get }
+    
+    var resolvedSaved: Bool { get }
 }
 
 public extension Reply2ApiBacker {

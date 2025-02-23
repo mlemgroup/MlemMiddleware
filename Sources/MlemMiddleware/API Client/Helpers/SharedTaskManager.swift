@@ -26,6 +26,7 @@ public class SharedTaskManager<Value> {
                 let result = await ongoingTask.result
                 return try result.get()
             } else {
+                defer { ongoingTask = nil }
                 let task = task ?? ongoingTask ?? Task { try await fetchTask() }
                 ongoingTask = task
                 let result = await task.result
