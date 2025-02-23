@@ -15,6 +15,10 @@ internal struct URLQueryItemEncoder {
     }
 }
 
+internal protocol URLQueryItemEncodable {
+    func encodeInQueryItemFormat() -> String?
+}
+
 internal enum URLQueryItemEncoderError: Error {
     case nestedContainersUnsupported
     case singleValueContainerUnsupported
@@ -79,6 +83,8 @@ private class KeyedContainer<K: CodingKey>: KeyedEncodingContainerProtocol {
             value.rawValue
         } else if let value = value as? any RawRepresentable<Int> {
             String(value.rawValue)
+        } else if let value = value as? any URLQueryItemEncodable {
+            value.encodeInQueryItemFormat()
         } else {
             nil
         }

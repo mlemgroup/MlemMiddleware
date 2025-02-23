@@ -10,8 +10,9 @@ import Foundation
 /// Protocol for API types that contain sufficient information to create a Person2
 public protocol Person2ApiBacker: ActorIdentifiable, CacheIdentifiable, Identifiable {
     var person: ApiPerson { get }
-    var counts: ApiPersonAggregates { get }
     var admin: Bool { get }
+    
+    var counts: ApiPersonAggregates { get }
 }
 
 public extension Person2ApiBacker {

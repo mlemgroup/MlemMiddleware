@@ -8,7 +8,7 @@
 import Foundation
 
 extension ApiModRemoveCommunityView: ModlogEntryApiBacker {
-    var published: Date { modRemoveCommunity.when_ }
+    var published: Date { modRemoveCommunity.published }
     var moderatorId: Int { modRemoveCommunity.id }
 
     @MainActor

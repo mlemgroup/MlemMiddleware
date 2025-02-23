@@ -37,43 +37,23 @@ public enum SiteVersion: Equatable, Hashable {
     }
     // swiftlint: enable large_tuple
     
-    public static let v18_0: Self = .init("0.18.0")
-    public static let v18_1: Self = .init("0.18.1")
-    public static let v18_2: Self = .init("0.18.2")
-    public static let v18_3: Self = .init("0.18.3")
-    public static let v18_4: Self = .init("0.18.4")
-    public static let v18_5: Self = .init("0.18.5")
-    public static let v19_0: Self = .init("0.19.0")
-    public static let v19_1: Self = .init("0.19.1")
-    public static let v19_2: Self = .init("0.19.2")
-    public static let v19_3: Self = .init("0.19.3")
-    public static let v19_4: Self = .init("0.19.4")
-    public static let v19_5: Self = .init("0.19.5")
-    public static let v19_6: Self = .init("0.19.6")
-    public static let v19_7: Self = .init("0.19.7")
-    public static let v19_8: Self = .init("0.19.8")
-    public static let v19_9: Self = .init("0.19.9")
-}
-
-public extension SiteVersion {
-    enum Feature {
-        case headerAuthentication, batchMarkRead
-        
-        var minimumVersion: SiteVersion {
-            switch self {
-            case .headerAuthentication: .v19_0
-            case .batchMarkRead: .v19_0
-            }
-        }
-    }
-    
-    /// Checks whether this SiteVersion supports the given feature. Always returns false if version unknown.
-    func suppports(_ feature: Feature) -> Bool {
-        switch self {
-        case .other: false
-        default: feature.minimumVersion <= self
-        }
-    }
+    public static let v0_18_0: Self = .init("0.18.0")
+    public static let v0_18_1: Self = .init("0.18.1")
+    public static let v0_18_2: Self = .init("0.18.2")
+    public static let v0_18_3: Self = .init("0.18.3")
+    public static let v0_18_4: Self = .init("0.18.4")
+    public static let v0_18_5: Self = .init("0.18.5")
+    public static let v0_19_0: Self = .init("0.19.0")
+    public static let v0_19_1: Self = .init("0.19.1")
+    public static let v0_19_2: Self = .init("0.19.2")
+    public static let v0_19_3: Self = .init("0.19.3")
+    public static let v0_19_4: Self = .init("0.19.4")
+    public static let v0_19_5: Self = .init("0.19.5")
+    public static let v0_19_6: Self = .init("0.19.6")
+    public static let v0_19_7: Self = .init("0.19.7")
+    public static let v0_19_8: Self = .init("0.19.8")
+    public static let v0_19_9: Self = .init("0.19.9")
+    public static let v1_0_0: Self = .init("1.0.0")
 }
 
 extension SiteVersion: CustomStringConvertible {

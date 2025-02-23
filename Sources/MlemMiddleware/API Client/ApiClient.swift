@@ -20,7 +20,6 @@ public class ApiClient {
     
     // url and username MAY NOT be modified! Downstream code expects that a given ApiClient will *always* submit requests from the same user to the same instance.
     public let baseUrl: URL
-    let endpointUrl: URL
     public let username: String?
     
     public private(set) var token: String?
@@ -95,7 +94,6 @@ public class ApiClient {
     ) {
         self.baseUrl = url
         self.username = username
-        self.endpointUrl = url.appendingPathComponent("api/v3")
         self.permissions = permissions
         contextDataManager.fetchTask = {
             let (person, instance, _) = try await self.getMyPerson()
@@ -141,7 +139,7 @@ public class ApiClient {
         
         let urlRequest = try urlRequest(from: request, tokenOverride: tokenOverride)
         // this line intentionally left commented for convenient future debugging
-        // urlRequest.debug()
+//         urlRequest.debug()
         let (data, response) = try await execute(urlRequest, tokenOverride: tokenOverride)
         if let response = response as? HTTPURLResponse {
             if response.statusCode >= 500 { // Error code for server being offline.
@@ -175,7 +173,7 @@ public class ApiClient {
     ) async throws -> (Data, URLResponse) {
         var urlRequest: URLRequest = urlRequest // make mutable
         let token = tokenOverride ?? self.token
-
+        
         if urlRequest.httpMethod != "GET", // GET requests do not support body
            !fetchedVersionSupports(.headerAuthentication),
            let token { // only add if we have a token
@@ -207,7 +205,7 @@ public class ApiClient {
     ) throws -> URLRequest {
         let token = tokenOverride ?? self.token
         guard permissions != .none else { throw ApiClientError.insufficientPermissions }
-        let url = try definition.endpoint(base: endpointUrl)
+        let url = try definition.endpoint(base: baseUrl)
         var urlRequest = URLRequest(url: url)
         for header in definition.headers {
             urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
@@ -221,6 +219,9 @@ public class ApiClient {
         } else if let putDefinition = definition as? any ApiPutRequest {
             urlRequest.httpMethod = "PUT"
             urlRequest.httpBody = try createBodyData(for: putDefinition)
+        } else if let deleteDefinition = definition as? any ApiDeleteRequest {
+            urlRequest.httpMethod = "DElETE"
+            urlRequest.httpBody = try createBodyData(for: deleteDefinition)
         }
         
         if let token, permissions == .all {
@@ -236,7 +237,6 @@ public class ApiClient {
     func createBodyData(for defintion: any ApiRequestBodyProviding) throws -> Data {
         do {
             let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
             let body = defintion.body ?? ""
             return try encoder.encode(body)
         } catch {

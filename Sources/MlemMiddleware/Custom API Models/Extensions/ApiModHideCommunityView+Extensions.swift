@@ -8,7 +8,7 @@
 import Foundation
 
 extension ApiModHideCommunityView: ModlogEntryApiBacker {
-    var published: Date { modHideCommunity.when_ }
+    var published: Date { modHideCommunity.published }
     var moderator: ApiPerson? { admin }
     var moderatorId: Int { modHideCommunity.id }
     

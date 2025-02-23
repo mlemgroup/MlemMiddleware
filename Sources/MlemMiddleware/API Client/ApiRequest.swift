@@ -65,10 +65,6 @@ protocol ApiRequestBodyProviding: ApiRequest {
     var body: Body? { get }
 }
 
-// MARK: - ApiPostRequest
-
 protocol ApiPostRequest: ApiRequestBodyProviding {}
-
-// MARK: - ApiPutRequest
-
 protocol ApiPutRequest: ApiRequestBodyProviding {}
+protocol ApiDeleteRequest: ApiRequestBodyProviding {}
