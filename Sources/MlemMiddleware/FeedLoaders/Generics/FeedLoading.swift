@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import MlemMiddleware
 
 public protocol FeedLoading<Item>: AnyObject {
     associatedtype Item: FeedLoadable

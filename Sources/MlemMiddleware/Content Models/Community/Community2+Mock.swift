@@ -10,7 +10,6 @@ import Foundation
 #if DEBUG
 public extension Community2 {
     static func mock(
-        api: ApiClient = .mock,
         community1: Community1,
         subscriberCount: Int,
         localSubscriberCount: Int,
@@ -21,9 +20,8 @@ public extension Community2 {
         activeUserCount: ActiveUserCount,
         bannedFromCommunity: Bool?
     ) -> Community2 {
-        assert(api === community1.api)
         return .init(
-            api: api,
+            api: community1.api,
             community1: community1,
             subscription: .init(
                 total: subscriberCount,

@@ -11,7 +11,7 @@ import Observation
 
 @Observable
 public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
-    private(set) public var items: [Item] = .init()
+    internal(set) public var items: [Item] = .init()
     internal(set) public var loadingState: LoadingState = .loading
     private(set) var thresholds: Thresholds<Item> = .init()
     

@@ -11,7 +11,7 @@ public class SharedTaskManager<Value> {
     internal var fetchTask: (() async throws -> Value)!
     
     private var ongoingTask: Task<Value, Error>?
-    internal private(set) var fetchedValue: Value?
+    internal var fetchedValue: Value?
     
     init(fetchTask: (() async throws -> Value)? = nil) {
         self.fetchTask = fetchTask
