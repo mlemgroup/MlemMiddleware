@@ -22,7 +22,7 @@ public class ApiClient {
     public let baseUrl: URL
     public let username: String?
     
-    public private(set) var token: String?
+    public internal(set) var token: String?
     
     public private(set) var contextDataManager: SharedTaskManager<Context> = .init()
     
@@ -284,11 +284,13 @@ extension ApiClient {
     public struct Context {
         let siteVersion: SiteVersion
         let myPersonId: Int?
-        
-        public init(instance: Instance3, person: Person4?) {
-            self.siteVersion = instance.version
-            self.myPersonId = person?.id
-        }
+    }
+}
+
+extension ApiClient.Context {
+    public init(instance: Instance3, person: Person4?) {
+        self.siteVersion = instance.version
+        self.myPersonId = person?.id
     }
 }
 

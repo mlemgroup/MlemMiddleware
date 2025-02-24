@@ -109,6 +109,7 @@ public extension URL {
     }
     
     var isMedia: Bool {
-        proxyAwarePathExtension?.isContainedIn(["jpg", "jpeg", "png", "webp", "gif", "mp4"]) ?? false
+        if scheme == "mlempreview" { return true }
+        return proxyAwarePathExtension?.isContainedIn(["jpg", "jpeg", "png", "webp", "gif", "mp4"]) ?? false
     }
 }
