@@ -113,57 +113,6 @@ public extension Post2Providing {
             try await self.api.hidePost(id: self.id, hide: newValue, semaphore: semaphore)
         }
     }
-    
-    /// Generates an array of image requests to fetch all images associated with this Post2Providing.
-    /// If configuration specifies any embeddings, parses and handles them before creating the ImageRequests.
-    func imageRequests(configuration config: PrefetchingConfiguration) async -> [ImageRequest] {
-        var ret: [ImageRequest] = .init()
-        
-        // handle loops.video embedding
-        if config.embedLoops {
-            await parseLoopEmbeds()
-        }
-        
-        // preload user and community avatars--fetching both because we don't know which we'll need, but these are super tiny
-        // so it's probably not an API crime, right?
-        if let avatarSize = config.avatarSize {
-            if let communityAvatarLink = community.avatar {
-                ret.append(ImageRequest(url: communityAvatarLink.withIconSize(avatarSize)))
-            }
-            
-            if let userAvatarLink = creator.avatar {
-                ret.append(ImageRequest(url: userAvatarLink.withIconSize(avatarSize)))
-            }
-        }
-        
-        switch type {
-        case let .media(url), let .embedded(url, _):
-            // media/embedded media: only load the media
-            switch config.imageSize {
-            case .unlimited:
-                ret.append(ImageRequest(url: url, priority: .high))
-            case let .limited(size):
-                ret.append(ImageRequest(url: url.withIconSize(size), priority: .high))
-            }
-        case let .link(link):
-            // websites: load image and favicon
-            if config.fetchFavicons, let url = link.favicon {
-                ret.append(ImageRequest(url: url))
-            }
-            if let url = link.thumbnail {
-                switch config.imageSize {
-                case .unlimited:
-                    ret.append(ImageRequest(url: url, priority: .high))
-                case let .limited(size):
-                    ret.append(ImageRequest(url: url.withIconSize(size), priority: .high))
-                }
-            }
-        default:
-            break
-        }
-        
-        return ret
-    }
 }
 
 // PersonContentProviding conformance
