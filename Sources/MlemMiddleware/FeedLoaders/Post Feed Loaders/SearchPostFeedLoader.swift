@@ -8,10 +8,11 @@
 import Foundation
 
 @Observable
-public class SearchPostFetcher: PostFetcher {
+public class SearchPostFetcher: Fetcher<Post2> {
     public var query: String
     public var communityId: Int?
     public var creatorId: Int?
+    public var sortType: ApiSortType
     public var listing: ApiListingType
     
     // setters to allow manual overriding of these for search use cases
@@ -26,10 +27,10 @@ public class SearchPostFetcher: PostFetcher {
         self.creatorId = creatorId
         self.listing = listing
         
-        super.init(api: api, sortType: sortType, pageSize: pageSize)
+        super.init(api: api, pageSize: pageSize)
     }
     
-    override internal func getPosts(page: Int, cursor: String?) async throws -> (posts: [Post2], cursor: String?) {
+    override internal func fetchPage(_ page: Int) async throws -> Fetcher<Post2>.FetchResponse {
         let response = try await api.searchPosts(
             query: query,
             page: page,
@@ -39,7 +40,7 @@ public class SearchPostFetcher: PostFetcher {
             filter: listing,
             sort: sortType
         )
-        return (posts: response, cursor: nil)
+        return .init(items: response, prevCursor: nil, nextCursor: nil)
     }
 }
 

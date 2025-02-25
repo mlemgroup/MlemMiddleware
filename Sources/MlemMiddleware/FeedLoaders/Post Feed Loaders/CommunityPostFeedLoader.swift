@@ -11,7 +11,7 @@ import Foundation
 class CommunityPostFetcher: PostFetcher {
     var community: any Community
     
-    init(sortType: ApiSortType, pageSize: Int, community: any Community) {
+    init(sortType: PostSortType, pageSize: Int, community: any Community) {
         self.community = community
         
         super.init(api: community.api, sortType: sortType, pageSize: pageSize)
@@ -36,7 +36,7 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     
     public init(
         pageSize: Int,
-        sortType: ApiSortType,
+        sortType: PostSortType,
         showReadPosts: Bool,
         filterContext: FilterContext,
         prefetchingConfiguration: PrefetchingConfiguration,

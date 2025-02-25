@@ -11,9 +11,9 @@ import Observation
 
 @Observable
 public class PostFetcher: Fetcher<Post2> {
-    var sortType: ApiSortType
+    var sortType: PostSortType
     
-    init(api: ApiClient, sortType: ApiSortType, pageSize: Int) {
+    init(api: ApiClient, sortType: PostSortType, pageSize: Int) {
         self.sortType = sortType
         
         super.init(api: api, pageSize: pageSize)

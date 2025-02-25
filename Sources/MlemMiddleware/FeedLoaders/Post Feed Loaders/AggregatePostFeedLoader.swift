@@ -11,7 +11,7 @@ import Foundation
 class AggregatePostFetcher: PostFetcher {
     var feedType: ApiListingType
     
-    init(api: ApiClient, feedType: ApiListingType, sortType: ApiSortType, pageSize: Int) {
+    init(api: ApiClient, feedType: ApiListingType, sortType: PostSortType, pageSize: Int) {
         self.feedType = feedType
         
         super.init(api: api, sortType: sortType, pageSize: pageSize)
@@ -36,7 +36,7 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
     
     public init(
         pageSize: Int,
-        sortType: ApiSortType,
+        sortType: PostSortType,
         showReadPosts: Bool,
         filterContext: FilterContext,
         prefetchingConfiguration: PrefetchingConfiguration,

@@ -11,7 +11,7 @@ public extension ApiClient {
     // swiftlint:disable:next function_parameter_count
     func getPosts(
         communityId: Int,
-        sort: ApiSortType,
+        sort: PostSortType,
         page: Int,
         cursor: String?,
         limit: Int,
@@ -21,7 +21,7 @@ public extension ApiClient {
         let request = GetPostsRequest(
             endpoint: .v3,
             type_: .all,
-            sort: sort,
+            sort: sort.legacyApiSortType,
             page: cursor == nil ? page : nil,
             limit: limit,
             communityId: communityId,
@@ -48,7 +48,7 @@ public extension ApiClient {
     // swiftlint:disable:next function_parameter_count
     func getPosts(
         feed: ApiListingType,
-        sort: ApiSortType,
+        sort: PostSortType,
         page: Int,
         cursor: String?,
         limit: Int,
@@ -58,7 +58,7 @@ public extension ApiClient {
         let request = GetPostsRequest(
             endpoint: .v3,
             type_: feed,
-            sort: sort,
+            sort: sort.legacyApiSortType,
             page: cursor == nil ? page : nil,
             limit: limit,
             communityId: nil,
@@ -85,7 +85,7 @@ public extension ApiClient {
     func getPosts(
         personId: Int,
         communityId: Int? = nil,
-        sort: ApiSortType = .new,
+        sort: PostSortType = .new,
         page: Int,
         limit: Int,
         savedOnly: Bool = false
@@ -94,7 +94,7 @@ public extension ApiClient {
             endpoint: .v3,
             personId: personId,
             username: nil,
-            sort: sort,
+            sort: sort.legacyApiSortType,
             page: page,
             limit: limit,
             communityId: communityId,
