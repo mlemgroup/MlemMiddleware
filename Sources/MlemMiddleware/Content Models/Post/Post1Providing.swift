@@ -16,6 +16,7 @@ public protocol Post1Providing:
         DeletableProviding,
         RemovableProviding,
         PurgableProviding,
+        ImagePrefetchProviding,
         FeedLoadable where FilterType == PostFilterType {
     var post1: Post1 { get }
     

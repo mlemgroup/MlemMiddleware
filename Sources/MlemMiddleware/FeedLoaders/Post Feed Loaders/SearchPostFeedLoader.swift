@@ -61,8 +61,6 @@ public class SearchPostFeedLoader: CorePostFeedLoader {
         listing: ApiListingType = .all
     ) {
         super.init(
-            api: api,
-            pageSize: pageSize,
             showReadPosts: true,
             filterContext: .none(), // search doesn't filter, only obscures on the frontend
             prefetchingConfiguration: prefetchingConfiguration,

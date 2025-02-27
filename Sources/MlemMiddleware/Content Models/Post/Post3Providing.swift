@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Nuke
 
 public protocol Post3Providing: Post2Providing {
     var post3: Post3 { get }
@@ -26,4 +27,11 @@ public extension Post3Providing {
     
     var communityModerators_: [Person1]? { post3.communityModerators }
     var crossPosts_: [Post2]? { post3.crossPosts }
+}
+
+// ImagePrefetchProviding conformance
+public extension Post3Providing {
+    func imageRequests(configuration config: PrefetchingConfiguration) async -> [ImageRequest] {
+        await post2.imageRequests(configuration: config)
+    }
 }
