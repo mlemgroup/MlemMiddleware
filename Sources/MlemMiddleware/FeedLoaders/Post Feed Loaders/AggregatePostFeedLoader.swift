@@ -34,6 +34,11 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
     // force unwrap because this should ALWAYS be an AggregatePostFetcher
     var aggregatePostFetcher: AggregatePostFetcher { fetcher as! AggregatePostFetcher }
     
+    // force unwrap because this should ALWAYS be a PostFetcher
+    private var postFetcher: PostFetcher { fetcher as! PostFetcher }
+        
+    public var sortType: PostSortType { postFetcher.sortType }
+    
     public init(
         pageSize: Int,
         sortType: PostSortType,
@@ -68,5 +73,16 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         if shouldRefresh {
             try await refresh(clearBeforeRefresh: true)
         }
+    }
+    
+    /// Changes the post sort type to the specified value and reloads the feed
+    public func changeSortType(to newSortType: PostSortType, forceRefresh: Bool = false) async throws {
+        // don't do anything if sort type not changed
+        guard postFetcher.sortType != newSortType || forceRefresh else {
+            return
+        }
+        
+        postFetcher.sortType = newSortType
+        try await refresh(clearBeforeRefresh: true)
     }
 }

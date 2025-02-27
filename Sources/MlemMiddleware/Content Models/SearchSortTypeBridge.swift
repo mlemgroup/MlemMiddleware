@@ -32,7 +32,6 @@ extension SearchSortTypeBridge {
     }
     
     func encodeInQueryItemFormat() -> String? {
-        print("TY", oldSortType, newSortType)
         if let oldSortType {
             return oldSortType.rawValue
         } else if let newSortType {

@@ -26,6 +26,7 @@ public class SearchPostFetcher: Fetcher<Post2> {
         self.communityId = communityId
         self.creatorId = creatorId
         self.listing = listing
+        self.sortType = sortType
         
         super.init(api: api, pageSize: pageSize)
     }

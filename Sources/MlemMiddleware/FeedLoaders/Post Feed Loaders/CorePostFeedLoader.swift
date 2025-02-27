@@ -50,16 +50,11 @@ public class CorePostFeedLoader: PrefetchingFeedLoader<Post2> {
     // store reference to the filter used by the LoadingActor so we can modify its filterContext from changeApi
     internal var filter: PostFilter
     
-    // force unwrap because this should ALWAYS be a PostFetcher
-    private var postFetcher: PostFetcher { fetcher as! PostFetcher }
-    
-    public var sortType: ApiSortType { postFetcher.sortType }
-    
     internal init(
         showReadPosts: Bool,
         filterContext: FilterContext,
         prefetchingConfiguration: PrefetchingConfiguration,
-        fetcher: PostFetcher
+        fetcher: Fetcher<Post2>
     ) {
         let filter: PostFilter = .init(showRead: showReadPosts, context: filterContext)
         self.filter = filter
@@ -76,16 +71,5 @@ public class CorePostFeedLoader: PrefetchingFeedLoader<Post2> {
     override public func changeApi(to newApi: ApiClient, context: FilterContext) async {
         filter.updateContext(to: context)
         await fetcher.changeApi(to: newApi, context: context)
-    }
-    
-    /// Changes the post sort type to the specified value and reloads the feed
-    public func changeSortType(to newSortType: ApiSortType, forceRefresh: Bool = false) async throws {
-        // don't do anything if sort type not changed
-        guard postFetcher.sortType != newSortType || forceRefresh else {
-            return
-        }
-        
-        postFetcher.sortType = newSortType
-        try await refresh(clearBeforeRefresh: true)
     }
 }
