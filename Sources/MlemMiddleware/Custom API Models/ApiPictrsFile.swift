@@ -15,3 +15,10 @@ public struct ApiPictrsFile: Codable, Equatable, ImageUpload1Backer {
     
     public var cacheId: Int { alias.hashValue }
 }
+
+public extension ApiPictrsFile {
+     enum CodingKeys: String, CodingKey {
+         case file
+         case deleteToken = "delete_token"
+     }
+}
