@@ -51,7 +51,7 @@ class Reply2Cache: CoreCache<Reply2> {
                 from: apiType.counts,
                 myVote: ScoringOperation.guaranteedInit(from: apiType.myVote)
             ))
-            savedManager = .init(wrappedValue: apiType.saved)
+            savedManager = .init(wrappedValue: apiType.resolvedSaved)
         }
         
         let newItem: Reply2 = .init(

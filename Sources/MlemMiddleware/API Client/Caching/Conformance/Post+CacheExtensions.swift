@@ -41,7 +41,7 @@ extension Post2: CacheIdentifiable {
         setIfChanged(\.commentCount, post.counts.comments)
         setIfChanged(\.unreadCommentCount, post.unreadComments)
         
-        savedManager.updateWithReceivedValue(post.saved, semaphore: semaphore)
+        savedManager.updateWithReceivedValue(post.saved ?? false, semaphore: semaphore)
         readManager.updateWithReceivedValue(post.read, semaphore: semaphore)
         hiddenManager.updateWithReceivedValue(post.hidden ?? false, semaphore: semaphore)
         votesManager.updateWithReceivedValue(
@@ -61,9 +61,9 @@ extension Post3: CacheIdentifiable {
     
     @MainActor
     func update(with post: ApiGetPostResponse, semaphore: UInt? = nil) {
-        setIfChanged(\.communityModerators, post.moderators.map { moderatorView in
+        setIfChanged(\.communityModerators, post.moderators?.map { moderatorView in
             api.caches.person1.performModelTranslation(api: api, from: moderatorView.moderator)
-        })
+        } ?? [])
         
         setIfChanged(\.crossPosts, post.crossPosts.map { crossPost in
             api.caches.post2.performModelTranslation(api: api, from: crossPost)

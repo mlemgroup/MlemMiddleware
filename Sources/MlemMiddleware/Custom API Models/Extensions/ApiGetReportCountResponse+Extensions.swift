@@ -10,8 +10,8 @@ import Foundation
 extension ApiGetReportCountResponse: UnreadCount.DictionaryConvertible {
     internal var unreadCountDictionary: [InboxItemType : Int] {
         [
-            .postReport: postReports,
-            .commentReport: commentReports,
+            .postReport: postReports ?? 0,
+            .commentReport: commentReports ?? 0,
             .messageReport: privateMessageReports ?? 0
         ]
     }

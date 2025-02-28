@@ -9,16 +9,18 @@ import Foundation
 
 public extension ApiClient {
     func getMyInstance() async throws -> Instance3 {
-        let request = GetSiteRequest()
+        let request = GetSiteRequest(endpoint: .v3)
         let response = try await perform(request)
         let model = await caches.instance3.getModel(api: self, from: response)
         model.local = true
-        myInstance = model
+        _ = await Task { @MainActor in
+            myInstance = model
+        }.result
         return model
     }
     
     func getFederatedInstances() async throws -> ApiFederatedInstances {
-        let request = GetFederatedInstancesRequest()
+        let request = GetFederatedInstancesRequest(endpoint: .v3)
         let response = try await perform(request)
         if let federatedInstances = response.federatedInstances {
             return federatedInstances
@@ -43,7 +45,7 @@ public extension ApiClient {
     func blockInstance(url: URL, instanceId: Int, block: Bool, semaphore: UInt? = nil) async throws {
         guard let host = url.host() else { throw ApiClientError.invalidInput }
         let actorId: ActorIdentifier = .instance(host: host)
-        let request = BlockInstanceRequest(instanceId: instanceId, block: block)
+        let request = UserBlockInstanceRequest(endpoint: .v3, instanceId: instanceId, block: block)
         let response = try await perform(request)
         if let instance = caches.instance1.retrieveModel(instanceId: instanceId) {
             instance.blockedManager.updateWithReceivedValue(response.blocked, semaphore: semaphore)
@@ -58,7 +60,7 @@ public extension ApiClient {
     /// Adds or removes an admin from this API's instance
     @discardableResult
     func addAdmin(personId: Int, added: Bool) async throws -> [Person2] {
-        let request = AddAdminRequest(personId: personId, added: added)
+        let request = AddAdminRequest(endpoint: .v3, personId: personId, added: added)
         let response = try await perform(request)
         
         let updatedAdministrators = await caches.person2.getModels(

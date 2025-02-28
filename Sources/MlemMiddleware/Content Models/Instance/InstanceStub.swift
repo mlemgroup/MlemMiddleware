@@ -20,7 +20,7 @@ public struct InstanceStub: InstanceStubProviding, Hashable {
     }
     
     public func asLocal() -> Self {
-        .init(api: .getApiClient(for: actorId.hostUrl, with: nil), actorId: actorId)
+        .init(api: .getApiClient(url: actorId.hostUrl, username: nil), actorId: actorId)
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -43,7 +43,7 @@ public extension InstanceStub {
     /// Due to API limitations (see [here](https://github.com/mlemgroup/mlem/pull/1029#issuecomment-2067746011)),
     /// it takes 4 API calls to perform this upgrade.
     func upgrade() async throws -> Instance1 {
-        let externalApi: ApiClient = .getApiClient(for: actorId.url, with: nil)
+        let externalApi: ApiClient = .getApiClient(url: actorId.url, username: nil)
         
         let response = try await externalApi.getPosts(
             feed: .local,

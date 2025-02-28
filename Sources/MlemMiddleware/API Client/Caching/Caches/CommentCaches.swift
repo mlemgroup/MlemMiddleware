@@ -44,7 +44,7 @@ class Comment2Cache: ApiTypeBackedCache<Comment2, ApiCommentView> {
                 from: apiType.counts,
                 myVote: ScoringOperation.guaranteedInit(from: apiType.myVote)
             ))
-            savedManager = .init(wrappedValue: apiType.saved)
+            savedManager = .init(wrappedValue: apiType.saved ?? false)
         }
         
         return .init(

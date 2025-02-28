@@ -71,7 +71,7 @@ public extension Instance1Providing {
     var name: String { host } // TODO: Remove this?
     
     var guestApi: ApiClient {
-        .getApiClient(for: local ? api.baseUrl : actorId.hostUrl, with: nil)
+        .getApiClient(url: local ? api.baseUrl : actorId.hostUrl, username: nil)
     }
     
     @discardableResult

@@ -45,8 +45,6 @@ public class AggregatePostFeedLoader: CorePostFeedLoader {
         feedType: ApiListingType
     ) {
         super.init(
-            api: api,
-            pageSize: pageSize,
             showReadPosts: showReadPosts,
             filterContext: filterContext,
             prefetchingConfiguration: prefetchingConfiguration,

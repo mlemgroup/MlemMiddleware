@@ -37,7 +37,7 @@ extension Comment2: CacheIdentifiable {
             .init(from: comment.counts, myVote: ScoringOperation.guaranteedInit(from: comment.myVote)),
             semaphore: semaphore
         )
-        savedManager.updateWithReceivedValue(comment.saved, semaphore: semaphore)
+        savedManager.updateWithReceivedValue(comment.saved ?? false, semaphore: semaphore)
         
         self.comment1.update(with: comment.comment, semaphore: semaphore)
         self.creator.update(with: comment.creator, semaphore: semaphore)

@@ -18,10 +18,11 @@ public class ApiClient {
     let decoder: JSONDecoder = .defaultDecoder
     let urlSession: URLSession = .init(configuration: .default)
     
-    // url and token MAY NOT be modified! Downstream code expects that a given ApiClient will *always* submit requests from the same user to the same instance.
+    // url and username MAY NOT be modified! Downstream code expects that a given ApiClient will *always* submit requests from the same user to the same instance.
     public let baseUrl: URL
-    let endpointUrl: URL
-    public private(set) var token: String?
+    public let username: String?
+    
+    public internal(set) var token: String?
     
     public private(set) var contextDataManager: SharedTaskManager<Context> = .init()
     
@@ -81,22 +82,18 @@ public class ApiClient {
     static var apiClientCache: ApiClientCache = .init()
     
     /// Creates or retrieves an API client for the given connection parameters
-    public static func getApiClient(
-        for url: URL,
-        with token: String?
-    ) -> ApiClient {
-        apiClientCache.createOrRetrieveApiClient(for: url, with: token)
+    public static func getApiClient(url: URL, username: String?) -> ApiClient {
+        apiClientCache.createOrRetrieveApiClient(url: url, username: username)
     }
     
     /// This should never be used outside of ApiClientCache (and MockApiClient), as the caching system depends on one ApiClient existing for any given session.
     internal init(
-        baseUrl: URL,
-        token: String? = nil,
+        url: URL,
+        username: String? = nil,
         permissions: RequestPermissions = .all
     ) {
-        self.baseUrl = baseUrl
-        self.endpointUrl = baseUrl.appendingPathComponent("api/v3")
-        self.token = token
+        self.baseUrl = url
+        self.username = username
         self.permissions = permissions
         contextDataManager.fetchTask = {
             let (person, instance, _) = try await self.getMyPerson()
@@ -109,32 +106,41 @@ public class ApiClient {
         ApiClient.apiClientCache.clean()
     }
     
-    /// Return a new `ApiClient` without a token.
-    public func loggedOut() -> ApiClient {
-        .getApiClient(for: self.baseUrl, with: nil)
+    /// Return a new guest `ApiClient`.
+    public func asGuest() -> ApiClient {
+        .getApiClient(url: self.baseUrl, username: nil)
     }
     
-    /// Return a new `ApiClient` with the given token.
-    public func loggedIn(token: String) -> ApiClient {
-        .getApiClient(for: self.baseUrl, with: token)
+    /// Return a new `ApiClient` targeting the given user.
+    public func asUser(name: String) -> ApiClient {
+        .getApiClient(url: self.baseUrl, username: name)
     }
     
     /// This should **only** be used when we get a new token for **the same** account!
     public func updateToken(_ newToken: String) {
-        guard token != nil else {
+        guard username != nil else {
             assertionFailure()
             return
         }
-        Self.apiClientCache.changeToken(for: baseUrl, oldToken: token, newToken: newToken)
         self.token = newToken
     }
     
     @discardableResult
-    func perform<Request: ApiRequest>(_ request: Request) async throws -> Request.Response {
-        let urlRequest = try urlRequest(from: request)
+    func perform<Request: ApiRequest>(
+        _ request: Request,
+        tokenOverride: String? = nil,
+        requiresToken: Bool = true // This should be `true` for the vast majority of requests, even GET requests
+    ) async throws -> Request.Response {
+        let token = tokenOverride ?? self.token
+        
+        guard !requiresToken || self.username == nil || token != nil else {
+            throw ApiClientError.noToken
+        }
+        
+        let urlRequest = try urlRequest(from: request, tokenOverride: tokenOverride)
         // this line intentionally left commented for convenient future debugging
-        // urlRequest.debug()
-        let (data, response) = try await execute(urlRequest)
+//         urlRequest.debug()
+        let (data, response) = try await execute(urlRequest, tokenOverride: tokenOverride)
         if let response = response as? HTTPURLResponse {
             if response.statusCode >= 500 { // Error code for server being offline.
                 throw ApiClientError.response(
@@ -161,9 +167,13 @@ public class ApiClient {
         return try decode(Request.Response.self, from: data)
     }
     
-    internal func execute(_ urlRequest: URLRequest) async throws -> (Data, URLResponse) {
+    internal func execute(
+        _ urlRequest: URLRequest,
+        tokenOverride: String? = nil
+    ) async throws -> (Data, URLResponse) {
         var urlRequest: URLRequest = urlRequest // make mutable
-
+        let token = tokenOverride ?? self.token
+        
         if urlRequest.httpMethod != "GET", // GET requests do not support body
            !fetchedVersionSupports(.headerAuthentication),
            let token { // only add if we have a token
@@ -189,9 +199,13 @@ public class ApiClient {
         }
     }
     
-    func urlRequest(from definition: any ApiRequest) throws -> URLRequest {
+    func urlRequest(
+        from definition: any ApiRequest,
+        tokenOverride: String? = nil
+    ) throws -> URLRequest {
+        let token = tokenOverride ?? self.token
         guard permissions != .none else { throw ApiClientError.insufficientPermissions }
-        let url = definition.endpoint(base: endpointUrl)
+        let url = try definition.endpoint(base: baseUrl)
         var urlRequest = URLRequest(url: url)
         for header in definition.headers {
             urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
@@ -205,6 +219,9 @@ public class ApiClient {
         } else if let putDefinition = definition as? any ApiPutRequest {
             urlRequest.httpMethod = "PUT"
             urlRequest.httpBody = try createBodyData(for: putDefinition)
+        } else if let deleteDefinition = definition as? any ApiDeleteRequest {
+            urlRequest.httpMethod = "DElETE"
+            urlRequest.httpBody = try createBodyData(for: deleteDefinition)
         }
         
         if let token, permissions == .all {
@@ -220,7 +237,6 @@ public class ApiClient {
     func createBodyData(for defintion: any ApiRequestBodyProviding) throws -> Data {
         do {
             let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
             let body = defintion.body ?? ""
             return try encoder.encode(body)
         } catch {
@@ -239,7 +255,7 @@ public class ApiClient {
 
 extension ApiClient: CacheIdentifiable {
     public var cacheId: Int {
-        ApiClient.apiClientCache.getCacheId(for: baseUrl, with: token)
+        ApiClient.apiClientCache.getCacheId(url: baseUrl, username: username)
     }
 }
 
@@ -250,7 +266,7 @@ extension ApiClient: ActorIdentifiable {
 extension ApiClient: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.baseUrl)
-        hasher.combine(self.token)
+        hasher.combine(self.username)
     }
     
     public static func == (lhs: ApiClient, rhs: ApiClient) -> Bool {
@@ -268,11 +284,13 @@ extension ApiClient {
     public struct Context {
         let siteVersion: SiteVersion
         let myPersonId: Int?
-        
-        public init(instance: Instance3, person: Person4?) {
-            self.siteVersion = instance.version
-            self.myPersonId = person?.id
-        }
+    }
+}
+
+extension ApiClient.Context {
+    public init(instance: Instance3, person: Person4?) {
+        self.siteVersion = instance.version
+        self.myPersonId = person?.id
     }
 }
 
@@ -283,32 +301,21 @@ extension ApiClient {
 extension ApiClient {
     /// Cache for ApiClient--exception case because there's no ApiType and it may need to perform ApiClient bootstrapping
     class ApiClientCache: CoreCache<ApiClient> {
-        func getCacheId(for baseUrl: URL, with token: String?) -> Int {
+        func getCacheId(url: URL, username: String?) -> Int {
             var hasher: Hasher = .init()
-            hasher.combine(baseUrl)
-            hasher.combine(token)
+            hasher.combine(url.removingPathComponents().appendingPathComponent("/"))
+            hasher.combine(username)
             return hasher.finalize()
         }
-        func createOrRetrieveApiClient(for baseUrl: URL, with token: String?) -> ApiClient {
-            if let client = retrieveModel(cacheId: getCacheId(for: baseUrl, with: token)) {
+        func createOrRetrieveApiClient(url: URL, username: String?) -> ApiClient {
+            let url = url.removingPathComponents().appendingPathComponent("/")
+            if let client = retrieveModel(cacheId: getCacheId(url: url, username: username)) {
                 return client
             }
             
-            let ret: ApiClient = .init(baseUrl: baseUrl, token: token)
+            let ret: ApiClient = .init(url: url, username: username)
             itemCache.put(ret)
             return ret
-        }
-        
-        // Should ONLY be used when we get a new token for THE SAME account
-        func changeToken(for baseUrl: URL, oldToken: String?, newToken: String?) {
-            let oldCacheId = getCacheId(for: baseUrl, with: oldToken)
-            let newCacheId = getCacheId(for: baseUrl, with: newToken)
-            guard let cachedClient = itemCache.get(oldCacheId) else {
-                assertionFailure("Failed to find old ApiClient in cache!")
-                return
-            }
-            itemCache.put(cachedClient, overrideCacheId: newCacheId)
-            itemCache.remove(oldCacheId)
         }
     }
 }

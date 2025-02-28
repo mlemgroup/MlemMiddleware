@@ -11,7 +11,7 @@ import Observation
 
 @Observable
 public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
-    private(set) public var items: [Item] = .init()
+    internal(set) public var items: [Item] = .init()
     internal(set) public var loadingState: LoadingState = .loading
     private(set) var thresholds: Thresholds<Item> = .init()
     
@@ -29,7 +29,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     @MainActor
     func setLoading(_ newState: LoadingState) {
         loadingState = newState
-        print("[\(Item.self) FeedLoader] set loading state to \(newState)")
+        print("[\(Self.self)] set loading state to \(newState)")
     }
     
     /// Sets the items to a new array
@@ -94,7 +94,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
                 newItems = items
                 newState = .done
             case .ignored, .cancelled:
-                print("[\(Item.self) FeedLoader] load did not complete (\(response.description))")
+                print("[\(Self.self)] load did not complete (\(response.description))")
                 newState = .idle
             }
             
@@ -107,7 +107,7 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
             }
             
             await self.setLoading(newState)
-            print("[\(Item.self) FeedLoader] loadMoreItems complete")
+            print("[\(Self.self)] loadMoreItems complete")
         }
     }
     
@@ -143,6 +143,9 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
             
             if items.isEmpty {
                 try await refresh(clearBeforeRefresh: false)
+            } else if thresholds.fallback == nil {
+                // if too few items are present after filtering to trigger threshold loading, initiate new load
+                try await loadMoreItems()
             }
         }
     }

@@ -8,7 +8,7 @@
 import Foundation
 
 extension ApiAdminPurgeCommunityView: ModlogEntryApiBacker {
-    var published: Date { adminPurgeCommunity.when_ }
+    var published: Date { adminPurgeCommunity.published }
     var moderator: ApiPerson? { admin }
     var moderatorId: Int { adminPurgeCommunity.id }
     

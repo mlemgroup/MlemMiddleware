@@ -19,6 +19,7 @@ public extension ApiClient {
         showHidden: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
         let request = GetPostsRequest(
+            endpoint: .v3,
             type_: .all,
             sort: sort,
             page: cursor == nil ? page : nil,
@@ -31,7 +32,13 @@ public extension ApiClient {
             pageCursor: cursor,
             showHidden: showHidden,
             showRead: nil,
-            showNsfw: nil
+            showNsfw: nil,
+            timeRangeSeconds: nil,
+            readOnly: nil,
+            hideMedia: nil,
+            markAsRead: nil,
+            noCommentsOnly: nil,
+            pageBack: nil
         )
         let response = try await perform(request)
         let posts = await caches.post2.getModels(api: self, from: response.posts)
@@ -49,6 +56,7 @@ public extension ApiClient {
         showHidden: Bool = false
     ) async throws -> (posts: [Post2], cursor: String?) {
         let request = GetPostsRequest(
+            endpoint: .v3,
             type_: feed,
             sort: sort,
             page: cursor == nil ? page : nil,
@@ -61,7 +69,13 @@ public extension ApiClient {
             pageCursor: cursor,
             showHidden: showHidden,
             showRead: nil,
-            showNsfw: nil
+            showNsfw: nil,
+            timeRangeSeconds: nil,
+            readOnly: nil,
+            hideMedia: nil,
+            markAsRead: nil,
+            noCommentsOnly: nil,
+            pageBack: nil
         )
         let response = try await perform(request)
         let posts = await caches.post2.getModels(api: self, from: response.posts)
@@ -77,6 +91,7 @@ public extension ApiClient {
         savedOnly: Bool = false
     ) async throws -> (person: Person3, posts: [Post2]) {
         let request = GetPersonDetailsRequest(
+            endpoint: .v3,
             personId: personId,
             username: nil,
             sort: sort,
@@ -88,18 +103,18 @@ public extension ApiClient {
         let response = try await perform(request)
         return await (
             person: caches.person3.getModel(api: self, from: response),
-            posts: caches.post2.getModels(api: self, from: response.posts)
+            posts: caches.post2.getModels(api: self, from: response.posts ?? [])
         )
     }
         
     func getPost(id: Int) async throws -> Post3 {
-        let request = GetPostRequest(id: id, commentId: nil)
+        let request = GetPostRequest(endpoint: .v3, id: id, commentId: nil)
         let response = try await perform(request)
         return await caches.post3.getModel(api: self, from: response)
     }
     
     func getPost(url: URL) async throws -> Post2 {
-        let request = ResolveObjectRequest(q: url.absoluteString)
+        let request = ResolveObjectRequest(endpoint: .v3, q: url.absoluteString)
         do {
             if let response = try await perform(request).post {
                 return await caches.post2.getModel(api: self, from: response)
@@ -119,20 +134,30 @@ public extension ApiClient {
         filter: ApiListingType = .all,
         sort: ApiSortType = .topAll
     ) async throws -> [Post2] {
+        let endpointVersion = try await self.version.highestSupportedEndpointVersion
         let request = SearchRequest(
+            endpoint: .v3,
             q: query,
             communityId: communityId,
             communityName: nil,
             creatorId: creatorId,
             type_: .posts,
-            sort: sort,
+            sort: .init(oldSortType: endpointVersion == .v3 ? sort : nil, newSortType: endpointVersion == .v4 ? .top : nil),
             listingType: filter,
             page: page,
             limit: limit,
-            postTitleOnly: false
+            postTitleOnly: false,
+            searchTerm: query,
+            timeRangeSeconds: .max,
+            titleOnly: nil,
+            postUrlOnly: nil,
+            likedOnly: nil,
+            dislikedOnly: nil,
+            pageCursor: nil,
+            pageBack: nil
         )
         let response = try await perform(request)
-        return await caches.post2.getModels(api: self, from: response.posts)
+        return await caches.post2.getModels(api: self, from: response.posts ?? [])
     }
     
     /// Mark the given post as read. Works on all versions.
@@ -154,15 +179,17 @@ public extension ApiClient {
                 semaphore: semaphore
             )
         } else {
-            request = MarkPostAsReadRequest(postId: id, read: read, postIds: nil)
+            request = MarkPostAsReadRequest(endpoint: .v3, postId: id, read: read, postIds: nil)
             let response = try await perform(request)
             if !response.success {
                 throw ApiClientError.unsuccessful
             }
             await markReadQueue.remove(id)
-            if let post = caches.post2.retrieveModel(cacheId: id) {
-                post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
-                post.readQueued = false
+            Task { @MainActor in
+                if let post = caches.post2.retrieveModel(cacheId: id) {
+                    post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
+                    post.updateReadQueued(false)
+                }
             }
         }
     }
@@ -176,7 +203,7 @@ public extension ApiClient {
         semaphore: UInt? = nil
     ) async throws {
         let version = try await version
-        guard version >= .v19_0 else { throw ApiClientError.unsupportedLemmyVersion }
+        guard version >= .v0_19_0 else { throw ApiClientError.unsupportedLemmyVersion }
         
         let idsToSend: Set<Int>
         let markReadQueueCopy: Set<Int>
@@ -191,7 +218,7 @@ public extension ApiClient {
         guard !idsToSend.isEmpty else { return }
         
         do {
-            let request = MarkPostAsReadRequest(postId: nil, read: read, postIds: Array(idsToSend))
+            let request = MarkPostAsReadRequest(endpoint: .v3, postId: nil, read: read, postIds: Array(idsToSend))
             let response = try await perform(request)
             if !response.success {
                 throw ApiClientError.unsuccessful
@@ -203,9 +230,11 @@ public extension ApiClient {
             await self.markReadQueue.union(markReadQueueCopy)
             throw error
         }
-        for post in idsToSend.compactMap({ caches.post2.retrieveModel(cacheId: $0) }) {
-            post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
-            post.readQueued = false
+        Task { @MainActor in
+            for post in idsToSend.compactMap({ caches.post2.retrieveModel(cacheId: $0) }) {
+                post.readManager.updateWithReceivedValue(read, semaphore: semaphore)
+                post.updateReadQueued(false)
+            }
         }
     }
     
@@ -217,21 +246,21 @@ public extension ApiClient {
     
     @discardableResult
     func voteOnPost(id: Int, score: ScoringOperation, semaphore: UInt? = nil) async throws -> Post2 {
-        let request = LikePostRequest(postId: id, score: score.rawValue)
+        let request = LikePostRequest(endpoint: .v3, postId: id, score: score.rawValue)
         let response = try await perform(request)
         return await caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
     
     @discardableResult
     func savePost(id: Int, save: Bool, semaphore: UInt? = nil) async throws -> Post2 {
-        let request = SavePostRequest(postId: id, save: save)
+        let request = SavePostRequest(endpoint: .v3, postId: id, save: save)
         let response = try await perform(request)
         return await caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
     
     @discardableResult
     func deletePost(id: Int, delete: Bool, semaphore: UInt? = nil) async throws -> Post2 {
-        let request = DeletePostRequest(postId: id, deleted: delete)
+        let request = DeletePostRequest(endpoint: .v3, postId: id, deleted: delete)
         let response = try await perform(request)
         return await caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
@@ -242,7 +271,7 @@ public extension ApiClient {
         hide: Bool,
         semaphore: UInt? = nil
     ) async throws {
-        let request = HidePostRequest(postIds: Array(ids), hide: hide)
+        let request = HidePostRequest(endpoint: .v3, postIds: Array(ids), hide: hide, postId: nil)
         let response = try await perform(request)
         if !response.success {
             throw ApiClientError.unsuccessful
@@ -267,6 +296,7 @@ public extension ApiClient {
         languageId: Int? = nil
     ) async throws -> Post2 {
         let request = CreatePostRequest(
+            endpoint: .v3,
             name: title,
             communityId: communityId,
             url: linkUrl?.absoluteString,
@@ -275,7 +305,9 @@ public extension ApiClient {
             nsfw: nsfw,
             languageId: languageId,
             altText: altText,
-            customThumbnail: thumbnail?.absoluteString
+            customThumbnail: thumbnail?.absoluteString,
+            tags: nil,
+            scheduledPublishTime: nil
         )
         let response = try await perform(request)
         return await caches.post2.getModel(api: self, from: response.postView)
@@ -293,6 +325,7 @@ public extension ApiClient {
         languageId: Int? = nil
     ) async throws -> Post2 {
         let request = EditPostRequest(
+            endpoint: .v3,
             postId: id,
             name: title,
             url: linkUrl?.absoluteString,
@@ -300,7 +333,9 @@ public extension ApiClient {
             nsfw: nsfw,
             languageId: languageId,
             altText: altText,
-            customThumbnail: thumbnail?.absoluteString
+            customThumbnail: thumbnail?.absoluteString,
+            tags: nil,
+            scheduledPublishTime: nil
         )
         let response = try await perform(request)
         return await caches.post2.getModel(api: self, from: response.postView)
@@ -308,6 +343,7 @@ public extension ApiClient {
 
     func replyToPost(id: Int, content: String, languageId: Int? = nil) async throws -> Comment2 {
         let request = CreateCommentRequest(
+            endpoint: .v3,
             content: content,
             postId: id,
             parentId: nil,
@@ -322,7 +358,7 @@ public extension ApiClient {
     
     @discardableResult
     func reportPost(id: Int, reason: String) async throws -> Report {
-        let request = CreatePostReportRequest(postId: id, reason: reason)
+        let request = CreatePostReportRequest(endpoint: .v3, postId: id, reason: reason, violatesInstanceRules: nil)
         async let response = try await perform(request)
         guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
         return await caches.report.getModel(
@@ -333,7 +369,7 @@ public extension ApiClient {
     }
     
     func purgePost(id: Int, reason: String?) async throws {
-        let request = PurgePostRequest(postId: id, reason: reason)
+        let request = PurgePostRequest(endpoint: .v3, postId: id, reason: reason)
         let response = try await perform(request)
         guard response.success else { throw ApiClientError.unsuccessful }
         caches.post1.retrieveModel(cacheId: id)?.purged = true
@@ -346,21 +382,21 @@ public extension ApiClient {
         reason: String?,
         semaphore: UInt? = nil
     ) async throws -> Post2 {
-        let request = RemovePostRequest(postId: id, removed: remove, reason: reason)
+        let request = RemovePostRequest(endpoint: .v3, postId: id, removed: remove, reason: reason)
         let response = try await perform(request)
         return await caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
     
     @discardableResult
     func pinPost(id: Int, pin: Bool, to target: ApiPostFeatureType, semaphore: UInt? = nil) async throws -> Post2 {
-        let request = FeaturePostRequest(postId: id, featured: pin, featureType: target)
+        let request = FeaturePostRequest(endpoint: .v3, postId: id, featured: pin, featureType: target)
         let response = try await perform(request)
         return await caches.post2 .getModel(api: self, from: response.postView, semaphore: semaphore)
     }
     
     @discardableResult
     func lockPost(id: Int, lock: Bool, semaphore: UInt? = nil) async throws -> Post2 {
-        let request = LockPostRequest(postId: id, locked: lock)
+        let request = LockPostRequest(endpoint: .v3, postId: id, locked: lock)
         let response = try await perform(request)
         return await caches.post2.getModel(api: self, from: response.postView, semaphore: semaphore)
     }
@@ -372,7 +408,7 @@ public extension ApiClient {
         page: Int = 1,
         limit: Int = 20
     ) async throws -> [PersonVote] {
-        let request = ListPostLikesRequest(postId: id, page: page, limit: limit)
+        let request = ListPostLikesRequest(endpoint: .v3, postId: id, page: page, limit: limit)
         let response = try await perform(request)
         return await caches.personVote.getModels(
             api: self,

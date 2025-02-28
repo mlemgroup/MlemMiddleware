@@ -28,8 +28,8 @@ extension Instance2: CacheIdentifiable {
     @MainActor
     func update(with siteView: ApiSiteView) {
         setIfChanged(\.setup, siteView.localSite.siteSetup)
-        setIfChanged(\.downvotesEnabled, siteView.localSite.enableDownvotes)
-        setIfChanged(\.nsfwContentEnabled, siteView.localSite.enableNsfw)
+        setIfChanged(\.downvotesEnabled, siteView.localSite.enableDownvotes ?? true) // TODO 0.20 support: we shouldn't be coalescing to true here
+        setIfChanged(\.nsfwContentEnabled, siteView.localSite.enableNsfw ?? false) // TODO 0.20 support: we shouldn't be coalescing to false here
         setIfChanged(\.communityCreationRestrictedToAdmins, siteView.localSite.communityCreationAdminOnly)
         setIfChanged(\.emailVerificationRequired, siteView.localSite.requireEmailVerification)
         setIfChanged(\.applicationQuestion, siteView.localSite.applicationQuestion)
@@ -71,8 +71,8 @@ extension Instance3: CacheIdentifiable {
     func update(with response: ApiGetSiteResponse) {
         setIfChanged(\.version, SiteVersion(response.version))
         setIfChanged(\.discussionLanguages, response.discussionLanguages)
-        setIfChanged(\.taglines, response.taglines)
-        setIfChanged(\.customEmojis, response.customEmojis)
+        setIfChanged(\.taglines, response.taglines ?? [response.tagline].compactMap { $0 })
+        setIfChanged(\.customEmojis, response.customEmojis ?? []) // TODO 0.20 support: we shouldn't be coalescing to [] here
         setIfChanged(\.blockedUrls, response.blockedUrls)
         setIfChanged(\.administrators, response.admins.map { api.caches.person2.getModel(api: api, from: $0) })
         

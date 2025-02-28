@@ -9,7 +9,7 @@ import Foundation
 
 public extension ApiClient {
     func getReportCount(communityId: Int? = nil) async throws -> ApiGetReportCountResponse {
-        try await perform(GetReportCountRequest(communityId: communityId))
+        try await perform(GetReportCountRequest(endpoint: .v3, communityId: communityId))
     }
     
     func getPostReports(
@@ -83,7 +83,7 @@ public extension ApiClient {
         resolved: Bool,
         semaphore: UInt? = nil
     ) async throws -> Report {
-        let request = ResolvePostReportRequest(reportId: id, resolved: resolved)
+        let request = ResolvePostReportRequest(endpoint: .v3, reportId: id, resolved: resolved)
         async let response = try await perform(request)
         guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
         return await caches.report.getModel(
@@ -100,7 +100,7 @@ public extension ApiClient {
         resolved: Bool,
         semaphore: UInt? = nil
     ) async throws -> Report {
-        let request = ResolveCommentReportRequest(reportId: id, resolved: resolved)
+        let request = ResolveCommentReportRequest(endpoint: .v3, reportId: id, resolved: resolved)
         async let response = try await perform(request)
         guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
         return await caches.report.getModel(
@@ -117,7 +117,7 @@ public extension ApiClient {
         resolved: Bool,
         semaphore: UInt? = nil
     ) async throws -> Report {
-        let request = ResolvePrivateMessageReportRequest(reportId: id, resolved: resolved)
+        let request = ResolvePrivateMessageReportRequest(endpoint: .v3, reportId: id, resolved: resolved)
         async let response = try await perform(request)
         guard let myPersonId = try await myPersonId else { throw ApiClientError.notLoggedIn }
         return await caches.report.getModel(

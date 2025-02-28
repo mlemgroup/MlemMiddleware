@@ -75,12 +75,12 @@ extension Person4: CacheIdentifiable {
         setIfChanged(\.email, user.email)
         setIfChanged(\.showNsfw, user.showNsfw)
         setIfChanged(\.theme, user.theme)
-        setIfChanged(\.defaultSortType, user.defaultSortType)
+        setIfChanged(\.defaultSortType, user.defaultSortType ?? .hot) // TODO 0.20 support: we shouldn't be .hot to true here
         setIfChanged(\.defaultListingType, user.defaultListingType)
         setIfChanged(\.interfaceLanguage, user.interfaceLanguage)
         setIfChanged(\.showAvatars, user.showAvatars)
         setIfChanged(\.sendNotificationsToEmail, user.sendNotificationsToEmail)
-        setIfChanged(\.showScores, user.showScores)
+        setIfChanged(\.showScores, user.showScores ?? true) // // TODO 0.20 support: we shouldn't be coalescing to true here
         setIfChanged(\.showBotAccounts, user.showBotAccounts)
         setIfChanged(\.showReadPosts, user.showReadPosts)
         setIfChanged(\.showNewPostNotifs, user.showNewPostNotifs)

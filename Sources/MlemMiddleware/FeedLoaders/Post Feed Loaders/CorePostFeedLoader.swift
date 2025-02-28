@@ -46,9 +46,7 @@ public class PostFetcher: Fetcher<Post2> {
 
 /// Post tracker for use with single feeds. Can easily be extended to load any pure post feed by creating an inheriting class that overrides getPosts().
 @Observable
-public class CorePostFeedLoader: StandardFeedLoader<Post2> {
-    public private(set) var prefetchingConfiguration: PrefetchingConfiguration
-    
+public class CorePostFeedLoader: PrefetchingFeedLoader<Post2> {
     // store reference to the filter used by the LoadingActor so we can modify its filterContext from changeApi
     internal var filter: PostFilter
     
@@ -58,28 +56,19 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
     public var sortType: ApiSortType { postFetcher.sortType }
     
     internal init(
-        api: ApiClient,
-        pageSize: Int,
         showReadPosts: Bool,
         filterContext: FilterContext,
         prefetchingConfiguration: PrefetchingConfiguration,
         fetcher: PostFetcher
     ) {
-        self.prefetchingConfiguration = prefetchingConfiguration
-
         let filter: PostFilter = .init(showRead: showReadPosts, context: filterContext)
         self.filter = filter
         
         super.init(
             filter: filter,
+            prefetchingConfiguration: prefetchingConfiguration,
             fetcher: fetcher
         )
-    }
-    
-    // MARK: StandardFeedLoader Loading Methods
-  
-    override func processNewItems(_ items: [Post2]) {
-        preloadImages(items)
     }
     
     // MARK: Custom Behavior
@@ -98,19 +87,5 @@ public class CorePostFeedLoader: StandardFeedLoader<Post2> {
         
         postFetcher.sortType = newSortType
         try await refresh(clearBeforeRefresh: true)
-    }
-    
-    /// Preloads images for the given posts
-    private func preloadImages(_ posts: [Post2]) {
-        Task {
-            prefetchingConfiguration.prefetcher.startPrefetching(with: await posts.concurrentFlatMap { post -> [ImageRequest] in
-                await post.imageRequests(configuration: self.prefetchingConfiguration)
-            })
-        }
-    }
-    
-    public func setPrefetchingConfiguration(_ config: PrefetchingConfiguration) {
-        prefetchingConfiguration = config
-        preloadImages(items)
     }
 }

@@ -45,8 +45,6 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     ) {
         self.community = community
         super.init(
-            api: community.api,
-            pageSize: pageSize,
             showReadPosts: showReadPosts,
             filterContext: filterContext,
             prefetchingConfiguration: prefetchingConfiguration,

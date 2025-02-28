@@ -22,7 +22,7 @@ class Message1Cache: CoreCache<Message1> {
         
         let newItem: Message1 = .init(
             api: api,
-            actorId: apiType.apId,
+            actorId: apiType.actorId,
             id: apiType.id,
             creatorId: apiType.creatorId,
             recipientId: apiType.recipientId,

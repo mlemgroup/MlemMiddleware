@@ -30,6 +30,7 @@ public extension ApiClient {
     
     func getPerson(id: Int) async throws -> Person3 {
         let request = GetPersonDetailsRequest(
+            endpoint: .v3,
             personId: id,
             username: nil,
             sort: .new,
@@ -43,7 +44,7 @@ public extension ApiClient {
     }
     
     func getPerson(url: URL) async throws -> Person2 {
-        let request = ResolveObjectRequest(q: url.absoluteString)
+        let request = ResolveObjectRequest(endpoint: .v3, q: url.absoluteString)
         do {
             if let response = try await perform(request).person {
                 return await caches.person2.getModel(api: self, from: response)
@@ -56,6 +57,7 @@ public extension ApiClient {
     
     func getPerson(username: String) async throws -> Person3 {
         let request = GetPersonDetailsRequest(
+            endpoint: .v3,
             personId: nil,
             username: username,
             sort: nil,
@@ -86,25 +88,35 @@ public extension ApiClient {
         filter: ApiListingType = .all,
         sort: ApiSortType = .topAll
     ) async throws -> [Person2] {
+        let endpointVersion = try await self.version.highestSupportedEndpointVersion
         let request = SearchRequest(
+            endpoint: .v3,
             q: query,
             communityId: nil,
             communityName: nil,
             creatorId: nil,
             type_: .users,
-            sort: sort,
+            sort: .init(oldSortType: endpointVersion == .v3 ? sort : nil, newSortType: endpointVersion == .v4 ? .top : nil),
             listingType: filter,
             page: page,
             limit: limit,
-            postTitleOnly: false
+            postTitleOnly: false,
+            searchTerm: query,
+            timeRangeSeconds: .max,
+            titleOnly: nil,
+            postUrlOnly: nil,
+            likedOnly: nil,
+            dislikedOnly: nil,
+            pageCursor: nil,
+            pageBack: nil
         )
         let response = try await perform(request)
-        return await caches.person2.getModels(api: self, from: response.users)
+        return await caches.person2.getModels(api: self, from: response.users ?? [])
     }
     
     @discardableResult
     func blockPerson(id: Int, block: Bool, semaphore: UInt? = nil) async throws -> Person2 {
-        let request = BlockPersonRequest(personId: id, block: block)
+        let request = BlockPersonRequest(endpoint: .v3, personId: id, block: block)
         let response = try await perform(request)
         let person = await caches.person2.getModel(api: self, from: response.personView, semaphore: semaphore)
         person.person1.blockedManager.updateWithReceivedValue(response.blocked, semaphore: semaphore)
@@ -127,10 +139,11 @@ public extension ApiClient {
             expiryTimestamp = nil
         }
         let request = BanFromCommunityRequest(
+            endpoint: .v3,
             communityId: communityId,
             personId: personId,
             ban: ban,
-            removeData: removeContent,
+            removeOrRestoreData: removeContent,
             reason: reason,
             expires: expiryTimestamp
         )
@@ -156,9 +169,10 @@ public extension ApiClient {
             expiryTimestamp = nil
         }
         let request = BanPersonRequest(
+            endpoint: .v3,
             personId: personId,
             ban: ban,
-            removeData: removeContent,
+            removeOrRestoreData: removeContent,
             reason: reason,
             expires: expiryTimestamp
         )
@@ -169,7 +183,7 @@ public extension ApiClient {
     }
     
     func purgePerson(id: Int, reason: String?) async throws {
-        let request = PurgePersonRequest(personId: id, reason: reason)
+        let request = PurgePersonRequest(endpoint: .v3, personId: id, reason: reason)
         let response = try await perform(request)
         guard response.success else { throw ApiClientError.unsuccessful }
         caches.person1.retrieveModel(cacheId: id)?.purged = true
@@ -184,6 +198,7 @@ public extension ApiClient {
         communityId: Int? = nil
     ) async throws -> (person: Person3, posts: [Post2], comments: [Comment2]) {
         let request = GetPersonDetailsRequest(
+            endpoint: .v3,
             personId: id,
             username: nil,
             sort: sort,
@@ -195,14 +210,20 @@ public extension ApiClient {
         let response = try await perform(request)
         return await (
             person: caches.person3.getModel(api: self, from: response),
-            posts: caches.post2.getModels(api: self, from: response.posts),
-            comments: caches.comment2.getModels(api: self, from: response.comments)
+            posts: caches.post2.getModels(api: self, from: response.posts ?? []),
+            comments: caches.comment2.getModels(api: self, from: response.comments ?? [])
         )
     }
     
     func getMyPerson() async throws -> (person: Person4?, instance: Instance3, blocks: BlockList?) {
-        let request = GetSiteRequest()
+        let request = GetSiteRequest(endpoint: .v3)
         let response = try await perform(request)
+        
+        guard response.myUser?.localUserView.person.name == self.username else {
+            assertionFailure()
+            throw ApiClientError.mismatchingToken
+        }
+        
         let instance = await caches.instance3.getModel(api: self, from: response)
         
         var blocks: BlockList? = self.blocks
@@ -215,14 +236,16 @@ public extension ApiClient {
                 blocks = .init(api: self, myUserInfo: myUser)
             }
         }
-        self.blocks = blocks
-        myPerson = person
-        myInstance = instance
+        _ = await Task { @MainActor in
+            self.blocks = blocks
+            myPerson = person
+            myInstance = instance
+        }.result
         return (person: person, instance: instance, blocks: blocks)
     }
     
     func deleteAccount(password: String, deleteContent: Bool?) async throws {
-        let request = DeleteAccountRequest(password: password, deleteContent: deleteContent)
+        let request = DeleteAccountRequest(endpoint: .v3, password: password, deleteContent: deleteContent)
         try await perform(request)
     }
     
@@ -258,6 +281,7 @@ public extension ApiClient {
         showUpvotePercentage: Bool?
     ) async throws {
         let request = SaveUserSettingsRequest(
+            endpoint: .v3,
             showNsfw: showNsfw,
             showScores: showScores,
             theme: theme,
@@ -288,7 +312,13 @@ public extension ApiClient {
             collapseBotComments: collapseBotComments,
             showUpvotes: showUpvotes,
             showDownvotes: showDownvotes,
-            showUpvotePercentage: showUpvotePercentage
+            showUpvotePercentage: showUpvotePercentage,
+            defaultPostSortType: nil,
+            defaultPostTimeRangeSeconds: nil,
+            defaultCommentSortType: nil,
+            enablePrivateMessages: nil,
+            autoMarkFetchedPostsAsRead: nil,
+            hideMedia: nil
         )
         let response = try await perform(request)
         guard response.success else { throw ApiClientError.unsuccessful }
