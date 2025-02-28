@@ -39,7 +39,6 @@ public class MockApiClient: ApiClient {
         tokenOverride: String? = nil,
         requiresToken: Bool = true
     ) async throws -> Request.Response {
-        print("REQ", request)
         if let request = request as? GetPostsRequest, let params = request.parameters {
             return ApiGetPostsResponse(posts: posts.map(\.apiPostView)) as! Request.Response
         }

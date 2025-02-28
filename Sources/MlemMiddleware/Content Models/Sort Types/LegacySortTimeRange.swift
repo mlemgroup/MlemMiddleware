@@ -7,33 +7,50 @@
 
 import Foundation
 
-public extension PostSortType {
-    enum LegacyTimeRange: CaseIterable {
-        case hour
-        case sixHour
-        case twelveHour
-        case day
-        case week
-        case month
-        /// Added in 0.18.1
-        case threeMonth
-        /// Added in 0.18.1
-        case sixMonth
-        /// Added in 0.18.1
-        case nineMonth
-        case year
-        case allTime
-    }
-    
-    static func top(_ range: LegacyTimeRange) -> Self {
-        .top(range.timeInterval)
-    }
+/// Represents the available "top" sort time ranges available before Lemmy v1.0.0.
+/// After v1.0.0, the top sort timer ange can be any number of seconds.
+public enum LegacySortTimeRange: CaseIterable {
+    case hour
+    case sixHour
+    case twelveHour
+    case day
+    case week
+    case month
+    /// Added in 0.18.1
+    case threeMonth
+    /// Added in 0.18.1
+    case sixMonth
+    /// Added in 0.18.1
+    case nineMonth
+    case year
+    case allTime
 }
 
-public extension PostSortType.LegacyTimeRange {
+public extension LegacySortTimeRange {
     init?(_ timeInterval: TimeInterval?) {
         if let match = Self.allCases.first(where: { $0.timeInterval == timeInterval }) {
             self = match
+        } else {
+            return nil
+        }
+    }
+    
+    init?(_ legacyApiSortType: ApiSortType) {
+        if let value: Self = switch legacyApiSortType {
+        case .topHour: .hour
+        case .topSixHour: .sixHour
+        case .topTwelveHour: .twelveHour
+        case .topDay: .day
+        case .topWeek: .week
+        case .topMonth: .month
+        case .topThreeMonths: .threeMonth
+        case .topSixMonths: .sixMonth
+        case .topNineMonths: .nineMonth
+        case .topYear: .year
+        case .topAll: .allTime
+        default: nil
+        } {
+            self = value
         } else {
             return nil
         }

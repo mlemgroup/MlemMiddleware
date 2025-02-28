@@ -36,7 +36,9 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     
     // force unwrap because this should ALWAYS be a PostFetcher
     private var postFetcher: PostFetcher { fetcher as! PostFetcher }
-        
+    
+    public var sortType: PostSortType { postFetcher.sortType }
+
     public init(
         pageSize: Int,
         sortType: PostSortType,
