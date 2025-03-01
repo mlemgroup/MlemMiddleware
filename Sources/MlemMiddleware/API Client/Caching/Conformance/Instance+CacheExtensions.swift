@@ -70,7 +70,7 @@ extension Instance3: CacheIdentifiable {
     @MainActor
     func update(with response: ApiGetSiteResponse) {
         setIfChanged(\.version, SiteVersion(response.version))
-        setIfChanged(\.discussionLanguages, response.discussionLanguages)
+        setIfChanged(\.allowedLanguageIds, Set(response.discussionLanguages).subtracting([0]))
         setIfChanged(\.taglines, response.taglines ?? [response.tagline].compactMap { $0 })
         setIfChanged(\.customEmojis, response.customEmojis ?? []) // TODO 0.20 support: we shouldn't be coalescing to [] here
         setIfChanged(\.blockedUrls, response.blockedUrls)

@@ -17,8 +17,14 @@ public final class Instance3: Instance3Providing {
     public let instance2: Instance2
     
     public var version: SiteVersion
-    public let allLanguages: [Language]
-    public var discussionLanguages: [Int]
+    
+    public let allLanguages: [Locale.Language]
+    
+    // This excludes the "undetermined" language identifier (which is 0),
+    // because its presence or absence doesn't actually affect whether you're
+    // able to create a post with "undetermined" as the language
+    public var allowedLanguageIds: Set<Int>
+    
     public var taglines: [ApiTagline]
     public var customEmojis: [ApiCustomEmojiView]
     public var blockedUrls: [ApiLocalSiteUrlBlocklist]?
@@ -28,8 +34,8 @@ public final class Instance3: Instance3Providing {
         api: ApiClient,
         instance2: Instance2,
         version: SiteVersion,
-        allLanguages: [Language],
-        discussionLanguages: [Int],
+        allLanguages: [Locale.Language],
+        allowedLanguageIds: Set<Int>,
         taglines: [ApiTagline],
         customEmojis: [ApiCustomEmojiView],
         blockedUrls: [ApiLocalSiteUrlBlocklist]?,
@@ -39,7 +45,7 @@ public final class Instance3: Instance3Providing {
         self.instance2 = instance2
         self.version = version
         self.allLanguages = allLanguages
-        self.discussionLanguages = discussionLanguages
+        self.allowedLanguageIds = allowedLanguageIds
         self.taglines = taglines
         self.customEmojis = customEmojis
         self.blockedUrls = blockedUrls

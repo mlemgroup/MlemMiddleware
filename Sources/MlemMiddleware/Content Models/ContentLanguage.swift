@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum Language {
+public enum ContentLanguage: Hashable {
     case undetermined
     case locale(Locale)
     
