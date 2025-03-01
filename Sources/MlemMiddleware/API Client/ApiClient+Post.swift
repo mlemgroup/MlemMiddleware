@@ -132,7 +132,53 @@ public extension ApiClient {
         communityId: Int? = nil,
         creatorId: Int? = nil,
         filter: ApiListingType = .all,
-        sort: ApiSortType = .topAll
+        sort: PostSortType
+    ) async throws -> [Post2] {
+        try await searchPosts(
+            query: query,
+            page: page,
+            limit: limit,
+            communityId: communityId,
+            creatorId: creatorId,
+            filter: filter,
+            legacySort: sort.legacyApiSortType,
+            sort: sort.apiSearchSortType,
+            timeRangeSeconds: nil
+        )
+    }
+    
+    func searchPosts(
+        query: String,
+        page: Int = 1,
+        limit: Int = 20,
+        communityId: Int? = nil,
+        creatorId: Int? = nil,
+        filter: ApiListingType = .all,
+        sort: SearchSortType
+    ) async throws -> [Post2] {
+        return try await searchPosts(
+            query: query,
+            page: page,
+            limit: limit,
+            communityId: communityId,
+            creatorId: creatorId,
+            filter: filter,
+            legacySort: sort.legacyApiSortType,
+            sort: sort.apiSortType,
+            timeRangeSeconds: sort.timeRangeSeconds
+        )
+    }
+    
+    private func searchPosts(
+        query: String,
+        page: Int,
+        limit: Int,
+        communityId: Int?,
+        creatorId: Int?,
+        filter: ApiListingType,
+        legacySort: ApiSortType?,
+        sort: ApiSearchSortType?,
+        timeRangeSeconds: Int?
     ) async throws -> [Post2] {
         let endpointVersion = try await self.version.highestSupportedEndpointVersion
         let request = SearchRequest(
@@ -142,13 +188,13 @@ public extension ApiClient {
             communityName: nil,
             creatorId: creatorId,
             type_: .posts,
-            sort: .init(oldSortType: endpointVersion == .v3 ? sort : nil, newSortType: endpointVersion == .v4 ? .top : nil),
+            sort: .init(oldSortType: endpointVersion == .v3 ? legacySort : nil, newSortType: endpointVersion == .v4 ? sort : nil),
             listingType: filter,
             page: page,
             limit: limit,
             postTitleOnly: false,
             searchTerm: query,
-            timeRangeSeconds: .max,
+            timeRangeSeconds: timeRangeSeconds,
             titleOnly: nil,
             postUrlOnly: nil,
             likedOnly: nil,

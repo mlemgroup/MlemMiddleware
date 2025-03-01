@@ -7,9 +7,9 @@
 
 import Foundation
 
-/// Represents the available "top" sort time ranges available before Lemmy v1.0.0.
-/// After v1.0.0, the top sort timer ange can be any number of seconds.
-public enum LegacySortTimeRange: CaseIterable {
+/// Represents the available "top" sort time ranges available before Lemmy 1.0.0.
+/// After 1.0.0, the top sort time range can be any number of seconds.
+public enum LegacySortTimeRangeLimit: CaseIterable {
     case hour
     case sixHour
     case twelveHour
@@ -23,10 +23,9 @@ public enum LegacySortTimeRange: CaseIterable {
     /// Added in 0.18.1
     case nineMonth
     case year
-    case allTime
 }
 
-public extension LegacySortTimeRange {
+public extension LegacySortTimeRangeLimit {
     init?(_ timeInterval: TimeInterval?) {
         if let match = Self.allCases.first(where: { $0.timeInterval == timeInterval }) {
             self = match
@@ -35,7 +34,7 @@ public extension LegacySortTimeRange {
         }
     }
     
-    init?(_ legacyApiSortType: ApiSortType) {
+    internal init?(_ legacyApiSortType: ApiSortType) {
         if let value: Self = switch legacyApiSortType {
         case .topHour: .hour
         case .topSixHour: .sixHour
@@ -47,7 +46,6 @@ public extension LegacySortTimeRange {
         case .topSixMonths: .sixMonth
         case .topNineMonths: .nineMonth
         case .topYear: .year
-        case .topAll: .allTime
         default: nil
         } {
             self = value
@@ -56,7 +54,7 @@ public extension LegacySortTimeRange {
         }
     }
     
-    var timeInterval: TimeInterval? {
+    var timeInterval: TimeInterval {
         let hour = 3600.0
         let day = hour * 24
         let month = day * 30
@@ -72,7 +70,6 @@ public extension LegacySortTimeRange {
         case .sixMonth: month * 6
         case .nineMonth: month * 9
         case .year: day * 365
-        case .allTime: nil
         }
     }
     
@@ -88,7 +85,6 @@ public extension LegacySortTimeRange {
         case .sixMonth: .topSixMonths
         case .nineMonth: .topNineMonths
         case .year: .topYear
-        case .allTime: .topAll
         }
     }
     

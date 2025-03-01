@@ -86,7 +86,7 @@ public extension ApiClient {
         page: Int = 1,
         limit: Int = 20,
         filter: ApiListingType = .all,
-        sort: ApiSortType = .topAll
+        sort: SearchSortType = .top(.allTime)
     ) async throws -> [Person2] {
         let endpointVersion = try await self.version.highestSupportedEndpointVersion
         let request = SearchRequest(
@@ -96,13 +96,16 @@ public extension ApiClient {
             communityName: nil,
             creatorId: nil,
             type_: .users,
-            sort: .init(oldSortType: endpointVersion == .v3 ? sort : nil, newSortType: endpointVersion == .v4 ? .top : nil),
+            sort: .init(
+                oldSortType: endpointVersion == .v3 ? sort.legacyApiSortType : nil,
+                newSortType: endpointVersion == .v4 ? sort.apiSortType : nil
+            ),
             listingType: filter,
             page: page,
             limit: limit,
             postTitleOnly: false,
             searchTerm: query,
-            timeRangeSeconds: .max,
+            timeRangeSeconds: sort.timeRangeSeconds,
             titleOnly: nil,
             postUrlOnly: nil,
             likedOnly: nil,

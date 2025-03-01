@@ -19,14 +19,10 @@ public enum PostSortType: Hashable, Sendable {
     /// Added in 0.19.0
     case scaled
     
-    /// `nil` indicates an infinite time scale ("Top of All Time").
-    ///
     /// From 1.0.0 onwards, any time interval is supported.
     /// Before 1.0.0, there is a discrete list of supported time intervals,
     /// represented by the ``LegacySortTimeRange`` type.
-    case top(TimeInterval?)
-    
-    static func top(_ range: LegacySortTimeRange) -> Self { .top(range.timeInterval) }
+    case top(SortTimeRange)
     
     public var isTop: Bool {
         switch self {
@@ -46,21 +42,27 @@ public enum PostSortType: Hashable, Sendable {
         .mostComments
     ]
     
-    public static var legacyTopCases: [Self] = LegacySortTimeRange.allCases.map { .top($0) }
+    public static var legacyTopCases: [Self] = SortTimeRange.legacyCases.map { .top($0) }
     
     public static var legacyCases: [Self] = nonTopCases + legacyTopCases
     
     public init(_ legacyApiSortType: ApiSortType) {
-        self = switch legacyApiSortType {
-        case .active: .active
-        case .hot: .hot
-        case .new: .new
-        case .old: .old
-        case .mostComments: .mostComments
-        case .newComments: .newComments
-        case .controversial: .controversial
-        case .scaled: .scaled
-        default: .top(LegacySortTimeRange(legacyApiSortType)?.timeInterval)
+        switch legacyApiSortType {
+        case .active: self = .active
+        case .hot: self = .hot
+        case .new: self = .new
+        case .old: self = .old
+        case .mostComments: self = .mostComments
+        case .newComments: self = .newComments
+        case .controversial: self = .controversial
+        case .scaled: self = .scaled
+        default:
+            if let timeRange = SortTimeRange(legacyApiSortType) {
+                self = .top(timeRange)
+            } else {
+                assertionFailure()
+                self = .top(.allTime)
+            }
         }
     }
     
@@ -75,7 +77,7 @@ public enum PostSortType: Hashable, Sendable {
         case .newComments: .newComments
         case .controversial: .controversial
         case .scaled: .scaled
-        case let .top(interval): LegacySortTimeRange(interval)?.legacyApiSortType
+        case let .top(timeRange): timeRange.legacyApiSortType
         }
     }
     
@@ -93,17 +95,30 @@ public enum PostSortType: Hashable, Sendable {
         }
     }
     
-    public var timeRange: TimeInterval? {
+    /// Returns `nil` if the `PostSortType` is a value that cannot be converted to an `ApiSearchSortType`.
+    public var apiSearchSortType: ApiSearchSortType? {
         switch self {
-        case let .top(timeInterval): timeInterval
+        case .new: .new
+        case .old: .old
+        case .top: .top
         default: nil
         }
     }
     
+    public var timeRange: SortTimeRange? {
+        switch self {
+        case let .top(timeRange): timeRange
+        default: nil
+        }
+    }
+    
+    // This should only be used internally within ApiClient
+    internal var timeRangeSeconds: Int? { timeRange?.timeRangeSeconds }
+    
     public var minimumVersion: SiteVersion {
         switch self {
         case .controversial, .scaled: .v0_19_0
-        case let .top(interval): LegacySortTimeRange(interval)?.minimumVersion ?? .v1_0_0
+        case let .top(timeRange): timeRange.minimumVersion
         default: .zero
         }
     }

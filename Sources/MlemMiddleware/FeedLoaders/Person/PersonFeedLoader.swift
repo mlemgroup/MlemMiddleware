@@ -12,9 +12,9 @@ class PersonFetcher: Fetcher<Person2> {
     var query: String
     /// `listing` can be set to `.local` from 0.19.4 onwards.
     var listing: ApiListingType
-    var sort: ApiSortType
+    var sort: SearchSortType
     
-    init(api: ApiClient, pageSize: Int, query: String, listing: ApiListingType, sort: ApiSortType) {
+    init(api: ApiClient, pageSize: Int, query: String, listing: ApiListingType, sort: SearchSortType) {
         self.query = query
         self.listing = listing
         self.sort = sort
@@ -51,7 +51,7 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
         query: String = "",
         pageSize: Int = 20,
         listing: ApiListingType = .all,
-        sort: ApiSortType = .topAll
+        sort: SearchSortType = .top(.allTime)
     ) {
         self.api = api
         
@@ -64,7 +64,7 @@ public class PersonFeedLoader: StandardFeedLoader<Person2> {
     public func refresh(
         query: String? = nil,
         listing: ApiListingType? = nil,
-        sort: ApiSortType? = nil,
+        sort: SearchSortType? = nil,
         clearBeforeRefresh: Bool = false
     ) async throws {
         personFetcher.query = query ?? personFetcher.query
