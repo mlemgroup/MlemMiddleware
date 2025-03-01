@@ -19,8 +19,12 @@ public extension String {
     }
     
     /// Returns true if this string contains any whole word that is in the given set of strings
-    func containsWordsIn(_ strings: Set<String>) -> Bool {
-        let words = self.split(separator: " ").map { $0.lowercased() }
-        return words.contains { strings.contains($0) }
+    func failsKeywordFilter(_ filteredKeywords: Set<String>) -> Bool {
+        let punctuationRegex = "[^a-zA-Z]" // matches single non-letter characters
+        let words = self
+            .replacingOccurrences(of: punctuationRegex, with: " ", options: [.regularExpression])
+            .split(separator: " ")
+            .map { $0.lowercased() }
+        return words.contains { filteredKeywords.contains($0) }
     }
 }
