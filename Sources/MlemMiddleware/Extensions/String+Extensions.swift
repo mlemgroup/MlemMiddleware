@@ -20,13 +20,9 @@ public extension String {
     
     /// Returns true if this string contains any whole word that is in the given set of strings
     func failsKeywordFilter(_ filteredKeywords: Set<String>) -> Bool {
-        // let punctuationRegex = "[^a-zA-Z]" // matches single non-letter characters
         let words = self
-            // .replacingOccurrences(of: punctuationRegex, with: " ", options: [.regularExpression])
-            // .split(separator: " ")
             .split(separator: /[^a-zA-Z]/) // split on any non-letter characters so "keyword's" is filtered as "keyword" "s"
             .map { $0.lowercased() }
-        print("DEBUG \(words)")
         return words.contains { filteredKeywords.contains($0) }
     }
 }
