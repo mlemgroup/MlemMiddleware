@@ -35,7 +35,7 @@ class PostKeywordFilter: FilterProviding {
         // bypass filter for moderated/administrated posts
         if context.isAdmin || context.moderatedCommunityActorIds.contains(post.community.actorId) { return true }
         
-        return !post.title.lowercased().containsWordsIn(context.filteredKeywords)
+        return !post.title.failsKeywordFilter(context.filteredKeywords)
     }
     
     func updateFilterContext(to context: FilterContext) {

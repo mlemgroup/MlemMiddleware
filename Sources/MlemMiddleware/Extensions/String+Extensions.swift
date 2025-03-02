@@ -19,8 +19,10 @@ public extension String {
     }
     
     /// Returns true if this string contains any whole word that is in the given set of strings
-    func containsWordsIn(_ strings: Set<String>) -> Bool {
-        let words = self.split(separator: " ").map { $0.lowercased() }
-        return words.contains { strings.contains($0) }
+    func failsKeywordFilter(_ filteredKeywords: Set<String>) -> Bool {
+        let words = self
+            .split(separator: /[^a-zA-Z]/) // split on any non-letter characters so "keyword's" is filtered as "keyword" "s"
+            .map { $0.lowercased() }
+        return words.contains { filteredKeywords.contains($0) }
     }
 }
