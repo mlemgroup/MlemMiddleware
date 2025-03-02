@@ -23,7 +23,6 @@ public extension String {
         let words = self
             .split(separator: /[^[:alnum:]]/) // split on any non-letter/number characters so "keyword's" is filtered as "keyword" "s"
             .map { $0.lowercased() }
-        print("DEBUG \(words)")
         return words.contains { filteredKeywords.contains($0) }
     }
 }
