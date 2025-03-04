@@ -102,7 +102,11 @@ public final class UnreadCount {
             }
             if !(self.api.myPerson?.moderatedCommunities.isEmpty ?? false) || self.api.isAdmin {
                 taskGroup.addTask {
-                    try await self.api.getReportCount(communityId: nil).unreadCountDictionary
+                    do {
+                        return try await self.api.getReportCount(communityId: nil).unreadCountDictionary
+                    } catch let ApiClientError.response(response, _) where response.error == "not_a_mod_or_admin" {
+                        return [:]
+                    }
                 }
             }
             // Don't use `api.isAdmin` here; it falls back to `false` and we need to fallback to `true`
