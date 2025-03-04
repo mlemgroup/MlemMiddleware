@@ -104,7 +104,7 @@ public final class UnreadCount {
                 taskGroup.addTask {
                     do {
                         return try await self.api.getReportCount(communityId: nil).unreadCountDictionary
-                    } catch let ApiClientError.response(response, _) where response.error == "not_a_mod_or_admin" {
+                    } catch let ApiClientError.response(response, _) where response.notModOrAdmin {
                         return [:]
                     }
                 }
@@ -114,7 +114,7 @@ public final class UnreadCount {
                 taskGroup.addTask {
                     do {
                         return try await self.api.getRegistrationApplicationCount().unreadCountDictionary
-                    } catch let ApiClientError.response(response, _) where response.error == "not_an_admin" {
+                    } catch let ApiClientError.response(response, _) where response.notAdmin {
                         return [:]
                     }
                 }

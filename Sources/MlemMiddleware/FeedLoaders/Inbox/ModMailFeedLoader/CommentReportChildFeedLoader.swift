@@ -15,7 +15,7 @@ public class CommentReportChildFeedLoader: ModMailChildFeedLoader {
                     prevCursor: nil,
                     nextCursor: nil
                 )
-            } catch let ApiClientError.response(response, _) where response.error == "not_a_mod_or_admin" {
+            } catch let ApiClientError.response(response, _) where response.notModOrAdmin {
                 return .init(items: .init(), prevCursor: nil, nextCursor: nil)
             }
         }
