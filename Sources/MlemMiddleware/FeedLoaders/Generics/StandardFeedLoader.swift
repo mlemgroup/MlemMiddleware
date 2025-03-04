@@ -161,6 +161,8 @@ public class StandardFeedLoader<Item: FeedLoadable>: FeedLoading {
     }
     
     public func changeApi(to newApi: ApiClient, context: FilterContext) async {
-        await fetcher.changeApi(to: newApi, context: context)
+        if fetcher.api != newApi {
+            await fetcher.changeApi(to: newApi, context: context)
+        }
     }
 }

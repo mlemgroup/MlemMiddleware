@@ -10,12 +10,16 @@ public class MessageReportChildFeedLoader: ModMailChildFeedLoader {
         override func fetchPage(_ page: Int) async throws -> FetchResponse {
             guard api.isAdmin else { return .init(items: [], prevCursor: nil, nextCursor: nil) }
             
-            let response = try await api.getMessageReports(page: page, limit: pageSize, unresolvedOnly: unreadOnly)
-            return .init(
-                items: response.map { .report($0) },
-                prevCursor: nil,
-                nextCursor: nil
-            )
+            do {
+                let response = try await api.getMessageReports(page: page, limit: pageSize, unresolvedOnly: unreadOnly)
+                return .init(
+                    items: response.map { .report($0) },
+                    prevCursor: nil,
+                    nextCursor: nil
+                )
+            } catch let ApiClientError.response(response, _) where response.error == "not_an_admin" {
+                return .init(items: .init(), prevCursor: nil, nextCursor: nil)
+            }
         }
     }
 

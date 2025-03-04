@@ -8,11 +8,16 @@
 public class CommentReportChildFeedLoader: ModMailChildFeedLoader {
     class Fetcher: ModMailFetcher {
         override func fetchPage(_ page: Int) async throws -> FetchResponse {
-            let response = try await api.getCommentReports(page: page, limit: pageSize, unresolvedOnly: unreadOnly)
-            return .init(items: response.map { .report($0) },
-                         prevCursor: nil,
-                         nextCursor: nil
-            )
+            do {
+                let response = try await api.getCommentReports(page: page, limit: pageSize, unresolvedOnly: unreadOnly)
+                return .init(
+                    items: response.map { .report($0) },
+                    prevCursor: nil,
+                    nextCursor: nil
+                )
+            } catch let ApiClientError.response(response, _) where response.error == "not_a_mod_or_admin" {
+                return .init(items: .init(), prevCursor: nil, nextCursor: nil)
+            }
         }
     }
 
