@@ -54,4 +54,22 @@ public enum CommentSortType: Hashable, Sendable {
         case let .top(sortTimeRange): .top
         }
     }
+    
+    public var timeRange: SortTimeRange? {
+        switch self {
+        case let .top(timeRange): timeRange
+        default: nil
+        }
+    }
+    
+    // This should only be used internally within ApiClient
+    internal var timeRangeSeconds: Int? { timeRange?.timeRangeSeconds }
+    
+    public var minimumVersion: SiteVersion {
+        switch self {
+        case .controversial: .v0_19_0
+        case let .top(timeRange): timeRange == .allTime ? .zero : .v1_0_0
+        default: .zero
+        }
+    }
 }
