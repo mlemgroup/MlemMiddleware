@@ -44,4 +44,6 @@ public extension ApiErrorResponse {
     var registrationApplicationIsPending: Bool { error == "registration_application_is_pending" }
     var emailNotVerified: Bool { error == "email_not_verified" }
     var couldntFindObject: Bool { couldntFindObjectErrors.contains(error) }
+    var notModOrAdmin: Bool { error == "not_a_mod_or_admin" }
+    var notAdmin: Bool { error == "not_an_admin" }
 }
