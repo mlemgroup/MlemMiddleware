@@ -28,7 +28,7 @@ public final class Person4: Person4Providing {
     public internal(set) var showScores: Bool
     public internal(set) var showBotAccounts: Bool
     public internal(set) var showReadPosts: Bool
-    public internal(set) var discussionLanguages: Set<Int>
+    public internal(set) var discussionLanguageIds: Set<Int>
     public internal(set) var showNewPostNotifs: Bool?
     public internal(set) var emailVerified: Bool
     public internal(set) var acceptedApplication: Bool
@@ -57,7 +57,7 @@ public final class Person4: Person4Providing {
         showScores: Bool,
         showBotAccounts: Bool,
         showReadPosts: Bool,
-        discussionLanguages: Set<Int>,
+        discussionLanguageIds: Set<Int>,
         showNewPostNotifs: Bool?,
         emailVerified: Bool,
         acceptedApplication: Bool,
@@ -85,7 +85,7 @@ public final class Person4: Person4Providing {
         self.showScores = showScores
         self.showBotAccounts = showBotAccounts
         self.showReadPosts = showReadPosts
-        self.discussionLanguages = discussionLanguages
+        self.discussionLanguageIds = discussionLanguageIds
         self.showNewPostNotifs = showNewPostNotifs
         self.emailVerified = emailVerified
         self.acceptedApplication = acceptedApplication
@@ -108,7 +108,7 @@ public final class Person4: Person4Providing {
         showNsfw: Bool? = nil,
         blurNsfw: Bool? = nil,
         showBotAccounts: Bool? = nil,
-        discussionLanguages: Set<Int>? = nil,
+        discussionLanguageIds: Set<Int>? = nil,
         sendNotificationsToEmail: Bool? = nil,
         isBot: Bool? = nil
     ) async throws {
@@ -133,7 +133,7 @@ public final class Person4: Person4Providing {
             botAccount: isBot ?? self.isBot,
             showBotAccounts: showBotAccounts ?? self.showBotAccounts,
             showReadPosts: self.showReadPosts,
-            discussionLanguages: discussionLanguages?.sorted(),
+            discussionLanguages: discussionLanguageIds?.sorted(),
             openLinksInNewTab: self.openLinksInNewTab,
             blurNsfw: blurNsfw ?? self.blurNsfw,
             autoExpand: self.autoExpandImages,
@@ -151,7 +151,7 @@ public final class Person4: Person4Providing {
         self.showNsfw = showNsfw ?? self.showNsfw
         self.blurNsfw = blurNsfw ?? self.blurNsfw
         self.showBotAccounts = showBotAccounts ?? self.showBotAccounts
-        self.discussionLanguages = discussionLanguages ?? self.discussionLanguages
+        self.discussionLanguageIds = discussionLanguageIds ?? self.discussionLanguageIds
         self.sendNotificationsToEmail = sendNotificationsToEmail ?? self.sendNotificationsToEmail
         self.person1.isBot = isBot ?? self.isBot
     }

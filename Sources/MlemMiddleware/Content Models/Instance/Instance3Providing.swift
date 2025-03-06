@@ -51,6 +51,10 @@ public extension Instance3Providing {
         allLanguages[safeIndex: id - 1]
     }
     
+    func getLanguageId(for language: Locale.Language) -> Int? {
+        allLanguages.firstIndex(of: language)?.advanced(by: 1)
+    }
+    
     func languages(withIds ids: Set<Int>) -> [Locale.Language] {
         ids.lazy.sorted(by: <).compactMap { self.language(withId: $0) }
     }

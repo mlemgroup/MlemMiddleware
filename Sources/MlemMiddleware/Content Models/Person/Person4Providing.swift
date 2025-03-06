@@ -52,7 +52,7 @@ public extension Person4Providing {
     var showScores: Bool { person4.showScores }
     var showBotAccounts: Bool { person4.showBotAccounts }
     var showReadPosts: Bool { person4.showReadPosts }
-    var discussionLanguageIds: Set<Int> { person4.discussionLanguages }
+    var discussionLanguageIds: Set<Int> { person4.discussionLanguageIds }
     var showNewPostNotifs: Bool? { person4.showNewPostNotifs }
     var emailVerified: Bool { person4.emailVerified }
     var acceptedApplication: Bool { person4.acceptedApplication }
