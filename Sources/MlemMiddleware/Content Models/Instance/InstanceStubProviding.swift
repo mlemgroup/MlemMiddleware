@@ -56,8 +56,8 @@ public protocol InstanceStubProviding: ActorIdentifiable, ContentModel {
     
     // From Instance3Providing. These are defined as get in the extension below
     var version_: SiteVersion? { get }
-    var allLanguages_: [ApiLanguage]? { get }
-    var discussionLanguages_: [Int]? { get }
+    var allLanguages_: [Locale.Language]? { get }
+    var allowedLanguageIds_: Set<Int>? { get }
     var taglines_: [ApiTagline]? { get }
     var customEmojis_: [ApiCustomEmojiView]? { get }
     var blockedUrls_: [ApiLocalSiteUrlBlocklist]? { get }
@@ -109,8 +109,8 @@ public extension InstanceStubProviding {
     var blocked_: Bool? { nil }
     
     var version_: SiteVersion? { nil }
-    var allLanguages_: [ApiLanguage]? { nil }
-    var discussionLanguages_: [Int]? { nil }
+    var allLanguages_: [Locale.Language]? { nil }
+    var allowedLanguageIds_: Set<Int>? { nil }
     var taglines_: [ApiTagline]? { nil }
     var customEmojis_: [ApiCustomEmojiView]? { nil }
     var blockedUrls_: [ApiLocalSiteUrlBlocklist]? { nil }

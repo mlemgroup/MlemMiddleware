@@ -83,6 +83,7 @@ extension Person4: CacheIdentifiable {
         setIfChanged(\.showScores, user.showScores ?? true) // // TODO 0.20 support: we shouldn't be coalescing to true here
         setIfChanged(\.showBotAccounts, user.showBotAccounts)
         setIfChanged(\.showReadPosts, user.showReadPosts)
+        setIfChanged(\.discussionLanguageIds, .init(apiMyUserInfo.discussionLanguages.filter { $0 != 0 }))
         setIfChanged(\.showNewPostNotifs, user.showNewPostNotifs)
         setIfChanged(\.emailVerified, user.emailVerified)
         setIfChanged(\.acceptedApplication, user.acceptedApplication)

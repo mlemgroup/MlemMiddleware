@@ -121,8 +121,8 @@ class Instance3Cache: ApiTypeBackedCache<Instance3, ApiGetSiteResponse> {
             api: api,
             instance2: api.caches.instance2.getModel(api: api, from: apiType.siteView),
             version: .init(apiType.version),
-            allLanguages: apiType.allLanguages,
-            discussionLanguages: apiType.discussionLanguages,
+            allLanguages: apiType.allLanguages.compactMap { .init($0) },
+            allowedLanguageIds: Set(apiType.discussionLanguages).subtracting([0]),
             taglines: apiType.taglines ?? [apiType.tagline].compactMap { $0 },
             customEmojis: apiType.customEmojis ?? [], // TODO 0.20 support: we shouldn't be coalescing to [] here
             blockedUrls: apiType.blockedUrls,
