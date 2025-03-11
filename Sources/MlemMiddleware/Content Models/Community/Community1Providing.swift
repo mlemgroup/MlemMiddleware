@@ -14,6 +14,7 @@ public protocol Community1Providing:
     ContentIdentifiable,
     RemovableProviding,
     PurgableProviding,
+    Sharable,
     FeedLoadable where FilterType == CommunityFilterType
 {
     var community1: Community1 { get }
@@ -77,6 +78,17 @@ public extension Community1Providing {
     @inlinable
     var allResolvableUrls: [URL] {
         ContentModelUrlType.allCases.map { resolvableUrl(from: $0) }
+    }
+}
+
+// Sharable conformance
+public extension Community1Providing {
+    func url() -> URL {
+        if self.apiIsLocal {
+            api.baseUrl.appending(path: "c/\(name)")
+        } else {
+            api.baseUrl.appending(path: "c/\(name)@\(host)")
+        }
     }
 }
 
