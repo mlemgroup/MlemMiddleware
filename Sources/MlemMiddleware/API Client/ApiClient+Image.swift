@@ -13,7 +13,7 @@ public extension ApiClient {
         onProgress progressCallback: @escaping (_ progress: Double) -> Void = { _ in }
     ) async throws -> ImageUpload1 {
         guard let token else { throw ApiClientError.notLoggedIn }
-        var request = URLRequest(url: baseUrl.appending(path: "pictrs/image"))
+        var request = mlemUrlRequest(url: baseUrl.appending(path: "pictrs/image"))
         request.httpMethod = "POST"
         
         let boundary = UUID().uuidString
@@ -56,7 +56,7 @@ public extension ApiClient {
     
     func deleteImage(alias: String, deleteToken: String) async throws {
         guard let token else { throw ApiClientError.notLoggedIn }
-        var request = URLRequest(url: baseUrl.appending(path: "pictrs/image/delete/\(deleteToken)/\(alias)"))
+        var request = mlemUrlRequest(url: baseUrl.appending(path: "pictrs/image/delete/\(deleteToken)/\(alias)"))
         // TODO: 0.18 deprecation: see comments in method above
         request.setValue("jwt=\(token)", forHTTPHeaderField: "Cookie")
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
