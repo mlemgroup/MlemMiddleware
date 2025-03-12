@@ -139,7 +139,7 @@ public class ApiClient {
         
         let urlRequest = try urlRequest(from: request, tokenOverride: tokenOverride)
         // this line intentionally left commented for convenient future debugging
-//         urlRequest.debug()
+        // urlRequest.debug()
         let (data, response) = try await execute(urlRequest, tokenOverride: tokenOverride)
         if let response = response as? HTTPURLResponse {
             if response.statusCode >= 500 { // Error code for server being offline.
@@ -210,6 +210,7 @@ public class ApiClient {
         for header in definition.headers {
             urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
         }
+        urlRequest.setValue("MlemUserAgent", forHTTPHeaderField: "User-Agent")
         
         if definition as? any ApiGetRequest != nil {
             urlRequest.httpMethod = "GET"
@@ -220,7 +221,7 @@ public class ApiClient {
             urlRequest.httpMethod = "PUT"
             urlRequest.httpBody = try createBodyData(for: putDefinition)
         } else if let deleteDefinition = definition as? any ApiDeleteRequest {
-            urlRequest.httpMethod = "DElETE"
+            urlRequest.httpMethod = "DELETE"
             urlRequest.httpBody = try createBodyData(for: deleteDefinition)
         }
         
