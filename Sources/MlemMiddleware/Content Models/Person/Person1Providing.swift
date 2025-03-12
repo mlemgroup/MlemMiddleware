@@ -14,6 +14,7 @@ public protocol Person1Providing:
         ContentIdentifiable,
         SelectableContentProviding,
         PurgableProviding,
+        Sharable,
         FeedLoadable where FilterType == PersonFilterType
 {
     var api: ApiClient { get }
@@ -72,6 +73,17 @@ public extension Person1Providing {
     @inlinable
     var allResolvableUrls: [URL] {
         ContentModelUrlType.allCases.map { resolvableUrl(from: $0) }
+    }
+}
+
+// Sharable conformance
+public extension Person1Providing {
+    func url() -> URL {
+        if self.apiIsLocal {
+            api.baseUrl.appending(path: "u/\(name)")
+        } else {
+            api.baseUrl.appending(path: "u/\(name)@\(host)")
+        }
     }
 }
 
