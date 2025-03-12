@@ -9,6 +9,6 @@ import Foundation
 
 func mlemUrlRequest(url: URL) -> URLRequest {
     var ret = URLRequest(url: url)
-    ret.setValue("MlemUserAgent", forHTTPHeaderField: "User-Agent")
+    ret.addValue("MlemUserAgent", forHTTPHeaderField: "User-Agent")
     return ret
 }
