@@ -206,11 +206,10 @@ public class ApiClient {
         let token = tokenOverride ?? self.token
         guard permissions != .none else { throw ApiClientError.insufficientPermissions }
         let url = try definition.endpoint(base: baseUrl)
-        var urlRequest = URLRequest(url: url)
+        var urlRequest = mlemUrlRequest(url: url)
         for header in definition.headers {
             urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
         }
-        urlRequest.setValue("MlemUserAgent", forHTTPHeaderField: "User-Agent")
         
         if definition as? any ApiGetRequest != nil {
             urlRequest.httpMethod = "GET"

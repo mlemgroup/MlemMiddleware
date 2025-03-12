@@ -16,11 +16,11 @@ extension Post2: ImagePrefetchProviding {
         // so it's probably not an API crime, right?
         if let avatarSize = config.avatarSize {
             if let communityAvatarLink = community.avatar {
-                ret.append(ImageRequest(url: communityAvatarLink.withIconSize(avatarSize)))
+                ret.append(ImageRequest(urlRequest: mlemUrlRequest(url: communityAvatarLink.withIconSize(avatarSize))))
             }
             
             if let userAvatarLink = creator.avatar {
-                ret.append(ImageRequest(url: userAvatarLink.withIconSize(avatarSize)))
+                ret.append(ImageRequest(urlRequest: mlemUrlRequest(url: userAvatarLink.withIconSize(avatarSize))))
             }
         }
         
