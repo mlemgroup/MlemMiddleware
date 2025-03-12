@@ -23,7 +23,6 @@ extension Post1: ImagePrefetchProviding {
             var urlRequest: URLRequest
             switch config.imageSize {
             case .unlimited:
-                print("DEBUG \(url)")
                 urlRequest = mlemUrlRequest(url: url)
             case let .limited(size):
                 urlRequest = mlemUrlRequest(url: url.withIconSize(size))
