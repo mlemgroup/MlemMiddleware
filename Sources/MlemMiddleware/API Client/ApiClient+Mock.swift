@@ -26,7 +26,7 @@ public class MockApiClient: ApiClient {
         self.communities = communities
         self.people = people
         super.init(
-            url: URL(string: "https://example.com/")!,
+            url: URL(string: "https://lemmy.world/")!,
             username: "",
             permissions: .all
         )
