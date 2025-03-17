@@ -111,7 +111,7 @@ public extension Comment1Providing {
     }
     
     func getChildren(
-        sort: ApiCommentSortType = .hot,
+        sort: CommentSortType = .hot,
         includedParentCount: Int = 0,
         page: Int,
         maxDepth: Int? = nil,

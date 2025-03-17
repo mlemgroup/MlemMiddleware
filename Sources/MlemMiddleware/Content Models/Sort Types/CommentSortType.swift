@@ -51,7 +51,27 @@ public enum CommentSortType: Hashable, Sendable {
         case .old: .old
         case .hot: .hot
         case .controversial: .controversial
-        case let .top(sortTimeRange): .top
+        case .top: .top
+        }
+    }
+    
+    public var legacyApiSortType: ApiSortType {
+        switch self {
+        case .new: .new
+        case .old: .old
+        case .hot: .hot
+        case .controversial: .controversial
+        case .top: .topAll
+        }
+    }
+    
+    /// Returns `nil` if the `CommentSortType` is a value that cannot be converted to an `ApiSearchSortType`.
+    public var apiSearchSortType: ApiSearchSortType? {
+        switch self {
+        case .new: .new
+        case .old: .old
+        case .top: .top
+        default: nil
         }
     }
     

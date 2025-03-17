@@ -182,7 +182,7 @@ public extension Post1Providing {
     }
     
     func getComments(
-        sort: ApiCommentSortType = .hot,
+        sort: CommentSortType = .hot,
         page: Int,
         maxDepth: Int? = nil,
         limit: Int,
@@ -190,7 +190,7 @@ public extension Post1Providing {
     ) async throws -> [Comment2] {
         return try await api.getComments(
             postId: id,
-            sort: sort,
+            sort: sort.apiSortType,
             page: page,
             maxDepth: maxDepth,
             limit: limit,
