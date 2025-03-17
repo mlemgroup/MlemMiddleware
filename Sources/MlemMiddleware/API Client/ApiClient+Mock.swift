@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ApiClient+Mock.swift
 //  MlemMiddleware
 //
 //  Created by Sjmarf on 2025-02-02.
@@ -16,17 +16,20 @@ public class MockApiClient: ApiClient {
     public var posts: [Post2]
     public var communities: [Community2]
     public var people: [Person2]
+    public var comments: [Comment2]
     
     public init(
         posts: [Post2] = [],
         communities: [Community2] = [],
-        people: [Person2] = []
+        people: [Person2] = [],
+        comments: [Comment2] = []
     ) {
         self.posts = posts
         self.communities = communities
         self.people = people
+        self.comments = comments
         super.init(
-            url: URL(string: "https://example.com/")!,
+            url: URL(string: "https://lemmy.world/")!,
             username: "",
             permissions: .all
         )
@@ -44,6 +47,10 @@ public class MockApiClient: ApiClient {
             return ApiGetPostsResponse(posts: posts.map(\.apiPostView)) as! Request.Response
         }
         
+        if let request = request as? GetCommentsRequest, let params = request.parameters {
+            return ApiGetCommentsResponse(comments: comments.map(\.apiCommentView)) as! Request.Response
+        }
+        
         if let request = request as? GetPersonDetailsRequest, let params = request.parameters {
             if let person = people.first(where: { $0.id == params.personId })?.apiPersonView {
                 return ApiGetPersonDetailsResponse(
@@ -56,7 +63,7 @@ public class MockApiClient: ApiClient {
         
         if let request = request as? ResolveObjectRequest, let params = request.parameters {
             return ApiResolveObjectResponse(
-                comment: nil,
+                comment: comments.first(where: { $0.actorId.description == params.q })?.apiCommentView,
                 post: posts.first(where: { $0.actorId.description == params.q })?.apiPostView,
                 community: communities.first(where: { $0.actorId.description == params.q })?.apiCommunityView,
                 person: people.first(where: { $0.actorId.description == params.q })?.apiPersonView
