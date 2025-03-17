@@ -17,6 +17,7 @@ public protocol Post1Providing:
         RemovableProviding,
         PurgableProviding,
         ImagePrefetchProviding,
+        Sharable,
         FeedLoadable where FilterType == PostFilterType {
     var post1: Post1 { get }
     
@@ -104,6 +105,11 @@ public extension Post1Providing {
     var allResolvableUrls: [URL] {
         ContentModelUrlType.allCases.map { resolvableUrl(from: $0) }
     }
+}
+
+// Sharable conformance
+public extension Post1Providing {
+    func url() -> URL { api.baseUrl.appending(path: "post/\(id)") }
 }
 
 // FeedLoadable conformance

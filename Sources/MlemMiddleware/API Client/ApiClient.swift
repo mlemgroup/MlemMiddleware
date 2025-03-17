@@ -139,7 +139,7 @@ public class ApiClient {
         
         let urlRequest = try urlRequest(from: request, tokenOverride: tokenOverride)
         // this line intentionally left commented for convenient future debugging
-//         urlRequest.debug()
+        // urlRequest.debug()
         let (data, response) = try await execute(urlRequest, tokenOverride: tokenOverride)
         if let response = response as? HTTPURLResponse {
             if response.statusCode >= 500 { // Error code for server being offline.
@@ -206,7 +206,7 @@ public class ApiClient {
         let token = tokenOverride ?? self.token
         guard permissions != .none else { throw ApiClientError.insufficientPermissions }
         let url = try definition.endpoint(base: baseUrl)
-        var urlRequest = URLRequest(url: url)
+        var urlRequest = mlemUrlRequest(url: url)
         for header in definition.headers {
             urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
         }
@@ -220,7 +220,7 @@ public class ApiClient {
             urlRequest.httpMethod = "PUT"
             urlRequest.httpBody = try createBodyData(for: putDefinition)
         } else if let deleteDefinition = definition as? any ApiDeleteRequest {
-            urlRequest.httpMethod = "DElETE"
+            urlRequest.httpMethod = "DELETE"
             urlRequest.httpBody = try createBodyData(for: deleteDefinition)
         }
         

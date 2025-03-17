@@ -17,6 +17,7 @@ public protocol Comment1Providing:
         RemovableProviding,
         PurgableProviding,
         SelectableContentProviding,
+        Sharable,
         FeedLoadable where FilterType == CommentFilterType {
     var comment1: Comment1 { get }
     var content: String { get }
@@ -70,6 +71,11 @@ public extension Comment1Providing {
     var allResolvableUrls: [URL] {
         ContentModelUrlType.allCases.map { resolvableUrl(from: $0) }
     }
+}
+
+// Sharable conformance
+public extension Comment1Providing {
+    func url() -> URL { api.baseUrl.appending(path: "comment/\(id)") }
 }
 
 // SelectableContentProviding conformance

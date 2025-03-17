@@ -128,7 +128,7 @@ class Person4Cache: ApiTypeBackedCache<Person4, ApiMyUserInfo> {
             showScores: user.showScores ?? true, // TODO 0.20 support: we shouldn't be coalescing to true here
             showBotAccounts: user.showBotAccounts,
             showReadPosts: user.showReadPosts,
-            discussionLanguages: .init(apiType.discussionLanguages),
+            discussionLanguageIds: .init(apiType.discussionLanguages.filter { $0 != 0 }),
             showNewPostNotifs: user.showNewPostNotifs,
             emailVerified: user.emailVerified,
             acceptedApplication: user.acceptedApplication,

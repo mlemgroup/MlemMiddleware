@@ -121,7 +121,7 @@ public extension ApiClient {
     ///
     /// **Importantly, step 2) is only performed if the `ApiClient` is authenticated.**
     ///
-    func resolve(url: URL) async throws -> (any ActorIdentifiable) {
+    func resolve(url: URL) async throws -> (any ActorIdentifiable & Sharable) {
         let request = ResolveObjectRequest(endpoint: .v3, q: url.absoluteString)
         let response = try await perform(request)
         if let post = response.post {
