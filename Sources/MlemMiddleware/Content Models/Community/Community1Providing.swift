@@ -123,7 +123,7 @@ public extension Community1Providing {
     }
     
     func getPosts(
-        sort: ApiSortType,
+        sort: PostSortType,
         page: Int = 1,
         cursor: String? = nil,
         limit: Int,

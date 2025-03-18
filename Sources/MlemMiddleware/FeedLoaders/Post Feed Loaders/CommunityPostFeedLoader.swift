@@ -11,7 +11,7 @@ import Foundation
 class CommunityPostFetcher: PostFetcher {
     var community: any Community
     
-    init(sortType: ApiSortType, pageSize: Int, community: any Community) {
+    init(sortType: PostSortType, pageSize: Int, community: any Community) {
         self.community = community
         
         super.init(api: community.api, sortType: sortType, pageSize: pageSize)
@@ -34,9 +34,14 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
     
     var communityPostFetcher: CommunityPostFetcher { fetcher as! CommunityPostFetcher }
     
+    // force unwrap because this should ALWAYS be a PostFetcher
+    private var postFetcher: PostFetcher { fetcher as! PostFetcher }
+    
+    public var sortType: PostSortType { postFetcher.sortType }
+
     public init(
         pageSize: Int,
-        sortType: ApiSortType,
+        sortType: PostSortType,
         showReadPosts: Bool,
         filterContext: FilterContext,
         prefetchingConfiguration: PrefetchingConfiguration,
@@ -66,5 +71,16 @@ public class CommunityPostFeedLoader: CorePostFeedLoader {
         } catch {
             assertionFailure("Couldn't change API")
         }
+    }
+    
+    /// Changes the post sort type to the specified value and reloads the feed
+    public func changeSortType(to newSortType: PostSortType, forceRefresh: Bool = false) async throws {
+        // don't do anything if sort type not changed
+        guard postFetcher.sortType != newSortType || forceRefresh else {
+            return
+        }
+        
+        postFetcher.sortType = newSortType
+        try await refresh(clearBeforeRefresh: true)
     }
 }

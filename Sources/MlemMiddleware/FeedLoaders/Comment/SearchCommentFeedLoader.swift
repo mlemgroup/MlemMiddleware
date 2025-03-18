@@ -9,9 +9,14 @@ import Foundation
 
 @Observable
 public class SearchCommentFetcher: Fetcher<Comment2> {
+    public enum SortType {
+        case v4(SearchSortType)
+        case v3(CommentSortType)
+    }
+    
     public var query: String
     public var listing: ApiListingType
-    public var sort: ApiSortType
+    public var sort: SortType
     public var communityId: Int?
     public var creatorId: Int?
     
@@ -22,7 +27,7 @@ public class SearchCommentFetcher: Fetcher<Comment2> {
         creatorId: Int?,
         pageSize: Int,
         listing: ApiListingType,
-        sort: ApiSortType
+        sort: SortType
     ) {
         self.query = query
         self.communityId = communityId
@@ -34,18 +39,32 @@ public class SearchCommentFetcher: Fetcher<Comment2> {
     }
     
     override func fetchPage(_ page: Int) async throws -> FetchResponse {
-        let communities = try await api.searchComments(
-            query: query,
-            page: page,
-            limit: pageSize,
-            communityId: communityId,
-            creatorId: creatorId,
-            filter: listing,
-            sort: sort
-        )
+        let comments: [Comment2]
+        switch sort {
+        case let .v4(searchSortType):
+            comments = try await api.searchComments(
+                query: query,
+                page: page,
+                limit: pageSize,
+                communityId: communityId,
+                creatorId: creatorId,
+                filter: listing,
+                sort: searchSortType
+            )
+        case let .v3(commentSortType):
+            comments = try await api.searchComments(
+                query: query,
+                page: page,
+                limit: pageSize,
+                communityId: communityId,
+                creatorId: creatorId,
+                filter: listing,
+                sort: commentSortType
+            )
+        }
         
         return .init(
-            items: communities,
+            items: comments,
             prevCursor: nil,
             nextCursor: nil
         )
@@ -70,7 +89,7 @@ public class SearchCommentFeedLoader: StandardFeedLoader<Comment2> {
         creatorId: Int? = nil,
         pageSize: Int = 20,
         listing: ApiListingType = .all,
-        sort: ApiSortType = .topAll
+        sort: SearchCommentFetcher.SortType = .v4(.top(.allTime))
     ) {
         self.api = api
 
@@ -83,14 +102,15 @@ public class SearchCommentFeedLoader: StandardFeedLoader<Comment2> {
                 creatorId: creatorId,
                 pageSize: pageSize,
                 listing: listing,
-                sort: sort)
+                sort: sort
+            )
         )
     }
     
     public func refresh(
         query: String? = nil,
         listing: ApiListingType? = nil,
-        sort: ApiSortType? = nil,
+        sort: SearchCommentFetcher.SortType? = nil,
         clearBeforeRefresh: Bool = false
     ) async throws {
         searchCommentFetcher.query = query ?? searchCommentFetcher.query

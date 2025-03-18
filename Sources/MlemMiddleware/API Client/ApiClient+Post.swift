@@ -11,7 +11,7 @@ public extension ApiClient {
     // swiftlint:disable:next function_parameter_count
     func getPosts(
         communityId: Int,
-        sort: ApiSortType,
+        sort: PostSortType,
         page: Int,
         cursor: String?,
         limit: Int,
@@ -21,7 +21,7 @@ public extension ApiClient {
         let request = GetPostsRequest(
             endpoint: .v3,
             type_: .all,
-            sort: sort,
+            sort: sort.legacyApiSortType,
             page: cursor == nil ? page : nil,
             limit: limit,
             communityId: communityId,
@@ -48,7 +48,7 @@ public extension ApiClient {
     // swiftlint:disable:next function_parameter_count
     func getPosts(
         feed: ApiListingType,
-        sort: ApiSortType,
+        sort: PostSortType,
         page: Int,
         cursor: String?,
         limit: Int,
@@ -58,7 +58,7 @@ public extension ApiClient {
         let request = GetPostsRequest(
             endpoint: .v3,
             type_: feed,
-            sort: sort,
+            sort: sort.legacyApiSortType,
             page: cursor == nil ? page : nil,
             limit: limit,
             communityId: nil,
@@ -85,7 +85,7 @@ public extension ApiClient {
     func getPosts(
         personId: Int,
         communityId: Int? = nil,
-        sort: ApiSortType = .new,
+        sort: PostSortType = .new,
         page: Int,
         limit: Int,
         savedOnly: Bool = false
@@ -94,7 +94,7 @@ public extension ApiClient {
             endpoint: .v3,
             personId: personId,
             username: nil,
-            sort: sort,
+            sort: sort.legacyApiSortType,
             page: page,
             limit: limit,
             communityId: communityId,
@@ -125,6 +125,7 @@ public extension ApiClient {
         throw ApiClientError.noEntityFound
     }
     
+    // This method should be removed in favor of the below method once we drop support for versions before Lemmy 1.0
     func searchPosts(
         query: String,
         page: Int = 1,
@@ -132,7 +133,53 @@ public extension ApiClient {
         communityId: Int? = nil,
         creatorId: Int? = nil,
         filter: ApiListingType = .all,
-        sort: ApiSortType = .topAll
+        sort: PostSortType
+    ) async throws -> [Post2] {
+        try await searchPosts(
+            query: query,
+            page: page,
+            limit: limit,
+            communityId: communityId,
+            creatorId: creatorId,
+            filter: filter,
+            legacySort: sort.legacyApiSortType,
+            sort: sort.apiSearchSortType,
+            timeRangeSeconds: nil
+        )
+    }
+    
+    func searchPosts(
+        query: String,
+        page: Int = 1,
+        limit: Int = 20,
+        communityId: Int? = nil,
+        creatorId: Int? = nil,
+        filter: ApiListingType = .all,
+        sort: SearchSortType
+    ) async throws -> [Post2] {
+        return try await searchPosts(
+            query: query,
+            page: page,
+            limit: limit,
+            communityId: communityId,
+            creatorId: creatorId,
+            filter: filter,
+            legacySort: sort.legacyApiSortType,
+            sort: sort.apiSortType,
+            timeRangeSeconds: sort.timeRangeSeconds
+        )
+    }
+    
+    private func searchPosts(
+        query: String,
+        page: Int,
+        limit: Int,
+        communityId: Int?,
+        creatorId: Int?,
+        filter: ApiListingType,
+        legacySort: ApiSortType?,
+        sort: ApiSearchSortType?,
+        timeRangeSeconds: Int?
     ) async throws -> [Post2] {
         let endpointVersion = try await self.version.highestSupportedEndpointVersion
         let request = SearchRequest(
@@ -142,13 +189,13 @@ public extension ApiClient {
             communityName: nil,
             creatorId: creatorId,
             type_: .posts,
-            sort: .init(oldSortType: endpointVersion == .v3 ? sort : nil, newSortType: endpointVersion == .v4 ? .top : nil),
+            sort: .init(oldSortType: endpointVersion == .v3 ? legacySort : nil, newSortType: endpointVersion == .v4 ? sort : nil),
             listingType: filter,
             page: page,
             limit: limit,
             postTitleOnly: false,
             searchTerm: query,
-            timeRangeSeconds: .max,
+            timeRangeSeconds: timeRangeSeconds,
             titleOnly: nil,
             postUrlOnly: nil,
             likedOnly: nil,

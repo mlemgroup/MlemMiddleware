@@ -56,7 +56,7 @@ public extension ApiClient {
     
     func getComments(
         parentId: Int,
-        sort: ApiCommentSortType,
+        sort: CommentSortType,
         page: Int,
         maxDepth: Int? = nil,
         limit: Int,
@@ -65,7 +65,7 @@ public extension ApiClient {
         let request = GetCommentsRequest(
             endpoint: .v3,
             type_: .all,
-            sort: sort,
+            sort: sort.apiSortType,
             maxDepth: maxDepth,
             page: page,
             limit: limit,
@@ -82,6 +82,7 @@ public extension ApiClient {
         return await caches.comment2.getModels(api: self, from: response.comments)
     }
     
+    // This method should be removed in favor of the below method once we drop support for versions before Lemmy 1.0
     func searchComments(
         query: String,
         page: Int = 1,
@@ -89,7 +90,53 @@ public extension ApiClient {
         communityId: Int? = nil,
         creatorId: Int? = nil,
         filter: ApiListingType = .all,
-        sort: ApiSortType = .topAll
+        sort: CommentSortType = .top(.allTime)
+    ) async throws -> [Comment2] {
+        try await searchComments(
+            query: query,
+            page: page,
+            limit: limit,
+            communityId: communityId,
+            creatorId: creatorId,
+            filter: filter,
+            legacySort: sort.legacyApiSortType,
+            sort: sort.apiSearchSortType,
+            timeRangeSeconds: sort.timeRangeSeconds
+        )
+    }
+    
+    func searchComments(
+        query: String,
+        page: Int = 1,
+        limit: Int = 20,
+        communityId: Int? = nil,
+        creatorId: Int? = nil,
+        filter: ApiListingType = .all,
+        sort: SearchSortType = .top(.allTime)
+    ) async throws -> [Comment2] {
+        try await searchComments(
+            query: query,
+            page: page,
+            limit: limit,
+            communityId: communityId,
+            creatorId: creatorId,
+            filter: filter,
+            legacySort: sort.legacyApiSortType,
+            sort: sort.apiSortType,
+            timeRangeSeconds: sort.timeRangeSeconds
+        )
+    }
+
+    private func searchComments(
+        query: String,
+        page: Int = 1,
+        limit: Int = 20,
+        communityId: Int?,
+        creatorId: Int?,
+        filter: ApiListingType,
+        legacySort: ApiSortType?,
+        sort: ApiSearchSortType?,
+        timeRangeSeconds: Int?
     ) async throws -> [Comment2] {
         let endpointVersion = try await self.version.highestSupportedEndpointVersion
         let request = SearchRequest(
@@ -99,13 +146,13 @@ public extension ApiClient {
             communityName: nil,
             creatorId: creatorId,
             type_: .comments,
-            sort: .init(oldSortType: endpointVersion == .v3 ? sort : nil, newSortType: endpointVersion == .v4 ? .top : nil),
+            sort: .init(oldSortType: endpointVersion == .v3 ? legacySort : nil, newSortType: endpointVersion == .v4 ? sort : nil),
             listingType: filter,
             page: page,
             limit: limit,
             postTitleOnly: false,
             searchTerm: nil,
-            timeRangeSeconds: .max,
+            timeRangeSeconds: timeRangeSeconds,
             titleOnly: nil,
             postUrlOnly: nil,
             likedOnly: nil,
